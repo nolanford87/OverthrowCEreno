@@ -23,6 +23,7 @@ class CfgFunctions {
             class testsCommon {};
             class testsBatch1 {};
             class testsBatch2 {};
+            class testsBatch4 {};
             class testsBatch5 {};
             class testsBatch6 {};
             class testsBatch7 {};
@@ -50,6 +51,10 @@ class zen_context_menu_actions {
         class OTQA_batch2 {
             displayName = "Run batch 2 tests (NATO)";
             statement = "['2'] spawn OTQA_fnc_run";
+        };
+        class OTQA_batch4 {
+            displayName = "Run batch 4 tests (spawning)";
+            statement = "['4'] spawn OTQA_fnc_run";
         };
         class OTQA_batch5 {
             displayName = "Run batch 5 tests (save / load)";
