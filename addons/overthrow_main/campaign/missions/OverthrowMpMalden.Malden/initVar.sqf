@@ -87,8 +87,8 @@ OT_clothes_mob = "U_I_C_Soldier_Camo_F";
 //NATO stuff
 OT_NATO_HMG = "B_HMG_01_high_F";
 OT_NATO_Vehicles_AirGarrison = [
-    ["B_VTOL_01_vehicle_F", 1],
-    ["B_VTOL_01_infantry_F", 1],
+    ["B_T_VTOL_01_vehicle_blue_F", 1],
+    ["B_T_VTOL_01_infantry_blue_F", 1],
     ["B_Heli_Light_01_armed_F", 1],
     ["B_Heli_Transport_03_unarmed_F", 2],
     ["B_Heli_Light_01_F", 3],
