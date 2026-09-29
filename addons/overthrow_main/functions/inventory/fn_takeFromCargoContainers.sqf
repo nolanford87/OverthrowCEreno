@@ -3,6 +3,7 @@ if (_num isEqualTo 0) exitWith { true };
 if (_num < 1) then { _num = 1 };
 private _gotit = false;
 {
+    if (_gotit) exitWith {};
     private _c = _x;
     {
         _x params ["_cls", "_amt"];

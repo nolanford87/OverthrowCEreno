@@ -22,7 +22,7 @@ if (_cat isEqualTo "Clothing") then {
         };
     } forEach (OT_items);
 };
-private _worth = [_itemcls, OT_Nation, 100, 100] call OT_fnc_getPrice;
+private _worth = [OT_nation, _itemcls, 100] call OT_fnc_getPrice;
 if (_worth > 20) then {
     _numitems = 1;
 };
