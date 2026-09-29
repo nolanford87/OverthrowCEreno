@@ -75,7 +75,8 @@ if ((isPlayer _unit) && isNil "OT_ACEunconsciousChangedEHId") then {
                 ] remoteExec ["systemChat", [0, -2] select isDedicated];
             };
 
-            //Look for a medic
+            //Look for a medic, counting only the medics sent for this time going unconscious
+            _unit setVariable ["OT_informedMedics", 0];
             private _havepi = "ACE_epinephrine" in (items player);
             private _nearbyUnits = player nearEntities ["CAManBase", 50];
             {

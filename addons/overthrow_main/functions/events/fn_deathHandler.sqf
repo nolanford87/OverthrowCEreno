@@ -1,6 +1,11 @@
-params ["_me", ["_killer", objNull]];
+params ["_me", ["_killer", objNull], ["_instigator", objNull]];
 
 if !(local _me) exitWith {}; //Only run this on the machine where unit is local
+
+// For vehicle kills the killer is the vehicle, the instigator is who pulled the trigger (e.g. the gunner)
+if (!isNull _instigator && { _instigator isKindOf "CAManBase" }) then {
+    _killer = _instigator;
+};
 
 if ((isNull _killer) || { _killer == _me }) then {
     private _aceSource = _me getVariable ["ace_medical_lastDamageSource", objNull];

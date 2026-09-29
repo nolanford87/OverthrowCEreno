@@ -633,7 +633,7 @@ if (_canBuyBoats) then {
                                 _driver globalChat "Alright, bye";
                             };
                             if (random 100 > 90) then {
-                                [player] spawn OT_fnc_NATOsearch;
+                                [player] remoteExec ["OT_fnc_NATOsearch", 2, false];
                             };
                             if (!alive _driver) exitWith {};
                             private _timeout = time + 800;
