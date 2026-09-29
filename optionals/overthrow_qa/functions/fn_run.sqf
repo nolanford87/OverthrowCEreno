@@ -37,6 +37,7 @@ if (_which in ["all", "4"]) then { _groups pushBack ["batch 4", OTQA_fnc_testsBa
 if (_which in ["all", "5"]) then { _groups pushBack ["batch 5", OTQA_fnc_testsBatch5] };
 if (_which in ["all", "6"]) then { _groups pushBack ["batch 6", OTQA_fnc_testsBatch6] };
 if (_which in ["all", "7"]) then { _groups pushBack ["batch 7", OTQA_fnc_testsBatch7] };
+if (_which in ["all", "8"]) then { _groups pushBack ["batch 8", OTQA_fnc_testsBatch8] };
 
 {
     _x params ["_group", "_testList"];
