@@ -1,11 +1,13 @@
 /*
     Description:
-    Second review follow-ups (fix/review-followups): employee deaths, garrison lists, stats loop.
+    Second review follow-ups (fix/review-followups): employee deaths, garrison lists, stats loop, job rewards.
 
     Returns: ARRAY - [[name, code], ...], part of the bug fix QA tests (OTQA_fnc_testsBugFixes)
 */
 
 "Respawn, then use Reset UI a few times: the stats HUD keeps updating and doesn't flicker" call OTQA_fnc_manual;
+"Multiplayer (as a non-host player): finish a 'Kill NATO' and an 'Operative transport' job, you get the money and the kill count hints, the host doesn't" call OTQA_fnc_manual;
+"Save at night (after 19:00), restart and load: time runs at the night speed straight away" call OTQA_fnc_manual;
 "As a general, open the player list and select an offline player who never saved money: shows $0, no script error" call OTQA_fnc_manual;
 
 // Far corner of the map, away from towns and players

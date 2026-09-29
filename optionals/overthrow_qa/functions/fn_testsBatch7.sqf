@@ -75,7 +75,8 @@ OTQA_b7_spawnPassiveNATO = {
         if !(call OTQA_b7_isUndercover) exitWith {
             "Batch 7 search lock test skipped: be undercover (not wanted) and on foot, then run again" call OTQA_fnc_manual;
         };
-        private _cop = [player getPos [4, getDir player]] call OTQA_b7_spawnPassiveNATO;
+        // 15 m away and unable to move: the search sets its flags, then waits for the cop and never gets to confiscating
+        private _cop = [player getPos [15, getDir player]] call OTQA_b7_spawnPassiveNATO;
         private _search = [player, _cop] spawn OT_fnc_NATOsearch;
         private _timeout = time + 5;
         waitUntil { sleep 0.2; (player getVariable ["OT_beingSearched", false]) || { time > _timeout } };

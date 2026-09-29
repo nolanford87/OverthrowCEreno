@@ -26,10 +26,21 @@ if (_searchPos isEqualType objNull) then {
 };
 
 // Check the cache for _searchPos. Function will often get called from same position multiple times.
-// Only trust a cached warehouse that is still owned and not shared since (or is the shared one)
+// Only trust a cached warehouse that is still owned and not shared since (or is the shared one).
+// A cached "none within 2 km" is trusted until the number of owned warehouses changes
+// (a purchase by another player doesn't clear this machine's cache)
 private _owned = warehouse getVariable ["owned", []];
+if ((missionNamespace getVariable ["OT_warehouseLocationCacheOwned", -1]) isNotEqualTo (count _owned)) then {
+    OT_warehouseLocationCache = createHashMap;
+    OT_warehouseLocationCacheOwned = count _owned;
+};
+private _hit = _searchPos in OT_warehouseLocationCache;
 private _cached = OT_warehouseLocationCache getOrDefault [_searchPos, objNull];
-if (!isNull _cached && { _cached isEqualTo warehouse_shared || { _cached in _owned && { !(_cached getVariable ["is_shared", false]) } } }) then {
+if (_hit && {
+    (isNull _cached && { _owned isNotEqualTo [] })
+    || { _cached isEqualTo warehouse_shared }
+    || { _cached in _owned && { !(_cached getVariable ["is_shared", false]) } }
+}) then {
     _warehouse = _cached;
 } else {
     if (_owned isNotEqualTo []) then {

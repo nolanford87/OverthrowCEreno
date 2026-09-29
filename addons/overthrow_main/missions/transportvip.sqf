@@ -75,8 +75,9 @@ private _title = format ["Operative transport for %1", _factionName];
         _civ setCaptive true;
         _civ addItem "ItemRadio";
 
-        //Save him for access later
+        //Save him for access later, and who took the job (the cleanup runs on the server)
         _this pushBack _civ;
+        _this pushBack player;
         true;
     },
     {
@@ -93,7 +94,7 @@ private _title = format ["Operative transport for %1", _factionName];
     },
     {
         //Cleanup
-        params ["_faction", "", "", "", "_civ", "_wassuccess"];
+        params ["_faction", "", "", "", "_civ", "_player", "_wassuccess"];
 
         private _group = createGroup civilian;
         [_civ] joinSilent nil;
@@ -103,13 +104,13 @@ private _title = format ["Operative transport for %1", _factionName];
         if (_wassuccess) then {
             [
                 {
-                    params ["_faction"];
+                    params ["_faction", "_player"];
                     private _factionName = server getVariable format ["factionname%1", _faction];
                     format ["Incoming message from %1: Thank you for delivering our operative. (+5 %1)", _factionName] remoteExec ["OT_fnc_notifyMinor", 0, false];
                     server setVariable [format ["standing%1", _faction], (server getVariable [format ["standing%1", _faction], 0]) + 5, true];
-                    [250] call OT_fnc_money;
+                    [250] remoteExec ["OT_fnc_money", _player, false];
                 },
-                [_faction],
+                [_faction, _player],
                 2
             ] call CBA_fnc_waitAndExecute;
         } else {

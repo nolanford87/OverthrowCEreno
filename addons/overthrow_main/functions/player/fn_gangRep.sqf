@@ -16,6 +16,6 @@ if (_gang isNotEqualTo []) then {
     if (_rep != 0) then {
         private _name = _gang select 8;
         if (_reason isNotEqualTo "") then { _reason = format [" (%1)", _reason] };
-        format ["%3: %1%2 Rep%4", _plusmin, _rep, _name, _reason] call OT_fnc_notifyMinor;
+        format ["%3: %1%2 Rep%4", _plusmin, _rep, _name, _reason] remoteExec ["OT_fnc_notifyMinor", _unit, false]; // Can run on the server (jobs)
     };
 };

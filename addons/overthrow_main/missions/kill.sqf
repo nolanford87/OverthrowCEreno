@@ -18,7 +18,8 @@ private _params = [_group, _reward, _numtokill];
     [_title, _description],
     getPos player,
     {
-        //No setup
+        // Remember who took the job, the checks below run on the server
+        _this pushBack player;
         true;
     },
     {
@@ -27,15 +28,15 @@ private _params = [_group, _reward, _numtokill];
     },
     {
         //Success Check
-        params ["_group", "", "_numtokill"];
+        params ["_group", "", "_numtokill", "_player"];
         private _numleft = { alive _x } count (units _group);
-        hint format ["Kills %1/%2", _numtokill - _numleft, _numtokill];
+        format ["Kills %1/%2", _numtokill - _numleft, _numtokill] remoteExecCall ["hint", _player, false];
         _numleft isEqualTo 0;
     },
     {
-        params ["", "_reward", "", "_wassuccess"];
+        params ["", "_reward", "", "_player", "_wassuccess"];
         if (_wassuccess) then {
-            [_reward] call OT_fnc_money;
+            [_reward] remoteExec ["OT_fnc_money", _player, false];
         };
     },
     _params

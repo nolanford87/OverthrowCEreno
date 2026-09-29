@@ -168,7 +168,7 @@ if (_tgroup isEqualType grpNull) then {
                 //Vehicle damaged (and on the ground)
                 _eject = true;
             };
-            if (_veh distance _lastpos < 0.5) then {
+            if (_veh distance _lastpos < 0.5 && { !_byair || { ((getPos _veh) select 2) < 2 } }) then { // A hovering helicopter isn't stuck
                 _stillfor = _stillfor + 10;
                 if (_stillfor > 60) then {
                     //what are you doing? gtfo

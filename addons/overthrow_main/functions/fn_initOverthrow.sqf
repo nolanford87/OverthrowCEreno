@@ -115,7 +115,8 @@ OT_tpl_checkpoint = [] call compileScript ["data\templates\NATOcheckpoint.sqf", 
     OT_timeMultiplierNight = ["ot_timemultipliernight", OT_timeMultiplierNight] call BIS_fnc_getParamValue;
 
     if (OT_fastTime) then {
-        setTimeMultiplier OT_timeMultiplierDay;
+        // The income loop only switches speed at 07:00 and 19:00, so start at the right one for the loaded hour
+        setTimeMultiplier ([OT_timeMultiplierNight, OT_timeMultiplierDay] select ((date select 3) >= 7 && { (date select 3) < 19 }));
     };
 
     //Init factions
