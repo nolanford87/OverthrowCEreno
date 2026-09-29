@@ -366,10 +366,6 @@ player addEventHandler [
     "InventoryOpened",
     {
         params ["", "_veh"];
-        if (player getVariable ["OT_beingSearched", false]) exitWith {
-            hint "NATO search is in progress, you cannot open your inventory";
-            true;
-        };
         private _locked = false;
         if !(_veh call OT_fnc_playerIsOwner) then {
             private _isgen = call OT_fnc_playerIsGeneral;

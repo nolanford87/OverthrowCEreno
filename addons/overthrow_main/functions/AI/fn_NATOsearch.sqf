@@ -43,8 +43,8 @@ _group setBehaviour "AWARE";
 if (isPlayer _target) then {
     [_cop, (["Stop right there!", "Halt, citizen!", "HALT!", "Stay right there, citizen"] call BIS_fnc_selectRandom)] remoteExec ["globalChat", _target, false];
     _wp setWaypointSpeed "FULL";
-    // Blocks the inventory, checked by the player's own InventoryOpened handler (the event only fires where the player is local)
     _target setVariable ["OT_beingSearched", true, true];
+    [true] remoteExec ["OT_fnc_NATOsearchLockInventory", _target, false];
 } else {
     [_target, "AmovPercMstpSnonWnonDnon_AmovPercMstpSsurWnonDnon"] remoteExec ["playMove", _target, false];
     [_target, "MOVE"] remoteExec ["disableAI", _target, false];
@@ -65,6 +65,7 @@ private _cleanup = {
     };
     if (isPlayer _target) then {
         _target setVariable ["OT_beingSearched", false, true];
+        [false] remoteExec ["OT_fnc_NATOsearchLockInventory", _target, false];
     } else {
         [_target, "MOVE"] remoteExec ["enableAI", _target, false];
     };
