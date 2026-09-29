@@ -147,7 +147,9 @@ OT_notifies = [];
 
 OT_NATO_HQPos = [0, 0, 0];
 
-OT_fastTime = true; //When true, 1 day will last 6 hrs real time
+OT_fastTime = true; //When true, time runs at the multipliers below
+OT_timeMultiplierDay = 24; //07:00-19:00, at 24 a full day lasts 1 hr real time
+OT_timeMultiplierNight = 24; //19:00-07:00
 OT_spawnDistance = 1200;
 if (isNil "OT_spawnCivPercentage") then {
     OT_spawnCivPercentage = 0.03;
