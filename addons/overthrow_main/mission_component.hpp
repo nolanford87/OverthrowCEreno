@@ -138,6 +138,18 @@ class Params {
         values[] = {100, 150, 200, 250, 300, 350, 400, 450, 500, 1000};
         default = 100;
     };
+    class ot_timemultiplierday {
+        title = "Time Speed (Day, 07:00-19:00)";
+        texts[] = {"1x (Real time)", "2x", "4x", "6x", "8x", "12x", "24x", "48x"};
+        values[] = {1, 2, 4, 6, 8, 12, 24, 48};
+        default = 24;
+    };
+    class ot_timemultipliernight {
+        title = "Time Speed (Night, 19:00-07:00)";
+        texts[] = {"1x (Real time)", "2x", "4x", "6x", "8x", "12x", "24x", "48x"};
+        values[] = {1, 2, 4, 6, 8, 12, 24, 48};
+        default = 24;
+    };
     class ace_medical_level {
         title = "ACE Medical Level";
         ACE_setting = 1;
