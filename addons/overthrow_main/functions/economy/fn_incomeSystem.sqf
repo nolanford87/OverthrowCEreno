@@ -17,10 +17,10 @@ income_system_lasthour = date select 3;
 
         if (OT_fastTime) then {
             if (income_system_lasthour isEqualTo 19) then {
-                setTimeMultiplier 8;
+                setTimeMultiplier OT_timeMultiplierNight;
             };
             if (income_system_lasthour isEqualTo 7) then {
-                setTimeMultiplier 4;
+                setTimeMultiplier OT_timeMultiplierDay;
             };
         };
 

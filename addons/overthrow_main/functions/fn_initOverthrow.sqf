@@ -111,7 +111,7 @@ OT_tpl_checkpoint = [] call compileScript ["data\templates\NATOcheckpoint.sqf", 
     private _initStart = diag_tickTime;
 
     if (OT_fastTime) then {
-        setTimeMultiplier 4;
+        setTimeMultiplier OT_timeMultiplierDay;
     };
 
     //Init factions
