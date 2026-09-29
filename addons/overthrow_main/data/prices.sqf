@@ -392,7 +392,6 @@ OT_priceData = [
     ['ACE_40mm_Flare_ir', [2, 0, 0.1, 0]],
     ['ACE_HuntIR_M203', [16, 0, 0.1, 0]],
     ['ACE_SpareBarrel', [30, 0, 0.1, 0]],
-    ['30Rnd_65x39_caseless_green_Tracer', [18, 0, 0.1, 0]],
     ['ACE_100Rnd_65x39_caseless_mag_Tracer_Dim', [45, 0, 0.1, 0]],
     ['ACE_200Rnd_65x39_cased_Box_Tracer_Dim', [36, 0, 0.1, 0]],
     ['ACE_30Rnd_65x39_caseless_mag_Tracer_Dim', [18, 0, 0.1, 0]],
@@ -559,7 +558,6 @@ OT_priceData = [
     ['B_T_MBT_01_TUSK_F', [800000, 0, 500, 5]],
     ['O_T_MBT_02_cannon_ghex_F', [748000, 0, 475, 5]],
     ['O_T_MBT_02_arty_ghex_F', [374000, 0, 263, 5]],
-    ['O_T_MBT_02_arty_F', [840000, 0, 500, 5]],
     ['I_LT_01_AT_F', [145000, 0, 125, 5]],
     ['I_LT_01_scout_F', [80000, 0, 125, 5]],
     ['I_LT_01_AA_F', [145000, 0, 125, 5]],
@@ -568,7 +566,6 @@ OT_priceData = [
     ['O_T_MBT_04_cannon_F', [616000, 0, 400, 5]],
     ['O_MBT_04_command_F', [632000, 0, 400, 5]],
     ['O_T_MBT_04_command_F', [632000, 0, 400, 5]],
-    ['I_T_APC_tracked_03_cannon_F', [582000, 0, 500, 5]],
 
     //Air
     ['B_Heli_Light_01_F', [60000, 0, 65, 5]],

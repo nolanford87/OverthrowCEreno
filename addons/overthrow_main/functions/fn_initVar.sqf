@@ -105,16 +105,26 @@ OT_mansions = ["Land_House_Big_02_F", "Land_House_Big_03_F", "Land_Hotel_01_F", 
 OT_lowPopHouses = [];
 OT_medPopHouses = [];
 OT_highPopHouses = [];
+// The police station, workshop and refugee camp are cargo houses, they aren't homes
+private _notHomes = [OT_policeStation, OT_workshopBuilding, OT_refugeeCamp] apply { toLowerANSI _x };
 {
     private _cost = getNumber (_x >> "cost");
     [_cost, configName _x] call {
         params ["_cost", "_name"];
+        private _lower = toLowerANSI _name;
+        if (_lower in _notHomes || { _name in OT_hugePopHouses }) exitWith {};
+        // Tanoa and Livonia houses don't set a cost (the default is 50000), so their size comes from the name
+        if (_cost isEqualTo 50000) exitWith {
+            if ((_lower select [0, 10]) isEqualTo "land_slum_") exitWith { OT_lowPopHouses pushBack _name };
+            if ("_big_" in _lower || { "land_house_2" in _lower }) exitWith { OT_highPopHouses pushBack _name };
+            OT_medPopHouses pushBack _name;
+        };
         if (_cost > 70000) exitWith { OT_hugePopHouses pushBack _name };
         if (_cost > 55000) exitWith { OT_highPopHouses pushBack _name };
         if (_cost > 25000) exitWith { OT_medPopHouses pushBack _name };
         OT_lowPopHouses pushBack _name;
     };
-} forEach ("(getNumber (_x >> 'scope') isEqualTo 2) && { (configName _x isKindOf 'House') && { '_house' in (toLowerANSI (configName _x)) } }" configClasses (_cfgVehicles));
+} forEach ("(getNumber (_x >> 'scope') isEqualTo 2) && { (configName _x isKindOf 'House') && { '_house' in (toLowerANSI (configName _x)) || { 'land_slum_0' in (toLowerANSI (configName _x)) } } }" configClasses (_cfgVehicles));
 
 OT_allBuyableBuildings = OT_lowPopHouses + OT_medPopHouses + OT_highPopHouses + OT_hugePopHouses + OT_mansions + [OT_item_Tent, OT_flag_IND];
 
@@ -375,11 +385,13 @@ _allVehs = "
     OT_allVehicleThreats pushBack (configName _x);
 } forEach (_allVehs);
 
+// Armed jets and VTOLs have a low 'threat' value, so planes are also checked for weapons (OT_fnc_isArmedPlane)
 private _allHelis = "
     (getNumber (_x >> 'scope') isEqualTo 2
         && { (getArray (_x >> 'threat') select 0) < 0.5 }
         && { toLowerANSI getText (_x >> 'vehicleClass') isEqualTo 'air' }
         && { toLowerANSI getText (_x >> 'faction') in ['civ_f', 'ind_f'] }
+        && { !(_x call OT_fnc_isArmedPlane) }
     );
 " configClasses (_cfgVehicles);
 
@@ -410,8 +422,8 @@ private _allHelis = "
 //Determine aircraft threats
 _allHelis = "
     (getNumber (_x >> 'scope') isEqualTo 2
-        && { (getArray (_x >> 'threat') select 0) >= 0.5 }
         && { toLowerANSI getText (_x >> 'vehicleClass') isEqualTo 'air' }
+        && { (getArray (_x >> 'threat') select 0) >= 0.5 || { _x call OT_fnc_isArmedPlane } }
     );
 " configClasses (_cfgVehicles);
 
@@ -506,6 +518,9 @@ private _allGlasses = "
 " configClasses (configFile >> "CfgGlasses");
 
 OT_allFactions = [];
+// NATO's weapon pools only come from its own factions (and the gendarmerie), not every BLUFOR faction
+// (FIA, CTRG or creator DLC factions)
+private _natoFactions = [OT_faction_NATO, OT_fallback_faction_NATO, getText (_cfgVehicles >> OT_NATO_Unit_Police >> "faction")];
 OT_allSubMachineGuns = [];
 OT_allAssaultRifles = [];
 OT_allMachineGuns = [];
@@ -608,7 +623,7 @@ OT_allBLURifleMagazines = [];
                 if !(_base in _blacklist) then {
                     private _muzzleEffect = getText (_cfgWeapons >> _base >> "muzzleEffect");
                     if (!(_x in _weapons) && (getNumber (_cfgWeapons >> _base >> "scope") isEqualTo 2)) then { _weapons pushBack _base };
-                    if (_side isEqualTo 1 && _muzzleEffect isNotEqualTo "BIS_fnc_effectFiredFlares") then {
+                    if (_side isEqualTo 1 && { _name in _natoFactions } && { _muzzleEffect isNotEqualTo "BIS_fnc_effectFiredFlares" }) then {
                         if (_base isKindOf ["Rifle", _cfgWeapons]) then {
                             private _mass = getNumber (_cfgWeapons >> _base >> "WeaponSlotsInfo" >> "mass");
                             _base call {
@@ -625,7 +640,7 @@ OT_allBLURifleMagazines = [];
                                 if (_add && _mass < 61) exitWith { OT_allBLUSMG pushBackUnique _base };
                                 if (_add) then {
                                     OT_allBLURifles pushBackUnique _base;
-                                    OT_allBLURifleMagazines = OT_allBLURifleMagazines + getArray (_cfgWeapons >> _base >> "WeaponSlotsInfo" >> "magazines");
+                                    OT_allBLURifleMagazines = OT_allBLURifleMagazines + getArray (_cfgWeapons >> _base >> "magazines");
                                 };
                             };
                         };
@@ -758,7 +773,10 @@ private _caliberRegex = "(\d*\.\d+)\s*x\s*(\d+)|(\d+)\.(\d+)|\.(\d+)|(\d+)x(\d+)
                 if (".338" in _this || ".303" in _this) exitWith { 700 };
                 100;
             };
-            if (_short != "Metal Detector") then {
+            // Not the metal detector, the Contact spectrum device (no magazines) or flare pistols
+            if (_short != "Metal Detector"
+                && { (compatibleMagazines _name) isNotEqualTo [] }
+                && { !(_name isKindOf ["hgun_Pistol_Signal_F", _cfgWeapons]) }) then {
                 OT_allHandGuns pushBack _name;
             };
             [_cost, 1];

@@ -619,6 +619,7 @@ class CfgFunctions {
             class datestamp {};
             class logVerbose {};
             class consolidateArray {};
+            class isArmedPlane {};
         };
 
         /*
