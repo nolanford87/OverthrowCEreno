@@ -12,12 +12,13 @@
 
 [
     ["Save/load round trip", {
-        // Finishes the round trip started by the save test of an earlier run
-        if !(profileNamespace getVariable ["OTQA_roundtripPending", false]) exitWith {
-            "Save/load round trip: not pending. This run's save test starts one, then restart, load the save and run batch 5 again" call OTQA_fnc_manual;
+        // Finishes the round trip started by the save test of an earlier run, stored next to the save itself
+        // with the save's name, so another campaign doesn't pick it up
+        if ((missionProfileNamespace getVariable ["OTQA_roundtripPending", ""]) isNotEqualTo OT_saveName) exitWith {
+            "Save/load round trip: not pending. This run's save test starts one, then restart, load the save and run the bug fix QA tests again" call OTQA_fnc_manual;
         };
-        profileNamespace setVariable ["OTQA_roundtripPending", nil];
-        saveProfileNamespace;
+        missionProfileNamespace setVariable ["OTQA_roundtripPending", nil];
+        saveMissionProfileNamespace;
         private _squad = (server getVariable ["squads", []]) select { (_x select 0) isEqualTo "OTQA_OFFLINE" };
         ["Offline player's squad survives save and load", _squad isNotEqualTo [] && { ((_squad select 0) param [3, []]) isNotEqualTo [] },
             format ["entry after load: %1", _squad]] call OTQA_fnc_check;
@@ -94,7 +95,7 @@
         private _date = date;
         setDate [_date select 0, 12, _date select 2, _date select 3, _date select 4];
         private _results = [];
-        for "_i" from 1 to 30 do {
+        for "_i" from 1 to 60 do {
             ot_weather_change_forecast = "Cloudy";
             ot_weather_change_time = time - 1;
             private _timeout = time + 5;
@@ -102,7 +103,7 @@
             _results pushBack ot_weather_change_forecast;
         };
         private _stayed = { _x isEqualTo "Cloudy" } count _results;
-        ["Cloudy weather can stay cloudy", _stayed > 0, format ["30 forced changes from Cloudy: %1 stayed Cloudy, %2 Clear, %3 Rain",
+        ["Cloudy weather can stay cloudy", _stayed > 0, format ["60 forced changes from Cloudy: %1 stayed Cloudy, %2 Clear, %3 Rain",
             _stayed, { _x isEqualTo "Clear" } count _results, { _x isEqualTo "Rain" } count _results]] call OTQA_fnc_check;
     }],
 
@@ -124,8 +125,8 @@
         private _short = { count _x < 7 } count _recruits;
         ["Saved recruits keep their XP field", _short isEqualTo 0, format ["%1 recruits, %2 without XP", count _recruits, _short]] call OTQA_fnc_check;
 
-        profileNamespace setVariable ["OTQA_roundtripPending", true];
-        saveProfileNamespace;
-        "Save/load round trip started: restart the mission, load the save and run batch 5 again" call OTQA_fnc_manual;
+        missionProfileNamespace setVariable ["OTQA_roundtripPending", OT_saveName];
+        saveMissionProfileNamespace;
+        "Save/load round trip started: restart the mission, load the save and run the bug fix QA tests again" call OTQA_fnc_manual;
     }]
 ]

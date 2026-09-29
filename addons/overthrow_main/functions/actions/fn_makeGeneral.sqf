@@ -26,6 +26,7 @@ if (_isonline) then {
     _money = _player getVariable ["money", 0];
 } else {
     _money = [_uid, "money"] call OT_fnc_getOfflinePlayerAttribute;
+    if !(_money isEqualType 0) then { _money = 0 }; // No saved money for this player yet
 };
 
 if (_uid in (server getVariable ["generals", []])) then {

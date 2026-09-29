@@ -79,9 +79,10 @@ call {
     };
     if (!isNil "_employee") exitWith {
         _killer setVariable ["CIVkills", (_killer getVariable ["CIVkills", 0]) + 1, true];
-        private _pop = server getVariable format ["employ%1", _employee];
+        // Businesses store their employee count as "<name>employ"
+        private _pop = server getVariable [format ["%1employ", _employee], 0];
         if (_pop > 0) then {
-            server setVariable [format ["employ%1", _employee], _pop - 1, true];
+            server setVariable [format ["%1employ", _employee], _pop - 1, true];
         };
         format ["An employee of %1 has died", _employee] remoteExec ["OT_fnc_notifyMinor", 0, false];
     };
@@ -179,16 +180,19 @@ call {
             };
         };
 
+        // Public like the stolen vehicle update in initPlayerLocal, so clients don't hold a stale list
         if (!isNil "_vehgarrison") then {
-            private _vg = server getVariable format ["vehgarrison%1", _vehgarrison];
-            _vg deleteAt (_vg find (typeOf _me));
-            server setVariable [format ["vehgarrison%1", _vehgarrison], _vg, false];
+            private _vg = server getVariable [format ["vehgarrison%1", _vehgarrison], []];
+            private _idx = _vg find (typeOf _me);
+            if (_idx > -1) then { _vg deleteAt _idx };
+            server setVariable [format ["vehgarrison%1", _vehgarrison], _vg, true];
         };
 
         if (!isNil "_airgarrison") then {
-            private _vg = server getVariable format ["airgarrison%1", _airgarrison];
-            _vg deleteAt (_vg find (typeOf _me));
-            server setVariable [format ["airgarrison%1", _airgarrison], _vg, false];
+            private _vg = server getVariable [format ["airgarrison%1", _airgarrison], []];
+            private _idx = _vg find (typeOf _me);
+            if (_idx > -1) then { _vg deleteAt _idx };
+            server setVariable [format ["airgarrison%1", _airgarrison], _vg, true];
         };
     } else {
         if (side _me isEqualTo blufor) then {

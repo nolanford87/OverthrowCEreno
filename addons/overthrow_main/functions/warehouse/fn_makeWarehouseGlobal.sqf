@@ -27,8 +27,12 @@ if (_callerMoney < 10000) exitWith {
 };
 
 private _warehouse = [_position] call OT_fnc_nearestWarehouse;
+if (isNull _warehouse) exitWith {
+    hint "There is no warehouse nearby!";
+    false;
+};
 // Merging the shared warehouse into itself would wipe it, as all its items are cleared afterwards
-if (isNull _warehouse || { _warehouse isEqualTo warehouse_shared } || { _warehouse getVariable ["is_shared", false] }) exitWith {
+if (_warehouse isEqualTo warehouse_shared || { _warehouse getVariable ["is_shared", false] }) exitWith {
     hint "This warehouse is already global!";
     false;
 };

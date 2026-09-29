@@ -50,6 +50,29 @@
         private _result = [[10, 10], player] call OT_fnc_makeWarehouseGlobal;
         private _money = player getVariable ["money", 0];
         ["No warehouse to share is refused without charging", !_result && { _money isEqualTo 20000 }, format ["result %1, money %2", _result, _money]] call OTQA_fnc_check;
+
+        // The real guard: the nearest warehouse is (now) shared, so it resolves to the shared warehouse itself
+        private _wh = [player] call OT_fnc_nearestWarehouse;
+        if (isNull _wh) exitWith {
+            "Shared warehouse guard test skipped: stand within 2 km of an owned warehouse" call OTQA_fnc_manual;
+        };
+        private _realWh = objNull;
+        if (_wh isNotEqualTo warehouse_shared) then {
+            _realWh = _wh;
+            _realWh setVariable ["is_shared", true, true];
+            OT_warehouseLocationCache = createHashMap;
+        };
+        private _sharedItems = { ((allVariables warehouse_shared) select { (toLower _x select [0, 5]) isEqualTo "item_" }) apply { warehouse_shared getVariable _x } };
+        private _before = call _sharedItems;
+        _result = [player, player] call OT_fnc_makeWarehouseGlobal;
+        _money = player getVariable ["money", 0];
+        private _after = call _sharedItems;
+        ["Sharing the shared warehouse again is refused", !_result && { _money isEqualTo 20000 } && { _before isEqualTo _after },
+            format ["result %1, money %2, shared items %3 -> %4", _result, _money, count _before, count _after]] call OTQA_fnc_check;
+        if (!isNull _realWh) then {
+            _realWh setVariable ["is_shared", false, true];
+            OT_warehouseLocationCache = createHashMap;
+        };
     }],
 
     ["Garrison units don't take warehouse gear on the server", {
