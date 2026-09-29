@@ -422,10 +422,10 @@ private _hasList_buildableHouses = false;
         continue;
     };
     if (_key == "recruitables") then {
-        private _done = false;
         {
             if (isNil "_x") then { continue };
             _x params ["_cls", "_loadout"];
+            private _done = false;
             {
                 _x params ["_c", "_l"];
                 if (_c == _cls) exitWith {
@@ -433,8 +433,8 @@ private _hasList_buildableHouses = false;
                     _x set [1, _loadout];
                 };
             } forEach (OT_Recruitables);
+            if !(_done) then { OT_Recruitables pushBack [_cls, _loadout] };
         } forEach (_val);
-        if !(_done) then { OT_Recruitables pushBack [_cls, _loadout] };
         publicVariable "OT_Recruitables";
         _set = false;
         continue;

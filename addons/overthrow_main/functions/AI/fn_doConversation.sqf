@@ -4,7 +4,7 @@ private _person = _personOne;
 {
     _person setRandomLip true;
     _person globalChat _x;
-    sleep ceil ((count _x) * 0.08) + 1;
+    sleep (ceil ((count _x) * 0.08) + 1);
     _person setRandomLip false;
     if (_person isEqualTo _personOne) then {
         _person = _personTwo;
