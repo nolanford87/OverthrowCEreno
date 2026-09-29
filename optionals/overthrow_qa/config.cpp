@@ -28,6 +28,7 @@ class CfgFunctions {
             class testsBatch5 {};
             class testsBatch6 {};
             class testsBatch7 {};
+            class testsBatch8 {};
         };
     };
 };
@@ -72,6 +73,10 @@ class zen_context_menu_actions {
         class OTQA_batch7 {
             displayName = "Run batch 7 tests (wanted / search)";
             statement = "['7'] spawn OTQA_fnc_run";
+        };
+        class OTQA_batch8 {
+            displayName = "Run batch 8 tests (warehouse / items)";
+            statement = "['8'] spawn OTQA_fnc_run";
         };
     };
 };
