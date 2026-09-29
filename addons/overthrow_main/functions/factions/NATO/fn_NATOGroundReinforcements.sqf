@@ -177,6 +177,7 @@ if (_tgroup isEqualType grpNull) then {
             } else {
                 _stillfor = 0;
             };
+            _lastpos = getPos _veh;
             if (_eject) exitWith {
                 while { (waypoints _tgroup) isNotEqualTo [] } do {
                     deleteWaypoint ((waypoints _tgroup) select 0);

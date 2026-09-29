@@ -14,6 +14,7 @@
 
 private _countered = false;
 private _abandoned = server getVariable ["NATOabandoned", []];
+private _resources = server getVariable ["NATOresources", 2000];
 
 {
     _x params ["_pos", "_name"];
@@ -35,5 +36,6 @@ private _abandoned = server getVariable ["NATOabandoned", []];
 } forEach OT_NATOComms;
 
 server setVariable ["NATOabandoned", _abandoned, true];
+server setVariable ["NATOresources", _resources];
 
 _countered;

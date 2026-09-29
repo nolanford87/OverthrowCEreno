@@ -49,7 +49,7 @@ if !(_frombase in _abandoned) then {
 
     waitUntil {
         sleep 10;
-        !isNil "_veh" && alive _veh && time > _timeout;
+        isNil "_veh" || { !alive _veh } || { time > _timeout };
     };
 
     while { (waypoints _group) isNotEqualTo [] } do {
@@ -58,7 +58,10 @@ if !(_frombase in _abandoned) then {
 
     sleep 1;
 
-    if (isNil "_veh" || !alive _veh) exitWith {};
+    if (isNil "_veh" || { !alive _veh }) exitWith {
+        if (!isNil "_veh") then { _veh call OT_fnc_cleanup };
+        _group call OT_fnc_cleanup;
+    };
 
     private _wp = _group addWaypoint [_frompos, 50];
     _wp setWaypointType "MOVE";

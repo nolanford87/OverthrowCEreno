@@ -49,7 +49,7 @@ if !(OT_NATO_HQ in _abandoned) then {
 
     waitUntil {
         sleep 10;
-        alive _veh && time > _timeout;
+        !alive _veh || time > _timeout;
     };
 
     while { (waypoints _group) isNotEqualTo [] } do {

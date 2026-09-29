@@ -239,8 +239,8 @@ if (_progress > 0) then {
     //Nato has won
     _params call _success;
 
-    //Recover resources
-    server setVariable ["NATOresources", round (_strength * 0.5), true];
+    //Recover half of the unspent strength. Add to what NATO has, it kept earning during the QRF
+    server setVariable ["NATOresources", (server getVariable ["NATOresources", 0]) + round ((_strength max 0) * 0.5), true];
     {
         if (side _x isEqualTo blufor) then {
             if ((units _x) isNotEqualTo []) then {
@@ -277,7 +277,7 @@ if (_progress > 0) then {
 
     //Nato gets pushed back
     server setVariable ["NATOresourceGain", 0, true];
-    server setVariable ["NATOresources", -_strength, true];
+    server setVariable ["NATOresources", -(_strength max 0), true];
 };
 server setVariable ["NATOlastattack", time, true]; //Ensures NATO takes some time after a QRF to recover (even if they win)
 server setVariable ["QRFpos", nil, true];

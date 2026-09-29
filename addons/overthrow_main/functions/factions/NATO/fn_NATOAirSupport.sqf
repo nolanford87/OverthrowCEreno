@@ -92,11 +92,16 @@ private _timeout = time + 1800;
 
 waitUntil {
     sleep 10;
-    alive _veh && time > _timeout;
+    !alive _veh || time > _timeout;
 };
 
 while { (waypoints _group) isNotEqualTo [] } do {
     deleteWaypoint ((waypoints _group) select 0);
+};
+
+if (!alive _veh) exitWith {
+    _veh call OT_fnc_cleanup;
+    _group call OT_fnc_cleanup;
 };
 
 [_veh, _pos, _group] spawn OT_fnc_landAndCleanupHelicopter;

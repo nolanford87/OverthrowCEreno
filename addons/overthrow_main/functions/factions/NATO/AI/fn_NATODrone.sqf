@@ -10,7 +10,6 @@ _this # 1 - The spawner object(?).
 */
 
 params ["_drone", "_obname"];
-private _targets = [];
 
 while {
     sleep 10;
@@ -21,6 +20,11 @@ while {
         [_drone] call OT_fnc_cleanupVehicle;
         spawner setVariable [format ["drone%1", _obname], objNull, false];
     };
+
+    // Report into the list currently on the drone. NATOcheckObjectives replaces it with an empty one after reading it,
+    // so targets are only reported once. Spotting runs in spawned scripts that may finish after this iteration
+    private _targets = _drone getVariable ["OT_seenTargets", []];
+    _drone setVariable ["OT_seenTargets", _targets, false];
 
     {
         if (alive _x) then {
@@ -97,8 +101,6 @@ while {
     if (_numRes > 10 && { _numMil isEqualTo 0 }) then {
         _targets pushBack ["INF", getPos _drone, 100, _drone];
     };
-
-    _drone setVariable ["OT_seenTargets", _targets, false];
 };
 
 // The drone is dead, delete all the crew

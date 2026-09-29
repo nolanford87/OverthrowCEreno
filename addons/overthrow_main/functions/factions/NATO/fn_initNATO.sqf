@@ -170,14 +170,15 @@ if ((server getVariable "StartupType") == "NEW" || (server getVariable ["NATOver
             server setVariable [format ["vehgarrison%1", _name], [], true];
 
             private _base = 8;
-            private _statics = OT_NATO_StaticGarrison_LevelOne;
+            // Copy, this becomes the objective's own vehicle garrison list
+            private _statics = +OT_NATO_StaticGarrison_LevelOne;
             if (_worth > 500) then {
                 _base = 16;
-                _statics = OT_NATO_StaticGarrison_LevelTwo;
+                _statics = +OT_NATO_StaticGarrison_LevelTwo;
             };
             if (_worth > 1000) then {
                 _base = 24;
-                _statics = OT_NATO_StaticGarrison_LevelThree;
+                _statics = +OT_NATO_StaticGarrison_LevelThree;
             };
             if ((random 150) < ((count _groundvehs) + _base)) then {
                 private _veh = (selectRandom _groundvehs);
@@ -223,7 +224,7 @@ if ((server getVariable "StartupType") == "NEW" || (server getVariable ["NATOver
     private _count = 0;
     private _done = [];
     while { _count < _numHVTs } do {
-        private _ob = selectRandom (OT_NATOobjectives - ([[OT_NATO_HQ, OT_NATO_HQPos]] + _done));
+        private _ob = selectRandom ((OT_NATOobjectives - _done) select { (_x select 1) != OT_NATO_HQ });
         private _name = _ob select 1;
         _done pushBack _ob;
         private _id = format ["%1%2", _name, round (random 99999)];
