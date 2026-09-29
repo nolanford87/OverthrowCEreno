@@ -3,7 +3,7 @@
     Batch 4 (fix/virtualization-race): spawner busy flag, despawn guard, shop and police group leaks.
     Game state isn't preserved (the test save is disposable).
 
-    Returns: ARRAY - [[name, code], ...] run by OTQA_fnc_run
+    Returns: ARRAY - [[name, code], ...], part of the bug fix QA tests (OTQA_fnc_testsBugFixes)
 */
 
 "Drive up to a big NATO base, leave again before it has finished spawning: once it despawns no NATO soldiers are left standing there" call OTQA_fnc_manual;

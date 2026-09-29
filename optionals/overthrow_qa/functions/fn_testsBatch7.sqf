@@ -5,7 +5,7 @@
     Game state isn't preserved (the test save is disposable), but tests delete what they spawn.
     The unconscious test runs last as it blows the player's cover.
 
-    Returns: ARRAY - [[name, code], ...] run by OTQA_fnc_run
+    Returns: ARRAY - [[name, code], ...], part of the bug fix QA tests (OTQA_fnc_testsBugFixes)
 */
 
 // Shared checks, compiled once so every test can call them
