@@ -80,6 +80,7 @@ private _title = format ["%1 needs %2 x %3", _destinationName, _numitems, _itemN
                         _x params ["_cls", "_amt"];
                         if (_cls == _itemcls && _amt >= _numitems) exitWith {
                             _driver = driver _c;
+                            if (isNull _driver) then { _driver = (_c getVariable ["owner", ""]) call BIS_fnc_getUnitByUID }; // Nobody in the driver seat, pay the owner
                             _found = true;
                             [_c, _cls, _numitems] call CBA_fnc_removeItemCargo;
                         };

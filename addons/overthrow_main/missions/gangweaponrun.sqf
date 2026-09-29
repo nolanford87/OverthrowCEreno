@@ -47,6 +47,7 @@ private _title = format ["Deliver %2 for %1", _gangname, _gunname];
         private _civ = _group createUnit [OT_civType_local, _destination, [], 0, "NONE"];
         _civ disableAI "MOVE";
         _civ setVariable ["OT_delivery", [_guncls, 1], true];
+        _civ setVariable ["OT_jobPlayer", player, true]; // Who took the job, for the failure penalty
 
         private _identity = call OT_fnc_randomLocalIdentity;
         _identity pushBack (selectRandom OT_voices_local);
@@ -76,11 +77,11 @@ private _title = format ["Deliver %2 for %1", _gangname, _gunname];
     },
     {
         params ["", "_gangid", "_guncls", "_reward", "_civ", "_wassuccess"];
+        private _player = _civ getVariable ["OT_deliveredBy", _civ getVariable ["OT_jobPlayer", objNull]];
         _civ call OT_fnc_cleanup;
 
         //If mission was a success
         if (_wassuccess) then {
-            _player = _civ getVariable ["OT_deliveredBy", objNull];
             //apply standing and pay money
             [
                 _reward,

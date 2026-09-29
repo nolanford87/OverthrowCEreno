@@ -13,7 +13,7 @@ if !(_jobparams call _setup) exitWith {
     };
 
     _active = spawner getVariable ["OT_activeJobIds", []];
-    _active deleteAt (_active find _id);
+    if (_id in _active) then { _active deleteAt (_active find _id) };
     spawner setVariable ["OT_activeJobIds", _active, true];
 };
 
@@ -67,7 +67,7 @@ if !(_jobparams call _setup) exitWith {
                         };
 
                         _active = spawner getVariable ["OT_activeJobIds", []];
-                        _active deleteAt (_active find _id);
+                        if (_id in _active) then { _active deleteAt (_active find _id) };
                         spawner setVariable ["OT_activeJobIds", _active, true];
 
                         if (_wassuccess) then {
@@ -84,7 +84,7 @@ if !(_jobparams call _setup) exitWith {
                             if (_repeat < 1) then {
                                 private _completed = server getVariable ["OT_completedJobIds", []];
                                 _completed pushBack _id;
-                                server setVariable ["OT_completedJobIds", _completed];
+                                server setVariable ["OT_completedJobIds", _completed, true];
                             };
                         };
 

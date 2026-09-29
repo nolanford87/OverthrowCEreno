@@ -7,7 +7,7 @@ if (job_system_counter >= 12) then {
             private _jobdef = _x;
             private _completed = server getVariable ["OT_completedJobIds", []];
             if (isNil "_completed") then {
-                server setVariable ["OT_completedJobIds", [], false];
+                server setVariable ["OT_completedJobIds", [], true];
                 _completed = server getVariable "OT_completedJobIds";
             };
 
@@ -19,8 +19,7 @@ if (job_system_counter >= 12) then {
                     if ((random 100) < _chance) then {
                         private _numAbandoned = count (server getVariable ["NATOabandoned", []]);
                         if (([_numAbandoned] call _condition) && !(_id in _completed) && !(_id in _activeJobs)) then {
-                            _activeJobs pushBack _id;
-                            spawner setVariable ["OT_activeJobIds", _activeJobs, false];
+                            // assignJob adds the id to OT_activeJobIds (adding it here too left it there for good)
                             [_id, _jobdef, []] call OT_fnc_assignJob;
                         };
                     };
@@ -34,8 +33,6 @@ if (job_system_counter >= 12) then {
                             if !(isNil "_p2") then {
                                 private _id = format ["%1-%2", _name, _missionid];
                                 if (([_mission, _numAbandoned] call _condition) && !(_id in _completed) && !(_id in _activeJobs)) then {
-                                    _activeJobs pushBack _id;
-                                    spawner setVariable ["OT_activeJobIds", _activeJobs, false];
                                     [_id, _jobdef, [_x]] call OT_fnc_assignJob;
                                 };
                             };

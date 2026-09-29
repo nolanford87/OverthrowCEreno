@@ -11,6 +11,6 @@ spawner setVariable ["OT_activeJobs", _active, true];
 
 private _activeJobIds = spawner getVariable ["OT_activeJobIds", []];
 _activeJobIds pushBack _id;
-spawner setVariable ["OT_activeJobIds", _activeJobIds, false];
+spawner setVariable ["OT_activeJobIds", _activeJobIds, true];
 
 _j spawn OT_fnc_startJob;

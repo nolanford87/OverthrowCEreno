@@ -39,7 +39,7 @@ OT_jobShowing = _job;
 OT_jobShowingID = _id;
 OT_jobShowingExpiry = _expiry;
 OT_jobsOffered pushBack _id;
-if (_job isEqualTo []) exitWith { call OT_fnc_requestJobGang };
+if (_job isEqualTo []) exitWith { call OT_fnc_requestJobFaction };
 
 OT_jobShowingType = "faction";
 
