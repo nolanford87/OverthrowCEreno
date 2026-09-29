@@ -58,7 +58,6 @@ income_system_lasthour = date select 3;
             } forEach (allPlayers - (entities 'HeadlessClient_F'));
 
             [_totax] call OT_fnc_resistanceFunds;
-            // Lease tax was already taken from the lease payouts, only remove the town tax here
             _total = _total - _townTax;
 
             private _numPlayers = count (allPlayers - (entities 'HeadlessClient_F'));
