@@ -65,25 +65,6 @@ _this spawn {
         clearBackpackCargoGlobal _target;
         clearItemCargoGlobal _target;
     } else {
-        // Move magazines one by one with their ammo count, adding them by class would refill them.
-        // Only the top level cargo, magazines inside backpacks etc. are still moved below
-        private _canTakeAll = (_veh isKindOf "Truck_F" || _veh isKindOf "ReammoBox_F");
-        private _mags = magazinesAmmoCargo _target;
-        private _leftBehind = false;
-        if (_mags isNotEqualTo []) then {
-            clearMagazineCargoGlobal _target;
-            {
-                _x params ["_cls", "_ammo"];
-                if (_canTakeAll || { _veh canAdd [_cls, 1] }) then {
-                    _veh addMagazineAmmoCargo [_cls, 1, _ammo];
-                } else {
-                    _target addMagazineAmmoCargo [_cls, 1, _ammo];
-                    _leftBehind = true;
-                };
-            } forEach _mags;
-        };
-        if (_leftBehind) then { hint "The vehicle is full, use a truck or ammobox for more storage" };
-
         {
             _x params [["_cls", ""], ["_max", 0]];
             private _count = 0;
