@@ -34,7 +34,7 @@ private _lastCounter = server getVariable ["NATOlastcounter", ""];
     if (_pri > 800) then { _chance = _chance - 1 };
     if (_popControl > 1000) then { _chance = _chance - 1 };
     if (_popControl > 2000) then { _chance = _chance - 1 };
-    if ((time - _lastAttack) > 1200 && { (_name != _lastCounter) } && { (_name in _abandoned) } && { (_resources > _pri) } && { (random 100) > _chance }) exitWith {
+    if (_lastAttack > 1200 && { (_name != _lastCounter) } && { (_name in _abandoned) } && { (_resources > _pri) } && { (random 100) > _chance }) exitWith {
         //Counter an objective
         private _multiplier = _diff + 1;
         if (_popControl > 1000) then { _multiplier = 2 };

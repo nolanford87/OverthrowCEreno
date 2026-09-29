@@ -36,7 +36,7 @@ private _lastAttack = time - (server getVariable ["NATOlastattack", 0]);
             private _numMil = { side _x isEqualTo blufor } count (_pos nearEntities ["CAManBase", 300]);
             private _numRes = { side _x isEqualTo independent || captive _x } count (_pos nearEntities ["CAManBase", 200]);
             if (_numMil < 3 && { _numRes > 0 }) then {
-                if ((time - _lastAttack) > 1200 && { (_resources > _population) } && { (random 100) > _chance }) then {
+                if (_lastAttack > 1200 && { (_resources > _population) } && { (random 100) > _chance }) then {
                     // Counter a town
                     diag_log format ["Overthrow: Counter-attacking %1", _town];
                     private _multiplier = 3;
