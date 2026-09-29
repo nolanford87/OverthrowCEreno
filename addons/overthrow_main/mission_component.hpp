@@ -108,6 +108,12 @@ class Params {
         texts[] = {"Yes", "No"};
         default = 1;
     };
+    class ot_showtownchange {
+        title = "Show town info when entering a town";
+        values[] = {1, 0};
+        texts[] = {"Yes", "No"};
+        default = 1;
+    };
     class ot_showenemygroup {
         title = "Show known enemy groups on map";
         values[] = {1, 0};
