@@ -138,6 +138,7 @@ ot_weather_change_time = 350 + (random 600);
             if (_mode isEqualTo 'Cloudy') exitWith {
                 if ((random 100) < _rainchance) exitWith { ot_weather_change_forecast = 'Rain' };
                 if ((random 100) > _cloudychance) exitWith { ot_weather_change_forecast = 'Clear' };
+                ot_weather_change_forecast = 'Cloudy';
             };
         };
         private _weather = ot_weather_change_forecast call ot_weather_getWeather;

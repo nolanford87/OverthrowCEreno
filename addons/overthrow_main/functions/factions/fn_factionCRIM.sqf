@@ -4,6 +4,13 @@
     if (_gangs isNotEqualTo []) then {
         private _gangid = _gangs select 0;
         private _gang = OT_civilians getVariable [format ["gang%1", _gangid], []];
+        // A gang that joined the resistance used to be left as an empty record, remove it so the town can get a new gang
+        if (_gang isEqualTo []) then {
+            OT_civilians setVariable [format ["gang%1", _gangid], nil, true];
+            _gangs deleteAt 0;
+            OT_civilians setVariable [format ["gangs%1", _x], _gangs, true];
+            continue;
+        };
         if (_gang isEqualType []) then {
             private _loadout = [];
             if (count _gang > 5) then {

@@ -33,8 +33,13 @@ private _recruits = server getVariable ["squads", []];
 _recruits pushBack [getPlayerUID _player, _gangid, _group, []];
 server setVariable ["squads", _recruits, true];
 
-OT_civilians setVariable [format ["gangsin%1", _town], [], true];
-OT_civilians setVariable [format ["gang%1", _gangid], [], true];
+// Remove the gang like the other places a gang ends, so the town can get a new gang later
+OT_civilians setVariable [format ["gang%1", _gangid], nil, true];
+private _gangs = OT_civilians getVariable [format ["gangs%1", _town], []];
+private _idx = _gangs find _gangid;
+if (_idx > -1) then { _gangs deleteAt _idx };
+OT_civilians setVariable [format ["gangs%1", _town], _gangs, true];
+deleteMarker format ["gang%1", _town];
 spawner setVariable [format ["gangspawn%1", _gangid], grpNull, true];
 
 format ["%1 has joined the resistance as your squad, use ctrl + space to command", _name] call OT_fnc_notifyMinor;

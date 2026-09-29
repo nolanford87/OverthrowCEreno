@@ -158,9 +158,9 @@ private _hasList_buildableHouses = false;
             };
             default {
                 {
-                    // This isn't used!
-                    params ["_itemClassL", "_itemData"];
+                    // Legacy (pre version 2) warehouse saves
                     if (isNil "_x") then { continue };
+                    _x params ["_itemClassL", "_itemData"];
                     if (_itemData isEqualType []) then {
                         _itemData params ["", ["_num", 0, [0]]];
                         if (_num > 0) then {
@@ -492,7 +492,9 @@ sleep 0.3;
     _mrkid setMarkerAlphaLocal 1;
     _mrkid setMarkerText (_x select 1);
     private _veh = OT_flag_IND createVehicle _pos;
-    [_veh, (server getVariable ["generals", [getPlayerUID player]]) select 0] call OT_fnc_setOwner;
+    // Owner is the player who set up the base, older saves fall back to the first general
+    [_veh, _x param [2, (server getVariable ["generals", [getPlayerUID player]]) select 0]] call OT_fnc_setOwner;
+    _veh setVariable ["name", _x select 1, true];
 } forEach (server getVariable ["bases", []]);
 
 {
@@ -560,7 +562,8 @@ private _built = (allMissionObjects "Static");
                     private _bdg = objNull;
                     if (_pos isEqualTo []) then {
                         _bdg = OT_centerPos nearestObject parseNumber _x;
-                        buildingpositions setVariable [_x, getPos _bdg, true];
+                        _pos = getPos _bdg;
+                        buildingpositions setVariable [_x, _pos, true];
                     } else {
                         _bdg = _pos nearestObject parseNumber _x;
                     };
