@@ -24,6 +24,11 @@ if (isNil "_close") then {
     } forEach (OT_airportData call BIS_fnc_arrayShuffle);
 };
 
+// Nowhere to deploy from
+if (isNil "_close") exitWith {
+    spawner setVariable ["NATOdeploying", false, false];
+};
+
 private _group = [_close, blufor, (configFile >> "CfgGroups" >> "West" >> OT_faction_NATO >> "Support" >> OT_NATO_Group_Engineers)] call BIS_fnc_spawnGroup;
 
 sleep 0.5;
@@ -141,3 +146,14 @@ _wp setWaypointType "MOVE";
 _wp setWaypointBehaviour "CARELESS";
 _wp setWaypointSpeed "FULL";
 _wp setWaypointStatements ["true", "this spawn OT_fnc_NATOGroupDeployFOB"];
+
+// Allow NATO to deploy another FOB once this one is established, or the engineers
+// are all dead, or they failed to make it within an hour
+private _timeout = time + 3600;
+waitUntil {
+    sleep 10;
+    (_group getVariable ["OT_deployFOBDone", false])
+        || { (units _group) findIf { alive _x } == -1 }
+        || { time > _timeout };
+};
+spawner setVariable ["NATOdeploying", false, false];
