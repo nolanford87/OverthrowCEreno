@@ -83,6 +83,9 @@ OTQA_b7_spawnPassiveNATO = {
         ["Search sets the inventory lock", player getVariable ["OT_beingSearched", false], ""] call OTQA_fnc_check;
         ["Cop is marked as searching", _cop getVariable ["OT_searching", false], ""] call OTQA_fnc_check;
 
+        // The inventory lock handler is added through remoteExec, a frame or so after the flag is set
+        _timeout = time + 5;
+        waitUntil { sleep 0.2; !isNil "OT_searchInventoryEH" || { time > _timeout } };
         player action ["Gear", objNull];
         sleep 1;
         private _opened = !isNull (findDisplay 602);
@@ -93,8 +96,10 @@ OTQA_b7_spawnPassiveNATO = {
         private _saved = (players_NS getVariable [getPlayerUID player, []]) findIf { (toLower (_x select 0)) isEqualTo "ot_beingsearched" };
         ["Search lock isn't written to the save", _saved isEqualTo -1, ""] call OTQA_fnc_check;
 
+        // The search is stopped before its own cleanup, so unlock the inventory here
         terminate _search;
         player setVariable ["OT_beingSearched", false, true];
+        [false] call OT_fnc_NATOsearchLockInventory;
         private _grp = group _cop;
         deleteVehicle _cop;
         deleteGroup _grp;
@@ -159,12 +164,13 @@ OTQA_b7_spawnPassiveNATO = {
         };
         // A stale medic count, as left behind by an AI revive before the fix
         player setVariable ["OT_informedMedics", 5];
-        private _historyBefore = count OT_notifyHistory;
+        // The history keeps only the last 16 messages, start from an empty one to find the hint reliably
+        OT_notifyHistory = [];
 
         [player, true] call ace_medical_fnc_setUnconscious;
         sleep 3;
         private _medics = player getVariable ["OT_informedMedics", 0];
-        private _hinted = (OT_notifyHistory select [_historyBefore]) findIf { "You are unconscious" in _x } != -1;
+        private _hinted = (OT_notifyHistory findIf { "You are unconscious" in _x }) != -1;
         ["Medic count is reset when going unconscious", _medics <= 1, format ["medics informed: %1 (was 5)", _medics]] call OTQA_fnc_check;
         if (_medics isEqualTo 0) then {
             ["No medic nearby shows the respawn hint", _hinted, ""] call OTQA_fnc_check;
