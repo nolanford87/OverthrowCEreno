@@ -12,7 +12,8 @@ if (isNull _group) then {
     _doinit = true;
 };
 
-private _unit = [_soldier, _pos, _group] call OT_fnc_createSoldier;
+// Gear is taken from the warehouse by the player buying the unit (addGarrison), and not at all when loading a save
+private _unit = [_soldier, _pos, _group, false] call OT_fnc_createSoldier;
 
 if (_doinit) then {
     _group call OT_fnc_initMilitaryPatrol;

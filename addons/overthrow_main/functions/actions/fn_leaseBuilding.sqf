@@ -16,7 +16,7 @@ if (damage _building isEqualTo 1) exitWith {
             owners setVariable ["damagedBuildings", _damaged, true];
         };
     } else {
-        format ["You need $%1", [_price, 1, 0, true] call CBA_fnc_formatNumber];
+        format ["You need $%1", [_price, 1, 0, true] call CBA_fnc_formatNumber] call OT_fnc_notifyMinor;
     };
 };
 if (typeOf _building == OT_policeStation) exitWith { [] call OT_fnc_policeDialog };

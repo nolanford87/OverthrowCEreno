@@ -2,7 +2,8 @@ private _idx = lbCurSel 1500;
 private _uid = lbData [1500, _idx];
 
 private _generals = server getVariable ["generals", []];
-_generals pushBack _uid;
+if (_uid isEqualTo "") exitWith {};
+_generals pushBackUnique _uid;
 server setVariable ["generals", _generals, true];
 
 disableSerialization;

@@ -1,7 +1,7 @@
 if (OT_taking) exitWith {};
 
 private _warehouse = [player] call OT_fnc_nearestWarehouse;
-if (_warehouse == objNull) exitWith { hint "No warehouse near by!" };
+if (isNull _warehouse) exitWith { hint "No warehouse near by!" };
 
 OT_taking = true;
 private _idx = lbCurSel 1500;

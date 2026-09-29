@@ -5,7 +5,10 @@
 params ["_unit", ["_correct", true]];
 
 private _warehouse = [_unit] call OT_fnc_nearestWarehouse;
-if (_warehouse == objNull) exitWith { hint "No warehouse near by!" };
+if (isNull _warehouse) exitWith { hint "No warehouse near by!"; [] };
+
+// Items that weren't available. Was never defined when called from the arsenal's close event handler (own scope)
+private _missing = [];
 
 private _ignore = [];
 {

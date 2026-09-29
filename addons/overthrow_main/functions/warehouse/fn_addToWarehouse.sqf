@@ -1,6 +1,6 @@
 params ["_cls", "_num"];
 private _warehouse = [player] call OT_fnc_nearestWarehouse;
-if (_warehouse == objNull) exitWith { hint "No warehouse near by!" };
+if (isNull _warehouse) exitWith { hint "No warehouse near by!" };
 
 private _d = _warehouse getVariable [format ["item_%1", _cls], [_cls, 0, [0]]];
 if (_d isEqualType []) then {

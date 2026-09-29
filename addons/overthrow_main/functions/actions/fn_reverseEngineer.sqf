@@ -12,7 +12,13 @@ if (_cost isNotEqualTo [] && !(_cls in _blueprints)) then {
         private _veh = OT_factoryPos nearestObject _cls;
         deleteVehicle _veh;
     } else {
-        player removeItem _cls;
+        // A weapon in the player's hands isn't removed by removeItem
+        call {
+            if ((primaryWeapon player) call BIS_fnc_baseWeapon == _cls) exitWith { player removeWeapon (primaryWeapon player) };
+            if ((secondaryWeapon player) call BIS_fnc_baseWeapon == _cls) exitWith { player removeWeapon (secondaryWeapon player) };
+            if ((handgunWeapon player) call BIS_fnc_baseWeapon == _cls) exitWith { player removeWeapon (handgunWeapon player) };
+            player removeItem _cls;
+        };
     };
 } else {
     "Cannot reverse-engineer this item, please contact Overthrow Devs on Discord" call OT_fnc_notifyMinor;

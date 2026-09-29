@@ -1,5 +1,5 @@
 private _warehouse = [player] call OT_fnc_nearestWarehouse;
-if (_warehouse == objNull) exitWith { hint "No warehouse near by!" };
+if (isNull _warehouse) exitWith { 0 };
 
 private _ret = 0;
 private _d = _warehouse getVariable [format ["item_%1", _this], [_this, 0, [0]]];

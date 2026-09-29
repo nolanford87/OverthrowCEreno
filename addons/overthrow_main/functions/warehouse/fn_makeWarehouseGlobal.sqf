@@ -27,6 +27,11 @@ if (_callerMoney < 10000) exitWith {
 };
 
 private _warehouse = [_position] call OT_fnc_nearestWarehouse;
+// Merging the shared warehouse into itself would wipe it, as all its items are cleared afterwards
+if (isNull _warehouse || { _warehouse isEqualTo warehouse_shared } || { _warehouse getVariable ["is_shared", false] }) exitWith {
+    hint "This warehouse is already global!";
+    false;
+};
 
 // We convert to hashmap for easier handling of data.
 private _warehouseItems = createHashMapFromArray ((allVariables _warehouse) select { (toLower _x select [0, 5]) isEqualTo "item_" } apply { _warehouse getVariable [_x, ["", 0]] });
@@ -69,4 +74,5 @@ private _result = createHashMap;
 playSound "3DEN_notificationDefault";
 _caller setVariable ["money", _callerMoney - 10000, true];
 _warehouse setVariable ["is_shared", true, true];
+OT_warehouseLocationCache = createHashMap;
 true;

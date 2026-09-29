@@ -25,11 +25,13 @@ if (_searchPos isEqualType objNull) then {
     _searchPos = [_searchPos # 0, _searchPos # 1]; // Convert to 2D to increase chances of match in cache
 };
 
-// Check the cache for _searchPos. Function will often get called from same position multiple times
-if (_searchPos in OT_warehouseLocationCache) then {
-    _warehouse = OT_warehouseLocationCache get _searchPos;
+// Check the cache for _searchPos. Function will often get called from same position multiple times.
+// Only trust a cached warehouse that is still owned and not shared since (or is the shared one)
+private _owned = warehouse getVariable ["owned", []];
+private _cached = OT_warehouseLocationCache getOrDefault [_searchPos, objNull];
+if (!isNull _cached && { _cached isEqualTo warehouse_shared || { _cached in _owned && { !(_cached getVariable ["is_shared", false]) } } }) then {
+    _warehouse = _cached;
 } else {
-    private _owned = warehouse getVariable ["owned", []];
     if (_owned isNotEqualTo []) then {
         private _closestWarehouse = ([_owned, [], { _x distance2D _searchPos }, "ASCEND"] call BIS_fnc_sortBy) # 0;
         if ((_closestWarehouse distance2D _searchPos) < 2000) then {

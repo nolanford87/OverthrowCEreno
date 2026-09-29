@@ -3,6 +3,11 @@ private _doSalvage = {
     [_this] spawn {
         private _veh = _this select 0;
         private _wreck = OT_salvageVehicle;
+        // The salvage action stays available while salvaging, don't pay out twice for one wreck
+        if (_wreck getVariable ["OT_salvaging", false]) exitWith {
+            "This wreck is already being salvaged" call OT_fnc_notifyMinor;
+        };
+        _wreck setVariable ["OT_salvaging", true, true];
         private _steel = 3;
         private _plastic = 0;
         private _cost = cost getVariable [typeOf _wreck, [100, 0, 0, 0]];

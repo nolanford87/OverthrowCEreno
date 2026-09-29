@@ -28,4 +28,12 @@ if (_effect isEqualTo 0) then { _effect = "None" } else { _effect = format ["+%1
 ((findDisplay 9000) displayCtrl 1101) ctrlSetStructuredText parseText format ["<t size=""1.5"" align=""center"">Police: %1</t>", _garrison];
 ((findDisplay 9000) displayCtrl 1104) ctrlSetStructuredText parseText format ["<t size=""1.2"" align=""center"">Effects</t><br/><br/><t size=""0.8"" align=""center"">%1</t>", _effect];
 
+// Take the gear the price was based on from the warehouse here, the server has no player to find it with
+if !(isNull ([player] call OT_fnc_nearestWarehouse)) then {
+    {
+        _x params ["_itemCls", "_num"];
+        [_itemCls, _num * _amt] call OT_fnc_removeFromWarehouse;
+    } forEach ((_soldier select 4) call BIS_fnc_consolidateArray);
+};
+
 [_town, _soldier, _amt] remoteExec ["OT_fnc_createPoliceGroup", 2];

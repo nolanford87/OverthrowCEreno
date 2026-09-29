@@ -311,7 +311,7 @@ buildOnMouseUp = {
                     _created setVariable ["OT_init", modeCode, true];
                     [_created, modeValue, modeCode] remoteExec ["OT_fnc_initBuilding", 2];
                 };
-                private _clu = createVehicle ["Land_ClutterCutter_large_F", (getPos modeTarget), [], 0, "CAN_COLLIDE"];
+                private _clu = createVehicle ["Land_ClutterCutter_large_F", (getPos _created), [], 0, "CAN_COLLIDE"];
                 _clu enableDynamicSimulation true;
             };
             deleteVehicle modeVisual;

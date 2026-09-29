@@ -6,11 +6,11 @@ if ((_b select 1) isEqualTo "Business") then {
         private _price = _name call OT_fnc_getBusinessPrice;
         private _money = [] call OT_fnc_resistanceFunds;
         if (_money >= _price) then {
-            [-_price] call OT_fnc_resistanceFunds;
             private _owned = server getVariable ["GEURowned", []];
             if (!(_name in _owned)) then {
+                [-_price] call OT_fnc_resistanceFunds; // Only charge when it's actually bought
                 server setVariable ["GEURowned", _owned + [_name], true];
-                server setVariable [format ["%1employ", _name], 2];
+                server setVariable [format ["%1employ", _name], 2, true]; // Public, the server runs the business
                 _pos remoteExec ["OT_fnc_resetSpawn", 2, false];
                 format ["%1 is now operational", _name] remoteExec ["OT_fnc_notifyMinor", 0, false];
                 _name setMarkerColor "ColorGUER";
@@ -32,7 +32,7 @@ if ((_b select 1) isEqualTo "Business") then {
                 if (_money >= _price) then {
                     [-_price] call OT_fnc_resistanceFunds;
                     server setVariable ["GEURowned", _owned + [_name], true];
-                    server setVariable [format ["%1employ", _name], 2];
+                    server setVariable [format ["%1employ", _name], 2, true];
                     _pos remoteExec ["OT_fnc_resetSpawn", 2, false];
                     format ["%1 is now operational", _name] remoteExec ["OT_fnc_notifyMinor", 0, false];
                     _name setMarkerColor "ColorGUER";

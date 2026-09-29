@@ -27,6 +27,13 @@ if (_create isEqualType 1) then {
     };
     if (_charge) then {
         [-_cost] call OT_fnc_money;
+        // Take the gear the price was based on from the warehouse here, the server has no player to find it with
+        if !(isNull ([player] call OT_fnc_nearestWarehouse)) then {
+            {
+                _x params ["_itemCls", "_num"];
+                [_itemCls, _num] call OT_fnc_removeFromWarehouse;
+            } forEach ((_soldier select 4) call BIS_fnc_consolidateArray);
+        };
     };
 
     [_code, _pos, _soldier, _charge] remoteExec ["OT_fnc_createGarrisonUnit", 2];

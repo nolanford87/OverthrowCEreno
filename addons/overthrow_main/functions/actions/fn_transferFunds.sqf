@@ -18,6 +18,7 @@ OT_inputHandler = {
             [_val] remoteExec ["OT_fnc_money", _player, false];
         } else {
             private _money = [_uid, "money"] call OT_fnc_getOfflinePlayerAttribute;
+            if !(_money isEqualType 0) then { _money = 0 }; // No saved money for this player yet
             [_uid, "money", _money + _val] call OT_fnc_setOfflinePlayerAttribute;
         };
         format ["Transferred $%1 resistance funds to %2", [_val, 1, 0, true] call CBA_fnc_formatNumber, players_NS getVariable [format ["name%1", _uid], "player"]] call OT_fnc_notifyMinor;

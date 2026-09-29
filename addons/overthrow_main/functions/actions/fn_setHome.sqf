@@ -31,7 +31,7 @@ if ((typeOf _building) in OT_allRepairableRuins) exitWith {
             _veh setPosATL _pos;
             [_veh, getPlayerUID player] call OT_fnc_setOwner;
         } else {
-            format ["You need $%1 to repair this building", [_price, 1, 0, true] call CBA_fnc_formatNumber];
+            format ["You need $%1 to repair this building", [_price, 1, 0, true] call CBA_fnc_formatNumber] call OT_fnc_notifyMinor;
         };
     };
 };
@@ -48,7 +48,7 @@ if (typeOf _building isEqualTo OT_warehouse) exitWith {
             owners setVariable ["damagedBuildings", _damaged, true];
         };
     } else {
-        format ["You need $%1 to repair this warehouse", [_price, 1, 0, true] call CBA_fnc_formatNumber];
+        format ["You need $%1 to repair this warehouse", [_price, 1, 0, true] call CBA_fnc_formatNumber] call OT_fnc_notifyMinor;
     };
 };
 

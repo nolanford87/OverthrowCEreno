@@ -1,5 +1,4 @@
 private _target = vehicle player;
-private _notvehicle = false;
 if (_target isEqualTo player) then {
     _target = OT_warehouseTarget;
 };
@@ -15,7 +14,7 @@ if (_b isEqualType []) then {
     };
 };
 
-if (_notvehicle && _objects isEqualTo []) exitWith {
+if (_objects isEqualTo []) exitWith {
     "No warehouse within range" call OT_fnc_notifyMinor;
 };
 

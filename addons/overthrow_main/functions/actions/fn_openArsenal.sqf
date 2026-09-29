@@ -13,7 +13,7 @@ private _missing = [];
 
 if (_target isEqualType "") then {
     private _warehouse = [_unit] call OT_fnc_nearestWarehouse;
-    if (_warehouse == objNull) exitWith { hint "No warehouse near by!" };
+    if (isNull _warehouse) exitWith { hint "No warehouse near by!" };
 
     // Old method, remove all items and then verify the new loadout
     //[_unit,true] call OT_fnc_dumpIntoWarehouse;
