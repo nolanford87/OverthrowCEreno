@@ -1,5 +1,5 @@
-params ["_player"];
-if !(alive _player) exitWith {};
+params ["_player", ["_loopId", -1]];
+if (!alive _player || { _loopId isNotEqualTo (missionNamespace getVariable ["OT_statsLoopId", -1]) }) exitWith {};
 
 private _wanted = "<br/>";
 if !(captive _player) then {
