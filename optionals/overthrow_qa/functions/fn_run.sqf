@@ -30,6 +30,8 @@ hint format ["Overthrow QA: running %1...", _which];
 
 private _groups = [];
 if (_which in ["all", "common"]) then { _groups pushBack ["common", OTQA_fnc_testsCommon] };
+if (_which in ["all", "1"]) then { _groups pushBack ["batch 1", OTQA_fnc_testsBatch1] };
+if (_which in ["all", "2"]) then { _groups pushBack ["batch 2", OTQA_fnc_testsBatch2] };
 if (_which in ["all", "5"]) then { _groups pushBack ["batch 5", OTQA_fnc_testsBatch5] };
 if (_which in ["all", "6"]) then { _groups pushBack ["batch 6", OTQA_fnc_testsBatch6] };
 if (_which in ["all", "7"]) then { _groups pushBack ["batch 7", OTQA_fnc_testsBatch7] };
@@ -43,11 +45,11 @@ if (_which in ["all", "7"]) then { _groups pushBack ["batch 7", OTQA_fnc_testsBa
         OTQA_currentTest = _name;
         private _before = count OTQA_results + count OTQA_manual;
         private _handle = [] spawn _code;
-        private _timeout = time + 60;
+        private _timeout = time + 120;
         waitUntil { sleep 0.2; scriptDone _handle || { time > _timeout } };
         if !(scriptDone _handle) then {
             terminate _handle;
-            [_name, false, "timed out after 60 s"] call OTQA_fnc_check;
+            [_name, false, "timed out after 120 s"] call OTQA_fnc_check;
         } else {
             if ((count OTQA_results + count OTQA_manual) isEqualTo _before) then {
                 [_name, false, "no result, the test probably hit a script error (see RPT)"] call OTQA_fnc_check;

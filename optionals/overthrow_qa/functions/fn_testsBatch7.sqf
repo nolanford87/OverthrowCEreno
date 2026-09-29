@@ -1,15 +1,15 @@
 /*
     Description:
-    Batch 7 (fix/wanted-and-search): kill credit, NATO search, ACE cargo, disconnect handler.
+    Batch 7 (fix/wanted-and-search): kill credit, NATO search, ACE cargo, disconnect handler, unconscious hint.
     Tests that need the player undercover skip themselves (listed as manual) when that isn't the case.
-    Everything spawned is deleted and changed state is restored afterwards.
+    Game state isn't preserved (the test save is disposable), but tests delete what they spawn.
+    The unconscious test runs last as it blows the player's cover.
 
     Returns: ARRAY - [[name, code], ...] run by OTQA_fnc_run
 */
 
 // Shared checks, compiled once so every test can call them
 OTQA_b7_isUndercover = { alive player && { captive player } && { isNull objectParent player } };
-OTQA_b7_natoNearby = { (allUnits findIf { side _x isEqualTo blufor && { alive _x } && { (_x distance player) < 1000 } }) != -1 };
 OTQA_b7_spawnPassiveNATO = {
     params ["_pos"];
     private _grp = createGroup blufor;
@@ -18,7 +18,6 @@ OTQA_b7_spawnPassiveNATO = {
     _unit;
 };
 
-"Get knocked out with no AI medic nearby: the 'respawn through the ESC menu' hint shows. Then get revived by an AI medic, get knocked out alone again: the hint shows again" call OTQA_fnc_manual;
 "Kill NATO soldiers as the gunner of an armed vehicle: your BLU kill count and rewards go up" call OTQA_fnc_manual;
 "During a real NATO search, move away twice: 'You tried to escape a NATO search' and your cover is blown" call OTQA_fnc_manual;
 
@@ -105,9 +104,6 @@ OTQA_b7_spawnPassiveNATO = {
         if !(call OTQA_b7_isUndercover) exitWith {
             "Batch 7 wanted-player search test skipped: be undercover (not wanted) and on foot, then run again" call OTQA_fnc_manual;
         };
-        if (call OTQA_b7_natoNearby) exitWith {
-            "Batch 7 wanted-player search test skipped: real NATO within 1 km, move away and run again" call OTQA_fnc_manual;
-        };
         private _cop = [player getPos [40, getDir player]] call OTQA_b7_spawnPassiveNATO;
         // All in one frame, so nothing can react to the player briefly not being captive
         isNil {
@@ -125,9 +121,6 @@ OTQA_b7_spawnPassiveNATO = {
     ["ACE cargo contraband", {
         if !(call OTQA_b7_isUndercover) exitWith {
             "Batch 7 cargo test skipped: be undercover (not wanted) and on foot, then run again" call OTQA_fnc_manual;
-        };
-        if (call OTQA_b7_natoNearby) exitWith {
-            "Batch 7 cargo test skipped: real NATO within 1 km, move away and run again" call OTQA_fnc_manual;
         };
         // A NATO soldier within 7 m counts as seeing the player
         private _watcher = [player getPos [5, getDir player]] call OTQA_b7_spawnPassiveNATO;
@@ -158,5 +151,30 @@ OTQA_b7_spawnPassiveNATO = {
         deleteVehicle _watcher;
         deleteGroup _grp;
         player setVariable ["SeenCacheNATO", nil];
+    }],
+
+    ["Unconscious hint after an earlier revive", {
+        if (isNil "ace_medical_fnc_setUnconscious") exitWith {
+            "Unconscious test skipped: ace_medical_fnc_setUnconscious not available" call OTQA_fnc_manual;
+        };
+        // A stale medic count, as left behind by an AI revive before the fix
+        player setVariable ["OT_informedMedics", 5];
+        private _historyBefore = count OT_notifyHistory;
+
+        [player, true] call ace_medical_fnc_setUnconscious;
+        sleep 3;
+        private _medics = player getVariable ["OT_informedMedics", 0];
+        private _hinted = (OT_notifyHistory select [_historyBefore]) findIf { "You are unconscious" in _x } != -1;
+        ["Medic count is reset when going unconscious", _medics <= 1, format ["medics informed: %1 (was 5)", _medics]] call OTQA_fnc_check;
+        if (_medics isEqualTo 0) then {
+            ["No medic nearby shows the respawn hint", _hinted, ""] call OTQA_fnc_check;
+        } else {
+            "An AI medic was nearby, so the respawn hint was correctly not shown. Run again away from your recruits to test the hint" call OTQA_fnc_manual;
+        };
+
+        [player, false] call ace_medical_fnc_setUnconscious;
+        sleep 3;
+        player setCaptive true;
+        ["Player wakes up again", !(player getVariable ["ACE_isUnconscious", false]), ""] call OTQA_fnc_check;
     }]
 ]
