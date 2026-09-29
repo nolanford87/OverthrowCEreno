@@ -494,7 +494,7 @@ private _revealed = server getVariable ["revealedFOBs", []];
     };
     _group call OT_fnc_initMilitaryPatrol;
 
-    [_pos, _upgrades] call OT_fnc_NATOupgradeFOB;
+    [_pos, _upgrades] spawn OT_fnc_NATOupgradeFOB; // Sleeps between objects, initNATO runs unscheduled
 
     private _id = str _pos;
     if (_id in _revealed) then {
