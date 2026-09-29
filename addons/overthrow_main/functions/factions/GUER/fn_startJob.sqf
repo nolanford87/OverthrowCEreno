@@ -34,7 +34,9 @@ if !(_jobparams call _setup) exitWith {
                 private _remains = spawner getVariable [format ["OT_jobRemain%1", _id], 0];
                 if (!_done) then {
                     private _date = call OT_fnc_datestamp;
-                    _remains = _remains - (_date - _lastdate);
+                    private _elapsed = _date - _lastdate;
+                    if (_elapsed < 0) then { _elapsed = _elapsed + 525600 }; // New Year, datestamp counts minutes since Jan 1
+                    _remains = _remains - _elapsed;
                     (_this select 0) set [12, _date]; //updates _lastdate
                     if (_expires < 1) then { _remains = 1 };
                     private _wassuccess = false;

@@ -19,7 +19,7 @@ if (alive _veh) then {
     _veh land "LAND";
     waitUntil {
         sleep 10;
-        unitReady _veh;
+        !alive _veh || { unitReady _veh };
     };
     [_veh, true] call OT_fnc_cleanup;
 };

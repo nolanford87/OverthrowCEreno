@@ -166,6 +166,10 @@ if ((_cls isKindOf ["Launcher", configFile >> "CfgWeapons"])
     playSound "3DEN_notificationDefault";
 };
 if (_cls isKindOf ["Default", configFile >> "CfgMagazines"]) exitWith {
+    // addMagazine silently does nothing when the inventory is full, don't take the money (or chemicals) then
+    if !(player canAdd _cls) exitWith {
+        "There is not enough room in your inventory" call OT_fnc_notifyMinor;
+    };
     if (_cls in OT_allExplosives) then {
         server setVariable ["reschems", _chems - (_cost select 3), true];
     };

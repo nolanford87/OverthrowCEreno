@@ -1,4 +1,5 @@
 params ["_m", "_v"];
+_m = +_m; // Copy, rows are added below and callers reuse their matrix
 
 // Create our empty result vector
 private _result = [0, 0, 0, 1];

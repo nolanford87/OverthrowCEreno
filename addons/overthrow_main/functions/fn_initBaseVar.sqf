@@ -180,7 +180,7 @@ OT_Recruitables = [
             "H_HelmetB_Light_tna_F",
             "",
             [],
-            ["ItemMap", "", "", "", "", "NVGoggles_tnaF"]
+            ["ItemMap", "", "", "", "", "NVGoggles_tna_F"]
         ]
     ],
     //AA
@@ -196,7 +196,7 @@ OT_Recruitables = [
             "H_HelmetB_Light_tna_F",
             "",
             [],
-            ["ItemMap", "", "", "", "", "NVGoggles_tnaF"]
+            ["ItemMap", "", "", "", "", "NVGoggles_tna_F"]
         ]
     ],
     //Assistant AT

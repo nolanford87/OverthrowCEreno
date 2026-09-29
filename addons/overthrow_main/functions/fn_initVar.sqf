@@ -612,7 +612,7 @@ OT_allBLURifleMagazines = [];
                         if (_base isKindOf ["Rifle", _cfgWeapons]) then {
                             private _mass = getNumber (_cfgWeapons >> _base >> "WeaponSlotsInfo" >> "mass");
                             _base call {
-                                private _itemType = ([_cls] call BIS_fnc_itemType) select 1;
+                                private _itemType = ([_base] call BIS_fnc_itemType) select 1; // The weapon, not the unit
                                 if (_itemType isEqualTo "MachineGun") exitWith { OT_allBLUMachineGuns pushBackUnique _base };
                                 if ((_this select [0, 7]) == "srifle_" || (_this isKindOf ["Rifle_Long_Base_F", _cfgWeapons])) exitWith { OT_allBLUSniperRifles pushBackUnique _base };
                                 if ("_GL_" in _this) exitWith { OT_allBLUGLRifles pushBackUnique _base };
@@ -802,7 +802,10 @@ private _caliberRegex = "(\d*\.\d+)\s*x\s*(\d+)|(\d+)\.(\d+)|\.(\d+)|(\d+)x(\d+)
             };
         };
         _steel = 2;
-        cost setVariable [_name, [_cost, 0, _steel, 0], true];
+        // Like the other items: only the server sets prices, and prices loaded from data/prices.sqf are kept
+        if (isServer && { isNil { cost getVariable _name } }) then {
+            cost setVariable [_name, [_cost, 0, _steel, 0], true];
+        };
     };
 } forEach _allVests;
 

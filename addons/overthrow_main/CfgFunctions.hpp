@@ -422,15 +422,10 @@ class CfgFunctions {
             file = "\overthrow_main\functions\warehouse";
             class addToWarehouse {};
             class removeFromWarehouse {};
-            class findHelmetInWarehouse {};
-            class findScopeInWarehouse {};
-            class findWeaponInWarehouse {};
-            class findVestInWarehouse {};
             class verifyFromWarehouse {};
             class verifyLoadoutFromWarehouse {};
             class applyLoadoutFromWarehouse {};
             class qtyInWarehouse {};
-            class isInWarehouse {};
             class makeWarehouseGlobal {};
         };
 
@@ -619,8 +614,6 @@ class CfgFunctions {
             class setOwner {};
             class unitStock {};
             class spawnTemplate {};
-            class sortBy {};
-            class sortByInplace {};
             class findReplace {};
             class exportPrices {};
             class datestamp {};

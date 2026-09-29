@@ -25,11 +25,12 @@ if (!_iswarehouse) then {
     _unit globalChat "Opening Arsenal (Warehouse)";
 };
 
-if (!isNull objectParent _target && (_unit distance _target) > 10) then {
+if (isNull objectParent _unit && { (_unit distance _target) > 10 }) then {
     _unit doMove ASLToAGL (getPosASL _target);
+    private _timeout = time + 60;
     waitUntil {
         sleep 1;
-        !alive _unit || (_unit distance _target < 10);
+        !alive _unit || (_unit distance _target < 10) || time > _timeout;
     };
 };
 

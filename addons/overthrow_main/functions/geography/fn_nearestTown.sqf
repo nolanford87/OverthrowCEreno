@@ -1,6 +1,6 @@
 private _shortest = 1e39; // Infinity
 private _town = "";
-private _searchPos = if (_this isEqualType objNull) then { getPosASL _this } else { _this };
+private _searchPos = if (_this isEqualType objNull) then { getPosASL _this } else { +_this }; // Copy, the caller's position is changed below otherwise
 _searchPos set [2, 0]; // Z-value must be zero for accurate results
 private ["_dis"];
 {

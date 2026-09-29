@@ -51,7 +51,7 @@
     } else {
         if (_pos # 2 > 2) exitWith { hint "Must be at least 150m high to parachute safely" };
         //get out
-        _squad leaveVehicle (vehicle player);
+        _squad leaveVehicle (vehicle leader _squad);
         { unassignVehicle _x } forEach (units _squad);
         (units _x) orderGetIn false;
         (units _squad) allowGetIn false;

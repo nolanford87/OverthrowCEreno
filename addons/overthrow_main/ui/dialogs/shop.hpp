@@ -199,7 +199,7 @@ class OT_dialog_sell {
             h = "0.055 * safeZoneH";
         };
         class RscButton_1602: RscOverthrowButton {
-            idc = 1600;
+            idc = 1602;
             action = "[] call OT_fnc_sellAll;";
 
             text = "Sell All"; //--- ToDo: Localize;

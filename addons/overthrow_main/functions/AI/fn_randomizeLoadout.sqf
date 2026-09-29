@@ -78,7 +78,7 @@ if (_hasPrimary) then {
     {
         if !(_x in _compatItems) then { (_newloadout # 0) set [_forEachIndex + 1, ""] };
     } forEach [((_newloadout # 0) # 1), ((_newloadout # 0) # 2), ((_newloadout # 0) # 3)];
-    if !(((_newloadout # 0) # 7) in _compatItems) then { (_newloadout # 0) set [7, ""] };
+    if !(((_newloadout # 0) # 6) in _compatItems) then { (_newloadout # 0) set [6, ""] }; // Bipod
 
     (_newloadout select 0) set [0, _wpn];
 
