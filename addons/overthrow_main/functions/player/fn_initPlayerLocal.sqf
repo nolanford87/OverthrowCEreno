@@ -201,7 +201,7 @@ private _newrecruits = [];
             };
         };
     };
-    _newrecruits pushBack [_owner, _name, _civ, _rank, _loadout, _type];
+    _newrecruits pushBack [_owner, _name, _civ, _rank, _loadout, _type, _xp];
 } forEach (_recruits);
 server setVariable ["recruits", _newrecruits, true];
 
@@ -238,8 +238,11 @@ hcRemoveAllGroups player;
         };
         player hcSetGroup [_group, groupId _group, "teamgreen"];
         _cc = _cc + 1;
+        _newsquads pushBack ([_owner, _cls, _group, []] + (_x select [4])); // Keep the saved squad name
+    } else {
+        // Another player's squad, which may still be their saved unit list if they haven't joined yet
+        _newsquads pushBack _x;
     };
-    _newsquads pushBack [_owner, _cls, _group, []];
 } forEach (_squads);
 player setVariable ["OT_squadcount", _cc, true];
 server setVariable ["squads", _newsquads, true];
@@ -374,7 +377,7 @@ player addEventHandler [
         if !(_veh call OT_fnc_playerIsOwner) then {
             private _isgen = call OT_fnc_playerIsGeneral;
             if (!_isgen && (_veh getVariable ["OT_locked", false])) exitWith {
-                hint format ["This inventory has been locked by %1", server getVariable "name" + (_veh call OT_fnc_getOwner)];
+                hint format ["This inventory has been locked by %1", players_NS getVariable [format ["name%1", _veh call OT_fnc_getOwner], "another player"]];
                 _locked = true;
             };
         };
@@ -408,7 +411,7 @@ player addEventHandler [
                 private _isgen = call OT_fnc_playerIsGeneral;
                 if (!_isgen && (_veh getVariable ["OT_locked", false])) then {
                     moveOut player;
-                    hint format ["This vehicle has been locked by %1", server getVariable "name" + (_veh call OT_fnc_getOwner)];
+                    hint format ["This vehicle has been locked by %1", players_NS getVariable [format ["name%1", _veh call OT_fnc_getOwner], "another player"]];
                 };
             };
         } else {
@@ -417,7 +420,7 @@ player addEventHandler [
                     private _isgen = call OT_fnc_playerIsGeneral;
                     if (!_isgen && (_veh getVariable ["OT_locked", false])) then {
                         moveOut player;
-                        hint format ["This vehicle has been locked by %1", server getVariable "name" + (_veh call OT_fnc_getOwner)];
+                        hint format ["This vehicle has been locked by %1", players_NS getVariable [format ["name%1", _veh call OT_fnc_getOwner], "another player"]];
                     };
                 };
             };
@@ -425,8 +428,9 @@ player addEventHandler [
         private _g = _veh getVariable ["vehgarrison", false];
         if (_g isEqualType "") then {
             private _vg = server getVariable format ["vehgarrison%1", _g];
-            _vg deleteAt (_vg find (typeOf _veh));
-            server setVariable [format ["vehgarrison%1", _g], _vg, false];
+            private _idx = _vg find (typeOf _veh);
+            if (_idx > -1) then { _vg deleteAt _idx };
+            server setVariable [format ["vehgarrison%1", _g], _vg, true]; // Public, this runs on the client
             _veh setVariable ["vehgarrison", nil, true];
             {
                 _x setCaptive false;
@@ -436,8 +440,9 @@ player addEventHandler [
         _g = _veh getVariable ["airgarrison", false];
         if (_g isEqualType "") then {
             private _vg = server getVariable format ["airgarrison%1", _g];
-            _vg deleteAt (_vg find (typeOf _veh));
-            server setVariable [format ["airgarrison%1", _g], _vg, false];
+            private _idx = _vg find (typeOf _veh);
+            if (_idx > -1) then { _vg deleteAt _idx };
+            server setVariable [format ["airgarrison%1", _g], _vg, true]; // Public, this runs on the client
             _veh setVariable ["airgarrison", nil, true];
             {
                 _x setCaptive false;

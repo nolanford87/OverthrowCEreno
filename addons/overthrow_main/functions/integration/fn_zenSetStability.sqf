@@ -29,7 +29,7 @@ private _stability = server getVariable [format ["stability%1", _nearestTown], 1
     {
         params ["_result", "_args"];
         _args params ["_town"];
-        server setVariable [format ["stability%1", _town], round ((_result # 0) * 100)];
+        server setVariable [format ["stability%1", _town], round ((_result # 0) * 100), true];
     },
     {},
     [_nearestTown, _stability]

@@ -26,7 +26,7 @@ if (isNil "_stock") then {
         private _type = selectRandom OT_allWeapons;
         if !(_type in _tostock) then {
 
-            _tostock pushBack [_type, 0];
+            _tostock pushBack _type;
             _count = _count + 1;
 
             _stock pushBack [_type, 0];

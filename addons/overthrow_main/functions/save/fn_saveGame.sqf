@@ -236,19 +236,27 @@ if !(_quiet) then {
 };
 
 private _squads = ((server getVariable ["squads", []]) select {
-    _x params ["_owner", "_cls", "_group"];
-    _group isEqualType grpNull
-        && { units _group isNotEqualTo [] }
-        && { (units _group) findIf { alive _x } != -1 };
+    _x params ["_owner", "_cls", "_group", ["_units", []]];
+    if (_group isEqualType grpNull) then {
+        units _group isNotEqualTo []
+            && { (units _group) findIf { alive _x } != -1 };
+    } else {
+        // Owner hasn't joined since the last load, the squad is still the saved unit list
+        _units isNotEqualTo [];
+    };
 }) apply {
     _x params ["_owner", "_cls", "_group"];
-    private _units = [];
-    {
-        if (alive _x) then {
-            _units pushBack [typeOf _x, getPos _x, getUnitLoadout _x];
-        };
-    } forEach (units _group);
-    [_owner, _cls, "Not a group, pls recreate", _units, groupId _group];
+    if (_group isEqualType grpNull) then {
+        private _units = [];
+        {
+            if (alive _x) then {
+                _units pushBack [typeOf _x, getPos _x, getUnitLoadout _x];
+            };
+        } forEach (units _group);
+        [_owner, _cls, "Not a group, pls recreate", _units, groupId _group];
+    } else {
+        +_x;
+    };
 };
 _data pushBack ["squads", _squads];
 

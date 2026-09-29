@@ -4,7 +4,7 @@ lbClear 1500;
 private _SearchTerm = ctrlText 1700;
 
 private _warehouse = [player] call OT_fnc_nearestWarehouse;
-if (_warehouse == objNull) exitWith { hint "No warehouse near by!" };
+if (isNull _warehouse) exitWith { hint "No warehouse near by!" };
 
 private _itemVars = (allVariables _warehouse) select { ((toLowerANSI _x select [0, 5]) isEqualTo "item_") };
 _itemVars sort true;

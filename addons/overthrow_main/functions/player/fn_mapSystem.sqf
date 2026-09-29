@@ -231,7 +231,7 @@ OT_mapcache_bodies = [];
         disableSerialization;
         private _gps = controlNull;
         {
-            if !(isNil { _x displayCtrl 101 }) exitWith {
+            if !(isNull (_x displayCtrl 101)) exitWith {
                 _gps = _x displayCtrl 101;
             };
         } forEach (uiNamespace getVariable "IGUI_Displays");

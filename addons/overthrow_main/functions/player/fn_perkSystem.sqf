@@ -1,3 +1,6 @@
+// Stop with the body it was started for, respawning starts a new loop
+if (!alive _this || { _this isNotEqualTo player }) exitWith {};
+
 private _fitness = _this getVariable ["OT_fitness", 1];
 
 if (ace_advanced_fatigue_anreserve < 2300) then {

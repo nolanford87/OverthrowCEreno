@@ -39,11 +39,13 @@ _veh animate ["hideSeatsRear", 1];
     }
 ] remoteExec ["addEventHandler", 0, true];
 
-private _Dname = getText (configOf _wpn >> "displayName");
-[_veh, format ["Get in %1 as Gunner", _Dname], "<img size='2' image='\a3\ui_f\data\IGUI\Cfg\Actions\getingunner_ca.paa'/>"] remoteExec ["OT_UpdateGetInState", 0, true];
 private _ls = [_veh, "", "", "", "speed _target <= 1 && speed _target >= -1 && _target distance _this < 5 && isNull objectParent _this && (!((_target getVariable 'OT_Attached') isEqualType false) || !((_target getVariable 'OT_Local') isEqualType false))", "true", {}, {}, {}, {}, [], 13, nil, false, false] call BIS_fnc_holdActionAdd;
 private _vls = _veh addAction ["", { [(_this select 0), (_this select 1)] spawn OT_fnc_mountAttached }, [], 5.5, true, true, "", "typeName (_target getVariable 'OT_Attached') != 'BOOL' && _target distance _this < 5"];
 _veh setVariable ["OT_Act", _ls, false];
 _veh setVariable ["OT_Act_GetIn", _vls, false];
 _veh setVariable ["OT_Attached", false, true];
 _veh setVariable ["OT_Local", false, true];
+
+// Title for the get in action, set here as the action only exists on this machine
+private _Dname = getText (configOf _wpn >> "displayName");
+[_veh, format ["Get in %1 as Gunner", _Dname], "<img size='2' image='\a3\ui_f\data\IGUI\Cfg\Actions\getingunner_ca.paa'/>"] call OT_fnc_updateAttached;

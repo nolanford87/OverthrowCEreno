@@ -13,7 +13,7 @@ private _done = [];
 private _SearchTerm = ctrlText 1700;
 {
     private _cls = _x;
-    if (_SearchTerm in toLowerANSI _cls) then {
+    if ((toLowerANSI _SearchTerm) in toLowerANSI _cls) then {
 
         if (isClass (configFile >> "CfgWeapons" >> _cls)) then {
             _cls = [_x] call BIS_fnc_baseWeapon;
