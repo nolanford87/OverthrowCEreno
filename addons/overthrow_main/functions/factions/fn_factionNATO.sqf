@@ -49,6 +49,7 @@ publicVariable "OT_nextNATOTurn";
                         [_vehtypes, [], _p1 select 1, _p2 select 1, _id] spawn OT_fnc_NATOConvoy;
                     };
                 };
+                reverse _remove; // Delete from the end so earlier indices stay valid
                 {
                     _schedule deleteAt _x;
                 } forEach (_remove);

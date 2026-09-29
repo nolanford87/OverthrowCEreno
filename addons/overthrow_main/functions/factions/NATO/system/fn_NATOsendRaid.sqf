@@ -31,6 +31,8 @@ private _resources = server getVariable ["NATOresources", 2000];
                 [_pos, "[this] spawn OT_fnc_NATOsiegeFOB"] call OT_fnc_NATOMissionReconInsert;
                 _spend = _spend - 250;
                 _resources = _resources - 250;
+                _x set [4, true];
+                spawner setVariable ["NATOlastRaid", time, false];
                 break;
             };
         };

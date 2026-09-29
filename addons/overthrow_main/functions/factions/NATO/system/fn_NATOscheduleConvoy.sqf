@@ -21,7 +21,7 @@ private _schedule = server getVariable ["NATOschedule", []];
 private _start = selectRandom (OT_objectiveData + OT_airportData);
 _start params ["_startPos", "_startName"];
 
-if (_startName in _abandoned) exitWith {};
+if (_startName in _abandoned) exitWith { _spend };
 private _end = [];
 {
     _x params ["_p", "_n"];

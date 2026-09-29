@@ -33,7 +33,7 @@ private _countered = false;
                 _resources = _resources - 500;
                 _x set [4, true];
                 if (([OT_nation] call OT_fnc_support) > (random 250)) then {
-                    format ["Intel reports that NATO has scrambled a jet to intercept %1", (typeOf _target) call OT_fnc_vehicleGetName];
+                    format ["Intel reports that NATO has scrambled a jet to intercept %1", (typeOf _target) call OT_fnc_vehicleGetName] remoteExec ["OT_fnc_notifyMinor", 0, false];
                 };
                 _countered = true;
             };
@@ -44,7 +44,7 @@ private _countered = false;
                 _resources = _resources - 350;
                 _x set [4, true];
                 if (([OT_nation] call OT_fnc_support) > (random 250)) then {
-                    format ["Intel reports that NATO has scrambled a helicopter to intercept %1", (typeOf _target) call OT_fnc_vehicleGetName];
+                    format ["Intel reports that NATO has scrambled a helicopter to intercept %1", (typeOf _target) call OT_fnc_vehicleGetName] remoteExec ["OT_fnc_notifyMinor", 0, false];
                 };
                 _countered = true;
             };
@@ -52,5 +52,7 @@ private _countered = false;
     };
     if (_countered) exitWith {};
 } forEach _knownTargets;
+
+server setVariable ["NATOresources", _resources];
 
 _countered;

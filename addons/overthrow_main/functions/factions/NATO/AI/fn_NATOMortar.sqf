@@ -32,6 +32,7 @@ while {
                     private _found = false;
                     {
                         if ((_x select 0) isEqualTo _mortarpos) exitWith {
+                            _found = true;
                             private _range = (_x select 1) - round ((_x select 1) * 0.25);
                             _x set [1, _range];
                             _x set [2, _mortarpos getPos [_range, random 360]];
@@ -80,6 +81,7 @@ while {
                     private _found = false;
                     {
                         if ((_x select 0) isEqualTo _mortarpos) exitWith {
+                            _found = true;
                             private _range = (_x select 1) - round ((_x select 1) * 0.25);
                             _x set [1, _range];
                             _x set [2, _mortarpos getPos [_range, random 360]];
@@ -92,6 +94,5 @@ while {
                 };
             };
         } forEach (_targets);
-        spawner setVariable ["NATOknownTargets", _targets, true];
     };
 };

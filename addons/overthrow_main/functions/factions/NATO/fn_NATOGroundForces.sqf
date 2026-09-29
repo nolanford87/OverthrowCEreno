@@ -8,7 +8,7 @@ private _squadtype = selectRandom OT_NATO_GroundForces;
 private _spawnpos = _frompos;
 private _group1 = [_spawnpos, blufor, _squadtype] call BIS_fnc_spawnGroup;
 _group1 deleteGroupWhenEmpty true;
-private _group2 = "";
+private _group2 = grpNull;
 if !(_byair) then {
     sleep 0.3;
     private _squadtype = selectRandom OT_NATO_GroundForces;
@@ -183,12 +183,12 @@ if !(_byair) then {
     {
         params ["_group1", "_group2"];
         {
-            if (alive _x) then { continue };
+            if (!alive _x) then { continue };
             [_x] call OT_fnc_cleanup;
         } forEach (units _group1);
 
         {
-            if (alive _x) then { continue };
+            if (!alive _x) then { continue };
             [_x] call OT_fnc_cleanup;
         } forEach (units _group2);
     },
@@ -225,6 +225,7 @@ if (_tgroup isEqualType grpNull) then {
             } else {
                 _stillfor = 0;
             };
+            _lastpos = getPos _veh;
             if (_eject) exitWith {
                 while { (waypoints _tgroup) isNotEqualTo [] } do {
                     deleteWaypoint ((waypoints _tgroup) select 0);
