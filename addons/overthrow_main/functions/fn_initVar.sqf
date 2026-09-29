@@ -521,6 +521,15 @@ OT_allFactions = [];
 // NATO's weapon pools only come from its own factions (and the gendarmerie), not every BLUFOR faction
 // (FIA, CTRG or creator DLC factions)
 private _natoFactions = [OT_faction_NATO, OT_fallback_faction_NATO, getText (_cfgVehicles >> OT_NATO_Unit_Police >> "faction")];
+// Weapon and gear pools for "Randomize NATO loadouts", the lobby setting "ot_randomloadoutpool" picks one:
+// NATO's factions, every BLUFOR faction, or everything in the game (built after the weapons are sorted)
+private _newLoadoutPool = {
+    createHashMapFromArray ([
+        "rifles", "glRifles", "machineGuns", "sniperRifles", "launchers", "handguns", "smgs", "vests", "helmets"
+    ] apply { [_x, []] })
+};
+private _poolNATO = call _newLoadoutPool;
+private _poolBLUFOR = call _newLoadoutPool;
 OT_allSubMachineGuns = [];
 OT_allAssaultRifles = [];
 OT_allMachineGuns = [];
@@ -623,29 +632,27 @@ OT_allBLURifleMagazines = [];
                 if !(_base in _blacklist) then {
                     private _muzzleEffect = getText (_cfgWeapons >> _base >> "muzzleEffect");
                     if (!(_x in _weapons) && (getNumber (_cfgWeapons >> _base >> "scope") isEqualTo 2)) then { _weapons pushBack _base };
-                    if (_side isEqualTo 1 && { _name in _natoFactions } && { _muzzleEffect isNotEqualTo "BIS_fnc_effectFiredFlares" }) then {
-                        if (_base isKindOf ["Rifle", _cfgWeapons]) then {
-                            private _mass = getNumber (_cfgWeapons >> _base >> "WeaponSlotsInfo" >> "mass");
-                            _base call {
-                                private _itemType = ([_base] call BIS_fnc_itemType) select 1; // The weapon, not the unit
-                                if (_itemType isEqualTo "MachineGun") exitWith { OT_allBLUMachineGuns pushBackUnique _base };
-                                if ((_this select [0, 7]) == "srifle_" || (_this isKindOf ["Rifle_Long_Base_F", _cfgWeapons])) exitWith { OT_allBLUSniperRifles pushBackUnique _base };
-                                if ("_GL_" in _this) exitWith { OT_allBLUGLRifles pushBackUnique _base };
-                                private _events = "" configClasses (_cfgWeapons >> _base >> "Eventhandlers");
-                                private _add = true;
-                                {
-                                    private _n = configName _x;
-                                    if (_n isEqualTo "RHS_BoltAction") exitWith { _add = false }; //ignore RHS bolt-action rifles
-                                } forEach (_events);
-                                if (_add && _mass < 61) exitWith { OT_allBLUSMG pushBackUnique _base };
-                                if (_add) then {
-                                    OT_allBLURifles pushBackUnique _base;
-                                    OT_allBLURifleMagazines = OT_allBLURifleMagazines + getArray (_cfgWeapons >> _base >> "magazines");
-                                };
+                    if (_side isEqualTo 1 && { _muzzleEffect isNotEqualTo "BIS_fnc_effectFiredFlares" }) then {
+                        private _key = _base call {
+                            if (_this isKindOf ["Rifle", _cfgWeapons]) exitWith {
+                                private _mass = getNumber (_cfgWeapons >> _this >> "WeaponSlotsInfo" >> "mass");
+                                private _itemType = ([_this] call BIS_fnc_itemType) select 1; // The weapon, not the unit
+                                if (_itemType isEqualTo "MachineGun") exitWith { "machineGuns" };
+                                if ((_this select [0, 7]) == "srifle_" || (_this isKindOf ["Rifle_Long_Base_F", _cfgWeapons])) exitWith { "sniperRifles" };
+                                if ("_GL_" in _this) exitWith { "glRifles" };
+                                //ignore RHS bolt-action rifles
+                                if (("true" configClasses (_cfgWeapons >> _this >> "Eventhandlers")) findIf { configName _x isEqualTo "RHS_BoltAction" } > -1) exitWith { "" };
+                                if (_mass < 61) exitWith { "smgs" };
+                                "rifles";
                             };
+                            if (_this isKindOf ["Launcher", _cfgWeapons]) exitWith { "launchers" };
+                            if (_this isKindOf ["Pistol", _cfgWeapons]) exitWith { "handguns" };
+                            "";
                         };
-                        if (_base isKindOf ["Launcher", _cfgWeapons]) then { OT_allBLULaunchers pushBackUnique _base };
-                        if (_base isKindOf ["Pistol", _cfgWeapons]) then { OT_allBLUPistols pushBackUnique _base };
+                        if (_key isNotEqualTo "") then {
+                            (_poolBLUFOR get _key) pushBackUnique _base;
+                            if (_name in _natoFactions) then { (_poolNATO get _key) pushBackUnique _base };
+                        };
                     };
                     //Get ammo
                     {
@@ -655,6 +662,17 @@ OT_allBLURifleMagazines = [];
                     } forEach (getArray (_cfgWeapons >> _base >> "magazines"));
                 };
             } forEach (getArray (_cfgVehicles >> _cls >> "weapons"));
+
+            //Get vests and helmets for the loadout pools
+            if (_side isEqualTo 1) then {
+                {
+                    private _key = ["", "vests", "helmets"] select (([701, 605] find getNumber (_cfgWeapons >> _x >> "ItemInfo" >> "type")) + 1);
+                    if (_key isNotEqualTo "" && { getNumber (_cfgWeapons >> _x >> "scope") isEqualTo 2 }) then {
+                        (_poolBLUFOR get _key) pushBackUnique _x;
+                        if (_name in _natoFactions) then { (_poolNATO get _key) pushBackUnique _x };
+                    };
+                } forEach (getArray (_cfgVehicles >> _cls >> "linkedItems"));
+            };
         } else {
             //It's a vehicle
             if !(_cls isKindOf "Bag_Base" || _cls isKindOf "StaticWeapon") then {
@@ -683,6 +701,19 @@ OT_allBLURifleMagazines = [];
         OT_allFactions pushBack [_name, _title, _side, _flag];
     };
 } forEach (_allFactions);
+
+// NATO's own weapons, also used for supply crates and faction weapon jobs
+OT_allBLURifles = _poolNATO get "rifles";
+OT_allBLUGLRifles = _poolNATO get "glRifles";
+OT_allBLUMachineGuns = _poolNATO get "machineGuns";
+OT_allBLUSniperRifles = _poolNATO get "sniperRifles";
+OT_allBLULaunchers = _poolNATO get "launchers";
+OT_allBLUPistols = _poolNATO get "handguns";
+OT_allBLUSMG = _poolNATO get "smgs";
+{
+    OT_allBLURifleMagazines append getArray (_cfgWeapons >> _x >> "magazines");
+} forEach OT_allBLURifles;
+OT_allBLURifleMagazines = OT_allBLURifleMagazines arrayIntersect OT_allBLURifleMagazines;
 
 private _caliberRegex = "(\d*\.\d+)\s*x\s*(\d+)|(\d+)\.(\d+)|\.(\d+)|(\d+)x(\d+)|(\d+)\s*GA/i";
 {
@@ -985,6 +1016,22 @@ OT_attachments = [];
 } forEach (_allOptics);
 
 OT_allWeapons = OT_allSubMachineGuns + OT_allAssaultRifles + OT_allMachineGuns + OT_allSniperRifles + OT_allHandGuns + OT_allMissileLaunchers + OT_allRocketLaunchers;
+
+// "Fully random" loadout pool: every weapon, vest and headgear in the game
+private _hasGL = { (getArray (_cfgWeapons >> _this >> "muzzles")) findIf { !(toLowerANSI _x in ["this", "safe"]) } > -1 };
+private _poolAll = call _newLoadoutPool;
+_poolAll set ["rifles", OT_allAssaultRifles select { !(_x call _hasGL) }];
+_poolAll set ["glRifles", OT_allAssaultRifles select { _x call _hasGL }];
+_poolAll set ["machineGuns", +OT_allMachineGuns];
+_poolAll set ["sniperRifles", +OT_allSniperRifles];
+_poolAll set ["launchers", OT_allMissileLaunchers + OT_allRocketLaunchers];
+_poolAll set ["handguns", +OT_allHandGuns];
+_poolAll set ["smgs", +OT_allSubMachineGuns];
+_poolAll set ["vests", +OT_allVests];
+_poolAll set ["helmets", OT_allHelmets + OT_allHats];
+
+private _poolSetting = ["ot_randomloadoutpool", 0] call BIS_fnc_getParamValue;
+OT_randomLoadoutPool = [_poolNATO, _poolBLUFOR, _poolAll] select ((_poolSetting max 0) min 2);
 
 if (isServer) then {
     cost setVariable ["CIV", [80, 0, 0, 0], true];

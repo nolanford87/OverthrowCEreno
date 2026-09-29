@@ -70,5 +70,37 @@ OTQA_dlc_isClass = {
         ["Two storey Livonia houses are high population", "Land_House_2W01_F" in OT_highPopHouses, ""] call OTQA_fnc_check;
         private _tiers = [count OT_lowPopHouses, count OT_medPopHouses, count OT_highPopHouses, count OT_hugePopHouses];
         ["Every house tier has houses", _tiers findIf { _x isEqualTo 0 } isEqualTo -1, format ["low/med/high/huge: %1", _tiers]] call OTQA_fnc_check;
+    }],
+
+    ["Randomized loadout pool", {
+        private _setting = ["ot_randomloadoutpool", 0] call BIS_fnc_getParamValue;
+        private _names = ["NATO only", "BLUFOR only", "Fully random"];
+        private _counts = ["rifles", "glRifles", "machineGuns", "sniperRifles", "launchers", "handguns", "smgs", "vests", "helmets"] apply { [_x, count (OT_randomLoadoutPool get _x)] };
+        ["Loadout pool is set up (" + (_names select _setting) + ")", (_counts select { _x select 1 > 0 }) isNotEqualTo [], format ["%1", _counts]] call OTQA_fnc_check;
+
+        // A NATO rifleman, randomized like initNATO does it
+        private _cls = OT_NATO_Units_LevelOne param [0, "B_Soldier_F"];
+        private _loadout = getUnitLoadout (configFile >> "CfgVehicles" >> _cls);
+        private _new = [_loadout, nil, nil, nil, nil, nil, nil, true] call OT_fnc_randomizeLoadout;
+        private _primary = (_new select 0) param [0, ""];
+        private _rifles = (OT_randomLoadoutPool get "rifles") + (OT_randomLoadoutPool get "glRifles") + (OT_randomLoadoutPool get "machineGuns") + (OT_randomLoadoutPool get "sniperRifles");
+        ["Randomized primary comes from the pool", _primary in _rifles || { _primary isEqualTo ((_loadout select 0) param [0, ""]) }, format ["%1 (%2)", _primary, _cls]] call OTQA_fnc_check;
+        private _mag = (_new select 0) param [4, []];
+        ["Randomized primary has a magazine", _mag isNotEqualTo [] && { (_mag select 0) in compatibleMagazines _primary }, format ["%1", _mag]] call OTQA_fnc_check;
+
+        private _armor = { getNumber (configFile >> "CfgWeapons" >> (_this select 0) >> "ItemInfo" >> "HitpointsProtectionInfo" >> (_this select 1) >> "armor") };
+        private _oldVest = (_loadout select 4) param [0, ""];
+        private _newVest = (_new select 4) param [0, ""];
+        ["Vest keeps about the same armor", abs (([_oldVest, "Chest"] call _armor) - ([_newVest, "Chest"] call _armor)) <= 4, format ["%1 -> %2", _oldVest, _newVest]] call OTQA_fnc_check;
+        ["Uniform stays", ((_new select 3) param [0, ""]) isEqualTo ((_loadout select 3) param [0, ""]), ""] call OTQA_fnc_check;
+
+        // Put it on a spawned soldier to see the game accepts it
+        private _grp = createGroup blufor;
+        private _unit = _grp createUnit [_cls, [worldSize - 100, 100, 0], [], 0, "CAN_COLLIDE"];
+        _unit setUnitLoadout [_new, true];
+        ["Soldier wears the randomized loadout", primaryWeapon _unit isEqualTo _primary && { vest _unit isEqualTo _newVest } && { uniform _unit isNotEqualTo "" },
+            format ["weapon %1, vest %2, uniform %3", primaryWeapon _unit, vest _unit, uniform _unit]] call OTQA_fnc_check;
+        deleteVehicle _unit;
+        deleteGroup _grp;
     }]
 ]
