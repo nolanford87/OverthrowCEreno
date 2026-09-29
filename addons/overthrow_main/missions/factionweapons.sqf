@@ -70,8 +70,8 @@ private _title = format ["%1 requests %2 x %3", _factionName, _numitems, _itemNa
                         if (_basecls == _itemcls) then {
                             _driver = driver _c;
                             if (isNull _driver) then { _driver = (_c getVariable ["owner", ""]) call BIS_fnc_getUnitByUID }; // Nobody in the driver seat, pay the owner
-                            [_c, _cls, _amt] call CBA_fnc_removeWeaponCargo;
-                            _numavailable = _numavailable + _amt;
+                            // Pay only for weapons actually taken, the stock also counts backpacks etc. in the vehicle
+                            _numavailable = _numavailable + ([_c, _cls, _amt] call OT_fnc_removeFromCargo);
                         };
                     } forEach (_c call OT_fnc_unitStock);
                 };

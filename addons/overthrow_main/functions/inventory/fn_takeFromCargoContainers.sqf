@@ -8,8 +8,8 @@ private _gotit = false;
     {
         _x params ["_cls", "_amt"];
         if (_cls == _input && _amt >= _num) exitWith {
-            [_c, _cls, _num] call CBA_fnc_removeItemCargo;
-            _gotit = true;
+            // The stock also counts backpacks etc. in the container, so take from those too
+            _gotit = ([_c, _cls, _num] call OT_fnc_removeFromCargo) >= _num;
         };
     } forEach (_c call OT_fnc_unitStock);
 } forEach (_pos nearObjects [OT_item_CargoContainer, 50]);

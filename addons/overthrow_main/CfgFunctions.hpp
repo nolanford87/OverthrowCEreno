@@ -412,6 +412,7 @@ class CfgFunctions {
             class dumpItem {};
             class canDumpUnitLoadout {};
             class canDumpContainer {};
+            class removeFromCargo {};
         };
 
         /*

@@ -53,11 +53,9 @@ if (_def isNotEqualTo []) then {
                 _x params ["_needed", "_qtyneeded"];
                 {
                     _x params ["_c"];
-                    if (_c isKindOf [_needed, configFile >> "CfgMagazines"]) exitWith {
-                        [_container, _c, _qtyneeded] call CBA_fnc_removeMagazineCargo;
-                    };
-                    if (_c isKindOf [_needed, configFile >> "CfgWeapons"]) exitWith {
-                        [_container, _c, _qtyneeded] call CBA_fnc_removeItemCargo;
+                    // Also takes ingredients from backpacks etc. in the ammobox, which the stock check counts
+                    if (_c isEqualTo _needed || { _c isKindOf [_needed, configFile >> "CfgMagazines"] } || { _c isKindOf [_needed, configFile >> "CfgWeapons"] }) exitWith {
+                        [_container, _c, _qtyneeded] call OT_fnc_removeFromCargo;
                     };
                 } forEach (_stock);
             } forEach (_recipe);

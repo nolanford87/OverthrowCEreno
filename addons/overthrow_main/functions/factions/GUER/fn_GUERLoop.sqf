@@ -112,15 +112,10 @@ if ((date select 3) != _lasthr) then {
                             {
                                 _x params ["_cls", "_amt"];
                                 if (_cls isEqualTo _input) exitWith {
-                                    if (_amt >= _innum) then {
-                                        [_c, _cls, _innum] call CBA_fnc_removeItemCargo;
-                                        _income = _income + (_sellprice * _innum);
-                                        _innum = 0;
-                                    } else {
-                                        [_c, _cls, _amt] call CBA_fnc_removeItemCargo;
-                                        _innum = _innum - _amt;
-                                        _income = _income + (_sellprice * _amt);
-                                    };
+                                    // Pay only for what was taken, the stock also counts backpacks etc. in the container
+                                    private _removed = [_c, _cls, _amt min _innum] call OT_fnc_removeFromCargo;
+                                    _income = _income + (_sellprice * _removed);
+                                    _innum = _innum - _removed;
                                 };
                             } forEach (_stock);
                         } forEach (_pos nearObjects [OT_item_CargoContainer, 50]);
@@ -147,15 +142,9 @@ if ((date select 3) != _lasthr) then {
                                 {
                                     _x params ["_cls", "_amt"];
                                     if (_cls isEqualTo _input) exitWith {
-                                        if (_amt >= _innum) then {
-                                            [_c, _cls, _innum] call CBA_fnc_removeItemCargo;
-                                            _inputnum = _inputnum + _innum;
-                                            _innum = 0;
-                                        } else {
-                                            [_c, _cls, _amt] call CBA_fnc_removeItemCargo;
-                                            _innum = _innum - _amt;
-                                            _inputnum = _inputnum + _amt;
-                                        };
+                                        private _removed = [_c, _cls, _amt min _innum] call OT_fnc_removeFromCargo;
+                                        _inputnum = _inputnum + _removed;
+                                        _innum = _innum - _removed;
                                     };
                                 } forEach (_c call OT_fnc_unitStock);
                             } forEach (_pos nearObjects [OT_item_CargoContainer, 50]);
@@ -169,8 +158,7 @@ if ((date select 3) != _lasthr) then {
                                     {
                                         _x params ["_cls", "_amt"];
                                         if (_cls isEqualTo "OT_Fertilizer") exitWith {
-                                            [_c, _cls, 1] call CBA_fnc_removeItemCargo;
-                                            _foundFertilizer = true;
+                                            _foundFertilizer = ([_c, _cls, 1] call OT_fnc_removeFromCargo) > 0;
                                         };
                                     } forEach (_c call OT_fnc_unitStock);
                                     if (_foundFertilizer) exitWith {};

@@ -8,20 +8,14 @@ format ["Taking legal inventory from vehicle"] call OT_fnc_notifyMinor;
 sleep 5;
 
 {
-    private _count = 0;
-    private _cls = _x select 0;
-    private _added = 0;
+    _x params ["_cls", "_num"];
     if (_cls in OT_allItems) then {
-        while { _count < (_x select 1) } do {
-            if (player canAdd _cls) then {
-                player addItem _cls;
-                _added = _added + 1;
-            };
-            _count = _count + 1;
+        // Only give the player what could be taken out of the vehicle (including backpacks etc. in it)
+        for "_i" from 1 to _num do {
+            if !(player canAdd _cls) exitWith {};
+            if (([_veh, _cls, 1] call OT_fnc_removeFromCargo) isEqualTo 0) exitWith {};
+            player addItem _cls;
         };
-    };
-    if !([_veh, _cls, _added] call CBA_fnc_removeItemCargo) then {
-        [_veh, _cls, _added] call CBA_fnc_removeWeaponCargo;
     };
 } forEach (_veh call OT_fnc_unitStock);
 
