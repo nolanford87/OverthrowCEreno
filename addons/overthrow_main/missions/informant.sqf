@@ -15,7 +15,7 @@ private _destinationName = selectRandom _outofspawndistance;
 private _posTown = server getVariable [_destinationName, []];
 
 private _building = [_posTown, OT_allHouses] call OT_fnc_getRandomBuilding;
-private _destination = (_building call BIS_fnc_buildingPositions) call BIS_fnc_selectRandom;
+private _destination = selectRandom (_building call BIS_fnc_buildingPositions);
 if (isNil "_destination" || _destination isEqualTo [0, 0, 0]) then {
     _destination = _posTown getPos [random 600, random 360];
 };
@@ -40,9 +40,9 @@ private _title = format ["NATO informant in %1", _destinationName];
         _civ setVariable ["notalk", true, true]; //Tells Overthrow this guy cannot be recruited etc
 
         //Set face,voice and uniform
-        [_civ, (OT_faces_western call BIS_fnc_selectRandom)] remoteExecCall ["setFace", 0, _civ];
-        [_civ, (OT_voices_western call BIS_fnc_selectRandom)] remoteExecCall ["setSpeaker", 0, _civ];
-        _civ forceAddUniform (OT_clothes_guerilla call BIS_fnc_selectRandom);
+        [_civ, (selectRandom OT_faces_western)] remoteExecCall ["setFace", 0, _civ];
+        [_civ, (selectRandom OT_voices_western)] remoteExecCall ["setSpeaker", 0, _civ];
+        _civ forceAddUniform (selectRandom OT_clothes_guerilla);
 
         _civ disableAI "MOVE";
 

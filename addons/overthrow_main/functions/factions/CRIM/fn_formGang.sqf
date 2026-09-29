@@ -77,7 +77,7 @@ if (_possible isNotEqualTo []) then {
         [_group, _townpos] call OT_fnc_initCriminalGroup;
 
         {
-            _x addCuratorEditableObjects [[_civ]];
+            _x addCuratorEditableObjects [[_civ], true];
         } forEach (allCurators);
     };
     OT_civilians setVariable [format ["gangs%1", _town], _gangs, true];

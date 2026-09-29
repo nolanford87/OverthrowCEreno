@@ -16,7 +16,7 @@ params [
 ];
 
 if !(hasInterface) exitWith {
-    diag_log format ["'%1' was canceled from running on a client that has no interface", __FILE__];
+    diag_log format ["'%1' was canceled from running on a client that has no interface", _fnc_scriptName];
 };
 
 private _display = findDisplay 46;

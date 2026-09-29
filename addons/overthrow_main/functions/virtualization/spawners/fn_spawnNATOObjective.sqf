@@ -306,7 +306,7 @@ private _vehgarrison = server getVariable [format ["vehgarrison%1", _name], []];
         } forEach (crew _veh);
         _vgroup setVariable ["Vcm_Disable", true, false];
         {
-            _x addCuratorEditableObjects [[_veh]];
+            _x addCuratorEditableObjects [[_veh], true];
         } forEach (allCurators);
     };
 } forEach (_vehgarrison);

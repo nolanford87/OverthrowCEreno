@@ -650,13 +650,10 @@ class CfgVehicles {
         faction = "BLU_W_F";
         uniformClass = "U_B_CombatUniform_tshirt_mcam_wdL_f";
         backpack = "B_Kitbag_rgr_BTReconExp_F";
-        #undef weaps
         #define weaps {"arifle_MX_Black_ACO_Pointer_Snds_F", "hgun_P07_khk_F", "Throw", "Put"}
         weapons[] = weaps; respawnWeapons[] = weaps;
-        #undef mags
         #define mags {MAG_6("30Rnd_65x39_caseless_black_mag"), MAG_3("16Rnd_9x21_Mag"), MAG_3("APERSMine_Range_Mag"), MAG_2("MiniGrenade"), "SmokeShell", "SmokeShellGreen", MAG_2("Chemlight_green")}
         magazines[] = mags; respawnMagazines[] = mags;
-        #undef links
         #define links {"H_Booniehat_wdl", "V_Chestrig_rgr", "ItemGPS", "ItemMap", "ItemCompass", "ItemWatch", "ItemRadio", "NVGoggles_INDEP"}
         linkedItems[] = links; respawnLinkedItems[] = links;
     };

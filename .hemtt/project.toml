@@ -22,3 +22,7 @@ sig_version = 3
 
 [hemtt.release]
 folder = "Overthrow-Community-Edition"
+
+# Established global names such as OT_NATO_HQ, renaming them would break existing code and saves
+[lints.sqf.var_all_caps]
+options.ignore = ["OT_NATO_*"]

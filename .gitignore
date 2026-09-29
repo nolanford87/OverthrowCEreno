@@ -51,3 +51,6 @@ tools/includes.txt
 ArmaScriptCompiler.exe
 /.hemttout
 *.exe
+
+# HEMTT signing key
+.hemttprivatekey

@@ -79,7 +79,7 @@ while { _count < _numNATO } do {
 };
 _group spawn OT_fnc_initNATOCheckpoint;
 {
-    _x addCuratorEditableObjects [units _group];
+    _x addCuratorEditableObjects [units _group, true];
 } forEach (allCurators);
 
 spawner setVariable [_spawnid, _groups, false];

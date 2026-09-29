@@ -138,7 +138,7 @@ private _gangs = OT_civilians getVariable [format ["gangs%1", _town], []];
             _groups pushBack _leaderGroup;
 
             {
-                _x addCuratorEditableObjects [[_civ]];
+                _x addCuratorEditableObjects [[_civ], true];
             } forEach (allCurators);
 
             {
@@ -159,7 +159,7 @@ private _gangs = OT_civilians getVariable [format ["gangs%1", _town], []];
                 _civ setVariable ["hometown", _town, true];
 
                 {
-                    _x addCuratorEditableObjects [[_civ]];
+                    _x addCuratorEditableObjects [[_civ], true];
                 } forEach (allCurators);
 
                 sleep 0.3;

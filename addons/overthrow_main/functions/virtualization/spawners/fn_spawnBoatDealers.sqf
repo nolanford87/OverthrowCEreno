@@ -15,7 +15,7 @@ private _groups = [_group];
     private _building = nearestBuilding _pos;
 
     private _dir = getDir _building;
-    _shopkeeper = _group createUnit [OT_civType_carDealer, [_pos, [0, 0, 2]] call BIS_fnc_vectorAdd, [], 0, "NONE"];
+    _shopkeeper = _group createUnit [OT_civType_carDealer, _pos vectorAdd [0, 0, 2], [], 0, "NONE"];
     _shopkeeper disableAI "MOVE";
     _shopkeeper disableAI "AUTOCOMBAT";
     _shopkeeper setVariable ["NOAI", true, false];
