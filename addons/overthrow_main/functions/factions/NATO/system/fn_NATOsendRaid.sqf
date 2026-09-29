@@ -28,7 +28,7 @@ private _resources = server getVariable ["NATOresources", 2000];
 
         if (_ty == "FOB") then {
             if ((random 100) > _chance) then {
-                [_pos, "[this] spawn OT_fnc_NATOsiegeFOB"] call OT_fnc_NATOMissionReconInsert;
+                [_pos, "[this] spawn OT_fnc_NATOsiegeFOB"] spawn OT_fnc_NATOMissionReconInsert; // Sleeps, and the NATO loop is unscheduled
                 _spend = _spend - 250;
                 _resources = _resources - 250;
                 _x set [4, true];
