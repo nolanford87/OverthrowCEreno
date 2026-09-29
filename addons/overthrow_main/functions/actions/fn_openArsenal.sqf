@@ -197,7 +197,7 @@ if (_target isEqualType "") then {
                             if (_x isKindOf ["Default", configFile >> "CfgMagazines"]) exitWith {
                                 [_ammobox, _x, 1] call CBA_fnc_addMagazineCargo;
                             };
-                            [_ammobox, _x, 1] call CBA_fnc_removeItemCargo;
+                            [_ammobox, _x, 1] call CBA_fnc_addItemCargo;
                         };
                     } forEach (backpackItems _unit);
                     removeBackpack _unit;
@@ -228,7 +228,7 @@ if (_target isEqualType "") then {
                             if (_x isKindOf ["Default", configFile >> "CfgMagazines"]) exitWith {
                                 [_ammobox, _x, 1] call CBA_fnc_addMagazineCargo;
                             };
-                            [_ammobox, _x, 1] call CBA_fnc_removeItemCargo;
+                            [_ammobox, _x, 1] call CBA_fnc_addItemCargo;
                         };
                     } forEach (vestItems _unit);
                     removeVest _unit;

@@ -32,10 +32,12 @@ if (_searchPos in OT_warehouseLocationCache) then {
     private _owned = warehouse getVariable ["owned", []];
     if (_owned isNotEqualTo []) then {
         private _closestWarehouse = ([_owned, [], { _x distance2D _searchPos }, "ASCEND"] call BIS_fnc_sortBy) # 0;
-        if ((_closestWarehouse distance2D _searchPos) < 2000) then { _warehouse = _closestWarehouse };
+        if ((_closestWarehouse distance2D _searchPos) < 2000) then {
+            _warehouse = _closestWarehouse;
 
-        // If this warehouse has paid the sum, then return the shared warehouse container object
-        if (_closestWarehouse getVariable ["is_shared", false]) then { _warehouse = warehouse_shared };
+            // If this warehouse has paid the sum, then return the shared warehouse container object
+            if (_closestWarehouse getVariable ["is_shared", false]) then { _warehouse = warehouse_shared };
+        };
 
         // Update cache
         OT_warehouseLocationCache set [_searchPos, _warehouse];

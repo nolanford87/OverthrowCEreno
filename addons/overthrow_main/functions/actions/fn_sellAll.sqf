@@ -88,7 +88,7 @@ if ((player getVariable ["OT_shopTarget", "Self"]) isEqualTo "Vehicle") then {
         } forEach (everyContainer _target);
     };
 } else {
-    for "_i" from 0 to _qty do {
+    for "_i" from 1 to _qty do {
         if (OT_hasTFAR) then {
             private _c = _ocls splitString "_";
             if ((_c select 0) == "tf") then {

@@ -4,8 +4,13 @@ private _nozzle = _sink getVariable "ace_refuel_nozzle";
 private _source = _nozzle getVariable "ace_refuel_source";
 
 if ((typeOf _source) in OT_fuelPumps) then {
-    private _last = _sink getVariable ["ot_lastFuel", fuel _sink];
-    private _fueled = (fuel _sink) - _last;
+    // Only compare against the fuel level recorded during this refuel session, otherwise fuel burned
+    // since the last visit to a pump would be refunded. ACE raises this about once a second while
+    // refueling, so a different nozzle or a gap means a new session.
+    (_sink getVariable ["ot_lastFuel", [objNull, 0, -100]]) params ["_lastNozzle", "_lastFuel", ["_lastTime", -100]];
+    private _sameSession = (_lastNozzle isEqualTo _nozzle) && { (CBA_missionTime - _lastTime) < 5 };
+    private _last = [fuel _sink, _lastFuel] select _sameSession;
+    private _fueled = ((fuel _sink) - _last) max 0;
     private _litresFueled = _fueled * getNumber (configOf _sink >> "fuelCapacity");
 
     private _pricePer = [OT_nation, "FUEL", 100] call OT_fnc_getPrice;
@@ -31,5 +36,5 @@ if ((typeOf _source) in OT_fuelPumps) then {
         [-_total] remoteExec ["OT_fnc_money", _player];
     };
 
-    _sink setVariable ["ot_lastFuel", fuel _sink, false];
+    _sink setVariable ["ot_lastFuel", [_nozzle, fuel _sink, CBA_missionTime], false];
 };

@@ -26,6 +26,7 @@ if (_veh isEqualTo player) then {
     };
 };
 if (_veh isEqualTo player) exitWith {
+    OT_taking = false;
     "No warehouse within range" call OT_fnc_notifyMinor;
 };
 

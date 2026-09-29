@@ -41,11 +41,12 @@ _this spawn {
 
     // Strip out preloaded missile dummies from inventory.
     // Only way to really clear them is a full magazine clear.
-    private _mags = magazineCargo _target;
-    _mags = _mags - OT_noCopyMags;
+    // Keep the ammo count of each magazine, so partially used magazines aren't refilled.
+    private _mags = (magazinesAmmoCargo _target) select { !((_x select 0) in OT_noCopyMags) };
     clearMagazineCargoGlobal _target;
     {
-        _target addMagazineCargoGlobal [_x, 1];
+        _x params ["_cls", "_ammo"];
+        _target addMagazineAmmoCargo [_cls, 1, _ammo];
     } forEach (_mags);
 
     if (_iswarehouse) then {

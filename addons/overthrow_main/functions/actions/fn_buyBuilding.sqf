@@ -42,6 +42,7 @@ if (_handled) then {
             private _ownedWarehouses = warehouse getVariable ["owned", []];
             _ownedWarehouses pushBack _building;
             warehouse setVariable ["owned", _ownedWarehouses, true];
+            OT_warehouseLocationCache = createHashMap;
         };
 
         buildingpositions setVariable [_id, getPos _building, true];
@@ -71,6 +72,17 @@ if (_handled) then {
             // Fallback for unknown buildings
         } else {
             _owned deleteAt (_owned find ([_building] call OT_fnc_getBuildID));
+        };
+
+        // It's a warehouse! Remove it from owned warehouses
+        if (typeOf _building == OT_warehouse) then {
+            private _ownedWarehouses = warehouse getVariable ["owned", []];
+            private _idx = _ownedWarehouses find _building;
+            if (_idx > -1) then {
+                _ownedWarehouses deleteAt _idx;
+                warehouse setVariable ["owned", _ownedWarehouses, true];
+            };
+            OT_warehouseLocationCache = createHashMap;
         };
 
         // Always attempt to remove the building, because it might be played-placed (for map-placed buildings, this won't do anything)

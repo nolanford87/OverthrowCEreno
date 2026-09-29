@@ -106,6 +106,7 @@ if ((date select 3) != _lasthr) then {
                             clearItemCargoGlobal _container;
                         };
                         {
+                            if (_innum <= 0) then { continue };
                             private _stock = _x call OT_fnc_unitStock;
                             private _c = _x;
                             {
@@ -114,6 +115,7 @@ if ((date select 3) != _lasthr) then {
                                     if (_amt >= _innum) then {
                                         [_c, _cls, _innum] call CBA_fnc_removeItemCargo;
                                         _income = _income + (_sellprice * _innum);
+                                        _innum = 0;
                                     } else {
                                         [_c, _cls, _amt] call CBA_fnc_removeItemCargo;
                                         _innum = _innum - _amt;
@@ -140,6 +142,7 @@ if ((date select 3) != _lasthr) then {
                         if (_input != "") then {
                             private _inputnum = 0;
                             {
+                                if (_innum <= 0) then { continue };
                                 private _c = _x;
                                 {
                                     _x params ["_cls", "_amt"];
@@ -147,6 +150,7 @@ if ((date select 3) != _lasthr) then {
                                         if (_amt >= _innum) then {
                                             [_c, _cls, _innum] call CBA_fnc_removeItemCargo;
                                             _inputnum = _inputnum + _innum;
+                                            _innum = 0;
                                         } else {
                                             [_c, _cls, _amt] call CBA_fnc_removeItemCargo;
                                             _innum = _innum - _amt;
@@ -172,7 +176,7 @@ if ((date select 3) != _lasthr) then {
                                     if (_foundFertilizer) exitWith {};
                                 } forEach (_pos nearObjects [OT_item_CargoContainer, 50]);
                                 if (_foundFertilizer) then {
-                                    _output = round (_output * 1.5);
+                                    _outnum = round (_outnum * 1.5);
                                 };
                             };
                             _container addItemCargoGlobal [_output, _outnum];
@@ -345,20 +349,7 @@ if ((date select 4) != _lastmin) then {
                     _timespent = _timespent + OT_factoryProductionMulti;
                 };
                 if (_timespent >= _timetoproduce) then {
-                    _timespent = 0;
-
-                    _queue = server getVariable ["factoryQueue", []];
-                    if (_queue isNotEqualTo []) then {
-                        private _item = _queue select 0;
-                        if (_item select 1 > 1) then {
-                            _item set [1, (_item select 1) - 1];
-                        } else {
-                            _queue deleteAt 0;
-                        };
-                        server setVariable ["factoryQueue", _queue, true];
-                    };
-
-                    server setVariable ["GEURproducing", ""];
+                    private _produced = true;
 
                     if (!(_currentCls isKindOf "Bag_Base") && _currentCls isKindOf "AllVehicles") then {
                         private _p = OT_factoryVehicleSpawn findEmptyPosition [5, 100, _currentCls];
@@ -374,7 +365,7 @@ if ((date select 4) != _lastmin) then {
                             format ["Factory has produced %1 x %2", _numtoproduce, _currentCls call OT_fnc_vehicleGetName] remoteExec ["OT_fnc_notifyMinor", 0, false];
                         } else {
                             format ["Factory has no room to produce %1, please clear the road", _currentCls call OT_fnc_vehicleGetName] remoteExec ["OT_fnc_notifyMinor", 0, false];
-                            _timespent = _timetoproduce;
+                            _produced = false;
                         };
                     } else {
                         private _veh = OT_factoryPos nearestObject OT_item_CargoContainer;
@@ -407,6 +398,26 @@ if ((date select 4) != _lastmin) then {
                             };
                             _veh addItemCargoGlobal [_currentCls, _numtoproduce];
                         };
+                    };
+
+                    if (_produced) then {
+                        _timespent = 0;
+
+                        _queue = server getVariable ["factoryQueue", []];
+                        if (_queue isNotEqualTo []) then {
+                            private _item = _queue select 0;
+                            if (_item select 1 > 1) then {
+                                _item set [1, (_item select 1) - 1];
+                            } else {
+                                _queue deleteAt 0;
+                            };
+                            server setVariable ["factoryQueue", _queue, true];
+                        };
+
+                        server setVariable ["GEURproducing", "", true];
+                    } else {
+                        // Already paid for, keep it at the front of the queue and try again next time
+                        _timespent = _timetoproduce;
                     };
                 };
                 server setVariable ["GEURproducetime", _timespent, true];

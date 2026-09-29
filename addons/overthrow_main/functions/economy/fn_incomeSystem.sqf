@@ -37,6 +37,7 @@ income_system_lasthour = date select 3;
             if (_tax > 0) then {
                 _totax = round (_total * (_tax / 100));
             };
+            private _townTax = _totax;
 
             {
                 private _owned = _x getVariable ['leasedata', []];
@@ -57,7 +58,8 @@ income_system_lasthour = date select 3;
             } forEach (allPlayers - (entities 'HeadlessClient_F'));
 
             [_totax] call OT_fnc_resistanceFunds;
-            _total = _total - _totax;
+            // Lease tax was already taken from the lease payouts, only remove the town tax here
+            _total = _total - _townTax;
 
             private _numPlayers = count (allPlayers - (entities 'HeadlessClient_F'));
             if (_numPlayers > 0) then {
