@@ -425,6 +425,13 @@ private _hasList_buildableHouses = false;
         {
             if (isNil "_x") then { continue };
             _x params ["_cls", "_loadout"];
+            // Older saves have the misspelled NVG class of the old AT and AA recruit loadouts
+            if (_loadout isEqualType [] && { count _loadout > 9 } && { (_loadout select 9) isEqualType [] }) then {
+                private _linked = _loadout select 9;
+                {
+                    if (_x isEqualTo "NVGoggles_tnaF") then { _linked set [_forEachIndex, "NVGoggles_tna_F"] };
+                } forEach _linked;
+            };
             private _done = false;
             {
                 _x params ["_c", "_l"];

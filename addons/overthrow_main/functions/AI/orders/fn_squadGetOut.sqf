@@ -11,7 +11,7 @@
         _paras allowGetIn false;
 
         {
-            spawner setVariable [format ["eject_%1", [_x] call OT_fnc_getBuildID], getUnitLoadout _x, false];
+            _x setVariable ["OT_ejectLoadout", getUnitLoadout _x, false]; // Kept on the unit, getBuildID doesn't give units a unique id
             removeBackpackGlobal _x;
             _x disableCollisionWith _vehicle; // Sometimes units take damage when being ejected.
             _x addBackpackGlobal "B_parachute";
@@ -42,9 +42,8 @@
 
                 _unit action ["Eject", vehicle _unit];
                 sleep 1;
-                private _id = [_unit] call OT_fnc_getBuildID;
-                _unit setUnitLoadout (spawner getVariable [format ["eject_%1", _id], []]);
-                spawner setVariable [format ["eject_%1", _id], nil, false];
+                _unit setUnitLoadout (_unit getVariable ["OT_ejectLoadout", getUnitLoadout _unit]);
+                _unit setVariable ["OT_ejectLoadout", nil, false];
                 _unit allowDamage true;
             };
         } forEach _paras;
