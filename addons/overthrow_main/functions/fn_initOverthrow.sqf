@@ -110,6 +110,10 @@ OT_tpl_checkpoint = [] call compileScript ["data\templates\NATOcheckpoint.sqf", 
 
     private _initStart = diag_tickTime;
 
+    // Lobby parameters override the defaults from initVar (only the server sets the time multiplier)
+    OT_timeMultiplierDay = ["ot_timemultiplierday", OT_timeMultiplierDay] call BIS_fnc_getParamValue;
+    OT_timeMultiplierNight = ["ot_timemultipliernight", OT_timeMultiplierNight] call BIS_fnc_getParamValue;
+
     if (OT_fastTime) then {
         setTimeMultiplier OT_timeMultiplierDay;
     };
