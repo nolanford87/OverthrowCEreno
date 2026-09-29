@@ -24,6 +24,7 @@ private _fobs = server getVariable ["NATOfobs", []];
         _near = true;
     };
 } forEach (_fobs);
+_group setVariable ["OT_deployFOBDone", true, false];
 if (_near) exitWith {};
 
 OT_flag_NATO createVehicle _targetPos;
