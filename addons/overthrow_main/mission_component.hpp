@@ -126,6 +126,12 @@ class Params {
         texts[] = {"Yes", "No"};
         default = 0;
     };
+    class ot_randomloadoutpool {
+        title = "Randomized NATO loadouts use";
+        values[] = {0, 1, 2};
+        texts[] = {"NATO weapons / gear only", "BLUFOR weapons / gear only", "Fully random (every weapon in the game)"};
+        default = 0;
+    };
     class ot_gangmembercap {
         title = "Gang Maximum Size";
         texts[] = {"10", "15", "20", "25", "30"};

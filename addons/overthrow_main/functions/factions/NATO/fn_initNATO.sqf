@@ -93,7 +93,7 @@ OT_NATO_Units_CTRGSupport = [];
             private _loadout = getUnitLoadout _unitCfg;
             private _loadouts = [];
             for "_i" from 1 to 5 do {
-                _loadouts pushBack ([_loadout] call OT_fnc_randomizeLoadout);
+                _loadouts pushBack ([_loadout, nil, nil, nil, nil, nil, nil, true] call OT_fnc_randomizeLoadout); // Also swaps vest and helmet
             };
             spawner setVariable [format ["loadouts_%1", _name], _loadouts, false];
         };
@@ -104,14 +104,14 @@ OT_NATO_Units_CTRGSupport = [];
 private _loadout = getUnitLoadout OT_NATO_Unit_Police;
 private _loadouts = [];
 for "_i" from 1 to 5 do {
-    _loadouts pushBack ([_loadout, OT_allBLUSMG] call OT_fnc_randomizeLoadout);
+    _loadouts pushBack ([_loadout, OT_randomLoadoutPool get "smgs"] call OT_fnc_randomizeLoadout); // Gendarmes keep their gear
 };
 spawner setVariable [format ["loadouts_%1", OT_NATO_Unit_Police], _loadouts, false];
 
 _loadout = getUnitLoadout OT_NATO_Unit_PoliceCommander;
 _loadouts = [];
 for "_i" from 1 to 5 do {
-    _loadouts pushBack ([_loadout, OT_allBLUSMG] call OT_fnc_randomizeLoadout);
+    _loadouts pushBack ([_loadout, OT_randomLoadoutPool get "smgs"] call OT_fnc_randomizeLoadout); // Gendarmes keep their gear
 };
 spawner setVariable [format ["loadouts_%1", OT_NATO_Unit_PoliceCommander], _loadouts, false];
 
