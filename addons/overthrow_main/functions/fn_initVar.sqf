@@ -1031,7 +1031,9 @@ _poolAll set ["vests", +OT_allVests];
 _poolAll set ["helmets", OT_allHelmets + OT_allHats];
 
 private _poolSetting = ["ot_randomloadoutpool", 0] call BIS_fnc_getParamValue;
-OT_randomLoadoutPool = [_poolNATO, _poolBLUFOR, _poolAll] select ((_poolSetting max 0) min 2);
+// All three are kept (the QA tests go through them), OT_randomLoadoutPool is the one in use
+OT_randomLoadoutPools = [_poolNATO, _poolBLUFOR, _poolAll];
+OT_randomLoadoutPool = OT_randomLoadoutPools select ((_poolSetting max 0) min 2);
 
 if (isServer) then {
     cost setVariable ["CIV", [80, 0, 0, 0], true];
