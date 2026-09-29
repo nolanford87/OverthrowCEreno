@@ -20,6 +20,7 @@ private _tests = [];
     OTQA_fnc_testsBatch6,
     OTQA_fnc_testsBatch8,
     OTQA_fnc_testsBatch9,
+    OTQA_fnc_testsReview,
     OTQA_fnc_testsBatch7
 ];
 _tests;
