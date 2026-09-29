@@ -8,8 +8,8 @@ if (_this isKindOf "CAManBase") then {
 } else {
     _myitems = (itemCargo _this) + (weaponCargo _this) + (magazineCargo _this) + (backpackCargo _this);
     {
-        _myitems = _myitems append ((items _this) + (magazines _this));
-    } forEach (units _this);
+        _myitems append ((items _x) + (magazines _x));
+    } forEach (crew _this);
 };
 if !(isNil "_myitems") then {
     {

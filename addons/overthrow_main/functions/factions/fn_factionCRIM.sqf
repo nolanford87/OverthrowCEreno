@@ -19,6 +19,7 @@
                 };
             } else {
                 //old gang format, generate one
+                private _town = _gang select 2;
                 private _vest = _gang select 3;
                 private _weapon = selectRandom (OT_CRIM_Weapons + OT_allCheapRifles);
                 _loadout = [(format ["gang%1", _gangid]), OT_CRIMBaseLoadout, [[_weapon]]] call OT_fnc_getRandomLoadout;

@@ -114,7 +114,8 @@ private _target = _sortedTargets # 0;
                 private _droppedWeaponHolders = (_target nearEntities ["WeaponHolderSimulated", (_range + 10)]);
                 {
                     if (getCorpse _x isEqualTo _body) then {
-                        private _weapon = weaponsItemsCargo _x # 0;
+                        private _weapon = (weaponsItemsCargo _x) param [0, []];
+                        if (_weapon isEqualTo []) then { continue };
                         if (_weapon # 0 isKindOf ["Launcher", configFile >> "CfgWeapons"]) then {
                             _lootedLoadout set [1, _weapon];
                         } else {
