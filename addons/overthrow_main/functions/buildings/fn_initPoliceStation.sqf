@@ -8,8 +8,7 @@ if (_garrison == -1) then {
 
     private _soldier = "Police" call OT_fnc_getSoldier;
 
-    private _spawnid = spawner getVariable [format ["townspawnid%1", _town], -1];
-    private _groups = spawner getVariable [_spawnid, []];
+    private _spawnid = spawner getVariable [format ["townspawnid%1", _town], ""];
 
     private _builder = name player;
     {
@@ -18,26 +17,31 @@ if (_garrison == -1) then {
 
     server setVariable [format ['police%1', _town], 2, true];
 
-    private _count = 0;
-    private _range = 15;
-    private _group = createGroup independent;
-    _groups pushBack _group;
-    while { _count < 2 } do {
-        private _start = [[[_pos, _range]]] call BIS_fnc_randomPos;
+    // Only spawn them now if the town is spawned, so they are despawned with it. Otherwise
+    // spawnPolice spawns them from the police count when the town spawns
+    if (_spawnid in OT_allSpawned) then {
+        private _groups = spawner getVariable [_spawnid, []];
+        private _count = 0;
+        private _range = 15;
+        private _group = createGroup independent;
+        _groups pushBack _group;
+        while { _count < 2 } do {
+            private _start = [[[_pos, _range]]] call BIS_fnc_randomPos;
 
-        private _p = [[[_start, 20]]] call BIS_fnc_randomPos;
+            private _p = [[[_start, 20]]] call BIS_fnc_randomPos;
 
-        private _civ = [_soldier, _p, _group, false] call OT_fnc_createSoldier;
-        _civ setVariable ["polgarrison", _town, true];
-        [_civ] joinSilent _group;
-        _civ setRank "SERGEANT";
-        [_civ, _town] call OT_fnc_initPolice;
-        _civ setBehaviour "SAFE";
+            private _civ = [_soldier, _p, _group, false] call OT_fnc_createSoldier;
+            _civ setVariable ["polgarrison", _town, true];
+            [_civ] joinSilent _group;
+            _civ setRank "SERGEANT";
+            [_civ, _town] call OT_fnc_initPolice;
+            _civ setBehaviour "SAFE";
 
-        _count = _count + 1;
+            _count = _count + 1;
+        };
+        _group call OT_fnc_initPolicePatrol;
+        spawner setVariable [_spawnid, _groups, false];
     };
-    _group call OT_fnc_initPolicePatrol;
-    spawner setVariable [_spawnid, _groups, false];
 };
 
 private _mrkid = format ["%1-police", _town];

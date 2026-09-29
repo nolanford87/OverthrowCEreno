@@ -2,6 +2,11 @@
 
 params ["_town", "_soldier", "_amount"];
 
+// Only spawn them now if the town is spawned, so they are despawned with it. Otherwise
+// spawnPolice spawns them from the police count when the town spawns
+private _spawnid = spawner getVariable [format ["townspawnid%1", _town], ""];
+if !(_spawnid in OT_allSpawned) exitWith {};
+
 private _posTown = server getVariable [format ["policepos%1", _town], server getVariable _town];
 
 private _group = createGroup independent;
@@ -20,7 +25,6 @@ for "_i" from 1 to _amount do {
 
 _group call OT_fnc_initPolicePatrol;
 
-private _spawnid = spawner getVariable [format ["townspawnid%1", _town], -1];
 private _groups = spawner getVariable [_spawnid, []];
 _groups pushBack _group;
 spawner setVariable [_spawnid, _groups, false];

@@ -357,4 +357,4 @@ private _vehgarrison = server getVariable [format ["vehgarrison%1", _name], []];
     };
 } forEach (OT_NATOhvts);
 
-spawner setVariable [_spawnid, _groups, false];
+spawner setVariable [_spawnid, (spawner getVariable [_spawnid, []]) + _groups, false];

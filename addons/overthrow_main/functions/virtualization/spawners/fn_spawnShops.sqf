@@ -1,6 +1,7 @@
 params ["_town", "_spawnid"];
 
 private _activeshops = server getVariable [format ["activeshopsin%1", _town], []];
+if (_activeshops isEqualTo []) exitWith {}; // No shops, don't create a group that would never be cleaned up
 
 // All shopkeepers can be in the same group to save performance
 private _groups = [];

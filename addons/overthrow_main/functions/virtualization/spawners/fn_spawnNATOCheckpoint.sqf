@@ -82,4 +82,4 @@ _group spawn OT_fnc_initNATOCheckpoint;
     _x addCuratorEditableObjects [units _group, true];
 } forEach (allCurators);
 
-spawner setVariable [_spawnid, _groups, false];
+spawner setVariable [_spawnid, (spawner getVariable [_spawnid, []]) + _groups, false];

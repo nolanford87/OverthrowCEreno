@@ -55,9 +55,9 @@ OT_townSpawners = [
         _pos,
         {
             params ["_spawntown", "_spawnid"];
-            {
-                [_spawntown, _spawnid] spawn _x;
-            } forEach (OT_townSpawners);
+            private _handles = OT_townSpawners apply { [_spawntown, _spawnid] spawn _x };
+            // Only return once every town spawner has finished, the town counts as spawning until then
+            waitUntil { sleep 0.5; (_handles findIf { !scriptDone _x }) isEqualTo -1 };
         },
         [_town]
     ] call OT_fnc_registerSpawner;
@@ -76,7 +76,7 @@ diag_log format ["Overthrow: %1 towns virtualized", count OT_allTowns];
             private _val = (_spawnidx > -1);
             if ((_start select 0) isEqualTo (_end select 0)) then {
                 if (_val) then {
-                    if ((time - _time) > 30) then {
+                    if ((time - _time) > 30 && { (time - (spawner getVariable [format ['spawning%1', _id], -100000])) > 300 }) then {
                         if !([_start] call OT_fnc_inSpawnDistance) then {
                             OT_allSpawned deleteAt _spawnidx;
                             _x spawn OT_fnc_despawn;
@@ -90,7 +90,7 @@ diag_log format ["Overthrow: %1 towns virtualized", count OT_allTowns];
                 };
             } else {
                 if (_val) then {
-                    if ((time - _time) > 30) then {
+                    if ((time - _time) > 30 && { (time - (spawner getVariable [format ['spawning%1', _id], -100000])) > 300 }) then {
                         if !(([_start] call OT_fnc_inSpawnDistance) || { [_end] call OT_fnc_inSpawnDistance }) then {
                             OT_allSpawned deleteAt _spawnidx;
                             _x spawn OT_fnc_despawn;
