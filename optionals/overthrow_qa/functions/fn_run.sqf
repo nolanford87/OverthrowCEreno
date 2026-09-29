@@ -30,6 +30,7 @@ hint format ["Overthrow QA: running %1...", _which];
 
 private _groups = [];
 if (_which in ["all", "common"]) then { _groups pushBack ["common", OTQA_fnc_testsCommon] };
+if (_which in ["all", "5"]) then { _groups pushBack ["batch 5", OTQA_fnc_testsBatch5] };
 if (_which in ["all", "6"]) then { _groups pushBack ["batch 6", OTQA_fnc_testsBatch6] };
 if (_which in ["all", "7"]) then { _groups pushBack ["batch 7", OTQA_fnc_testsBatch7] };
 
