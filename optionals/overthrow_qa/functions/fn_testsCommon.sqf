@@ -54,7 +54,7 @@
     }],
 
     ["Town popup loop running", {
-        ["Town popup loop running", (missionNamespace getVariable ["OT_townCheckUnit", objNull]) isEqualTo player,
+        ["Town popup loop running", (missionNamespace getVariable ["OT_setupPlayerUnit", objNull]) isEqualTo player,
             "started once for the current body"] call OTQA_fnc_check;
     }]
 ]

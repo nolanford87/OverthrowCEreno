@@ -21,6 +21,7 @@ class CfgFunctions {
             class check {};
             class manual {};
             class testsCommon {};
+            class testsBatch6 {};
             class testsBatch7 {};
         };
     };
@@ -38,6 +39,10 @@ class zen_context_menu_actions {
         class OTQA_common {
             displayName = "Run common checks";
             statement = "['common'] spawn OTQA_fnc_run";
+        };
+        class OTQA_batch6 {
+            displayName = "Run batch 6 tests (player setup / waypoints)";
+            statement = "['6'] spawn OTQA_fnc_run";
         };
         class OTQA_batch7 {
             displayName = "Run batch 7 tests (wanted / search)";
