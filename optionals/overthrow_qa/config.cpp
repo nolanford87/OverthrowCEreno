@@ -33,6 +33,7 @@ class CfgFunctions {
             class testsBatch8 {};
             class testsBatch9 {};
             class testsReview {};
+            class testsDLC {};
         };
     };
 };
