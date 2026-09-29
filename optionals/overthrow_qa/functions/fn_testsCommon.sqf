@@ -14,6 +14,8 @@
         private _bad = [];
         {
             _x params ["_id", "_condition", "_code"];
+            // The autosave loop is registered without code on purpose, the loop runner handles it itself
+            if (_id isEqualTo "OT_autosave_loop") then { continue };
             if ((str _condition) isEqualTo "{}" || { (str _code) isEqualTo "{}" }) then { _bad pushBack _id };
         } forEach action_loop;
         ["Action loops compiled", _bad isEqualTo [], format ["%1 loops, empty after compiling: %2", count action_loop, _bad]] call OTQA_fnc_check;
