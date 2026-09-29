@@ -2,7 +2,7 @@
     Description:
     Checks that apply to every build: loops compiled, functions defined, settings applied.
 
-    Returns: ARRAY - [[name, code], ...] run by OTQA_fnc_run
+    Returns: ARRAY - [[name, code], ...], part of the bug fix QA tests (OTQA_fnc_testsBugFixes)
 */
 
 [

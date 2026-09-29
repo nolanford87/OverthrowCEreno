@@ -1,15 +1,23 @@
 /*
     Description:
-    Runs QA tests and reports the results on screen and in the RPT (lines starting with "OT_QA").
+    Runs a QA test suite and reports the results on screen and in the RPT (lines starting with "OT_QA").
     Each test runs in its own script, so one failing with a script error doesn't stop the others.
 
     Parameters:
-        _this # 0: STRING - "all", "common" or a batch number such as "7"
+        _this # 0: STRING - Suite to run, "bugfixes" (the bug fix QA tests)
 
-    Usage: ["all"] spawn OTQA_fnc_run;
+    Usage: ["bugfixes"] spawn OTQA_fnc_run;
 */
 
-params [["_which", "all", [""]]];
+params [["_suite", "bugfixes", [""]]];
+
+private _suites = createHashMapFromArray [
+    ["bugfixes", ["Bug fix QA tests", OTQA_fnc_testsBugFixes]]
+];
+if !(_suite in _suites) exitWith {
+    hint format ["Overthrow QA: unknown test suite %1", _suite];
+};
+(_suites get _suite) params ["_title", "_testList"];
 
 if (!isServer || !hasInterface) exitWith {
     hint "Overthrow QA: run the tests as the host (or in singleplayer)";
@@ -23,49 +31,34 @@ if (isNil "OT_NATOInitDone") exitWith {
 OTQA_running = true;
 OTQA_results = [];
 OTQA_manual = [];
+OTQA_currentGroup = _title;
 
 private _build = getText (configFile >> "CfgPatches" >> "OT_Overthrow_Main" >> "versionStr");
-diag_log format ["OT_QA ===== START %1 (build %2, %3) =====", _which, _build, worldName];
-hint format ["Overthrow QA: running %1...", _which];
-
-private _groups = [];
-if (_which in ["all", "common"]) then { _groups pushBack ["common", OTQA_fnc_testsCommon] };
-if (_which in ["all", "1"]) then { _groups pushBack ["batch 1", OTQA_fnc_testsBatch1] };
-if (_which in ["all", "2"]) then { _groups pushBack ["batch 2", OTQA_fnc_testsBatch2] };
-if (_which in ["all", "3"]) then { _groups pushBack ["batch 3", OTQA_fnc_testsBatch3] };
-if (_which in ["all", "4"]) then { _groups pushBack ["batch 4", OTQA_fnc_testsBatch4] };
-if (_which in ["all", "5"]) then { _groups pushBack ["batch 5", OTQA_fnc_testsBatch5] };
-if (_which in ["all", "6"]) then { _groups pushBack ["batch 6", OTQA_fnc_testsBatch6] };
-if (_which in ["all", "7"]) then { _groups pushBack ["batch 7", OTQA_fnc_testsBatch7] };
-if (_which in ["all", "8"]) then { _groups pushBack ["batch 8", OTQA_fnc_testsBatch8] };
+diag_log format ["OT_QA ===== START %1 (build %2, %3) =====", _title, _build, worldName];
+hint format ["Overthrow QA: running %1...", _title];
 
 {
-    _x params ["_group", "_testList"];
-    OTQA_currentGroup = _group;
-    private _tests = call _testList;
-    {
-        _x params ["_name", "_code"];
-        OTQA_currentTest = _name;
-        private _before = count OTQA_results + count OTQA_manual;
-        private _handle = [] spawn _code;
-        private _timeout = time + 120;
-        waitUntil { sleep 0.2; scriptDone _handle || { time > _timeout } };
-        if !(scriptDone _handle) then {
-            terminate _handle;
-            [_name, false, "timed out after 120 s"] call OTQA_fnc_check;
-        } else {
-            if ((count OTQA_results + count OTQA_manual) isEqualTo _before) then {
-                [_name, false, "no result, the test probably hit a script error (see RPT)"] call OTQA_fnc_check;
-            };
+    _x params ["_name", "_code"];
+    OTQA_currentTest = _name;
+    private _before = count OTQA_results + count OTQA_manual;
+    private _handle = [] spawn _code;
+    private _timeout = time + 120;
+    waitUntil { sleep 0.2; scriptDone _handle || { time > _timeout } };
+    if !(scriptDone _handle) then {
+        terminate _handle;
+        [_name, false, "timed out after 120 s"] call OTQA_fnc_check;
+    } else {
+        if ((count OTQA_results + count OTQA_manual) isEqualTo _before) then {
+            [_name, false, "no result, the test probably hit a script error (see RPT)"] call OTQA_fnc_check;
         };
-    } forEach _tests;
-} forEach _groups;
+    };
+} forEach (call _testList);
 
 private _pass = { _x select 1 } count OTQA_results;
 private _fail = (count OTQA_results) - _pass;
-diag_log format ["OT_QA ===== DONE %1: %2 passed, %3 failed, %4 manual =====", _which, _pass, _fail, count OTQA_manual];
+diag_log format ["OT_QA ===== DONE %1: %2 passed, %3 failed, %4 manual =====", _title, _pass, _fail, count OTQA_manual];
 
-private _text = format ["<t size='1.2'>Overthrow QA: %1</t><br/>%2 passed, %3 failed", _which, _pass, _fail];
+private _text = format ["<t size='1.2'>%1</t><br/>%2 passed, %3 failed", _title, _pass, _fail];
 {
     _x params ["_name", "_ok", "_detail"];
     if (!_ok) then {

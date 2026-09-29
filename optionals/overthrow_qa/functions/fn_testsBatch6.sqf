@@ -3,7 +3,7 @@
     Batch 6 (fix/player-init): setupPlayer stacking, perk loop lifetime, waypoint watcher.
     The multiplayer-only fixes are listed as manual checks.
 
-    Returns: ARRAY - [[name, code], ...] run by OTQA_fnc_run
+    Returns: ARRAY - [[name, code], ...], part of the bug fix QA tests (OTQA_fnc_testsBugFixes)
 */
 
 "MP: have a friend with High Command squads join after you: their squads come back with their soldiers, and saving before they join keeps them" call OTQA_fnc_manual;

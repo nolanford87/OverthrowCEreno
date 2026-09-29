@@ -3,7 +3,7 @@
     Batch 8 (fix/warehouse-helpers): taking items from containers inside cargo, warehouse lookups and
     guards, garrison units not taking warehouse gear on the server. Game state isn't preserved.
 
-    Returns: ARRAY - [[name, code], ...] run by OTQA_fnc_run
+    Returns: ARRAY - [[name, code], ...], part of the bug fix QA tests (OTQA_fnc_testsBugFixes)
 */
 
 "Put crafting ingredients inside a backpack in the ammobox and craft: the ingredients are used up" call OTQA_fnc_manual;
@@ -42,7 +42,7 @@
 
         // A cached entry that isn't an owned warehouse must not be returned
         OT_warehouseLocationCache set [_far, player];
-        ["Stale warehouse cache entry is ignored", !(([_far] call OT_fnc_nearestWarehouse) isEqualTo player), ""] call OTQA_fnc_check;
+        ["Stale warehouse cache entry is ignored", ([_far] call OT_fnc_nearestWarehouse) isNotEqualTo player, ""] call OTQA_fnc_check;
     }],
 
     ["Making the shared warehouse global again is refused", {

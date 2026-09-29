@@ -5,7 +5,7 @@
     The save test runs last: afterwards restart the mission, load the save and run batch 5 again to
     finish the save/load round trip. Game state isn't preserved (the test save is disposable).
 
-    Returns: ARRAY - [[name, code], ...] run by OTQA_fnc_run
+    Returns: ARRAY - [[name, code], ...], part of the bug fix QA tests (OTQA_fnc_testsBugFixes)
 */
 
 "Dedicated server: players without a home building rejoin at their last position, not the map corner" call OTQA_fnc_manual;

@@ -3,7 +3,7 @@
     Batch 1 (fix/economy-exploits): forced income tick, inventory transfer between boxes.
     Game state isn't preserved (the test save is disposable).
 
-    Returns: ARRAY - [[name, code], ...] run by OTQA_fnc_run
+    Returns: ARRAY - [[name, code], ...], part of the bug fix QA tests (OTQA_fnc_testsBugFixes)
 */
 
 "Business with two cargo containers nearby takes its input once per hour; fertilized farms make 1.5x output" call OTQA_fnc_manual;

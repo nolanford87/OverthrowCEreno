@@ -3,7 +3,7 @@
     Batch 2 (fix/nato-ai-loops): real jet/helicopter scrambles and a raid, checking NATO's resources.
     These spawn real NATO aircraft and a recon team. Game state isn't preserved (the test save is disposable).
 
-    Returns: ARRAY - [[name, code], ...] run by OTQA_fnc_run
+    Returns: ARRAY - [[name, code], ...], part of the bug fix QA tests (OTQA_fnc_testsBugFixes)
 */
 
 "After a QRF ends and you leave the area, NATO's surviving attackers despawn (bodies stay)" call OTQA_fnc_manual;

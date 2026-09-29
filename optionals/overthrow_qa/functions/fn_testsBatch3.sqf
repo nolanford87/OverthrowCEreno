@@ -3,7 +3,7 @@
     Batch 3 (fix/jobs-locality): accepting and assigning jobs, job completion bookkeeping.
     Uses fake jobs whose success is controlled by the test. Game state isn't preserved.
 
-    Returns: ARRAY - [[name, code], ...] run by OTQA_fnc_run
+    Returns: ARRAY - [[name, code], ...], part of the bug fix QA tests (OTQA_fnc_testsBugFixes)
 */
 
 "MP: a non-host player requests 'Recon of <base>' at a faction rep and completes it (it used to never complete or expire)" call OTQA_fnc_manual;
