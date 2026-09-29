@@ -36,7 +36,7 @@ while { _count < _amt } do {
         _civ setVariable ["hometown", _town, true];
 
         {
-            _x addCuratorEditableObjects [[_civ]];
+            _x addCuratorEditableObjects [[_civ], true];
         } forEach (allCurators);
     };
     _count = _count + 1;

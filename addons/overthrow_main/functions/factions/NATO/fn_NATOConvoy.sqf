@@ -43,7 +43,7 @@ if ([_topos, _fromregion] call OT_fnc_regionIsConnected) then {
         _driver assignAsCommander _veh;
         _convoypos = _convoypos getPos [20, _dir + 180];
         {
-            _x addCuratorEditableObjects [[_veh]];
+            _x addCuratorEditableObjects [[_veh], true];
         } forEach (allCurators);
         sleep 0.3;
     } forEach (_vehtypes);

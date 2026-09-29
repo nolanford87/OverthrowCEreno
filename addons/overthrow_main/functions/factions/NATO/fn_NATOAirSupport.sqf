@@ -40,7 +40,7 @@ createVehicleCrew _veh;
 sleep 1;
 
 {
-    _x addCuratorEditableObjects [[_veh]];
+    _x addCuratorEditableObjects [[_veh], true];
 } forEach (allCurators);
 
 private _topos = _attackpos getPos [random 200, random 360];

@@ -34,7 +34,7 @@ while { _count < _num } do {
     sleep 0.3;
 
     {
-        _x addCuratorEditableObjects [[_veh]];
+        _x addCuratorEditableObjects [[_veh], true];
     } forEach (allCurators);
 };
 

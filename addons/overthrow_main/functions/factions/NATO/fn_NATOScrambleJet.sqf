@@ -19,7 +19,7 @@ if !(OT_NATO_HQ in _abandoned) then {
     _veh setDir OT_NATO_JetDir;
 
     {
-        _x addCuratorEditableObjects [[_veh]];
+        _x addCuratorEditableObjects [[_veh], true];
     } forEach (allCurators);
 
     clearWeaponCargoGlobal _veh;

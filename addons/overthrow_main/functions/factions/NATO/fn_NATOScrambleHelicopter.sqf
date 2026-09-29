@@ -27,7 +27,7 @@ if !(isNil "_from") then {
     _veh setVariable ["garrison", "HQ", false];
 
     {
-        _x addCuratorEditableObjects [[_veh]];
+        _x addCuratorEditableObjects [[_veh], true];
     } forEach (allCurators);
 
     clearWeaponCargoGlobal _veh;

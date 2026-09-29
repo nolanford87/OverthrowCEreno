@@ -35,7 +35,7 @@ while { _count < _num } do {
     _group deleteGroupWhenEmpty true;
 
     {
-        _x addCuratorEditableObjects [[_veh]];
+        _x addCuratorEditableObjects [[_veh], true];
     } forEach (allCurators);
 
     _attackpos = _attackpos findEmptyPosition [50, 200, _vehtype];

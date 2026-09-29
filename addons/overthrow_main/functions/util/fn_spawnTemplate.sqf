@@ -8,7 +8,7 @@ if (isNil { templates getVariable _type }) then {
             "",
             "TEMPLATE ERROR",
             format ["%1 has no furniture template defined", _type],
-            __FILE__,
+            _fnc_scriptName,
             __LINE__
         ] call CBA_fnc_error;
     };
@@ -19,7 +19,7 @@ if (isNil { templates getVariable _type }) then {
             "",
             "TEMPLATE ERROR",
             format ["%1 furniture template is defined incorrectly", _type],
-            __FILE__,
+            _fnc_scriptName,
             __LINE__
         ] call CBA_fnc_error;
     };

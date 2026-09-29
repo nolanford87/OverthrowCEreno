@@ -124,7 +124,7 @@ private _lastCounter = server getVariable ["NATOlastcounter", ""];
                 _wp setWaypointType "CYCLE";
 
                 {
-                    _x addCuratorEditableObjects [[_drone]];
+                    _x addCuratorEditableObjects [[_drone], true];
                 } forEach (allCurators);
 
                 [_drone, _name] spawn OT_fnc_NATODrone;
