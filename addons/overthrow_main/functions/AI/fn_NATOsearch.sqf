@@ -22,11 +22,11 @@ if ((count _this) isEqualTo 3) then {
         } forEach (_target nearEntities ["CAManBase", 150]);
     };
 };
-if (isNil "_cop" || isNil "_target") exitWith {};
-
-_cop setVariable ["OT_searching", true, true];
+if (isNull _cop || isNull _target) exitWith {};
 
 if ((isPlayer _target) && !(captive _target)) exitWith {};
+
+_cop setVariable ["OT_searching", true, true];
 
 private _group = group _cop;
 private _hdl = objNull;
@@ -43,13 +43,8 @@ _group setBehaviour "AWARE";
 if (isPlayer _target) then {
     [_cop, (["Stop right there!", "Halt, citizen!", "HALT!", "Stay right there, citizen"] call BIS_fnc_selectRandom)] remoteExec ["globalChat", _target, false];
     _wp setWaypointSpeed "FULL";
-    _hdl = _target addEventHandler [
-        "InventoryOpened",
-        {
-            hint "NATO search is in progress, you cannot open your inventory";
-            true; //<-- inventory override
-        }
-    ];
+    // Blocks the inventory, checked by the player's own InventoryOpened handler (the event only fires where the player is local)
+    _target setVariable ["OT_beingSearched", true, true];
 } else {
     [_target, "AmovPercMstpSnonWnonDnon_AmovPercMstpSsurWnonDnon"] remoteExec ["playMove", _target, false];
     [_target, "MOVE"] remoteExec ["disableAI", _target, false];
@@ -69,7 +64,7 @@ private _cleanup = {
         [_cop, ""] remoteExec ["switchMove", _cop, false];
     };
     if (isPlayer _target) then {
-        _target removeEventHandler ["InventoryOpened", _handler];
+        _target setVariable ["OT_beingSearched", false, true];
     } else {
         [_target, "MOVE"] remoteExec ["enableAI", _target, false];
     };
@@ -79,11 +74,12 @@ waitUntil {
     sleep 1;
     (_cop distance _target) < 7 || (_target distance _posnow) > 2 || (time - _timenow) > 120;
 };
-if (isNil "_cop" || isNil "_target") exitWith { [_group, _cop, _target, _hdl] call _cleanup };
+if (isNull _cop || isNull _target) exitWith { [_group, _cop, _target, _hdl] call _cleanup };
 if (!alive _cop || !alive _target) exitWith { [_group, _cop, _target, _hdl] call _cleanup };
 
 if ((isPlayer _target && !captive _target) || (!alive _cop) || ((time - _timenow) > 120)) exitWith { [_group, _cop, _target, _hdl] call _cleanup };
 
+private _escaped = false;
 if ((_target distance _posnow) > 2) then {
     if (isPlayer _target) then {
         [_cop, "I said stop! move again and we WILL open fire"] remoteExec ["globalChat", _target, false];
@@ -106,12 +102,17 @@ if ((_target distance _posnow) > 2) then {
             (_cop distance _target) < 7 || (_target distance _posnow) > 2 || (time - _timenow) > 120;
         };
         if ((_target distance _posnow) > 2) then {
-            _target setCaptive false;
-            [_group, _cop, _target, _hdl] call _cleanup;
+            _escaped = true;
         };
     };
 };
-if (isNil "_cop" || isNil "_target") exitWith { [_group, _cop, _target, _hdl] call _cleanup };
+if (_escaped) exitWith {
+    "You tried to escape a NATO search" remoteExecCall ["hint", _target, false];
+    [_group, _cop, _target, _hdl] call _cleanup;
+    _target setCaptive false;
+    [_target] call OT_fnc_revealToNATO;
+};
+if (isNull _cop || isNull _target) exitWith { [_group, _cop, _target, _hdl] call _cleanup };
 if (!alive _cop || !alive _target) exitWith { [_group, _cop, _target, _hdl] call _cleanup };
 [_cop, "Amovpknlmstpsraswrfldnon_gear"] remoteExec ["playMove", _cop, false];
 if (isPlayer _target) then {
@@ -138,10 +139,11 @@ if (isPlayer _target) then {
     private _foundweapons = false;
     {
         private _cls = _x select 0;
+        // removeItem needs the player to be local, so run it on the player's machine
         if (_cls in OT_allWeapons + OT_allMagazines + OT_illegalHeadgear + OT_illegalVests + OT_allStaticBackpacks + OT_allOptics) then {
             private _count = _x select 1;
             for "_i" from 1 to _count do {
-                _target removeItem _cls;
+                [_target, _cls] remoteExec ["removeItem", _target, false];
                 _cop addItem _cls;
             };
             _foundweapons = true;
@@ -149,7 +151,7 @@ if (isPlayer _target) then {
         if (_cls in OT_illegalItems) then {
             private _count = _x select 1;
             for "_i" from 1 to _count do {
-                _target removeItem _cls;
+                [_target, _cls] remoteExec ["removeItem", _target, false];
                 _cop addItem _cls;
             };
             _foundillegal = true;
