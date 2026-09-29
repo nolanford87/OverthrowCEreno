@@ -80,8 +80,8 @@ publicVariable "OT_nextNATOTurn";
             spawner setVariable ["NATOknownTargets", _knownTargets select { (time - (_x # 5)) < 800 }];
 
             // Scramble jets and helos
-            // Price of jet scramble: 500
-            // Price of heli scramble: 350
+            // Price of jet scramble: 250
+            // Price of heli scramble: 100
             [] call OT_fnc_NATOscrambleAircraft;
 
             //NATO gets to play if it hasn't reacted to anything
