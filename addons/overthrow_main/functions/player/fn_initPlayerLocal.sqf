@@ -86,7 +86,7 @@ if ((isServer || count ([] call CBA_fnc_players) == 1) && (server getVariable ["
 };
 OT_showPlayerMarkers = (["ot_showplayermarkers", 1] call BIS_fnc_getParamValue) isEqualTo 1;
 OT_showTownChange = (["ot_showtownchange", 1] call BIS_fnc_getParamValue) isEqualTo 1;
-OT_showEnemyGroups = (["ot_showenemygroups", 1] call BIS_fnc_getParamValue) isEqualTo 1;
+OT_showEnemyGroups = (["ot_showenemygroup", 1] call BIS_fnc_getParamValue) isEqualTo 1;
 OT_randomizeLoadouts = (["ot_randomizeloadouts", 0] call BIS_fnc_getParamValue) isEqualTo 1;
 OT_factoryProductionMulti = (["ot_factoryproductionmulti", 0] call BIS_fnc_getParamValue) * 0.01;
 OT_gangMemberCap = ["ot_gangmembercap", 0] call BIS_fnc_getParamValue;
