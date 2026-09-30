@@ -663,13 +663,16 @@ OT_allBLURifleMagazines = [];
                 };
             } forEach (getArray (_cfgVehicles >> _cls >> "weapons"));
 
-            //Get vests and helmets for the loadout pools
-            {
-                private _key = ["", "vests", "helmets"] select (([701, 605] find getNumber (_cfgWeapons >> _x >> "ItemInfo" >> "type")) + 1);
-                if (_key isNotEqualTo "" && { getNumber (_cfgWeapons >> _x >> "scope") isEqualTo 2 }) then {
-                    (_pool get _key) pushBackUnique _x;
-                };
-            } forEach (getArray (_cfgVehicles >> _cls >> "linkedItems"));
+            //Get vests and helmets for the loadout pools, from infantry only (not pilots, crews, divers...)
+            private _lowerCls = toLowerANSI _cls;
+            if (["pilot", "crew", "driver", "diver", "deck", "parade", "story", "survivor", "unarmed", "_vr_", "protagonist"] findIf { _x in _lowerCls } isEqualTo -1) then {
+                {
+                    private _key = ["", "vests", "helmets"] select (([701, 605] find getNumber (_cfgWeapons >> _x >> "ItemInfo" >> "type")) + 1);
+                    if (_key isNotEqualTo "" && { getNumber (_cfgWeapons >> _x >> "scope") isEqualTo 2 }) then {
+                        (_pool get _key) pushBackUnique _x;
+                    };
+                } forEach (getArray (_cfgVehicles >> _cls >> "linkedItems"));
+            };
         } else {
             //It's a vehicle
             if !(_cls isKindOf "Bag_Base" || _cls isKindOf "StaticWeapon") then {
