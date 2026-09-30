@@ -158,7 +158,8 @@ OTQA_intel_airdrop = {
             sleep 1; // Payment goes through the player's machine
             private _paid = (player getVariable ["money", 0]) - _money;
             private _gained = (player getVariable ["influence", 0]) - _influence;
-            [format ["Airdrop (%1): the host owns it and gets $3500 and +20 influence", _label], !isNull _tank && { (_tank getVariable ["owner", ""]) isEqualTo getPlayerUID player } && { _paid isEqualTo 3500 } && { _gained isEqualTo 20 },
+            // At least: the regular income can land during the test (+$50 at 24x time)
+            [format ["Airdrop (%1): the host owns it and gets $3500 and +20 influence", _label], !isNull _tank && { (_tank getVariable ["owner", ""]) isEqualTo getPlayerUID player } && { _paid >= 3500 } && { _gained >= 20 },
                 format ["money +%1, influence +%2", _paid, _gained]] call OTQA_fnc_check;
         };
     };
