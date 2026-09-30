@@ -137,9 +137,9 @@ class Params {
         default = 0;
     };
     class ot_randomloadoutpool {
-        title = "Randomized NATO loadouts use";
-        values[] = {0, 1, 2};
-        texts[] = {"NATO weapons / gear only", "BLUFOR weapons / gear only", "Fully random (every weapon in the game)"};
+        title = "Randomized occupier loadouts use";
+        values[] = {0, 2}; // 1 was "every faction on the occupier's side", now treated as fully random
+        texts[] = {"Faction random (the occupier's own weapons / gear)", "Fully random (every weapon in the game)"};
         default = 0;
     };
     class ot_gangmembercap {
