@@ -82,38 +82,49 @@ _plane setVariable ["OT_deliveryCargo", _vehicle, true];
 // Down, or stopped coming down (caught on trees / a roof: the parachute, which carries it, stops
 // falling; not checked in the first seconds while it opens), or taking too long.
 // The wind would carry it hundreds of metres from the field on the way down (into the sea on a
-// coast): the parachute steers back over the drop point
+// coast): high up, the parachute steers back over the drop point and comes down at 6 m/s (pushed
+// sideways, a parachute glides and hardly falls). The last 40 m it comes straight down: hanging
+// under the parachute the vehicle doesn't collide, drifting into a slope it would sink into it
 private _released = time;
 private _landTimeout = time + 180;
 private _still = 0;
 waitUntil {
     sleep 0.5;
     if (!isNull _chute) then {
-        private _off = (getPosATL _chute) vectorDiff _dropPoint;
-        _off set [2, 0];
-        private _steer = (vectorNormalized _off) vectorMultiply -((vectorMagnitude _off) min 8);
-        _chute setVelocity [_steer select 0, _steer select 1, (velocity _chute) select 2];
+        private _fall = (velocity _chute) select 2;
+        if (((getPosATL _vehicle) select 2) > 40) then {
+            private _off = (getPosATL _chute) vectorDiff _dropPoint;
+            _off set [2, 0];
+            private _steer = (vectorNormalized _off) vectorMultiply -((vectorMagnitude _off) min 6);
+            _chute setVelocity [_steer select 0, _steer select 1, -6];
+        } else {
+            _chute setVelocity [0, 0, _fall min -3];
+        };
+        if (time > _released + 10 && { _fall > -0.3 }) then { _still = _still + 1 } else { _still = 0 };
     };
-    if (!isNull _chute && { time > _released + 10 } && { ((velocity _chute) select 2) > -0.3 }) then { _still = _still + 1 } else { _still = 0 };
     isNull _chute || { ((getPosATL _vehicle) select 2) < 3 } || { _still >= 6 } || { time > _landTimeout }
 };
 detach _vehicle;
+_vehicle setVelocity [0, 0, 0];
 if (!isNull _chute) then { deleteVehicle _chute };
-// Still came down in the water: put it on the drop point's field
-if (surfaceIsWater (getPosATL _vehicle) && { !surfaceIsWater _dropPoint }) then {
-    private _ground = _dropPoint findEmptyPosition [0, 60, _cargoClass];
-    if (_ground isEqualTo []) then { _ground = _dropPoint };
-    _vehicle setPosATL [_ground select 0, _ground select 1, 0];
+sleep 3; // Settles
+
+// Put back on the ground (the engine finds a clear spot on the surface)
+private _place = {
+    params ["_vehicle", "_pos", "_why"];
+    _vehicle setVelocity [0, 0, 0];
+    _vehicle setVehiclePosition [[_pos select 0, _pos select 1, 0], [], 10, "NONE"];
     _vehicle setVectorUp (surfaceNormal (getPosATL _vehicle));
-    diag_log format ["Overthrow: airdropped %1 came down in the water, put on land at %2", _cargoClass, _ground];
+    diag_log format ["Overthrow: airdropped %1 %2, put on the ground at %3", typeOf _vehicle, _why, getPosATL _vehicle];
 };
-// Resting above the ground: put it down on the ground nearby
-if (((getPosATL _vehicle) select 2) > 2) then {
-    private _ground = (getPosATL _vehicle) findEmptyPosition [0, 60, _cargoClass];
-    if (_ground isEqualTo []) then { _ground = getPosATL _vehicle };
-    _vehicle setPosATL [_ground select 0, _ground select 1, 0];
-    _vehicle setVectorUp (surfaceNormal (getPosATL _vehicle));
+private _at = getPosATL _vehicle;
+call {
+    // Came down in the water: on the drop point's field
+    if (surfaceIsWater _at && { !surfaceIsWater _dropPoint }) exitWith { [_vehicle, _dropPoint, "came down in the water"] call _place };
+    // Sunk into the ground
+    if ((_at select 2) < -0.5 || { ((getPosASL _vehicle) select 2) < ((getTerrainHeightASL _at) - 0.5) }) exitWith { [_vehicle, _at, "sank into the ground"] call _place };
+    // Resting above the ground (a roof, trees)
+    if ((_at select 2) > 2) exitWith { [_vehicle, _at, "was caught above the ground"] call _place };
 };
-sleep 2;
 _vehicle allowDamage true;
 [_vehicle, _plane];
