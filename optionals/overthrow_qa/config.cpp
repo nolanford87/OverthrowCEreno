@@ -20,6 +20,7 @@ class CfgFunctions {
             class run {};
             class check {};
             class manual {};
+            class spawnWarehouse {}; // Zeus helper
             // Bug fix QA tests: the suite, and the tests for each fix batch it's made of
             class testsBugFixes {};
             class testsCommon {};
@@ -59,6 +60,10 @@ class zen_context_menu_actions {
         class OTQA_occupiers {
             displayName = "Run occupier QA tests";
             statement = "['occupiers'] spawn OTQA_fnc_run";
+        };
+        class OTQA_spawnWarehouse {
+            displayName = "Spawn my warehouse here";
+            statement = "[[AGLToASL screenToWorld getMousePosition, _position] select !isNil '_position', player] remoteExecCall ['OTQA_fnc_spawnWarehouse', 2]";
         };
     };
 };
