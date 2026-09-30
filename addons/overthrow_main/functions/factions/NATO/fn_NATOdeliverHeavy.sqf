@@ -12,7 +12,8 @@
         _this # 0: STRING - Tank class
         _this # 1: STRING - Base name
         _this # 2: ARRAY - Base position
-        _this # 3: STRING - (Optional) "airdrop" to always airdrop it (the QA tests)
+        _this # 3: STRING - (Optional) "airdrop" / "convoy" to deliver it that way (the QA tests; a convoy
+            only when one can reach the base)
 
     Usage: [_type, _name, _pos] spawn OT_fnc_NATOdeliverHeavy;
 */
@@ -43,7 +44,7 @@ private _field = [];
     if (_try isNotEqualTo [] && { !surfaceIsWater _try } && { (_try distance2D _basePos) >= (_min - 50) } && { (_try distance2D _basePos) <= (_max + 50) }) exitWith { _field = _try };
 } forEach [[1700, 2300], [1000, 3500], [500, 4000]];
 
-private _convoy = _method isNotEqualTo "airdrop" && { _sources isNotEqualTo [] } && { random 100 < 50 };
+private _convoy = _method isNotEqualTo "airdrop" && { _sources isNotEqualTo [] } && { _method isEqualTo "convoy" || { random 100 < 50 } };
 // No field on land (small islands): convoy it if it can come by road, otherwise drop it by the base
 if (_field isEqualTo [] && { _sources isNotEqualTo [] } && { _method isNotEqualTo "airdrop" }) then { _convoy = true };
 if (_field isEqualTo []) then {
