@@ -56,12 +56,17 @@ _tests pushBack ["FOB lost: construction cleared, bodies stay", {
     { _x setDamage 1 } forEach ([_pos, true] call OTQA_fob_units);
     sleep 2;
     private _dead = count ([_pos, false] call OTQA_fob_units);
+    // Any other occupier soldier within 300 m still holds it: killed too (named in the result)
+    private _others = (_pos nearEntities ["CAManBase", 300]) select { alive _x && { side group _x isEqualTo blufor } };
+    private _othersText = str (_others apply { format ["%1 (%2, %3 m)", typeOf _x, _x getVariable ["garrison", ""], round (_x distance2D _pos)] });
+    { _x setDamage 1 } forEach _others;
     player setPosATL (_pos getPos [8, random 360]);
     sleep 3;
     call OT_fnc_NATOcheckFOBs;
     sleep 1;
 
-    ["FOB lost: it's off the FOB list", ((server getVariable ["NATOfobs", []]) findIf { (_x select 0) isEqualTo _pos }) isEqualTo -1, ""] call OTQA_fnc_check;
+    ["FOB lost: it's off the FOB list", ((server getVariable ["NATOfobs", []]) findIf { (_x select 0) isEqualTo _pos }) isEqualTo -1,
+        format ["other occupier soldiers near it: %1", _othersText]] call OTQA_fnc_check;
     private _left = [_pos] call OTQA_fob_built;
     ["FOB lost: its construction is cleared", _left isEqualTo 0, format ["%1 objects left", _left]] call OTQA_fnc_check;
     private _bodies = [_pos, false] call OTQA_fob_units;
