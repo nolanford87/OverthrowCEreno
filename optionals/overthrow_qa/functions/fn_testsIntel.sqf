@@ -111,7 +111,7 @@ OTQA_intel_airdrop = {
     private _timeout = time + 90;
     waitUntil { sleep 1; !alive _tank || { ((getPosATL _tank) select 2) < 3 && { alive driver _tank } } || { time > _timeout } };
     private _landing = getPosATL _tank;
-    [format ["Airdrop (%1): lands on land and is crewed", _label], alive _tank && { alive driver _tank } && { !surfaceIsWater _landing },
+    [format ["Airdrop (%1): lands on land, on the base's island, and is crewed", _label], alive _tank && { alive driver _tank } && { !surfaceIsWater _landing } && { [_landing, _basePos] call OT_fnc_regionIsConnected },
         format ["at %1, %2 m from the base", _landing, round (_landing distance2D _basePos)]] call OTQA_fnc_check;
 
     if (_finish isEqualTo "deliver") then {

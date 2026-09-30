@@ -3,7 +3,7 @@
     A tank a base just traded for (OT_fnc_NATOupgradeHeavyGarrisons) is delivered, one of two ways:
     - convoyed from the occupier's nearest HQ or factory (while it holds them) reachable by land,
       with 2 escort vehicles that protect it until it's delivered or destroyed, then leave
-    - airdropped in an open field about 2 km from the base, then drives in (always possible)
+    - airdropped in an open field about 2 km from the base on its island, then drives in (always possible)
     It's already on the base's vehicle list, destroyed on the way it comes off it (tagged "vehgarrison").
     At the base it stays and patrols when the base is spawned (a player near), otherwise it's removed
     and the base spawns it next time.
@@ -35,13 +35,22 @@ private _sources = [];
 if !(OT_NATO_HQ in _abandoned) then { _sources pushBack OT_NATO_HQPos };
 if !("Factory" in (server getVariable ["GEURowned", []])) then { _sources pushBack OT_factoryPos };
 _sources = _sources select { (_x distance2D _basePos) > 500 && { [_x, _basePos] call OT_fnc_regionIsConnected } };
-// An open field on land to airdrop it in: about 2 km away, further or nearer if there's none
+// An open field on land to airdrop it in, on the base's island (it has to drive there): about 2 km
+// away, further or nearer if there's none. A few tries per distance, one can land on another island
 private _field = [];
 {
     _x params ["_min", "_max"];
-    private _try = [_basePos, _min, _max, 12, 0, 0.15, 0, [], [[], []]] call BIS_fnc_findSafePos;
-    // Found nothing, findSafePos returns the map centre: only take a spot that is where we looked
-    if (_try isNotEqualTo [] && { !surfaceIsWater _try } && { (_try distance2D _basePos) >= (_min - 50) } && { (_try distance2D _basePos) <= (_max + 50) }) exitWith { _field = _try };
+    for "_i" from 1 to 6 do {
+        private _try = [_basePos, _min, _max, 12, 0, 0.15, 0, [], [[], []]] call BIS_fnc_findSafePos;
+        // Found nothing, findSafePos returns the map centre: only take a spot that is where we looked
+        if (_try isNotEqualTo []
+            && { !surfaceIsWater _try }
+            && { (_try distance2D _basePos) >= (_min - 50) }
+            && { (_try distance2D _basePos) <= (_max + 50) }
+            && { [_try, _basePos] call OT_fnc_regionIsConnected }
+        ) exitWith { _field = _try };
+    };
+    if (_field isNotEqualTo []) exitWith {};
 } forEach [[1700, 2300], [1000, 3500], [500, 4000]];
 
 private _convoy = _method isNotEqualTo "airdrop" && { _sources isNotEqualTo [] } && { _method isEqualTo "convoy" || { random 100 < 50 } };
