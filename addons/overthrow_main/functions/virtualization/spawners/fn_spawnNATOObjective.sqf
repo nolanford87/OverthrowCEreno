@@ -261,6 +261,8 @@ private _vehgarrison = server getVariable [format ["vehgarrison%1", _name], []];
 private _presentVeh = (vehicles select { alive _x && { (_x getVariable ["vehgarrison", ""]) isEqualTo _name } }) apply { typeOf _x };
 // ... or still in the air, in a Blackfish (OT_fnc_NATOairdropVehicle)
 _presentVeh append ((vehicles select { alive _x && { (_x getVariable ["OT_airdropFor", ""]) isEqualTo _name } && { isNull (_x getVariable ["OT_deliveryCargo", objNull]) } }) apply { _x getVariable ["OT_airdropCargo", ""] });
+// ... or still to set off (OT_fnc_NATOdeliveryWait)
+_presentVeh append (((missionNamespace getVariable ["OT_pendingDeliveries", []]) select { (_x select 0) isEqualTo _name && { (_x select 2) isEqualTo "vehgarrison" } }) apply { _x select 1 });
 {
     private _presentIndex = _presentVeh find _x;
     if (_presentIndex > -1) then { _presentVeh deleteAt _presentIndex; continue };
@@ -325,6 +327,7 @@ _presentVeh append ((vehicles select { alive _x && { (_x getVariable ["OT_airdro
 // Patrol helicopters / VTOLs, parked and crewed, they take off while a player is within 2 km.
 // One already here (flying in after being bought, OT_fnc_NATOdeliverAirPatrol) isn't spawned again
 private _presentAir = (vehicles select { alive _x && { (_x getVariable ["airpatrol", ""]) isEqualTo _name } }) apply { typeOf _x };
+_presentAir append (((missionNamespace getVariable ["OT_pendingDeliveries", []]) select { (_x select 0) isEqualTo _name && { (_x select 2) isEqualTo "airpatrol" } }) apply { _x select 1 }); // Still to set off
 {
     private _vehtype = _x;
     private _presentIndex = _presentAir find _vehtype;

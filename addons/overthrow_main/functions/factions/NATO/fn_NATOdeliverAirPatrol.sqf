@@ -6,6 +6,8 @@
     air patrol list, shot down on the way it comes off it (tagged "airpatrol"). At the base it lands
     and becomes the base's patrol aircraft when the base is spawned (a player near), otherwise it's
     removed and the base spawns it parked next time.
+    It sets off 8 real minutes after it's ordered (OT_fnc_NATOdeliveryWait), resistance intelligence may
+    report it as soon as it's ordered (OT_fnc_NATOdeliveryIntel). The base lost meanwhile, it's called off.
 
     Parameters:
         _this # 0: STRING - Aircraft class
@@ -17,6 +19,19 @@
 */
 
 params ["_type", "_name", "_basePos", "_airfieldPos"];
+
+// Announced to the resistance if intelligence reports it, then it sets off after the wait
+private _delay = missionNamespace getVariable ["OT_deliveryDelay", 480]; // Changed only by the QA tests
+private _intel = [_basePos, _name, 2000, ["route", _airfieldPos], _type, _delay] call OT_fnc_NATOdeliveryIntel;
+[_name, _type, "airpatrol", _delay] call OT_fnc_NATOdeliveryWait;
+if (_name in (server getVariable ["NATOabandoned", []])) exitWith {
+    // The base was lost meanwhile: called off, it comes off the list
+    private _list = server getVariable [format ["airpatrol%1", _name], []];
+    private _index = _list find _type;
+    if (_index > -1) then { _list deleteAt _index };
+    server setVariable [format ["airpatrol%1", _name], _list, true];
+    _intel set ["cancel", true];
+};
 
 private _from = +_airfieldPos;
 _from set [2, 500];
@@ -31,7 +46,7 @@ private _group = [_veh] call OT_fnc_createNATOCrew;
 _group setVariable ["Vcm_Disable", true, false];
 _group setBehaviour "AWARE";
 _veh flyInHeight 150;
-[_veh, _basePos, _name, 2000, ["route", _airfieldPos]] spawn OT_fnc_NATOdeliveryIntel; // Resistance intelligence may report it
+_intel set ["veh", _veh]; // An intelligence report on it follows it
 
 private _wp = _group addWaypoint [_basePos, 0];
 _wp setWaypointType "MOVE";

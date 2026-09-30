@@ -37,6 +37,7 @@ if (isNil "OT_NATOInitDone") exitWith {
     hint "Overthrow QA: wait until the mission has finished loading";
 };
 OTQA_running = true;
+OT_deliveryDelay = 0; // Deliveries set off at once in the tests (8 minutes in play), a test may change it
 OTQA_results = [];
 OTQA_manual = [];
 OTQA_currentGroup = _title;
@@ -82,3 +83,4 @@ hint parseText _text;
 } forEach OTQA_manual;
 
 OTQA_running = nil;
+OT_deliveryDelay = nil;

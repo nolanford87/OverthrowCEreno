@@ -6,6 +6,8 @@
       that protect it until it's delivered or destroyed, then leave
     - airdropped by an armed Blackfish (OT_fnc_NATOairdropVehicle) in an open field about 2 km from the
       base on its island, then drives in (always possible; shot down before the drop, it's lost)
+    It sets off 8 real minutes after it's ordered (OT_fnc_NATOdeliveryWait), resistance intelligence may
+    report it as soon as it's ordered (OT_fnc_NATOdeliveryIntel). The base lost meanwhile, it's called off.
     It's already on the base's vehicle list, destroyed on the way it comes off it (tagged "vehgarrison").
     At the base it stays and patrols when the base is spawned (a player near), otherwise it's removed
     and the base spawns it next time.
@@ -74,12 +76,29 @@ private _tank = objNull;
 private _group = grpNull;
 private _escorts = [];
 private _from = [];
-
+private _start = [];
+private _drop = [_field select 0, _field select 1, 0];
 if (_convoy) then {
     _from = ([_sources, [], { _x distance2D _basePos }, "ASCEND"] call BIS_fnc_sortBy) select 0;
     // On a road within 50 m of it
     private _road = ([_from nearRoads 50, [], { _x distance2D _from }, "ASCEND"] call BIS_fnc_sortBy) select 0;
-    private _start = getPosATL _road;
+    _start = getPosATL _road;
+};
+
+// Announced to the resistance if intelligence reports it, then it sets off after the wait
+private _delay = missionNamespace getVariable ["OT_deliveryDelay", 480]; // Changed only by the QA tests
+private _intel = [_basePos, _name, 3500, [["drop", _drop], ["route", _start]] select _convoy, _type, _delay] call OT_fnc_NATOdeliveryIntel;
+[_name, _type, "vehgarrison", _delay] call OT_fnc_NATOdeliveryWait;
+if (_name in (server getVariable ["NATOabandoned", []])) exitWith {
+    // The base was lost meanwhile: called off, it comes off the list
+    private _list = server getVariable [format ["vehgarrison%1", _name], []];
+    private _index = _list find _type;
+    if (_index > -1) then { _list deleteAt _index };
+    server setVariable [format ["vehgarrison%1", _name], _list, true];
+    _intel set ["cancel", true];
+};
+
+if (_convoy) then {
     private _dir = _start getDir _basePos;
     private _escortTypes = OT_NATO_Vehicles_Convoy select { !(_x isKindOf "Tank") };
     if (_escortTypes isEqualTo []) then { _escortTypes = OT_NATO_Vehicles_GroundSupport };
@@ -99,7 +118,7 @@ if (_convoy) then {
         sleep 0.5;
     } forEach [selectRandom _escortTypes, _type, selectRandom _escortTypes];
     _tank setVariable ["vehgarrison", _name, true]; // Destroyed on the way, it comes off the base's list
-    [_tank, _basePos, _name, 3500, ["route", _start]] spawn OT_fnc_NATOdeliveryIntel; // Resistance intelligence may report it
+    _intel set ["veh", _tank]; // An intelligence report on it follows it
 
     // A convoy vehicle that hasn't moved after a minute is sent on again
     [[_tank] + _escorts, _basePos] spawn {
@@ -116,15 +135,14 @@ if (_convoy) then {
     diag_log format ["Overthrow: %1 convoys a %2 to %3", OT_NATO_name, _type call OT_fnc_vehicleGetName, _name];
 } else {
     // Airdropped by an armed Blackfish over the open field found above (never in the water)
-    private _drop = [_field select 0, _field select 1, 0];
     diag_log format ["Overthrow: %1 airdrops a %2 near %3", OT_NATO_name, _type call OT_fnc_vehicleGetName, _name];
     private _onLaunch = {
         params ["_plane", "_args"];
-        _args params ["_basePos", "_name", "_drop", "_type"];
+        _args params ["_name", "_intel"];
         _plane setVariable ["OT_airdropFor", _name, true]; // The base doesn't spawn it while it's on its way
-        [_plane, _basePos, _name, 3500, ["drop", _drop], _type] spawn OT_fnc_NATOdeliveryIntel; // Resistance intelligence may report it
+        _intel set ["veh", _plane]; // An intelligence report on it follows the Blackfish, then what it drops
     };
-    _tank = ([_type, _drop, [_onLaunch, [_basePos, _name, _drop, _type]]] call OT_fnc_NATOairdropVehicle) select 0;
+    _tank = ([_type, _drop, [_onLaunch, [_name, _intel]]] call OT_fnc_NATOairdropVehicle) select 0;
     if (isNull _tank) then {
         // Shot down with the Blackfish: it comes off the base's list
         private _list = server getVariable [format ["vehgarrison%1", _name], []];
