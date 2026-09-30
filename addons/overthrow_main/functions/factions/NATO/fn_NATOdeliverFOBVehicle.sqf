@@ -32,7 +32,7 @@ private _setup = {
 private _crew = {
     params ["_v"];
     private _g = [_v] call OT_fnc_createNATOCrew;
-    { _x setVariable ["garrison", "HQ", false] } forEach (crew _v);
+    { _x setVariable ["garrison", "HQ", false]; _x setVariable ["OT_fob", _pos] } forEach (crew _v);
     _g;
 };
 

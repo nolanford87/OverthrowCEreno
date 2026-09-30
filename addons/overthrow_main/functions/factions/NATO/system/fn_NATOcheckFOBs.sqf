@@ -24,11 +24,7 @@ private _fobs = server getVariable ["NATOfobs", []];
         _countered = true;
         _clearedFOBs pushBack _x;
         format ["Cleared %1 FOB", OT_NATO_name] remoteExec ["OT_fnc_notifyMinor", 0, false];
-        private _flag = _pos nearObjects [OT_flag_NATO, 50];
-        if (_flag isNotEqualTo []) then {
-            deleteVehicle (_flag select 0);
-        };
-        deleteMarker format ["natofob%1", str _pos];
+        [_pos] call OT_fnc_NATOclearFOB; // Its construction goes, the bodies stay
     };
 } forEach _fobs;
 

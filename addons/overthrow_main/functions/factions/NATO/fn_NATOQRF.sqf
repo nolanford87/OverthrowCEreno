@@ -247,7 +247,7 @@ if (_progress > 0) then {
                 private _lead = (units _x) select 0;
                 private _g = (_lead getVariable ["garrison", ""]);
                 if !(_g isEqualType "") then { _g = "HQ" };
-                if (_g isEqualTo "HQ") then {
+                if (_g isEqualTo "HQ" && { (_lead getVariable ["OT_fob", []]) isEqualTo [] }) then {
                     if (!isNull objectParent _lead) then {
                         [objectParent _lead] call OT_fnc_cleanup;
                     } else {
@@ -267,7 +267,7 @@ if (_progress > 0) then {
     } forEach (groups blufor);
     {
         if (side _x isEqualTo blufor) then {
-            if (_x getVariable ["garrison", ""] isEqualTo "HQ") then {
+            if (_x getVariable ["garrison", ""] isEqualTo "HQ" && { (_x getVariable ["OT_fobVehicle", []]) isEqualTo [] }) then {
                 [_x] call OT_fnc_cleanup;
             };
         };
