@@ -12,6 +12,7 @@ private _tests = [];
     _tests append (call _x);
 } forEach [
     OTQA_fnc_testsReview,
-    OTQA_fnc_testsDLC
+    OTQA_fnc_testsDLC,
+    OTQA_fnc_testsGarage
 ];
 _tests;

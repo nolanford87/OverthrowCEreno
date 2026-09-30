@@ -12,6 +12,7 @@ class CfgPatches {
             "cba_jr",
             "ace_main",
             "ace_medical",
+            "HR_Garage_Garage", // Virtual garage (HR Garage mod)
             "a3_ui_f",
             "a3_characters_f",
             "A3_Ui_F_Orange",

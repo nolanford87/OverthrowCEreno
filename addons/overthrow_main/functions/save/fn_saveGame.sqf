@@ -184,6 +184,11 @@ private _vehicles = (_tocheck) apply {
 };
 _data pushBack ["vehicles", _vehicles];
 
+// Virtual garage (HR Garage) and what Overthrow keeps for its vehicles, hashmaps as arrays so the save can be exported
+private _garage = [] call HR_Garage_fnc_getSaveData;
+_garage set [0, (_garage select 0) apply { _x apply { [_x, _y] } }];
+_data pushBack ["hrgarage", [_garage, (missionNamespace getVariable ["OT_garageExtra", createHashMap]) apply { [_x, _y] }]];
+
 if !(_quiet) then {
     "Step 6/11 - Saving warehouse" remoteExecCall ["OT_fnc_notifyAndLog", 0, false];
 };

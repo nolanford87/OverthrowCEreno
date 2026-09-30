@@ -631,6 +631,19 @@ class CfgFunctions {
         };
 
         /*
+         * Virtual garage (HR Garage)
+         */
+        class Garage {
+            file = "\overthrow_main\functions\garage";
+            class garageAccessPoint {};
+            class garageInitPlayer {};
+            class garageRestore {};
+            class garageStore {};
+            class getCargo {};
+            class setCargo {};
+        };
+
+        /*
          * Mod integration
          */
         class Integration {

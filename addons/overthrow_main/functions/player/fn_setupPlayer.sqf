@@ -11,6 +11,7 @@ if ((missionNamespace getVariable ["OT_setupPlayerUnit", objNull]) isNotEqualTo 
     [OT_fnc_perkSystem, player, 1] call CBA_fnc_waitAndExecute;
     [OT_fnc_notificationLoop, player, 1] call CBA_fnc_waitAndExecute;
     [OT_fnc_townCheckLoop, player, 5] call CBA_fnc_waitAndExecute; // Town info popup
+    call OT_fnc_garageInitPlayer; // Virtual garage actions
 };
 
 player setVariable ["player_uid", getPlayerUID player, true];
