@@ -10,6 +10,7 @@
 "Garage: at an owned warehouse or base flag, store a damaged, half-fuelled vehicle with cargo, take it out: same damage, fuel, ammo, cargo, ACE cargo and lock" call OTQA_fnc_manual;
 "Garage: a vehicle with a workshop weapon comes back with the weapon attached" call OTQA_fnc_manual;
 "Garage: save, restart and load: stored vehicles are still in the garage" call OTQA_fnc_manual;
+"Garage: main menu > Vehicles, select a vehicle of yours far away: Recover to Garage shows a price, pressing it stores the vehicle and charges you" call OTQA_fnc_manual;
 
 // Cargo as a sorted list of text, to compare two containers
 OTQA_garage_cargoText = {
@@ -108,6 +109,39 @@ OTQA_garage_fill = {
         ["Undercover (captive) doesn't close the garage", !(call HR_Garage_CP_closeCnd), ""] call OTQA_fnc_check;
         player setCaptive _wasCaptive;
         HR_Garage_accessPoint = _was;
+        deleteVehicle _flag;
+    }],
+
+    ["Garage recovery service", {
+        if (isNil "HR_Garage_fnc_addVehicle") exitWith { "Garage recovery test skipped: HR Garage isn't loaded" call OTQA_fnc_manual };
+        // A garage (base flag) by the player, and one of their vehicles 300 m away
+        private _flag = createVehicle [OT_flag_IND, player getPos [8, (getDir player) + 180], [], 0, "CAN_COLLIDE"];
+        private _cls = "C_Offroad_01_F";
+        private _pos = (player getPos [300, getDir player]) findEmptyPosition [0, 100, _cls];
+        if (_pos isEqualTo []) exitWith { deleteVehicle _flag; "Garage recovery test skipped: no room for a vehicle" call OTQA_fnc_manual };
+        private _veh = createVehicle [_cls, _pos, [], 0, "NONE"];
+        [_veh, getPlayerUID player] call OT_fnc_setOwner;
+
+        (_veh call OT_fnc_garageRecoverPrice) params ["_price", "_garage", "_town", "_modifier"];
+        private _expected = round ((100 + ((_veh distance2D _garage) / 10) + (((cost getVariable [_cls, [0]]) select 0) * 0.02)) * (1 + (_modifier / 100)));
+        private _held = _town in (server getVariable ["NATOabandoned", []]);
+        ["Recovery price: distance + 2% of value, town discount / hike", _price isEqualTo _expected && { _modifier isEqualTo ([25, -25] select _held) },
+            format ["$%1 to %2, %3%4 near %5", _price, _garage, _modifier, "%", _town]] call OTQA_fnc_check;
+
+        private _money = player getVariable ["money", 0];
+        player setVariable ["money", _price + 1000, true];
+        [_veh, player] call OT_fnc_garageRecover;
+        sleep 1; // Payment goes through the player's machine
+        private _vehUID = HR_Garage_UID;
+        private _cat = [_cls] call HR_Garage_fnc_getCatIndex;
+        private _inGarage = ((HR_Garage_Vehicles select _cat) getOrDefault [_vehUID, []]) isNotEqualTo [];
+        ["Vehicle is recovered into the garage from afar", isNull _veh && { _inGarage }, format ["id %1", _vehUID]] call OTQA_fnc_check;
+        ["The player pays the recovery price", (player getVariable ["money", 0]) isEqualTo 1000, format ["money left %1 (paid of %2)", player getVariable ["money", 0], _price + 1000]] call OTQA_fnc_check;
+
+        (HR_Garage_Vehicles select _cat) deleteAt _vehUID;
+        OT_garageExtra deleteAt _vehUID;
+        player setVariable ["money", _money, true];
+        if (!isNull _veh) then { deleteVehicle _veh };
         deleteVehicle _flag;
     }]
 ]

@@ -8,24 +8,30 @@
     Parameters:
         _this # 0: OBJECT - Vehicle
         _this # 1: OBJECT - Player storing it
+        _this # 2: OBJECT - (Optional) Garage it goes to, for recovering a vehicle from afar
+            (OT_fnc_garageRecover): the player doesn't have to be at the garage or the vehicle
 
     Usage: [_veh, player] remoteExecCall ["OT_fnc_garageStore", 2];
+
+    Returns: BOOL - Stored
 */
 
-if (!isServer) exitWith {};
-params ["_veh", "_player"];
+if (!isServer) exitWith { false };
+params ["_veh", "_player", ["_access", objNull]];
+private _remote = !isNull _access;
 
 private _uid = getPlayerUID _player;
 private _hint = { _this remoteExecCall ["hint", _player] };
 
-if (isNull _veh || { !alive _veh }) exitWith {};
-if ((crew _veh) findIf { alive _x } > -1) exitWith { "Everyone has to get out of the vehicle first" call _hint };
+if (isNull _veh || { !alive _veh }) exitWith { false };
+private _class = typeOf _veh; // The vehicle is gone once stored
+if ((crew _veh) findIf { alive _x } > -1) exitWith { "Everyone has to get out of the vehicle first" call _hint; false };
 private _owner = _veh call OT_fnc_getOwner;
-if (isNil "_owner" || { _owner isEqualTo "" }) exitWith { "Take the vehicle first (get in it), then it can be stored" call _hint };
-if (_owner isNotEqualTo _uid && { !(_uid in (server getVariable ["generals", []])) }) exitWith { "You can only store your own vehicles" call _hint };
+if (isNil "_owner" || { _owner isEqualTo "" }) exitWith { "Take the vehicle first (get in it), then it can be stored" call _hint; false };
+if (_owner isNotEqualTo _uid && { !(_uid in (server getVariable ["generals", []])) }) exitWith { "You can only store your own vehicles" call _hint; false };
 
-private _access = _player call OT_fnc_garageAccessPoint;
-if (isNull _access) exitWith { "You need to be at an owned warehouse or a resistance base" call _hint };
+if (!_remote) then { _access = _player call OT_fnc_garageAccessPoint };
+if (isNull _access) exitWith { "You need to be at an owned warehouse or a resistance base" call _hint; false };
 
 // HR Garage checks access (for aircraft) against its access point, on a dedicated server there is no player to find it
 _access setVariable ["HR_Garage_Garage_ModuleArguments", createHashMapFromArray [["accessAir", true], ["accessNaval", true], ["accessArmor", true]], true];
@@ -60,7 +66,8 @@ if (alive _attached) then {
 };
 
 private _lockUID = ["", _owner] select _locked;
-private _stored = [_veh, owner _player, _lockUID, _player] call HR_Garage_fnc_addVehicle;
+// Recovering from afar: no player for HR Garage, it would refuse when they're over 25 m from the vehicle
+private _stored = [_veh, owner _player, _lockUID, [_player, objNull] select _remote] call HR_Garage_fnc_addVehicle;
 
 if (isNil "_stored" || { !_stored }) exitWith {
     // Not stored, put things back as they were
@@ -70,6 +77,7 @@ if (isNil "_stored" || { !_stored }) exitWith {
         private _item = OT_workshop select { (_x select 4) == _attachedClass && { (typeOf _veh) == (_x select 1) } };
         _attached attachTo [_veh, ((_item param [0, []]) param [5, [[0, 0, 0]]]) select 0];
     };
+    false;
 };
 
 // The vehicle was added last, it has the newest id
@@ -86,3 +94,9 @@ deleteVehicle _attached;
         [_forEachIndex] call HR_Garage_fnc_declairSources;
     };
 } forEach HR_Garage_Sources;
+
+// HR Garage shows who locked it, it had no player to take the name from
+if (_remote && { _locked }) then {
+    (((HR_Garage_Vehicles select ([_class] call HR_Garage_fnc_getCatIndex)) getOrDefault [_vehUID, []]) set [5, name _player]);
+};
+true;
