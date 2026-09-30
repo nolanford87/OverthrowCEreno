@@ -4,8 +4,8 @@
     vehicles initVar collected for every faction (OT_factionPools, OT_factionVehicles):
     - OT_allBLU* weapons (supply crates, faction weapon jobs) from the occupier's factions
     - OT_allBLUOffensiveVehicles / OT_allBLUVehicles from every faction on the occupier's side
-    - the pools for "Randomize NATO loadouts": the occupier's factions, every faction on its side,
-      or everything in the game (lobby setting "ot_randomloadoutpool")
+    - the pools for "Randomize NATO loadouts": the occupier's own factions ("faction random")
+      or everything in the game ("fully random", lobby setting "ot_randomloadoutpool")
     Run by initVar, and again by OT_fnc_applyOccupier when the occupier changes.
 
     Usage: call OT_fnc_applyOccupierPools;
@@ -38,7 +38,6 @@ private _merge = {
     _merged;
 };
 private _poolOccupier = OT_occupierFactions call _merge;
-private _poolSide = _sideFactions call _merge;
 
 // The occupier's own weapons, also used for supply crates and faction weapon jobs
 OT_allBLURifles = _poolOccupier get "rifles";
@@ -63,7 +62,7 @@ OT_allBLUVehicles = [];
     OT_allBLUVehicles append _other;
 } forEach _sideFactions;
 
-// All three are kept (the QA tests go through them), OT_randomLoadoutPool is the one in use
+// Both are kept (the QA tests go through them), OT_randomLoadoutPool is the one in use
 private _poolSetting = ["ot_randomloadoutpool", 0] call BIS_fnc_getParamValue;
-OT_randomLoadoutPools = [_poolOccupier, _poolSide, OT_loadoutPoolAll];
-OT_randomLoadoutPool = OT_randomLoadoutPools select ((_poolSetting max 0) min 2);
+OT_randomLoadoutPools = [_poolOccupier, OT_loadoutPoolAll];
+OT_randomLoadoutPool = OT_randomLoadoutPools select (_poolSetting > 0);

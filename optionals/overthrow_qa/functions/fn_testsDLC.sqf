@@ -77,9 +77,9 @@ OTQA_dlc_isClass = {
     }],
 
     ["Randomized loadout pools", {
-        // Goes through all three lobby options, then puts the lobby choice back
+        // Goes through both lobby options, then puts the lobby choice back
         private _inUse = OT_randomLoadoutPool;
-        private _names = ["NATO only", "BLUFOR only", "Fully random"];
+        private _names = [format ["Faction random (%1)", OT_NATO_name], "Fully random"];
         private _cls = OT_NATO_Units_LevelOne param [0, "B_Soldier_F"];
         private _loadout = getUnitLoadout (configFile >> "CfgVehicles" >> _cls);
         private _armor = { getNumber (configFile >> "CfgWeapons" >> (_this select 0) >> "ItemInfo" >> "HitpointsProtectionInfo" >> (_this select 1) >> "armor") };
