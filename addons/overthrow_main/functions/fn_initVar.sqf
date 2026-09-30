@@ -519,7 +519,7 @@ private _allGlasses = "
 
 OT_allFactions = [];
 // The weapons, gear and vehicles of every faction. OT_fnc_applyOccupierPools builds the occupier's lists from them:
-// NATO's weapons (supply crates, faction weapon jobs), its vehicles, and the pools for "Randomize NATO loadouts"
+// NATO's weapons (supply crates, faction weapon jobs), its vehicles, and the pools for randomized occupier loadouts
 OT_newLoadoutPool = {
     createHashMapFromArray ([
         "rifles", "glRifles", "machineGuns", "sniperRifles", "launchers", "handguns", "smgs", "vests", "helmets"

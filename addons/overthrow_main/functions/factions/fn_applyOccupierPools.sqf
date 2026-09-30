@@ -4,8 +4,8 @@
     vehicles initVar collected for every faction (OT_factionPools, OT_factionVehicles):
     - OT_allBLU* weapons (supply crates, faction weapon jobs) from the occupier's factions
     - OT_allBLUOffensiveVehicles / OT_allBLUVehicles from every faction on the occupier's side
-    - the pools for "Randomize NATO loadouts": the occupier's own factions ("faction random")
-      or everything in the game ("fully random", lobby setting "ot_randomloadoutpool")
+    - the pools for randomized occupier loadouts: the occupier's own factions ("faction random")
+      or everything in the game ("fully random"), see OT_fnc_setLoadoutMode
     Run by initVar, and again by OT_fnc_applyOccupier when the occupier changes.
 
     Usage: call OT_fnc_applyOccupierPools;

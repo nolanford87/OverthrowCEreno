@@ -130,16 +130,10 @@ class Params {
         texts[] = {"Yes", "No"};
         default = 1;
     };
-    class ot_randomizeloadouts {
-        title = "Randomize occupier loadouts (new game default, set on the new game screen)";
-        values[] = {1, 0};
-        texts[] = {"Yes", "No"};
-        default = 0;
-    };
-    class ot_randomloadoutpool {
-        title = "Randomized occupier loadouts use (new game default)";
-        values[] = {0, 2}; // 1 was "every faction on the occupier's side", now treated as fully random
-        texts[] = {"Faction random (the occupier's own weapons / gear)", "Fully random (every weapon in the game)"};
+    class ot_occupierloadouts {
+        title = "Occupier loadouts (new game default, also set on the new game screen)";
+        values[] = {0, 1, 2};
+        texts[] = {"Standard", "Faction random (the occupier's own weapons / gear)", "Fully random (every weapon in the game)"};
         default = 0;
     };
     class ot_gangmembercap {
