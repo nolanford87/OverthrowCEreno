@@ -1,6 +1,6 @@
 // Overthrow CE QA tools - optional addon, only loaded when added to the mod list.
 // Adds "Overthrow QA" to the Zeus Enhanced right-click menu to run the automated QA test suites.
-// Can also be run from the debug console: ["bugfixes"] spawn OTQA_fnc_run;
+// Can also be run from the debug console: ["current"] spawn OTQA_fnc_run; (or "archive")
 
 class CfgPatches {
     class OT_Overthrow_QA {
@@ -18,6 +18,9 @@ class CfgFunctions {
         class QA {
             file = "\OT\addons\overthrow_qa\functions";
             class run {};
+            // Current QA tests (new changes) and archived QA tests (everything that passed before)
+            class testsCurrent {};
+            class testsArchive {};
             class check {};
             class manual {};
             class spawnWarehouse {}; // Zeus helper
@@ -49,17 +52,13 @@ class zen_context_menu_actions {
         displayName = "Overthrow QA";
         condition = "isServer";
         priority = 1;
-        class OTQA_bugfixes {
-            displayName = "Run bug fix QA tests";
-            statement = "['bugfixes'] spawn OTQA_fnc_run";
+        class OTQA_current {
+            displayName = "Run current QA tests";
+            statement = "['current'] spawn OTQA_fnc_run";
         };
-        class OTQA_followups {
-            displayName = "Run review and DLC QA tests";
-            statement = "['followups'] spawn OTQA_fnc_run";
-        };
-        class OTQA_occupiers {
-            displayName = "Run occupier QA tests";
-            statement = "['occupiers'] spawn OTQA_fnc_run";
+        class OTQA_archive {
+            displayName = "Run archived QA tests";
+            statement = "['archive'] spawn OTQA_fnc_run";
         };
         class OTQA_spawnWarehouse {
             displayName = "Spawn my warehouse here";
