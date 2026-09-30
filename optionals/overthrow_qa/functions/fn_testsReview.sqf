@@ -202,6 +202,7 @@ OTQA_rv_spawnKill = {
         private _fob = [_pos, 16, ["Mortar", "Barriers", "HMG", "Vehicle"]];
         _fobs pushBack _fob;
         server setVariable ["NATOfobs", _fobs, true];
+        OT_deliveryIntelChance = 0; // No intelligence report task from this test
         [_pos, true] spawn OT_fnc_NATOdeliverFOBVehicle;
 
         private _timeout = time + 10;
@@ -225,6 +226,7 @@ OTQA_rv_spawnKill = {
         _fobs = server getVariable ["NATOfobs", []];
         _fobs deleteAt (_fobs find _fob);
         server setVariable ["NATOfobs", _fobs, true];
+        OT_deliveryIntelChance = nil;
     }],
 
     ["FOB takeover timer", {
@@ -311,6 +313,7 @@ OTQA_rv_spawnKill = {
         if (_airfield isEqualTo []) exitWith {
             ["The occupier holds no airfield, so it can't buy aircraft", true, ""] call OTQA_fnc_check;
         };
+        OT_deliveryIntelChance = 0; // No intelligence report task from this test
         private _script = [_cls, "OTQA_TEST", _basePos, _airfield select 0] spawn OT_fnc_NATOdeliverAirPatrol;
         private _timeout = time + 10;
         private _veh = objNull;
@@ -338,6 +341,7 @@ OTQA_rv_spawnKill = {
             deleteVehicle _veh;
             deleteGroup _group;
         };
+        OT_deliveryIntelChance = nil;
     }],
 
     ["Bought tank is delivered", {
@@ -345,6 +349,7 @@ OTQA_rv_spawnKill = {
         if (OT_NATO_Vehicles_TankSupport isEqualTo []) exitWith { "Tank delivery test skipped: the occupier has no tanks" call OTQA_fnc_manual };
         private _cls = selectRandom OT_NATO_Vehicles_TankSupport;
         private _basePos = getPos player;
+        OT_deliveryIntelChance = 0; // No intelligence report task from this test
         private _script = [_cls, "OTQA_TEST", _basePos] spawn OT_fnc_NATOdeliverHeavy;
         private _timeout = time + 15;
         private _tank = objNull;
@@ -372,5 +377,6 @@ OTQA_rv_spawnKill = {
             deleteVehicle _v;
             if (!isNull _g) then { deleteGroup _g };
         } forEach (_escorts + ([_tank] select { !isNull _x }));
+        OT_deliveryIntelChance = nil;
     }]
 ]

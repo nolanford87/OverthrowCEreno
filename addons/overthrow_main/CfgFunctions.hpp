@@ -549,6 +549,7 @@ class CfgFunctions {
             class NATOairPatrolBase {};
             class NATOdeliverAirPatrol {};
             class NATOdeliverHeavy {};
+            class NATOdeliveryIntel {};
             class NATOnearestAirfield {};
             class NATOConvoy {};
             class NATOGroupDeployFOB {};

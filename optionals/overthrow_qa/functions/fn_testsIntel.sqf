@@ -1,0 +1,79 @@
+/*
+    Description:
+    Resistance intelligence on occupier deliveries (OT_fnc_NATOdeliveryIntel): the intercept task,
+    destroyed / stolen / delivered outcomes and the reward. Part of the current QA tests.
+
+    Returns: ARRAY - [[name, code], ...]
+*/
+
+"Intelligence: a reported delivery (tank convoy/airdrop, patrol aircraft, FOB vehicle) shows an 'Intercept' task following it on the map" call OTQA_fnc_manual;
+
+// A stand-in delivery vehicle 300 m from the player, reported (chance forced)
+OTQA_intel_start = {
+    params ["_reward"];
+    private _cls = selectRandom OT_NATO_Vehicles_GroundSupport;
+    private _pos = (player getPos [300, random 360]) findEmptyPosition [0, 100, _cls];
+    if (_pos isEqualTo []) then { _pos = player getPos [300, random 360] };
+    private _veh = createVehicle [_cls, _pos, [], 0, "NONE"];
+    OT_deliveryIntelChance = 100;
+    [_veh, getPos player, "OTQA test base", _reward] spawn OT_fnc_NATOdeliveryIntel;
+    private _timeout = time + 5;
+    waitUntil { sleep 0.2; ((_veh getVariable ["OT_interceptTask", ""]) isNotEqualTo "") || { time > _timeout } };
+    OT_deliveryIntelChance = nil;
+    _veh;
+};
+OTQA_intel_state = {
+    params ["_veh", "_taskId"];
+    private _timeout = time + 8;
+    waitUntil { sleep 0.5; !((_taskId call BIS_fnc_taskState) in ["CREATED", "ASSIGNED", ""]) || { time > _timeout } };
+    _taskId call BIS_fnc_taskState;
+};
+
+[
+    ["Delivery intelligence report", {
+        // Never reported at 0%
+        private _cls = selectRandom OT_NATO_Vehicles_GroundSupport;
+        private _quiet = createVehicle [_cls, player getPos [300, 90], [], 0, "NONE"];
+        OT_deliveryIntelChance = 0;
+        [_quiet, getPos player, "OTQA test base", 500] spawn OT_fnc_NATOdeliveryIntel;
+        sleep 1;
+        OT_deliveryIntelChance = nil;
+        ["No report when the chance fails", (_quiet getVariable ["OT_interceptTask", ""]) isEqualTo "", ""] call OTQA_fnc_check;
+        deleteVehicle _quiet;
+
+        // Reported: a task to intercept it
+        private _veh = [500] call OTQA_intel_start;
+        private _taskId = _veh getVariable ["OT_interceptTask", ""];
+        ["Reported delivery gets an intercept task", _taskId isNotEqualTo "" && { (_taskId call BIS_fnc_taskState) in ["CREATED", "ASSIGNED"] }, _taskId] call OTQA_fnc_check;
+
+        // Destroyed: task succeeds
+        _veh setDamage 1;
+        private _state = [_veh, _taskId] call OTQA_intel_state;
+        ["Destroying it completes the task", _state isEqualTo "SUCCEEDED", _state] call OTQA_fnc_check;
+        deleteVehicle _veh;
+    }],
+
+    ["Stolen delivery pays the thief", {
+        private _veh = [500] call OTQA_intel_start;
+        private _taskId = _veh getVariable ["OT_interceptTask", ""];
+        private _money = player getVariable ["money", 0];
+        private _influence = player getVariable ["influence", 0];
+        [_veh, getPlayerUID player] call OT_fnc_setOwner; // As getting in does
+        private _state = [_veh, _taskId] call OTQA_intel_state;
+        sleep 1; // Payment goes through the player's machine
+        ["Stealing it completes the task", _state isEqualTo "SUCCEEDED", _state] call OTQA_fnc_check;
+        ["The thief gets $500 and +10 influence", (player getVariable ["money", 0]) isEqualTo (_money + 500) && { (player getVariable ["influence", 0]) isEqualTo (_influence + 10) },
+            format ["money +%1, influence +%2", (player getVariable ["money", 0]) - _money, (player getVariable ["influence", 0]) - _influence]] call OTQA_fnc_check;
+        { deleteVehicle _x } forEach (crew _veh);
+        deleteVehicle _veh;
+    }],
+
+    ["Delivered delivery fails the task", {
+        private _veh = [250] call OTQA_intel_start;
+        private _taskId = _veh getVariable ["OT_interceptTask", ""];
+        _veh setVariable ["OT_delivered", true]; // As the delivery does on arrival
+        private _state = [_veh, _taskId] call OTQA_intel_state;
+        ["A delivered vehicle fails the task", _state isEqualTo "FAILED", _state] call OTQA_fnc_check;
+        deleteVehicle _veh;
+    }]
+]

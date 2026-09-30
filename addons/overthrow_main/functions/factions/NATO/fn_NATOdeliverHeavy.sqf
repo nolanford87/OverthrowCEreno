@@ -63,6 +63,7 @@ if (_convoy) then {
         sleep 0.5;
     } forEach [selectRandom _escortTypes, _type, selectRandom _escortTypes];
     _tank setVariable ["vehgarrison", _name, true]; // Destroyed on the way, it comes off the base's list
+    [_tank, _basePos, _name, 500] spawn OT_fnc_NATOdeliveryIntel; // Resistance intelligence may report it
     diag_log format ["Overthrow: %1 convoys a %2 to %3", OT_NATO_name, _type call OT_fnc_vehicleGetName, _name];
 } else {
     // Airdrop in an open field about 2 km away
@@ -74,6 +75,7 @@ if (_convoy) then {
     _tank allowDamage false;
     _tank attachTo [_chute, [0, 0, -1.3]];
     _tank setVariable ["vehgarrison", _name, true]; // Destroyed on the way, it comes off the base's list
+    [_tank, _basePos, _name, 500] spawn OT_fnc_NATOdeliveryIntel; // Resistance intelligence may report it
     waitUntil { sleep 0.5; isNull _chute || { ((getPosATL _tank) select 2) < 3 } };
     detach _tank;
     if (!isNull _chute) then { deleteVehicle _chute };
@@ -116,6 +118,7 @@ if (_escorts isNotEqualTo []) then {
 };
 
 if (!alive _tank) exitWith {};
+_tank setVariable ["OT_delivered", true]; // An intelligence report on it has failed
 for "_i" from (count waypoints _group) - 1 to 0 step -1 do { deleteWaypoint [_group, _i] };
 
 // Nobody near the base: it's there when the base spawns
