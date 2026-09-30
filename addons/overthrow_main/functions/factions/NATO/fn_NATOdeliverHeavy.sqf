@@ -12,11 +12,12 @@
         _this # 0: STRING - Tank class
         _this # 1: STRING - Base name
         _this # 2: ARRAY - Base position
+        _this # 3: STRING - (Optional) "airdrop" to always airdrop it (the QA tests)
 
     Usage: [_type, _name, _pos] spawn OT_fnc_NATOdeliverHeavy;
 */
 
-params ["_type", "_name", "_basePos"];
+params ["_type", "_name", "_basePos", ["_method", ""]];
 
 private _tag = {
     params ["_v"];
@@ -33,7 +34,7 @@ private _sources = [];
 if !(OT_NATO_HQ in _abandoned) then { _sources pushBack OT_NATO_HQPos };
 if !("Factory" in (server getVariable ["GEURowned", []])) then { _sources pushBack OT_factoryPos };
 _sources = _sources select { (_x distance2D _basePos) > 500 && { [_x, _basePos] call OT_fnc_regionIsConnected } };
-private _convoy = _sources isNotEqualTo [] && { random 100 < 50 };
+private _convoy = _method isNotEqualTo "airdrop" && { _sources isNotEqualTo [] } && { random 100 < 50 };
 
 private _tank = objNull;
 private _group = grpNull;
