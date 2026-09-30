@@ -59,7 +59,8 @@ private _fobs = server getVariable ["NATOfobs", []];
         _upgrades pushBack "HMG";
         [_pos, ["HMG"]] spawn OT_fnc_NATOupgradeFOB;
     };
-    if (!("Vehicle" in _upgrades) && { (_spend > 250) } && { (random 100 > _chance) }) exitWith {
+    // One vehicle per FOB, a lost one isn't replaced ("VehicleLost")
+    if (!("Vehicle" in _upgrades) && { !("VehicleLost" in _upgrades) } && { (_spend > 250) } && { (random 100 > _chance) }) exitWith {
         _spend = _spend - 250;
         _resources = _resources - 250;
         _upgrades pushBack "Vehicle";
