@@ -71,4 +71,25 @@ while { _count < _numNATO } do {
     };
 };
 
+// Vehicles in the town's garrison (a FOB that took the town back left its vehicle), crewed, patrolling
+// the town while a player is near. One still out there (driving over from the FOB) isn't spawned again
+private _present = (vehicles select { alive _x && { (_x getVariable ["vehgarrison", ""]) isEqualTo _town } }) apply { typeOf _x };
+private _townPos = server getVariable _town;
+{
+    private _index = _present find _x;
+    if (_index > -1) then { _present deleteAt _index; continue };
+    private _pos = (_town call OT_fnc_getRandomRoadPosition) findEmptyPosition [5, 80, _x];
+    if (_pos isEqualTo []) then { continue };
+    private _veh = createVehicle [_x, _pos, [], 0, "NONE"];
+    _veh setDir (random 360);
+    _veh setVariable ["vehgarrison", _town, true]; // Destroyed or stolen, it comes off the town's list
+    private _vgroup = [_veh] call OT_fnc_createNATOCrew;
+    { _x setVariable ["garrison", _town, false] } forEach (crew _veh);
+    { _x addCuratorEditableObjects [[_veh], true] } forEach (allCurators);
+    [_vgroup, _veh, _townPos] spawn OT_fnc_NATOvehiclePatrol;
+    _groups pushBack _veh;
+    _groups pushBack _vgroup;
+    sleep 0.5;
+} forEach (server getVariable [format ["vehgarrison%1", _town], []]);
+
 spawner setVariable [_spawnid, (spawner getVariable [_spawnid, []]) + _groups, false];

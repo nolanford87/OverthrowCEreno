@@ -3,6 +3,7 @@
     A base's garrison vehicle patrols around the base while a player is within 2 km of it, and
     drives back to where it was parked when no player is. Ends when the vehicle, its crew or the
     base (despawned) is gone. Spawned by OT_fnc_spawnNATOObjective.
+    Moved to another place by setting the group's "OT_patrolCenter" (and "OT_patrolHome", where it parks).
 
     Parameters:
         _this # 0: GROUP - The vehicle's crew
@@ -18,6 +19,16 @@ private _home = getPosATL _veh;
 private _patrolling = false;
 
 while { sleep 30; alive _veh && { !isNull _group } && { (units _group) findIf { alive _x } > -1 } } do {
+    private _center = _group getVariable ["OT_patrolCenter", _basePos];
+    if (_center isNotEqualTo _basePos) then {
+        _basePos = _center;
+        _home = _group getVariable ["OT_patrolHome", _center];
+        _patrolling = false;
+        for "_i" from (count waypoints _group) - 1 to 0 step -1 do {
+            deleteWaypoint [_group, _i];
+        };
+        _group move _home;
+    };
     private _playerNear = (allPlayers - entities "HeadlessClient_F") findIf { alive _x && { (_x distance2D _basePos) < 2000 } } > -1;
     if (_playerNear && !_patrolling) then {
         _patrolling = true;
