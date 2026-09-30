@@ -133,7 +133,7 @@ if (_totalAmmo > 0) then {
 // Recovery to the garage, for the player's own vehicles
 private _recoverTxt = "";
 if ((_veh getVariable ["owner", ""]) isEqualTo getPlayerUID player) then {
-    (_veh call OT_fnc_garageRecoverPrice) params ["_price", "_garage", "_town", "_modifier"];
+    (_veh call OT_fnc_garageRecoverPrice) params ["_price", "_garage", "_town", "_modifier", "_contraband"];
     if (_price < 0) then {
         ctrlEnable [1602, false];
         ctrlSetText [1602, "Recover to Garage"];
@@ -141,13 +141,14 @@ if ((_veh getVariable ["owner", ""]) isEqualTo getPlayerUID player) then {
     } else {
         ctrlEnable [1602, true];
         ctrlSetText [1602, format ["Recover to Garage ($%1)", [_price, 1, 0, true] call CBA_fnc_formatNumber]];
-        _recoverTxt = format ["<br/>Recovery: $%1 to the garage near %2 (%3%4%5, near %6)",
+        _recoverTxt = format ["<br/>Recovery: $%1 to the garage near %2 (%3%4%5, near %6%7)",
             [_price, 1, 0, true] call CBA_fnc_formatNumber,
             _garage call OT_fnc_nearestTown,
             ["", "+"] select (_modifier > 0),
             _modifier,
             "%",
-            _town
+            _town,
+            ["", "; +50% for contraband"] select _contraband
         ];
     };
 } else {
