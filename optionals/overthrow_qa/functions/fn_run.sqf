@@ -4,15 +4,19 @@
     Each test runs in its own script, so one failing with a script error doesn't stop the others.
 
     Parameters:
-        _this # 0: STRING - Suite to run, "bugfixes" (the bug fix QA tests) or "followups" (review and DLC QA tests)
-            or "occupiers" (occupier QA tests)
+        _this # 0: STRING - Suite to run: "current" (tests for the changes since the last archive) or
+            "archive" (every test that passed before); its parts "bugfixes", "followups" and "occupiers"
+            also run on their own
 
-    Usage: ["bugfixes"] spawn OTQA_fnc_run;
+    Usage: ["current"] spawn OTQA_fnc_run;
 */
 
-params [["_suite", "bugfixes", [""]]];
+params [["_suite", "current", [""]]];
 
 private _suites = createHashMapFromArray [
+    ["current", ["Current QA tests", OTQA_fnc_testsCurrent]],
+    ["archive", ["Archived QA tests", OTQA_fnc_testsArchive]],
+    // The parts of the archive, still runnable on their own
     ["bugfixes", ["Bug fix QA tests", OTQA_fnc_testsBugFixes]],
     ["followups", ["Review and DLC QA tests", OTQA_fnc_testsFollowups]],
     ["occupiers", ["Occupier QA tests", OTQA_fnc_testsOccupiers]]
