@@ -3,7 +3,7 @@
     The occupier spends resources on new vehicles for its bases (vehicle garrisons), like
     OT_fnc_NATOupgradeGarrisons does for soldiers. Only for bases no player is near, the vehicle
     appears the next time the base spawns. Armed cars and MRAPs for any base, APCs for the
-    bigger ones. At most one vehicle a turn.
+    bigger ones. At most one vehicle a turn, and 2 more than a base of its value starts with.
 
     Parameters:
         _spend - The current spending limit
@@ -37,13 +37,15 @@ private _abandoned = server getVariable ["NATOabandoned", []];
     _x params ["_pos", "_name", "_worth"];
     if (_name in _abandoned) then { continue };
 
-    // Vehicles it has now (not counting static guns) and room for more by the base's value
+    // Vehicles it has now (not counting static guns). Room for the most a base of its value starts
+    // with (initNATO: 1, 2 or 3 by value, 2 at the HQ) plus 2 bought ones
     private _garrison = server getVariable [format ["vehgarrison%1", _name], []];
     private _vehicles = { !(_x isKindOf "StaticWeapon") && { _x isKindOf "LandVehicle" } } count _garrison;
     private _max = 1;
     if (_worth > 500) then { _max = 2 };
     if (_worth > 1000) then { _max = 3 };
-    if (_name isEqualTo OT_NATO_HQ) then { _max = 4 };
+    if (_name isEqualTo OT_NATO_HQ) then { _max = 2 };
+    _max = _max + 2;
     if (_vehicles >= _max || { random 100 < _chance } || { [_pos] call OT_fnc_inSpawnDistance }) then { continue };
 
     private _useAPC = _worth > 1000 && { _apcs isNotEqualTo [] } && { _spend >= _costAPC } && { random 100 < 40 };
