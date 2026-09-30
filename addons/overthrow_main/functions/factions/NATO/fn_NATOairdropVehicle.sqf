@@ -69,9 +69,8 @@ waitUntil { sleep 1; !alive _plane || { (_plane distance2D _dropPoint) < 120 } |
 if (!alive _plane) exitWith { [objNull, _plane] };
 if (time > _timeout) exitWith { [_plane, _planeGroup] call _leave; [objNull, _plane] };
 
-// Release it just behind and below
-private _release = _plane getPos [30, (getDir _plane) + 180];
-_release set [2, ((getPosATL _plane) select 2) - 15];
+// Release it right over the drop point (an open field), just below the Blackfish
+private _release = [_dropPoint select 0, _dropPoint select 1, ((getPosATL _plane) select 2) - 15];
 private _chute = createVehicle ["B_Parachute_02_F", _release, [], 0, "FLY"];
 _chute setPosATL _release;
 private _vehicle = createVehicle [_cargoClass, _release, [], 0, "CAN_COLLIDE"];
@@ -80,9 +79,25 @@ _vehicle attachTo [_chute, [0, 0, -1.3]];
 _plane setVariable ["OT_deliveryCargo", _vehicle, true];
 [_plane, _planeGroup] call _leave;
 
-waitUntil { sleep 0.5; isNull _chute || { ((getPosATL _vehicle) select 2) < 3 } };
+// Down, or stopped coming down (caught on trees / a roof: the parachute, which carries it, stops
+// falling; not checked in the first seconds while it opens), or taking too long
+private _released = time;
+private _landTimeout = time + 120;
+private _still = 0;
+waitUntil {
+    sleep 0.5;
+    if (!isNull _chute && { time > _released + 10 } && { ((velocity _chute) select 2) > -0.3 }) then { _still = _still + 1 } else { _still = 0 };
+    isNull _chute || { ((getPosATL _vehicle) select 2) < 3 } || { _still >= 6 } || { time > _landTimeout }
+};
 detach _vehicle;
 if (!isNull _chute) then { deleteVehicle _chute };
+// Resting above the ground: put it down on the ground nearby
+if (((getPosATL _vehicle) select 2) > 2) then {
+    private _ground = (getPosATL _vehicle) findEmptyPosition [0, 60, _cargoClass];
+    if (_ground isEqualTo []) then { _ground = getPosATL _vehicle };
+    _vehicle setPosATL [_ground select 0, _ground select 1, 0];
+    _vehicle setVectorUp (surfaceNormal (getPosATL _vehicle));
+};
 sleep 2;
 _vehicle allowDamage true;
 [_vehicle, _plane];

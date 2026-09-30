@@ -100,6 +100,19 @@ if (_convoy) then {
     } forEach [selectRandom _escortTypes, _type, selectRandom _escortTypes];
     _tank setVariable ["vehgarrison", _name, true]; // Destroyed on the way, it comes off the base's list
     [_tank, _basePos, _name, 3500, ["route", _start]] spawn OT_fnc_NATOdeliveryIntel; // Resistance intelligence may report it
+
+    // A convoy vehicle that hasn't moved after a minute is sent on again
+    [[_tank] + _escorts, _basePos] spawn {
+        params ["_vehicles", "_basePos"];
+        private _positions = _vehicles apply { getPosATL _x };
+        sleep 60;
+        {
+            if (alive _x && { ((getPosATL _x) distance2D (_positions select _forEachIndex)) < 20 } && { !isNull driver _x }) then {
+                (group driver _x) move _basePos;
+                (driver _x) doMove _basePos;
+            };
+        } forEach _vehicles;
+    };
     diag_log format ["Overthrow: %1 convoys a %2 to %3", OT_NATO_name, _type call OT_fnc_vehicleGetName, _name];
 } else {
     // Airdropped by an armed Blackfish over the open field found above (never in the water)
