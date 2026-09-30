@@ -34,7 +34,22 @@ private _sources = [];
 if !(OT_NATO_HQ in _abandoned) then { _sources pushBack OT_NATO_HQPos };
 if !("Factory" in (server getVariable ["GEURowned", []])) then { _sources pushBack OT_factoryPos };
 _sources = _sources select { (_x distance2D _basePos) > 500 && { [_x, _basePos] call OT_fnc_regionIsConnected } };
+// An open field on land to airdrop it in: about 2 km away, further or nearer if there's none
+private _field = [];
+{
+    _x params ["_min", "_max"];
+    private _try = [_basePos, _min, _max, 12, 0, 0.15, 0, [], [[], []]] call BIS_fnc_findSafePos;
+    // Found nothing, findSafePos returns the map centre: only take a spot that is where we looked
+    if (_try isNotEqualTo [] && { !surfaceIsWater _try } && { (_try distance2D _basePos) >= (_min - 50) } && { (_try distance2D _basePos) <= (_max + 50) }) exitWith { _field = _try };
+} forEach [[1700, 2300], [1000, 3500], [500, 4000]];
+
 private _convoy = _method isNotEqualTo "airdrop" && { _sources isNotEqualTo [] } && { random 100 < 50 };
+// No field on land (small islands): convoy it if it can come by road, otherwise drop it by the base
+if (_field isEqualTo [] && { _sources isNotEqualTo [] } && { _method isNotEqualTo "airdrop" }) then { _convoy = true };
+if (_field isEqualTo []) then {
+    _field = _basePos findEmptyPosition [30, 300, _type];
+    if (_field isEqualTo [] || { surfaceIsWater _field }) then { _field = _basePos };
+};
 
 private _tank = objNull;
 private _group = grpNull;
@@ -67,8 +82,7 @@ if (_convoy) then {
     [_tank, _basePos, _name, 3500, ["route", _start]] spawn OT_fnc_NATOdeliveryIntel; // Resistance intelligence may report it
     diag_log format ["Overthrow: %1 convoys a %2 to %3", OT_NATO_name, _type call OT_fnc_vehicleGetName, _name];
 } else {
-    // Airdrop in an open field about 2 km away
-    private _field = [_basePos, 1700, 2300, 12, 0, 0.15, 0, [], [_basePos getPos [2000, random 360], []]] call BIS_fnc_findSafePos;
+    // Airdrop in the open field found above (never in the water)
     private _drop = [_field select 0, _field select 1, 300];
     private _chute = createVehicle ["B_Parachute_02_F", _drop, [], 0, "FLY"];
     _chute setPosATL _drop;

@@ -12,7 +12,7 @@
     Returns: BOOL - The result
 */
 
-params ["_name", "_ok", ["_detail", ""]];
+params ["_name", ["_ok", "nothing"], ["_detail", ""]]; // A check that returned nil is a fail, not a script error
 
 if !(_ok isEqualType true) then {
     _detail = format ["check returned %1 instead of true/false. %2", _ok, _detail];

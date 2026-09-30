@@ -80,7 +80,7 @@ OTQA_intel_airdrop = {
         sleep 1; // Payment goes through the player's machine
         private _paid = (player getVariable ["money", 0]) - _money;
         private _gained = (player getVariable ["influence", 0]) - _influence;
-        ["Airdrop intercept (steal): the host owns it and gets $3500 and +20 influence", ((_tank call OT_fnc_getOwner) isEqualTo getPlayerUID player) && { _paid isEqualTo 3500 } && { _gained isEqualTo 20 },
+        ["Airdrop intercept (steal): the host owns it and gets $3500 and +20 influence", !isNull _tank && { (_tank getVariable ["owner", ""]) isEqualTo getPlayerUID player } && { _paid isEqualTo 3500 } && { _gained isEqualTo 20 },
             format ["money +%1, influence +%2", _paid, _gained]] call OTQA_fnc_check;
     };
 
