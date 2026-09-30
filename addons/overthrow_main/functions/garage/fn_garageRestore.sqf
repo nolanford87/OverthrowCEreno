@@ -24,18 +24,26 @@ _extra params [["_owner", getPlayerUID _player], ["_locked", false], ["_name", "
 [_veh, _owner] call OT_fnc_setOwner;
 _veh setVariable ["OT_locked", _locked, true];
 if (_name isNotEqualTo "") then { _veh setVariable ["name", _name, true] };
-if (_cargo isNotEqualTo []) then { [_veh, _cargo] call OT_fnc_setCargo };
 
-{
-    _x params ["_class", "_contents"];
-    private _item = createVehicle [_class, getPosATL _veh, [], 5, "NONE"];
-    if (_contents isNotEqualTo []) then { [_item, _contents] call OT_fnc_setCargo };
-    if !([_item, _veh, true] call ace_cargo_fnc_loadItem) then {
-        diag_log format ["Overthrow: garage couldn't load %1 back into %2, left next to it", _class, typeOf _veh];
+// ACE adds things to a new vehicle's inventory (a tow rope) a moment after it's created, restore the
+// cargo after that so it's exactly what was stored
+[_veh, _cargo, _aceCargo, _attachedClass, _attachedAmmo] spawn {
+    params ["_veh", "_cargo", "_aceCargo", "_attachedClass", "_attachedAmmo"];
+    sleep 2;
+    if (isNull _veh) exitWith {};
+    if (_cargo isNotEqualTo []) then { [_veh, _cargo] call OT_fnc_setCargo };
+
+    {
+        _x params ["_class", "_contents"];
+        private _item = createVehicle [_class, getPosATL _veh, [], 5, "NONE"];
+        if (_contents isNotEqualTo []) then { [_item, _contents] call OT_fnc_setCargo };
+        if !([_item, _veh, true] call ace_cargo_fnc_loadItem) then {
+            diag_log format ["Overthrow: garage couldn't load %1 back into %2, left next to it", _class, typeOf _veh];
+        };
+    } forEach _aceCargo;
+
+    if (_attachedClass isNotEqualTo "") then {
+        _veh setVariable ["OT_attachedClass", _attachedClass, true];
+        [_veh, _attachedAmmo] call OT_fnc_initAttached;
     };
-} forEach _aceCargo;
-
-if (_attachedClass isNotEqualTo "") then {
-    _veh setVariable ["OT_attachedClass", _attachedClass, true];
-    [_veh, _attachedAmmo] call OT_fnc_initAttached;
 };
