@@ -3,7 +3,7 @@
     A delivery to the occupier (a tank, a patrol aircraft or a FOB's vehicle) may be reported by
     resistance intelligence: 20% + the destination town's resistance support / 20, at most 80%.
     Reported, the players get a task to destroy or steal it before it arrives: $3500 for a tank, $2000
-    for an aircraft, $1000 for a FOB vehicle (the callers pass it) and +10 influence to whoever does it. It fails when it's delivered (the delivery sets
+    for an aircraft, $1000 for a FOB vehicle (the callers pass it) and +20 influence to whoever does it. It fails when it's delivered (the delivery sets
     "OT_delivered" on it, or removes it on arrival) or after 40 minutes.
     The task doesn't track the vehicle: for a route (convoy, fly-in) it shows where it comes from and
     where it goes, for an airdrop an area (off-centre) it may land in.
@@ -67,7 +67,7 @@ if (_kind isEqualTo "drop") then {
 [
     independent, [_taskId],
     [
-        format ["Resistance intelligence reports that a %1 is being delivered to %2. %4 Destroy it or steal it before it gets there.<br/><br/>Reward: $%3, +10 influence", _vehName, _for, _reward, _how],
+        format ["Resistance intelligence reports that a %1 is being delivered to %2. %4 Destroy it or steal it before it gets there.<br/><br/>Reward: $%3, +20 influence", _vehName, _for, _reward, _how],
         format ["Intercept the %1", _vehName],
         _taskId
     ],
@@ -120,7 +120,7 @@ format ["The %1 for %2 was %3", _vehName, _for, _result] remoteExec ["OT_fnc_not
 // influence. Nobody to credit (it crashed, the thief is offline): everyone gets the influence
 if (!isNull _winner) then { [_winner, _reward] call OT_fnc_rewardMoney };
 if (!isNull _winner && { isPlayer _winner }) then {
-    10 remoteExec ["OT_fnc_influence", _winner, false];
+    20 remoteExec ["OT_fnc_influence", _winner, false];
 } else {
-    10 remoteExec ["OT_fnc_influence", 0, false];
+    20 remoteExec ["OT_fnc_influence", 0, false];
 };
