@@ -58,7 +58,6 @@ call compileScript ["initVar.sqf", false];
 
 // Dedicated servers need a separate definition for mission params
 if (isDedicated) then {
-    OT_randomizeLoadouts = (["ot_randomizeloadouts", 0] call BIS_fnc_getParamValue) isEqualTo 1;
     OT_factoryProductionMulti = (["ot_factoryproductionmulti", 0] call BIS_fnc_getParamValue) * 0.01;
     OT_gangMemberCap = ["ot_gangmembercap", 0] call BIS_fnc_getParamValue;
     OT_gangResourceCap = ["ot_gangresourcecap", 0] call BIS_fnc_getParamValue;
@@ -95,6 +94,9 @@ OT_tpl_checkpoint = [] call compileScript ["data\templates\NATOcheckpoint.sqf", 
     if (_occupier isEqualTo -1) then { _occupier = ["ot_enemy_faction", 0] call BIS_fnc_getParamValue };
     if (_occupier isNotEqualTo OT_occupierChoice) then { [_occupier] call OT_fnc_applyOccupier };
     server setVariable ["OT_occupier", _occupier, true];
+
+    // Occupier loadouts: picked on the new game screen, a loaded game keeps its own (older saves: the lobby's)
+    server setVariable ["OT_randomLoadoutMode", [server getVariable ["OT_randomLoadoutMode", -1]] call OT_fnc_setLoadoutMode, true];
 
     private _initStart = diag_tickTime;
 

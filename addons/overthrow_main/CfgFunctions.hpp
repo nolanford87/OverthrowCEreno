@@ -33,6 +33,7 @@ class CfgFunctions {
             class revealToResistance {};
             class applyOccupier {};
             class applyOccupierPools {};
+            class setLoadoutMode {};
         };
 
         /* Persistent Save */

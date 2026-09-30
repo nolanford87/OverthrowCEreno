@@ -62,7 +62,6 @@ OT_allBLUVehicles = [];
     OT_allBLUVehicles append _other;
 } forEach _sideFactions;
 
-// Both are kept (the QA tests go through them), OT_randomLoadoutPool is the one in use
-private _poolSetting = ["ot_randomloadoutpool", 0] call BIS_fnc_getParamValue;
+// Both are kept (the QA tests go through them), OT_randomLoadoutPool is the one in use (see OT_fnc_setLoadoutMode)
 OT_randomLoadoutPools = [_poolOccupier, OT_loadoutPoolAll];
-OT_randomLoadoutPool = OT_randomLoadoutPools select (_poolSetting > 0);
+[missionNamespace getVariable ["OT_randomLoadoutMode", -1]] call OT_fnc_setLoadoutMode;
