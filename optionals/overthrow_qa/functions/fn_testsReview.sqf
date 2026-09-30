@@ -9,7 +9,7 @@
 "Multiplayer (as a non-host player): finish a 'Kill NATO' and an 'Operative transport' job, you get the money and the kill count hints, the host doesn't" call OTQA_fnc_manual;
 "Save at night (after 19:00), restart and load: time runs at the night speed straight away" call OTQA_fnc_manual;
 "New game screen: pick Occupier Loadouts (Standard, Faction Random, Fully Random), start, save and reload: the choice stays" call OTQA_fnc_manual;
-"A FOB whose bought vehicle arrives (drives in or parachuted) warns that the nearest town falls back in 15 minutes; clear the FOB in time and it doesn't" call OTQA_fnc_manual;
+"A FOB whose bought vehicle arrives (drives in or parachuted) warns that the nearest town falls back in 15 minutes; clear the FOB in time and it doesn't. If it takes the town, its vehicle patrols the town afterwards and the FOB is gone once you are dead or over 1 km away" call OTQA_fnc_manual;
 "As a general, open the player list and select an offline player who never saved money: shows $0, no script error" call OTQA_fnc_manual;
 
 // Far corner of the map, away from towns and players
@@ -241,9 +241,35 @@ OTQA_rv_spawnKill = {
         [_fobPos] call OT_fnc_NATOstartFOBTimer;
         ["Only one timer per FOB", ({ (_x select 0) isEqualTo _fobPos } count (server getVariable ["NATOfobTimers", []])) isEqualTo 1, ""] call OTQA_fnc_check;
 
+        // Its vehicle, still alive, should join the town's garrison
+        private _vehCls = selectRandom OT_NATO_Vehicles_GroundSupport;
+        private _vehPos = _fobPos findEmptyPosition [10, 80, _vehCls];
+        if (_vehPos isEqualTo []) then { _vehPos = _fobPos };
+        private _fobVeh = createVehicle [_vehCls, _vehPos, [], 0, "NONE"];
+        _fobVeh setVariable ["OT_fobVehicle", _fobPos];
+        [_fobVeh] call OT_fnc_createNATOCrew;
+        private _townVehicles = +(server getVariable [format ["vehgarrison%1", _town], []]);
+
         // Time's up (the save is disposable, the town really flips)
         _timer set [1, 0];
         call OT_fnc_NATOFOBtimers;
+        private _newList = server getVariable [format ["vehgarrison%1", _town], []];
+        ["The FOB's vehicle joins the town's garrison", (count _newList) isEqualTo ((count _townVehicles) + 1) && { _vehCls in _newList } && { (_fobVeh getVariable ["vehgarrison", ""]) isEqualTo _town },
+            format ["%1: %2", _town, _newList]] call OTQA_fnc_check;
+        ["The FOB is set to disband", "Disband" in (_fob select 2), ""] call OTQA_fnc_check;
+
+        // It disbands once no player is within 1 km
+        call OT_fnc_NATOFOBtimers;
+        private _stillThere = ((server getVariable ["NATOfobs", []]) findIf { (_x select 0) isEqualTo _fobPos }) > -1;
+        if ((player distance2D _fobPos) > 1000) then {
+            ["FOB disbands when no player is within 1 km", !_stillThere, ""] call OTQA_fnc_check;
+        } else {
+            ["FOB stays while a player is within 1 km", _stillThere, format ["%1 m away", round (player distance2D _fobPos)]] call OTQA_fnc_check;
+        };
+
+        { deleteVehicle _x } forEach (crew _fobVeh);
+        deleteVehicle _fobVeh;
+        server setVariable [format ["vehgarrison%1", _town], _townVehicles, true];
         private _stability = server getVariable [format ["stability%1", _town], 0];
         private _support = server getVariable [format ["rep%1", _town], 0];
         ["Town is back under occupier control, 100% stability, no resistance support",
