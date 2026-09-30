@@ -40,9 +40,13 @@ OTQA_dlc_isClass = {
 
     ["NATO weapon pools", {
         private _all = OT_allBLURifles + OT_allBLUGLRifles + OT_allBLUMachineGuns + OT_allBLUSniperRifles + OT_allBLULaunchers + OT_allBLUPistols + OT_allBLUSMG;
-        // FIA and CTRG weapons that used to leak in
-        private _leaked = _all arrayIntersect ["arifle_TRG21_F", "arifle_TRG20_F", "arifle_Mk20_F", "arifle_AKM_F", "launch_RPG32_F", "hgun_PDW2000_F"];
-        ["NATO weapon pools only hold NATO weapons", _leaked isEqualTo [], format ["found: %1", _leaked]] call OTQA_fnc_check;
+        // FIA and CTRG weapons that used to leak in (only when NATO occupies, other occupiers carry some of them)
+        if !(toUpperANSI OT_faction_NATO in ["BLU_F", "BLU_T_F", "BLU_W_F"]) then {
+            format ["NATO weapon pool leak check skipped: %1 occupies, not NATO", OT_NATO_name] call OTQA_fnc_manual;
+        } else {
+            private _leaked = _all arrayIntersect ["arifle_TRG21_F", "arifle_TRG20_F", "arifle_Mk20_F", "arifle_AKM_F", "launch_RPG32_F", "hgun_PDW2000_F"];
+            ["NATO weapon pools only hold NATO weapons", _leaked isEqualTo [], format ["found: %1", _leaked]] call OTQA_fnc_check;
+        };
         ["Gendarmes have SMGs to pick from", OT_allBLUSMG isNotEqualTo [], format ["%1", OT_allBLUSMG]] call OTQA_fnc_check;
     }],
 
