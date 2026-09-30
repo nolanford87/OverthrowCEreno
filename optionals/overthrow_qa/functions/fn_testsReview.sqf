@@ -338,5 +338,39 @@ OTQA_rv_spawnKill = {
             deleteVehicle _veh;
             deleteGroup _group;
         };
+    }],
+
+    ["Bought tank is delivered", {
+        // Ordered for a (test) base at the player: convoyed with 2 escorts, or airdropped about 2 km away
+        if (OT_NATO_Vehicles_TankSupport isEqualTo []) exitWith { "Tank delivery test skipped: the occupier has no tanks" call OTQA_fnc_manual };
+        private _cls = selectRandom OT_NATO_Vehicles_TankSupport;
+        private _basePos = getPos player;
+        private _script = [_cls, "OTQA_TEST", _basePos] spawn OT_fnc_NATOdeliverHeavy;
+        private _timeout = time + 15;
+        private _tank = objNull;
+        waitUntil {
+            sleep 0.5;
+            _tank = vehicles select { (_x getVariable ["vehgarrison", ""]) isEqualTo "OTQA_TEST" } param [0, objNull];
+            !isNull _tank || { time > _timeout }
+        };
+        sleep 2;
+        private _escorts = vehicles select { (_x getVariable ["OT_escort", ""]) isEqualTo "OTQA_TEST" };
+        private _alt = (getPosATL _tank) select 2;
+        private _dist = _tank distance2D _basePos;
+        private _airdrop = _alt > 20 || { (_dist > 1500) && { (_dist < 2500) } && { _escorts isEqualTo [] } };
+        private _convoy = (count _escorts) isEqualTo 2 && { (_escorts findIf { !alive _x || { isNull driver _x } }) isEqualTo -1 };
+        ["Tank is convoyed (2 escorts) or airdropped about 2 km away", !isNull _tank && { _airdrop || _convoy },
+            format ["%1: %2, %3 m from the base, %4 m up, %5 escorts", _cls, ["airdrop", "convoy"] select _convoy, round _dist, round _alt, count _escorts]] call OTQA_fnc_check;
+
+        terminate _script;
+        {
+            private _v = _x;
+            private _g = group driver _v;
+            { deleteVehicle _x } forEach (crew _v);
+            { detach _x; deleteVehicle _x } forEach (attachedObjects _v);
+            if (!isNull attachedTo _v) then { deleteVehicle (attachedTo _v) };
+            deleteVehicle _v;
+            if (!isNull _g) then { deleteGroup _g };
+        } forEach (_escorts + ([_tank] select { !isNull _x }));
     }]
 ]

@@ -257,7 +257,11 @@ private _airgarrison = server getVariable [format ["airgarrison%1", _name], []];
 } forEach (_airgarrison);
 
 private _vehgarrison = server getVariable [format ["vehgarrison%1", _name], []];
+// A tank already here (on its way after being bought, OT_fnc_NATOdeliverHeavy) isn't spawned again
+private _presentVeh = (vehicles select { alive _x && { (_x getVariable ["vehgarrison", ""]) isEqualTo _name } }) apply { typeOf _x };
 {
+    private _presentIndex = _presentVeh find _x;
+    if (_presentIndex > -1) then { _presentVeh deleteAt _presentIndex; continue };
     private _vgroup = createGroup blufor;
     _groups pushBack _vgroup;
     private _vehtype = _x;
