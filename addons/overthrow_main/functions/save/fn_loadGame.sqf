@@ -199,6 +199,15 @@ private _hasList_buildableHouses = false;
         } forEach (_val);
         continue;
     };
+    if (_key == "hrgarage") then {
+        _val params [["_garage", []], ["_extra", []]];
+        if (_garage isNotEqualTo []) then {
+            _garage params [["_categories", []], ["_lastUID", 0], ["_sources", [[], [], []]]];
+            [[_categories apply { createHashMapFromArray _x }, _lastUID, _sources]] call HR_Garage_fnc_loadSaveData;
+        };
+        OT_garageExtra = createHashMapFromArray _extra;
+        continue;
+    };
     if (_key == "vehicles") then {
         _set = false;
         private _ccc = 0;

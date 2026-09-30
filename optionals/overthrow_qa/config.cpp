@@ -36,6 +36,7 @@ class CfgFunctions {
             class testsFollowups {};
             class testsReview {};
             class testsDLC {};
+            class testsGarage {};
             // Occupier QA tests: every "Occupying faction" lobby option
             class testsOccupiers {};
         };
