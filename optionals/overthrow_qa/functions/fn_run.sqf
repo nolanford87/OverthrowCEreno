@@ -4,7 +4,7 @@
     Each test runs in its own script, so one failing with a script error doesn't stop the others.
 
     Parameters:
-        _this # 0: STRING - Suite to run, "bugfixes" (the bug fix QA tests)
+        _this # 0: STRING - Suite to run, "bugfixes" (the bug fix QA tests) or "followups" (review and DLC QA tests)
 
     Usage: ["bugfixes"] spawn OTQA_fnc_run;
 */
@@ -12,7 +12,8 @@
 params [["_suite", "bugfixes", [""]]];
 
 private _suites = createHashMapFromArray [
-    ["bugfixes", ["Bug fix QA tests", OTQA_fnc_testsBugFixes]]
+    ["bugfixes", ["Bug fix QA tests", OTQA_fnc_testsBugFixes]],
+    ["followups", ["Review and DLC QA tests", OTQA_fnc_testsFollowups]]
 ];
 if !(_suite in _suites) exitWith {
     hint format ["Overthrow QA: unknown test suite %1", _suite];

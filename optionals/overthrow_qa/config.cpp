@@ -32,6 +32,8 @@ class CfgFunctions {
             class testsBatch7 {};
             class testsBatch8 {};
             class testsBatch9 {};
+            // Review and DLC QA tests: the suite for the fixes made after the nine batches
+            class testsFollowups {};
             class testsReview {};
             class testsDLC {};
         };
@@ -46,6 +48,10 @@ class zen_context_menu_actions {
         class OTQA_bugfixes {
             displayName = "Run bug fix QA tests";
             statement = "['bugfixes'] spawn OTQA_fnc_run";
+        };
+        class OTQA_followups {
+            displayName = "Run review and DLC QA tests";
+            statement = "['followups'] spawn OTQA_fnc_run";
         };
     };
 };

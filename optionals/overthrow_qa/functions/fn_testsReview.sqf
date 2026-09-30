@@ -2,7 +2,7 @@
     Description:
     Second review follow-ups (fix/review-followups): employee deaths, garrison lists, stats loop, job rewards.
 
-    Returns: ARRAY - [[name, code], ...], part of the bug fix QA tests (OTQA_fnc_testsBugFixes)
+    Returns: ARRAY - [[name, code], ...], part of the review and DLC QA tests (OTQA_fnc_testsFollowups)
 */
 
 "Respawn, then use Reset UI a few times: the stats HUD keeps updating and doesn't flicker" call OTQA_fnc_manual;

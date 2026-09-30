@@ -57,7 +57,9 @@ private _muzzleMagazines = {
             _magazines append getArray _x;
         } forEach (configProperties [configFile >> "CfgMagazineWells" >> _x, "isArray _x"]);
     } forEach (getArray (_cfg >> "magazineWell"));
-    _magazines select { getNumber (_cfgMagazines >> _x >> "scope") > 1 };
+    // Mods don't always spell the classnames in their wells like the class, use the config spelling
+    _magazines = _magazines apply { configName (_cfgMagazines >> _x) };
+    _magazines select { _x isNotEqualTo "" && { getNumber (_cfgMagazines >> _x >> "scope") > 1 } };
 };
 
 // Armor of a vest (chest) or helmet (head)
