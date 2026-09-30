@@ -1,6 +1,6 @@
 /*
     Description:
-    An airdrop by an armed Blackfish (whatever the occupier): it flies in at 300-400 m from the
+    An airdrop by an armed Blackfish (whatever the occupier): it flies in at 250-325 m from the
     occupier's nearest airfield (about 5 km out when it holds none), releases the vehicle on a
     parachute over the drop point, flies on and is removed once no player is within 2 km.
     Shot down before the drop, nothing is dropped. Waits until the vehicle has landed.
@@ -20,7 +20,7 @@
 params ["_cargoClass", "_dropPoint", ["_onLaunch", []]];
 
 private _planeClass = "B_T_VTOL_01_armed_F";
-private _altitude = 300 + random 100;
+private _altitude = 250 + random 75;
 private _airfield = [_dropPoint] call OT_fnc_NATOnearestAirfield;
 private _origin = [_dropPoint getPos [5000, random 360], _airfield select 0] select (_airfield isNotEqualTo []);
 _origin = [_origin select 0, _origin select 1, _altitude];
