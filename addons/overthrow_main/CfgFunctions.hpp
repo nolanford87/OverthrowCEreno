@@ -547,6 +547,7 @@ class CfgFunctions {
             class NATOstartFOBTimer {};
             class NATOvehiclePatrol {};
             class NATOairPatrolBase {};
+            class NATOdeliverAirPatrol {};
             class NATOConvoy {};
             class NATOGroupDeployFOB {};
             class NATOMissionDeployFOB {};

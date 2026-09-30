@@ -316,9 +316,13 @@ private _vehgarrison = server getVariable [format ["vehgarrison%1", _name], []];
     };
 } forEach (_vehgarrison);
 
-// Patrol helicopters / VTOLs, parked and crewed, they take off while a player is within 2 km
+// Patrol helicopters / VTOLs, parked and crewed, they take off while a player is within 2 km.
+// One already here (flying in after being bought, OT_fnc_NATOdeliverAirPatrol) isn't spawned again
+private _presentAir = (vehicles select { alive _x && { (_x getVariable ["airpatrol", ""]) isEqualTo _name } }) apply { typeOf _x };
 {
     private _vehtype = _x;
+    private _presentIndex = _presentAir find _vehtype;
+    if (_presentIndex > -1) then { _presentAir deleteAt _presentIndex; continue };
     private _pos = _posTown findEmptyPosition [25, 300, _vehtype];
     if (_pos isEqualTo []) then { continue };
     private _veh = createVehicle [_vehtype, _pos, [], 0, "NONE"];

@@ -301,5 +301,32 @@ OTQA_rv_spawnKill = {
         server setVariable ["NATOfobs", _allFobs, true]; // Cleared
         call OT_fnc_NATOFOBtimers;
         ["Clearing the FOB cancels its timer", ((server getVariable ["NATOfobTimers", []]) findIf { (_x select 0) isEqualTo _fob2Pos }) isEqualTo -1, ""] call OTQA_fnc_check;
+    }],
+
+    ["Bought patrol aircraft flies in", {
+        // Ordered for a (test) base at the player: it appears 3-4 km away, high up, heading in
+        private _cls = selectRandom (OT_NATO_Vehicles_AirSupport + OT_NATO_Vehicles_AirSupport_Small);
+        private _basePos = getPos player;
+        private _script = [_cls, "OTQA_TEST", _basePos] spawn OT_fnc_NATOdeliverAirPatrol;
+        private _timeout = time + 10;
+        private _veh = objNull;
+        waitUntil {
+            sleep 0.5;
+            _veh = vehicles select { (_x getVariable ["airpatrol", ""]) isEqualTo "OTQA_TEST" } param [0, objNull];
+            !isNull _veh || { time > _timeout }
+        };
+        sleep 1;
+        private _dist = round (_veh distance2D _basePos);
+        private _alt = round ((getPosATL _veh) select 2);
+        ["Patrol aircraft appears 3-4 km away, high up", !isNull _veh && { _dist > 2800 } && { _dist < 4200 } && { _alt > 150 } && { alive _veh },
+            format ["%1, %2 m away, %3 m up", _cls, _dist, _alt]] call OTQA_fnc_check;
+
+        terminate _script;
+        if (!isNull _veh) then {
+            private _group = group driver _veh;
+            { deleteVehicle _x } forEach (crew _veh);
+            deleteVehicle _veh;
+            deleteGroup _group;
+        };
     }]
 ]
