@@ -26,6 +26,7 @@ The goal of the project is to update the Overthrow codebase to allow for easier 
 
 # 🔍 Required Addons
 * ACE3 (Fully integrated) [(Steam Workshop)](https://steamcommunity.com/sharedfiles/filedetails/?id=463939057)
+* HR Garage (virtual garage at owned warehouses and resistance bases) [(Steam Workshop)](https://steamcommunity.com/sharedfiles/filedetails/?id=2600207268)
 
 # 🔨 To install
 * Overthrow CE is available on the [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=2824471652) (Recommended way to play)
