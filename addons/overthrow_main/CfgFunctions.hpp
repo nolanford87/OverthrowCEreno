@@ -542,6 +542,7 @@ class CfgFunctions {
             class NATOSupportSniper {};
             class NATOSupportRecon {};
             class createNATOCrew {};
+            class NATOreleaseFOBVehicle {};
             class NATOvehiclePatrol {};
             class NATOairPatrolBase {};
             class NATOConvoy {};
