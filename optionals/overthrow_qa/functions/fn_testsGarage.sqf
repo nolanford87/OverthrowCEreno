@@ -6,6 +6,7 @@
     Returns: ARRAY - [[name, code], ...]
 */
 
+"Garage: while undercover, open the garage and take a vehicle out: the garage stays open and placing works" call OTQA_fnc_manual;
 "Garage: at an owned warehouse or base flag, store a damaged, half-fuelled vehicle with cargo, take it out: same damage, fuel, ammo, cargo, ACE cargo and lock" call OTQA_fnc_manual;
 "Garage: a vehicle with a workshop weapon comes back with the weapon attached" call OTQA_fnc_manual;
 "Garage: save, restart and load: stored vehicles are still in the garage" call OTQA_fnc_manual;
@@ -93,6 +94,20 @@ OTQA_garage_fill = {
         // Clean up: take it out of the garage pool again
         (HR_Garage_Vehicles select _cat) deleteAt _vehUID;
         deleteVehicle _out;
+        deleteVehicle _flag;
+    }],
+
+    ["Garage stays open while undercover", {
+        if (isNil "HR_Garage_CP_closeCnd") exitWith { "Garage undercover test skipped: HR Garage isn't loaded" call OTQA_fnc_manual };
+        call OT_garageApplyHooks;
+        private _flag = createVehicle [OT_flag_IND, player getPos [8, (getDir player) + 180], [], 0, "CAN_COLLIDE"];
+        private _wasCaptive = captive player;
+        private _was = HR_Garage_accessPoint;
+        HR_Garage_accessPoint = _flag;
+        player setCaptive true;
+        ["Undercover (captive) doesn't close the garage", !(call HR_Garage_CP_closeCnd), ""] call OTQA_fnc_check;
+        player setCaptive _wasCaptive;
+        HR_Garage_accessPoint = _was;
         deleteVehicle _flag;
     }]
 ]
