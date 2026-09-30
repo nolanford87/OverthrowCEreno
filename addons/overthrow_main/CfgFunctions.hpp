@@ -551,6 +551,7 @@ class CfgFunctions {
             class NATOdeliverAirPatrol {};
             class NATOdeliverHeavy {};
             class NATOairdropVehicle {};
+            class NATOdeliveryWait {};
             class NATOdeliveryIntel {};
             class NATOnearestAirfield {};
             class NATOConvoy {};

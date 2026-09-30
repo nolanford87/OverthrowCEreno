@@ -12,6 +12,9 @@
     5. Shot down: the Blackfish is destroyed before the drop, task succeeds, off the base's list
     6. Convoy completes: a base a convoy reaches, it drives 200-300 m, is moved 200-300 m from the base
        and completes the delivery (task fails, stays on the list, escorts head back)
+    7. The wait: a delivery is reported as soon as it's ordered and only sets off after the wait (8 real
+       minutes in play, 60 seconds here); meanwhile the base doesn't spawn it itself
+    The QA runner makes deliveries set off at once (OT_deliveryDelay 0) except in test 7.
 
     Returns: ARRAY - [[name, code, seconds], ...]
 */
@@ -311,5 +314,43 @@ OTQA_intel_airdrop = {
         ["Convoy: the escorts head back (or are gone)", (count _returning) isEqualTo (count _escorts), format ["%1 of %2", count _returning, count _escorts]] call OTQA_fnc_check;
 
         [_tank, _baseName, _script, _type, true] call OTQA_intel_cleanup;
-    }, 600]
+    }, 600],
+
+    ["Intel 7: announced, then sets off after the wait", {
+        private _base = call OTQA_intel_base;
+        if (_base isEqualTo [] || { OT_NATO_Vehicles_TankSupport isEqualTo [] }) exitWith { "Wait test skipped: no occupier base or no tanks" call OTQA_fnc_manual };
+        _base params ["_basePos", "_baseName"];
+        private _type = selectRandom OT_NATO_Vehicles_TankSupport;
+        private _list = server getVariable [format ["vehgarrison%1", _baseName], []];
+        _list pushBack _type;
+        server setVariable [format ["vehgarrison%1", _baseName], _list, true];
+        private _isFor = { (_x getVariable ["vehgarrison", ""]) isEqualTo _baseName || { (_x getVariable ["OT_airdropFor", ""]) isEqualTo _baseName } };
+        private _before = vehicles select _isFor;
+
+        private _oldTasks = (player call BIS_fnc_tasksUnit) select { (_x find "intercept") isEqualTo 0 };
+        OT_deliveryDelay = 60;
+        OT_deliveryIntelChance = 100;
+        private _ordered = time;
+        private _script = [_type, _baseName, _basePos] spawn OT_fnc_NATOdeliverHeavy;
+        sleep 5;
+        OT_deliveryIntelChance = nil;
+        OT_deliveryDelay = 0;
+
+        // Announced at once, nothing on its way yet
+        private _taskId = ((player call BIS_fnc_tasksUnit) select { (_x find "intercept") isEqualTo 0 && { !(_x in _oldTasks) } }) param [0, ""];
+        ["Wait: reported as soon as it's ordered", _taskId isNotEqualTo "", format ["%1 for %2", _taskId, _baseName]] call OTQA_fnc_check;
+        private _early = (vehicles select _isFor) - _before;
+        ["Wait: nothing sets off before the wait", _early isEqualTo [], format ["%1 on its way after %2 s", _early apply { typeOf _x }, round (time - _ordered)]] call OTQA_fnc_check;
+        private _pending = (missionNamespace getVariable ["OT_pendingDeliveries", []]) select { (_x select 0) isEqualTo _baseName };
+        ["Wait: the base knows it's still to come (won't spawn it itself)", (_pending findIf { (_x select 1) isEqualTo _type }) > -1, str _pending] call OTQA_fnc_check;
+
+        // Sets off after the wait
+        private _veh = objNull;
+        private _timeout = _ordered + 90;
+        waitUntil { sleep 1; _veh = (vehicles select { alive _x && _isFor }) - _before param [0, objNull]; !isNull _veh || { time > _timeout } };
+        ["Wait: it sets off after the wait, the report follows it", !isNull _veh && { (time - _ordered) >= 58 } && { sleep 3; (_veh getVariable ["OT_interceptTask", ""]) isEqualTo _taskId },
+            format ["%1 after %2 s", typeOf _veh, round (time - _ordered)]] call OTQA_fnc_check;
+
+        [_veh, _baseName, _script, _type, true] call OTQA_intel_cleanup;
+    }, 180]
 ]
