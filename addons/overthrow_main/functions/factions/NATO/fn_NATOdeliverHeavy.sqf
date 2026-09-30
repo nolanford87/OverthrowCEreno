@@ -1,8 +1,9 @@
 /*
     Description:
     A tank a base just traded for (OT_fnc_NATOupgradeHeavyGarrisons) is delivered, one of two ways:
-    - convoyed from the occupier's nearest HQ or factory (while it holds them) reachable by land,
-      with 2 escort vehicles that protect it until it's delivered or destroyed, then leave
+    - convoyed from the nearest place the occupier holds (HQ, factory, a base or radio tower) at least
+      4 km away and reachable by land, starting on a road within 50 m of it, with 2 escort vehicles
+      that protect it until it's delivered or destroyed, then leave
     - airdropped by an armed Blackfish (OT_fnc_NATOairdropVehicle) in an open field about 2 km from the
       base on its island, then drives in (always possible; shot down before the drop, it's lost)
     It's already on the base's vehicle list, destroyed on the way it comes off it (tagged "vehgarrison").
@@ -30,12 +31,19 @@ private _tag = {
     _g;
 };
 
-// Where a convoy can come from: the HQ and the factory while the occupier holds them, by land
+// Where a convoy can come from: the HQ, the factory and any base or radio tower the occupier holds, at
+// least 4 km away, reachable by land and with a road within 50 m to start on
 private _abandoned = server getVariable ["NATOabandoned", []];
 private _sources = [];
 if !(OT_NATO_HQ in _abandoned) then { _sources pushBack OT_NATO_HQPos };
 if !("Factory" in (server getVariable ["GEURowned", []])) then { _sources pushBack OT_factoryPos };
-_sources = _sources select { (_x distance2D _basePos) > 500 && { [_x, _basePos] call OT_fnc_regionIsConnected } };
+{
+    _x params ["_sourcePos", "_sourceName"];
+    if (!(_sourceName in _abandoned) && { _sourceName isNotEqualTo _name }) then { _sources pushBack _sourcePos };
+} forEach (OT_objectiveData + OT_airportData + OT_commsData);
+_sources = _sources select {
+    (_x distance2D _basePos) >= 4000 && { [_x, _basePos] call OT_fnc_regionIsConnected } && { (_x nearRoads 50) isNotEqualTo [] }
+};
 // An open field on land to airdrop it in, on the base's island (it has to drive there): about 2 km
 // away, further or nearer if there's none. A few tries per distance, one can land on another island
 private _field = [];
@@ -69,8 +77,9 @@ private _from = [];
 
 if (_convoy) then {
     _from = ([_sources, [], { _x distance2D _basePos }, "ASCEND"] call BIS_fnc_sortBy) select 0;
-    private _road = [_from, 300] call BIS_fnc_nearestRoad;
-    private _start = [getPosATL _road, _from] select (isNull _road);
+    // On a road within 50 m of it
+    private _road = ([_from nearRoads 50, [], { _x distance2D _from }, "ASCEND"] call BIS_fnc_sortBy) select 0;
+    private _start = getPosATL _road;
     private _dir = _start getDir _basePos;
     private _escortTypes = OT_NATO_Vehicles_Convoy select { !(_x isKindOf "Tank") };
     if (_escortTypes isEqualTo []) then { _escortTypes = OT_NATO_Vehicles_GroundSupport };
