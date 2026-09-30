@@ -10,6 +10,8 @@
        handling), task succeeds and pays the host
     4. Delivered: it's moved next to the base, the delivery arrives and the task fails
     5. Shot down: the Blackfish is destroyed before the drop, task succeeds, off the base's list
+    6. Convoy completes: a base a convoy reaches, it drives 200-300 m, is moved 200-300 m from the base
+       and completes the delivery (task fails, stays on the list, escorts head back)
 
     Returns: ARRAY - [[name, code, seconds], ...]
 */
@@ -34,8 +36,8 @@ OTQA_intel_listCount = {
 // A real tank delivery to that base: [tank (a convoy) or Blackfish (an airdrop), task id, base position,
 // base name, delivery script, tank class], [] if none
 OTQA_intel_deliver = {
-    params ["_method", ["_chance", 100]];
-    private _base = call OTQA_intel_base;
+    params ["_method", ["_chance", 100], ["_base", []]];
+    if (_base isEqualTo []) then { _base = call OTQA_intel_base };
     if (_base isEqualTo [] || { OT_NATO_Vehicles_TankSupport isEqualTo [] }) exitWith { [] };
     _base params ["_basePos", "_baseName"];
     private _type = selectRandom OT_NATO_Vehicles_TankSupport;
@@ -88,6 +90,22 @@ OTQA_intel_cleanup = {
         if (_index > -1) then { _list deleteAt _index };
         server setVariable [format ["vehgarrison%1", _baseName], _list, true];
     };
+};
+
+// The occupier base nearest the host that a convoy can reach (from the HQ or the factory it holds,
+// on the same land, over 500 m away): [position, name], [] if none
+OTQA_intel_convoyBase = {
+    private _abandoned = server getVariable ["NATOabandoned", []];
+    private _sources = [];
+    if !(OT_NATO_HQ in _abandoned) then { _sources pushBack OT_NATO_HQPos };
+    if !("Factory" in (server getVariable ["GEURowned", []])) then { _sources pushBack OT_factoryPos };
+    private _bases = (OT_objectiveData + OT_airportData) select {
+        private _basePos = _x select 0;
+        !((_x select 1) in _abandoned) && { _sources findIf { (_x distance2D _basePos) > 500 && { [_x, _basePos] call OT_fnc_regionIsConnected } } > -1 }
+    };
+    if (_bases isEqualTo []) exitWith { [] };
+    private _base = ([_bases, [], { (_x select 0) distance2D player }, "ASCEND"] call BIS_fnc_sortBy) select 0;
+    [_base select 0, _base select 1];
 };
 
 OTQA_intel_state = {
@@ -234,5 +252,55 @@ OTQA_intel_airdrop = {
     ["Intel 2: airdrop destroyed", { ["destroy"] call OTQA_intel_airdrop }, 720],
     ["Intel 3: airdrop stolen", { ["steal"] call OTQA_intel_airdrop }, 720],
     ["Intel 4: airdrop delivered", { ["deliver"] call OTQA_intel_airdrop }, 720],
-    ["Intel 5: Blackfish shot down", { ["shootdown"] call OTQA_intel_airdrop }, 120]
+    ["Intel 5: Blackfish shot down", { ["shootdown"] call OTQA_intel_airdrop }, 120],
+    ["Intel 6: ground convoy completes", {
+        private _base = call OTQA_intel_convoyBase;
+        if (_base isEqualTo []) exitWith { "Convoy test skipped: no occupier base a convoy can reach" call OTQA_fnc_manual };
+        (["convoy", 100, _base] call OTQA_intel_deliver) params ["_tank", "_taskId", "_basePos", "_baseName", "_script", "_type"];
+        private _escorts = vehicles select { (_x getVariable ["OT_escort", ""]) isEqualTo _baseName };
+        ["Convoy: a tank with 2 escorts, reported", !isNull _tank && { (count _escorts) isEqualTo 2 } && { (markerType (_taskId + "_from")) isEqualTo "mil_start" },
+            format ["%1 to %2, %3 escorts, %4 m to go", _type, _baseName, count _escorts, round (_tank distance2D _basePos)]] call OTQA_fnc_check;
+        if (isNull _tank) exitWith {};
+
+        // It drives 200-300 m
+        private _start = getPosATL _tank;
+        private _timeout = time + 180;
+        waitUntil { sleep 1; !alive _tank || { (_tank distance2D _start) >= 200 } || { time > _timeout } };
+        private _driven = round (_tank distance2D _start);
+        ["Convoy: it drives off", alive _tank && { _driven >= 200 } && { _driven <= 350 }, format ["%1 m", _driven]] call OTQA_fnc_check;
+
+        // The convoy onto a road 200-300 m from the base, tank in front, keeping their orders
+        private _dir = _basePos getDir _tank;
+        private _spot = _basePos getPos [250, _dir];
+        private _road = [_spot, 150] call BIS_fnc_nearestRoad;
+        if (!isNull _road && { ((getPosATL _road) distance2D _basePos) > 180 } && { ((getPosATL _road) distance2D _basePos) < 330 }) then { _spot = getPosATL _road };
+        private _heading = _spot getDir _basePos;
+        {
+            private _p = (_spot getPos [_forEachIndex * 30, _heading + 180]) findEmptyPosition [0, 40, typeOf _x];
+            if (_p isEqualTo []) then { _p = _spot getPos [_forEachIndex * 30, _heading + 180] };
+            _x setPosATL _p;
+            _x setDir _heading;
+        } forEach ([_tank] + (_escorts select { alive _x }));
+        ["Convoy: moved 200-300 m from the base", round (_tank distance2D _basePos) >= 180 && { (_tank distance2D _basePos) <= 330 }, format ["%1 m from %2", round (_tank distance2D _basePos), _baseName]] call OTQA_fnc_check;
+        private _listBefore = [_baseName, _type] call OTQA_intel_listCount;
+
+        // It completes the delivery
+        _timeout = time + 240;
+        waitUntil { sleep 2; !alive _tank || { _tank getVariable ["OT_delivered", false] } || { isNull _tank } || { time > _timeout } };
+        private _arrived = isNull _tank || { _tank getVariable ["OT_delivered", false] };
+        ["Convoy: the tank reaches the base", _arrived, format ["%1 m from the base", [round (_tank distance2D _basePos), 0] select (isNull _tank)]] call OTQA_fnc_check;
+        private _state = [_taskId] call OTQA_intel_state;
+        ["Convoy: delivered, the intercept task fails", _state isEqualTo "FAILED", _state] call OTQA_fnc_check;
+        ["Convoy: the tank stays on the base's list", ([_baseName, _type] call OTQA_intel_listCount) isEqualTo _listBefore, format ["%1 on the list: %2", _type, [_baseName, _type] call OTQA_intel_listCount]] call OTQA_fnc_check;
+        // The escorts are sent back after the delivery: further from the base 20 seconds later
+        private _distances = _escorts apply { [_x distance2D _basePos, 0] select (isNull _x) };
+        sleep 20;
+        private _returning = [];
+        {
+            if (isNull _x || { !alive _x } || { (_x distance2D _basePos) > ((_distances select _forEachIndex) + 20) }) then { _returning pushBack _x };
+        } forEach _escorts;
+        ["Convoy: the escorts head back (or are gone)", (count _returning) isEqualTo (count _escorts), format ["%1 of %2", count _returning, count _escorts]] call OTQA_fnc_check;
+
+        [_tank, _baseName, _script, _type, true] call OTQA_intel_cleanup;
+    }, 600]
 ]
