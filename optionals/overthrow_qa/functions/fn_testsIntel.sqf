@@ -2,7 +2,7 @@
     Description:
     Resistance intelligence on occupier deliveries (OT_fnc_NATOdeliveryIntel), with real deliveries:
     the occupier base nearest the host that it still holds is sent a tank (put on its vehicle list
-    first, like a trade does), with the intelligence report forced. Part of the current QA tests.
+    first, like a trade does), with the intelligence report forced. Part of the archived QA tests.
     1. Report: a convoy shows where it comes from and goes to (airdrop: a drop zone), no report at 0%
     2. Destroy: the player at the airdrop's landing, it drives 400-500 m, it's destroyed, task succeeds
     3. Steal: the same, the crew is killed and the host gets in (Overthrow's real stolen vehicle
