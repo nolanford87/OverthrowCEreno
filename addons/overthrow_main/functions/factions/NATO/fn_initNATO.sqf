@@ -497,6 +497,7 @@ private _revealed = server getVariable ["revealedFOBs", []];
 
         private _civ = _group createUnit [selectRandom OT_NATO_Units_LevelOne, _start, [], 0, "NONE"];
         _civ setVariable ["garrison", "HQ", false];
+        _civ setVariable ["OT_fob", _pos];
         _civ setRank "LIEUTENANT";
         _civ setVariable ["VCOM_NOPATHING_Unit", true, false];
         _civ setBehaviour "SAFE";

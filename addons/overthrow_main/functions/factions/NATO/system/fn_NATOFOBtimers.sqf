@@ -23,14 +23,7 @@ private _disband = _fobList select {
 if (_disband isNotEqualTo []) then {
     {
         private _fobPos = _x select 0;
-        private _statics = [OT_flag_NATO, OT_NATO_Barrier_Small, OT_NATO_Barrier_Large, OT_NATO_Sandbag_Curved, OT_NATO_HMG, OT_NATO_Mortar] + OT_NATO_StaticGarrison_LevelOne;
-        {
-            { deleteVehicle _x } forEach (crew _x);
-            deleteVehicle _x;
-        } forEach ((nearestObjects [_fobPos, _statics, 60]) select { !(_x call OT_fnc_hasOwner) });
-        // Its soldiers (on foot, the vehicle left for the town)
-        { deleteVehicle _x } forEach ((_fobPos nearEntities ["CAManBase", 250]) select { side group _x isEqualTo blufor && { !isPlayer _x } && { isNull objectParent _x } });
-        deleteMarker format ["natofob%1", str _fobPos];
+        [_fobPos] call OT_fnc_NATOclearFOB; // Its construction and living soldiers, the bodies stay
         _fobList deleteAt (_fobList find _x);
         diag_log format ["Overthrow: %1 FOB near %2 disbanded", OT_NATO_name, _fobPos call OT_fnc_nearestTown];
     } forEach _disband;
@@ -93,7 +86,7 @@ private _keep = [];
             private _park = ((server getVariable [_town, getPos _veh]) findEmptyPosition [10, 150, typeOf _veh]);
             _group setVariable ["OT_patrolCenter", server getVariable [_town, getPos _veh]];
             _group setVariable ["OT_patrolHome", [_park, getPos _veh] select (_park isEqualTo [])];
-            { _x setVariable ["garrison", _town, false] } forEach (crew _veh);
+            { _x setVariable ["garrison", _town, false]; _x setVariable ["OT_fob", nil] } forEach (crew _veh);
         };
     };
 

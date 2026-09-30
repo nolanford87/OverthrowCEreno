@@ -31,7 +31,7 @@ params ["_pos", "_upgrades", ["_deliver", false]];
         private _p = _pos getPos [8.5, 45];
         private _v = _gun createVehicle _p;
         _v setDir 45;
-        [_v] call OT_fnc_createNATOCrew;
+        { _x setVariable ["OT_fob", _pos] } forEach units ([_v] call OT_fnc_createNATOCrew);
 
         sleep 0.3;
 
@@ -42,7 +42,7 @@ params ["_pos", "_upgrades", ["_deliver", false]];
         _p = _pos getPos [8.5, 135];
         _v = _gun createVehicle _p;
         _v setDir 135;
-        [_v] call OT_fnc_createNATOCrew;
+        { _x setVariable ["OT_fob", _pos] } forEach units ([_v] call OT_fnc_createNATOCrew);
 
         sleep 0.3;
 
@@ -53,7 +53,7 @@ params ["_pos", "_upgrades", ["_deliver", false]];
         _p = _pos getPos [8.5, 225];
         _v = _gun createVehicle _p;
         _v setDir 225;
-        [_v] call OT_fnc_createNATOCrew;
+        { _x setVariable ["OT_fob", _pos] } forEach units ([_v] call OT_fnc_createNATOCrew);
 
         sleep 0.3;
 
@@ -64,7 +64,7 @@ params ["_pos", "_upgrades", ["_deliver", false]];
         _p = _pos getPos [8.5, 315];
         _v = _gun createVehicle _p;
         _v setDir 315;
-        [_v] call OT_fnc_createNATOCrew;
+        { _x setVariable ["OT_fob", _pos] } forEach units ([_v] call OT_fnc_createNATOCrew);
 
         sleep 0.3;
 
@@ -75,7 +75,7 @@ params ["_pos", "_upgrades", ["_deliver", false]];
     if (_x isEqualTo "Mortar") then {
         private _p = _pos findEmptyPosition [3, 50, OT_NATO_Mortar];
         private _v = OT_NATO_Mortar createVehicle _p;
-        [_v] call OT_fnc_createNATOCrew;
+        { _x setVariable ["OT_fob", _pos] } forEach units ([_v] call OT_fnc_createNATOCrew);
 
         private _g = grpNull;
         {
