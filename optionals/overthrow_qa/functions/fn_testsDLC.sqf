@@ -3,7 +3,7 @@
     DLC compatibility fixes (fix/dlc-compat): classnames, weapon and aircraft classification, houses.
     Run on each map to cover its own class lists (Altis, Malden, Tanoa, Livonia).
 
-    Returns: ARRAY - [[name, code], ...], part of the bug fix QA tests (OTQA_fnc_testsBugFixes)
+    Returns: ARRAY - [[name, code], ...], part of the review and DLC QA tests (OTQA_fnc_testsFollowups)
 */
 
 OTQA_dlc_isClass = {
@@ -94,7 +94,7 @@ OTQA_dlc_isClass = {
             private _rifles = (OT_randomLoadoutPool get "rifles") + (OT_randomLoadoutPool get "glRifles") + (OT_randomLoadoutPool get "machineGuns") + (OT_randomLoadoutPool get "sniperRifles");
             [format ["%1: primary comes from the pool", _name], _primary in _rifles || { _primary isEqualTo ((_loadout select 0) param [0, ""]) }, format ["%1 (%2)", _primary, _cls]] call OTQA_fnc_check;
             private _mag = (_new select 0) param [4, []];
-            [format ["%1: primary has a magazine", _name], _mag isNotEqualTo [] && { (_mag select 0) in compatibleMagazines _primary }, format ["%1", _mag]] call OTQA_fnc_check;
+            [format ["%1: primary has a magazine", _name], _mag isNotEqualTo [] && { (toLowerANSI (_mag select 0)) in ((compatibleMagazines _primary) apply { toLowerANSI _x }) }, format ["%1", _mag]] call OTQA_fnc_check;
 
             private _oldVest = (_loadout select 4) param [0, ""];
             private _newVest = (_new select 4) param [0, ""];
