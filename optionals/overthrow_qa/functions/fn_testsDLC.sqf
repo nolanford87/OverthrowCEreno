@@ -115,5 +115,12 @@ OTQA_dlc_isClass = {
 
         deleteGroup _grp;
         OT_randomLoadoutPool = _inUse;
+    }],
+
+    ["Occupier loadout choice", {
+        private _mode = server getVariable ["OT_randomLoadoutMode", -1];
+        private _names = ["Standard", "Faction random", "Fully random"];
+        ["Loadout choice is saved with the game", _mode in [0, 1, 2], format ["%1", _names param [_mode, _mode]]] call OTQA_fnc_check;
+        ["Soldiers use the saved choice", OT_randomizeLoadouts isEqualTo (_mode > 0) && { OT_randomLoadoutPool isEqualTo (OT_randomLoadoutPools select (_mode isEqualTo 2)) }, format ["randomize %1", OT_randomizeLoadouts]] call OTQA_fnc_check;
     }]
 ]

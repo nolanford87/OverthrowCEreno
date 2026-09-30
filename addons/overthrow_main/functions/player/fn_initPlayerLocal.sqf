@@ -88,7 +88,7 @@ if ((isServer || count ([] call CBA_fnc_players) == 1) && (server getVariable ["
 OT_showPlayerMarkers = (["ot_showplayermarkers", 1] call BIS_fnc_getParamValue) isEqualTo 1;
 OT_showTownChange = (["ot_showtownchange", 1] call BIS_fnc_getParamValue) isEqualTo 1;
 OT_showEnemyGroups = (["ot_showenemygroup", 1] call BIS_fnc_getParamValue) isEqualTo 1;
-OT_randomizeLoadouts = (["ot_randomizeloadouts", 0] call BIS_fnc_getParamValue) isEqualTo 1;
+if (!isServer) then { [] call OT_fnc_setLoadoutMode }; // Lobby default, the game's own is applied once the server is ready
 OT_factoryProductionMulti = (["ot_factoryproductionmulti", 0] call BIS_fnc_getParamValue) * 0.01;
 OT_gangMemberCap = ["ot_gangmembercap", 0] call BIS_fnc_getParamValue;
 OT_gangResourceCap = ["ot_gangresourcecap", 0] call BIS_fnc_getParamValue;
@@ -102,6 +102,7 @@ waitUntil {
 if (!isServer) then {
     private _occupier = server getVariable ["OT_occupier", OT_occupierChoice];
     if (_occupier isNotEqualTo OT_occupierChoice) then { [_occupier] call OT_fnc_applyOccupier };
+    [server getVariable ["OT_randomLoadoutMode", -1]] call OT_fnc_setLoadoutMode;
 };
 
 private _aplayers = players_NS getVariable ["OT_allplayers", []];

@@ -5,6 +5,12 @@ server setVariable ["generals", [getPlayerUID player], true];
 private _diff = server getVariable ["OT_difficulty", 1];
 private _ft = server getVariable ["OT_fastTravelType", 1];
 private _ftr = server getVariable ["OT_fastTravelRules", _diff];
+private _loadouts = server getVariable ["OT_randomLoadoutMode", missionNamespace getVariable ["OT_randomLoadoutMode", 0]]; // The lobby's by default
+
+// Occupier loadouts: highlight the chosen one
+{
+    (findDisplay 8099) displayCtrl _x ctrlSetTextColor ([[1, 1, 1, 1], [0, 0.8, 0, 1]] select (_forEachIndex isEqualTo _loadouts));
+} forEach [1610, 1611, 1612];
 
 if (_diff isEqualTo 0) then {
     (findDisplay 8099) displayCtrl 1600 ctrlSetTextColor [0, 0.8, 0, 1];

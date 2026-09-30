@@ -1351,7 +1351,7 @@ class OT_dialog_newgame {
             x = "0.324687 * safeZoneW + safeZoneX";
             y = "0.269 * safeZoneH + safeZoneY";
             w = "0.345469 * safeZoneW";
-            h = "0.495 * safeZoneH";
+            h = "0.649 * safeZoneH";
             colorBackground[] = {0.1, 0.1, 0.1, 1};
             colorActive[] = {0.1, 0.1, 0.1, 1};
         };
@@ -1482,11 +1482,50 @@ class OT_dialog_newgame {
             action = "server setVariable ['OT_fastTravelRules', 2, true]; call OT_fnc_newGameDialog;";
             tooltip = "Cannot fast travel while holding a weapon, carrying drugs, or in an offensive vehicle";
         };
+        class RscStructuredText_1104: RscOverthrowStructuredText {
+            idc = 1104;
+            text = "<t size='1.5'>Occupier Loadouts</t>";
+            x = "0.329844 * safeZoneW + safeZoneX";
+            y = "0.731 * safeZoneH + safeZoneY";
+            w = "0.159844 * safeZoneW";
+            h = "0.033 * safeZoneH";
+            colorBackground[] = {0, 0, 0, 0};
+        };
+        class RscButton_1610: RscOverthrowButton {
+            idc = 1610;
+            text = "Standard";
+            x = "0.329844 * safeZoneW + safeZoneX";
+            y = "0.775 * safeZoneH + safeZoneY";
+            w = "0.0876563 * safeZoneW";
+            h = "0.077 * safeZoneH";
+            action = "server setVariable ['OT_randomLoadoutMode', 0, true]; call OT_fnc_newGameDialog;";
+            tooltip = "The occupier's soldiers use their own standard loadouts";
+        };
+        class RscButton_1611: RscOverthrowButton {
+            idc = 1611;
+            text = "Faction Random";
+            x = "0.453594 * safeZoneW + safeZoneX";
+            y = "0.775 * safeZoneH + safeZoneY";
+            w = "0.0876563 * safeZoneW";
+            h = "0.077 * safeZoneH";
+            action = "server setVariable ['OT_randomLoadoutMode', 1, true]; call OT_fnc_newGameDialog;";
+            tooltip = "Most soldiers get random weapons, vests and helmets from the occupier's own gear";
+        };
+        class RscButton_1612: RscOverthrowButton {
+            idc = 1612;
+            text = "Fully Random";
+            x = "0.577344 * safeZoneW + safeZoneX";
+            y = "0.775 * safeZoneH + safeZoneY";
+            w = "0.0876563 * safeZoneW";
+            h = "0.077 * safeZoneH";
+            action = "server setVariable ['OT_randomLoadoutMode', 2, true]; call OT_fnc_newGameDialog;";
+            tooltip = "Most soldiers get random weapons, vests and helmets from everything in the game";
+        };
         class RscButton_1606: RscOverthrowButton {
             idc = 1606;
             text = "Start Game"; //--- ToDo: Localize;
             x = "0.577344 * safeZoneW + safeZoneX";
-            y = "0.708 * safeZoneH + safeZoneY";
+            y = "0.862 * safeZoneH + safeZoneY";
             w = "0.0876563 * safeZoneW";
             h = "0.045 * safeZoneH";
             action = "closeDialog 0; [] remoteExec ['OT_fnc_newGame', 2, false]";
