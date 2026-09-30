@@ -1,5 +1,5 @@
 // Weapons (and with _swapGear, vests and helmets) come from the pool picked by the lobby setting
-// "ot_randomloadoutpool" (OT_randomLoadoutPool, see initVar). Pass nil to use the pool for a slot.
+// "Occupier loadouts" or the new game screen (OT_randomLoadoutPool, see OT_fnc_setLoadoutMode). Pass nil to use the pool for a slot.
 // A slot whose pool is empty keeps its weapon.
 params [
     "_loadout",
