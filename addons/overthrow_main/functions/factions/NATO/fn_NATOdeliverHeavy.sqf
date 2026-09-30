@@ -3,7 +3,8 @@
     A tank a base just traded for (OT_fnc_NATOupgradeHeavyGarrisons) is delivered, one of two ways:
     - convoyed from the occupier's nearest HQ or factory (while it holds them) reachable by land,
       with 2 escort vehicles that protect it until it's delivered or destroyed, then leave
-    - airdropped in an open field about 2 km from the base on its island, then drives in (always possible)
+    - airdropped by an armed Blackfish (OT_fnc_NATOairdropVehicle) in an open field about 2 km from the
+      base on its island, then drives in (always possible; shot down before the drop, it's lost)
     It's already on the base's vehicle list, destroyed on the way it comes off it (tagged "vehgarrison").
     At the base it stays and patrols when the base is spawned (a player near), otherwise it's removed
     and the base spawns it next time.
@@ -92,24 +93,28 @@ if (_convoy) then {
     [_tank, _basePos, _name, 3500, ["route", _start]] spawn OT_fnc_NATOdeliveryIntel; // Resistance intelligence may report it
     diag_log format ["Overthrow: %1 convoys a %2 to %3", OT_NATO_name, _type call OT_fnc_vehicleGetName, _name];
 } else {
-    // Airdrop in the open field found above (never in the water)
-    private _drop = [_field select 0, _field select 1, 300];
-    private _chute = createVehicle ["B_Parachute_02_F", _drop, [], 0, "FLY"];
-    _chute setPosATL _drop;
-    _tank = createVehicle [_type, _drop, [], 0, "CAN_COLLIDE"];
-    _tank allowDamage false;
-    _tank attachTo [_chute, [0, 0, -1.3]];
-    _tank setVariable ["vehgarrison", _name, true]; // Destroyed on the way, it comes off the base's list
-    [_tank, _basePos, _name, 3500, ["drop", _drop]] spawn OT_fnc_NATOdeliveryIntel; // Resistance intelligence may report it
-    waitUntil { sleep 0.5; isNull _chute || { ((getPosATL _tank) select 2) < 3 } };
-    detach _tank;
-    if (!isNull _chute) then { deleteVehicle _chute };
-    sleep 2;
-    _tank allowDamage true;
-    _group = [_tank] call _tag;
-    private _wp = _group addWaypoint [_basePos, 50];
-    _wp setWaypointType "MOVE";
+    // Airdropped by an armed Blackfish over the open field found above (never in the water)
+    private _drop = [_field select 0, _field select 1, 0];
     diag_log format ["Overthrow: %1 airdrops a %2 near %3", OT_NATO_name, _type call OT_fnc_vehicleGetName, _name];
+    private _onLaunch = {
+        params ["_plane", "_args"];
+        _args params ["_basePos", "_name", "_drop", "_type"];
+        _plane setVariable ["OT_airdropFor", _name, true]; // The base doesn't spawn it while it's on its way
+        [_plane, _basePos, _name, 3500, ["drop", _drop], _type] spawn OT_fnc_NATOdeliveryIntel; // Resistance intelligence may report it
+    };
+    _tank = ([_type, _drop, [_onLaunch, [_basePos, _name, _drop, _type]]] call OT_fnc_NATOairdropVehicle) select 0;
+    if (isNull _tank) then {
+        // Shot down with the Blackfish: it comes off the base's list
+        private _list = server getVariable [format ["vehgarrison%1", _name], []];
+        private _index = _list find _type;
+        if (_index > -1) then { _list deleteAt _index };
+        server setVariable [format ["vehgarrison%1", _name], _list, true];
+    } else {
+        _tank setVariable ["vehgarrison", _name, true]; // Destroyed on the way, it comes off the base's list
+        _group = [_tank] call _tag;
+        private _wp = _group addWaypoint [_basePos, 50];
+        _wp setWaypointType "MOVE";
+    };
 };
 
 // On its way until it arrives or is destroyed

@@ -14,11 +14,14 @@
         _this # 2: STRING - What it's for, e.g. "Zaros Base" or "the FOB near Georgetown"
         _this # 3: NUMBER - Money reward (tank 3500, aircraft 2000, FOB vehicle 1000)
         _this # 4: ARRAY - What intelligence knows: ["route", from position] or ["drop", drop position]
+        _this # 5: STRING - (Optional) What's delivered, when _this # 0 is the Blackfish of an airdrop
+            (OT_fnc_NATOairdropVehicle): shooting it down stops the delivery, once dropped the report
+            follows the dropped vehicle
 
     Usage: [_veh, _destination, _name, 3500, ["route", _start]] spawn OT_fnc_NATOdeliveryIntel;
 */
 
-params ["_veh", "_destination", "_for", ["_reward", 1000], ["_info", []]];
+params ["_veh", "_destination", "_for", ["_reward", 1000], ["_info", []], ["_cargoClass", ""]];
 _info params [["_kind", "route"], ["_where", getPos _veh]];
 
 private _town = _destination call OT_fnc_nearestTown;
@@ -27,7 +30,7 @@ private _chance = ((20 + (_support / 20)) max 0) min 80;
 _chance = missionNamespace getVariable ["OT_deliveryIntelChance", _chance]; // Set only by the QA tests
 if (random 100 >= _chance) exitWith {};
 
-private _vehName = (typeOf _veh) call OT_fnc_vehicleGetName;
+private _vehName = ([_cargoClass, typeOf _veh] select (_cargoClass isEqualTo "")) call OT_fnc_vehicleGetName;
 private _taskId = format ["intercept%1", round (diag_tickTime * 1000) + round random 1000];
 
 // What intelligence knows, on the map
@@ -77,18 +80,28 @@ _veh setVariable ["OT_interceptTask", _taskId];
 format ["Resistance intelligence: a %1 is being delivered to %2", _vehName, _for] remoteExec ["OT_fnc_notifyMinor", 0, false];
 
 // Who destroyed it
-_veh setVariable ["OT_interceptKiller", objNull];
-_veh addEventHandler ["Killed", {
-    params ["_veh", "_killer", "_instigator"];
-    _veh setVariable ["OT_interceptKiller", [_killer, _instigator] select (!isNull _instigator)];
-    _veh setVariable ["OT_interceptDestroyed", true];
-}];
+private _watch = {
+    params ["_veh"];
+    _veh setVariable ["OT_interceptKiller", objNull];
+    _veh addEventHandler ["Killed", {
+        params ["_veh", "_killer", "_instigator"];
+        _veh setVariable ["OT_interceptKiller", [_killer, _instigator] select (!isNull _instigator)];
+        _veh setVariable ["OT_interceptDestroyed", true];
+    }];
+};
+[_veh] call _watch;
 
 private _timeout = time + 2400;
 private _result = "";
 private _winner = objNull;
 waitUntil {
     sleep 3;
+    // An airdrop's Blackfish has dropped it: from now on it's about the dropped vehicle
+    if (!isNull _veh && { !isNull (_veh getVariable ["OT_deliveryCargo", objNull]) }) then {
+        _veh = _veh getVariable ["OT_deliveryCargo", objNull];
+        _veh setVariable ["OT_interceptTask", _taskId];
+        [_veh] call _watch;
+    };
     call {
         if (isNull _veh) exitWith { _result = "delivered" }; // Removed on arrival
         if (_veh getVariable ["OT_interceptDestroyed", false]) exitWith {

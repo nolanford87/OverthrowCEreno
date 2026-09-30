@@ -2,12 +2,14 @@
     Description:
     Resistance intelligence on occupier deliveries (OT_fnc_NATOdeliveryIntel), with real deliveries:
     the occupier base nearest the host that it still holds is sent a tank (put on its vehicle list
-    first, like a trade does), with the intelligence report forced. Part of the archived QA tests.
+    first, like a trade does), with the intelligence report forced. Part of the current QA tests.
     1. Report: a convoy shows where it comes from and goes to (airdrop: a drop zone), no report at 0%
+    Airdrops are flown in by an armed Blackfish (OT_fnc_NATOairdropVehicle).
     2. Destroy: the player at the airdrop's landing, it drives 400-500 m, it's destroyed, task succeeds
     3. Steal: the same, the crew is killed and the host gets in (Overthrow's real stolen vehicle
        handling), task succeeds and pays the host
     4. Delivered: it's moved next to the base, the delivery arrives and the task fails
+    5. Shot down: the Blackfish is destroyed before the drop, task succeeds, off the base's list
 
     Returns: ARRAY - [[name, code, seconds], ...]
 */
@@ -29,7 +31,8 @@ OTQA_intel_listCount = {
     { _x isEqualTo _type } count (server getVariable [format ["vehgarrison%1", _baseName], []]);
 };
 
-// A real tank delivery to that base: [tank, task id, base position, base name, delivery script], [] if none
+// A real tank delivery to that base: [tank (a convoy) or Blackfish (an airdrop), task id, base position,
+// base name, delivery script, tank class], [] if none
 OTQA_intel_deliver = {
     params ["_method", ["_chance", 100]];
     private _base = call OTQA_intel_base;
@@ -42,14 +45,15 @@ OTQA_intel_deliver = {
     _list pushBack _type;
     server setVariable [format ["vehgarrison%1", _baseName], _list, true];
 
-    private _before = vehicles select { (_x getVariable ["vehgarrison", ""]) isEqualTo _baseName };
+    private _isFor = { (_x getVariable ["vehgarrison", ""]) isEqualTo _baseName || { (_x getVariable ["OT_airdropFor", ""]) isEqualTo _baseName } };
+    private _before = vehicles select _isFor;
     OT_deliveryIntelChance = _chance;
     private _script = [_type, _baseName, _basePos, _method] spawn OT_fnc_NATOdeliverHeavy;
     private _tank = objNull;
     private _timeout = time + 15;
     waitUntil {
         sleep 0.5;
-        _tank = (vehicles select { alive _x && { (_x getVariable ["vehgarrison", ""]) isEqualTo _baseName } }) - _before param [0, objNull];
+        _tank = (vehicles select { alive _x && _isFor }) - _before param [0, objNull];
         !isNull _tank || { time > _timeout }
     };
     private _taskId = "";
@@ -61,14 +65,14 @@ OTQA_intel_deliver = {
         _taskId = _tank getVariable ["OT_interceptTask", ""];
     };
     OT_deliveryIntelChance = nil;
-    [_tank, _taskId, _basePos, _baseName, _script];
+    [_tank, _taskId, _basePos, _baseName, _script, _type];
 };
 
-// Removes a test delivery (tank, crew, escorts, its entry on the base's list if still there)
+// Removes a test delivery (tank / Blackfish, crew, escorts) and, when _onList, its entry on the base's
+// list (a delivery destroyed or stolen already came off it)
 OTQA_intel_cleanup = {
-    params ["_tank", "_baseName", "_script", ["_type", ""]];
+    params ["_tank", "_baseName", "_script", "_type", "_onList"];
     terminate _script;
-    if (_type isEqualTo "" && { !isNull _tank }) then { _type = typeOf _tank };
     {
         private _v = _x;
         private _g = group driver _v;
@@ -78,10 +82,12 @@ OTQA_intel_cleanup = {
         deleteVehicle _v;
         if (!isNull _g) then { deleteGroup _g };
     } forEach ((vehicles select { (_x getVariable ["OT_escort", ""]) isEqualTo _baseName }) + ([_tank] select { !isNull _x && { alive _x } }));
-    private _list = server getVariable [format ["vehgarrison%1", _baseName], []];
-    private _index = _list find _type;
-    if (_index > -1 && { _type isNotEqualTo "" } && { !isNull _tank } && { alive _tank }) then { _list deleteAt _index };
-    server setVariable [format ["vehgarrison%1", _baseName], _list, true];
+    if (_onList) then {
+        private _list = server getVariable [format ["vehgarrison%1", _baseName], []];
+        private _index = _list find _type;
+        if (_index > -1) then { _list deleteAt _index };
+        server setVariable [format ["vehgarrison%1", _baseName], _list, true];
+    };
 };
 
 OTQA_intel_state = {
@@ -97,15 +103,42 @@ OTQA_intel_airdrop = {
     params ["_finish"];
     private _delivery = ["airdrop"] call OTQA_intel_deliver;
     if (_delivery isEqualTo []) exitWith { format ["Airdrop test (%1) skipped: no occupier base or no tanks", _finish] call OTQA_fnc_manual };
-    _delivery params ["_tank", "_taskId", "_basePos", "_baseName", "_script"];
-    private _type = typeOf _tank;
+    _delivery params ["_plane", "_taskId", "_basePos", "_baseName", "_script", "_type"];
     private _label = format ["%1, %2", _finish, _baseName];
     private _home = getPosATL player;
     private _wasCaptive = captive player;
     private _money = player getVariable ["money", 0];
     private _influence = player getVariable ["influence", 0];
-    [format ["Airdrop (%1): reported, intercept task", _label], !isNull _tank && { _taskId isNotEqualTo "" }, format ["%1, %2", _type, _taskId]] call OTQA_fnc_check;
-    if (isNull _tank) exitWith {};
+    [format ["Airdrop (%1): reported, intercept task", _label], !isNull _plane && { _taskId isNotEqualTo "" }, format ["%1, %2", _type, _taskId]] call OTQA_fnc_check;
+    if (isNull _plane) exitWith {};
+
+    // The armed Blackfish flies it in at 300-400 m
+    sleep 3;
+    private _planeAlt = round ((getPosATL _plane) select 2);
+    [format ["Airdrop (%1): an armed Blackfish flies it in at 300-400 m", _label], (typeOf _plane) isEqualTo "B_T_VTOL_01_armed_F" && { _planeAlt > 250 } && { _planeAlt < 450 } && { side group driver _plane isEqualTo blufor },
+        format ["%1 at %2 m, %3 m from the base", typeOf _plane, _planeAlt, round (_plane distance2D _basePos)]] call OTQA_fnc_check;
+
+    if (_finish isEqualTo "shootdown") exitWith {
+        // Shot down before the drop: the delivery is lost
+        private _listBefore = [_baseName, _type] call OTQA_intel_listCount;
+        _plane setDamage 1;
+        private _state = [_taskId] call OTQA_intel_state;
+        [format ["Airdrop (%1): shooting the Blackfish down completes the task", _label], _state isEqualTo "SUCCEEDED", _state] call OTQA_fnc_check;
+        sleep 3;
+        private _listAfter = [_baseName, _type] call OTQA_intel_listCount;
+        [format ["Airdrop (%1): the tank comes off the base's list", _label], _listAfter isEqualTo (_listBefore - 1), format ["%1 on the list: %2 -> %3", _type, _listBefore, _listAfter]] call OTQA_fnc_check;
+        [format ["Airdrop (%1): nothing is dropped", _label], (vehicles select { (_x getVariable ["vehgarrison", ""]) isEqualTo _baseName && { typeOf _x isEqualTo _type } && { alive _x } && { (_x distance2D _basePos) > 400 } }) isEqualTo [], ""] call OTQA_fnc_check;
+        [objNull, _baseName, _script, _type, false] call OTQA_intel_cleanup; // It came off the list when shot down
+        { deleteVehicle _x } forEach (crew _plane);
+        deleteVehicle _plane;
+    };
+
+    // Dropped: from now on it's about the tank
+    private _flight = time + 480;
+    waitUntil { sleep 2; !alive _plane || { !isNull (_plane getVariable ["OT_deliveryCargo", objNull]) } || { time > _flight } };
+    private _tank = _plane getVariable ["OT_deliveryCargo", objNull];
+    [format ["Airdrop (%1): the Blackfish drops it", _label], !isNull _tank, format ["%1 m from the base", round (_plane distance2D _basePos)]] call OTQA_fnc_check;
+    if (isNull _tank) exitWith { [_plane, _baseName, _script, _type, alive _plane] call OTQA_intel_cleanup };
 
     // Landed and crewed
     private _timeout = time + 90;
@@ -164,7 +197,8 @@ OTQA_intel_airdrop = {
         };
     };
 
-    [_tank, _baseName, _script, _type] call OTQA_intel_cleanup;
+    // Destroyed / stolen: already off the list; delivered: still on it
+    [_tank, _baseName, _script, _type, _finish isEqualTo "deliver"] call OTQA_intel_cleanup;
     player setPosATL _home;
     player setCaptive _wasCaptive;
 };
@@ -174,12 +208,12 @@ OTQA_intel_airdrop = {
         // No report at 0%
         private _quiet = ["convoy", 0] call OTQA_intel_deliver;
         if (_quiet isEqualTo []) exitWith { "Intel report test skipped: no occupier base or no tanks" call OTQA_fnc_manual };
-        _quiet params ["_quietTank", "_quietTask", "", "_quietBase", "_quietScript"];
+        _quiet params ["_quietTank", "_quietTask", "", "_quietBase", "_quietScript", "_quietType"];
         ["No report when the chance fails", !isNull _quietTank && { _quietTask isEqualTo "" }, _quietBase] call OTQA_fnc_check;
-        [_quietTank, _quietBase, _quietScript] call OTQA_intel_cleanup;
+        [_quietTank, _quietBase, _quietScript, _quietType, true] call OTQA_intel_cleanup;
 
         // Reported convoy (an airdrop if no convoy can reach the base)
-        (["convoy"] call OTQA_intel_deliver) params ["_tank", "_taskId", "_basePos", "_baseName", "_script"];
+        (["convoy"] call OTQA_intel_deliver) params ["_tank", "_taskId", "_basePos", "_baseName", "_script", "_type"]; // A Blackfish if it's an airdrop
         ["Reported delivery gets an intercept task", _taskId isNotEqualTo "" && { (_taskId call BIS_fnc_taskState) in ["CREATED", "ASSIGNED"] }, format ["%1 to %2", _taskId, _baseName]] call OTQA_fnc_check;
         private _escorts = vehicles select { (_x getVariable ["OT_escort", ""]) isEqualTo _baseName };
         if (_escorts isNotEqualTo []) then {
@@ -192,12 +226,13 @@ OTQA_intel_airdrop = {
             ["Airdrop (no convoy reaches this base): a possible drop zone", (markerShape _area) isEqualTo "ELLIPSE",
                 format ["zone %1 m across", round (((getMarkerSize _area) select 0) * 2)]] call OTQA_fnc_check;
         };
-        [_tank, _baseName, _script] call OTQA_intel_cleanup;
+        [_tank, _baseName, _script, _type, true] call OTQA_intel_cleanup;
         private _state = [_taskId] call OTQA_intel_state;
         ["The markers go when the task ends", (markerType (_taskId + "_from")) isEqualTo "" && { (markerShape (_taskId + "_area")) isEqualTo "" }, _state] call OTQA_fnc_check;
     }, 120],
 
-    ["Intel 2: airdrop destroyed", { ["destroy"] call OTQA_intel_airdrop }, 300],
-    ["Intel 3: airdrop stolen", { ["steal"] call OTQA_intel_airdrop }, 300],
-    ["Intel 4: airdrop delivered", { ["deliver"] call OTQA_intel_airdrop }, 300]
+    ["Intel 2: airdrop destroyed", { ["destroy"] call OTQA_intel_airdrop }, 720],
+    ["Intel 3: airdrop stolen", { ["steal"] call OTQA_intel_airdrop }, 720],
+    ["Intel 4: airdrop delivered", { ["deliver"] call OTQA_intel_airdrop }, 720],
+    ["Intel 5: Blackfish shot down", { ["shootdown"] call OTQA_intel_airdrop }, 120]
 ]

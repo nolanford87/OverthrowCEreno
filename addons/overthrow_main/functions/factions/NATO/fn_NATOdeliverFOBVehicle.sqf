@@ -84,21 +84,28 @@ call {
         };
     };
 
-    // Parachuted in over the FOB
+    // Airdropped over the FOB by an armed Blackfish
     private _drop = _pos getPos [random 40, random 360];
-    _drop set [2, 250];
-    private _chute = createVehicle ["B_Parachute_02_F", _drop, [], 0, "FLY"];
-    _chute setPosATL _drop;
-    _v = createVehicle [_cls, _drop, [], 0, "CAN_COLLIDE"];
-    _v allowDamage false;
-    _v attachTo [_chute, [0, 0, -1.3]];
+    private _onLaunch = {
+        params ["_plane", "_args"];
+        _args params ["_pos", "_drop", "_cls"];
+        _plane setVariable ["OT_airdropFOB", _pos, true];
+        [_plane, _pos, format ["the FOB near %1", _pos call OT_fnc_nearestTown], 1000, ["drop", _drop], _cls] spawn OT_fnc_NATOdeliveryIntel; // May be reported
+    };
+    _v = ([_cls, _drop, [_onLaunch, [_pos, _drop, _cls]]] call OT_fnc_NATOairdropVehicle) select 0;
+    if (isNull _v) exitWith {
+        // Shot down with the Blackfish: the FOB has lost its vehicle (no other one), its takeover timer starts
+        private _fobs = server getVariable ["NATOfobs", []];
+        {
+            if ((_x select 0) isEqualTo _pos) exitWith {
+                private _index = (_x select 2) find "Vehicle";
+                if (_index > -1) then { (_x select 2) set [_index, "VehicleLost"] };
+            };
+        } forEach _fobs;
+        server setVariable ["NATOfobs", _fobs, true];
+        [_pos] call OT_fnc_NATOstartFOBTimer;
+    };
     [_v] call _setup;
-    [_v, _pos, format ["the FOB near %1", _pos call OT_fnc_nearestTown], 1000, ["drop", _drop]] spawn OT_fnc_NATOdeliveryIntel; // May be reported
-    waitUntil { sleep 0.5; isNull _chute || { ((getPosATL _v) select 2) < 3 } };
-    detach _v;
-    if (!isNull _chute) then { deleteVehicle _chute };
-    sleep 2;
-    _v allowDamage true;
     _g = [_v] call _crew;
 };
 
