@@ -139,10 +139,10 @@ OTQA_intel_airdrop = {
     [format ["Airdrop (%1): reported, intercept task", _label], !isNull _plane && { _taskId isNotEqualTo "" }, format ["%1, %2", _type, _taskId]] call OTQA_fnc_check;
     if (isNull _plane) exitWith {};
 
-    // The armed Blackfish flies it in at 300-400 m
+    // The armed Blackfish flies it in at 250-325 m
     sleep 3;
     private _planeAlt = round ((getPosATL _plane) select 2);
-    [format ["Airdrop (%1): an armed Blackfish flies it in at 300-400 m", _label], (typeOf _plane) isEqualTo "B_T_VTOL_01_armed_F" && { _planeAlt > 250 } && { _planeAlt < 450 } && { side group driver _plane isEqualTo blufor },
+    [format ["Airdrop (%1): an armed Blackfish flies it in at 250-325 m", _label], (typeOf _plane) isEqualTo "B_T_VTOL_01_armed_F" && { _planeAlt > 200 } && { _planeAlt < 375 } && { side group driver _plane isEqualTo blufor },
         format ["%1 at %2 m, %3 m from the base", typeOf _plane, _planeAlt, round (_plane distance2D _basePos)]] call OTQA_fnc_check;
 
     if (_finish isEqualTo "shootdown") exitWith {
