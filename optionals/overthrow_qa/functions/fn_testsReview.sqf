@@ -97,5 +97,55 @@ OTQA_rv_spawnKill = {
         { deleteVehicle _x } forEach (crew _veh);
         deleteVehicle _veh;
         deleteGroup _group;
+    }],
+
+    ["Occupier trades base vehicles for heavy ones", {
+        // Real trade at the HQ with a zero chance roll, then the lists are put back
+        private _hq = (OT_objectiveData + OT_airportData) select { (_x select 1) isEqualTo OT_NATO_HQ } param [0, []];
+        if (_hq isEqualTo [] || { [_hq select 0] call OT_fnc_inSpawnDistance }) exitWith {
+            "Heavy vehicle trade test skipped: the HQ is loaded (you're near it)" call OTQA_fnc_manual;
+        };
+        private _bases = OT_objectiveData + OT_airportData;
+        private _savedVeh = _bases apply { +(server getVariable [format ["vehgarrison%1", _x select 1], []]) };
+        private _savedAir = _bases apply { +(server getVariable [format ["airpatrol%1", _x select 1], []]) };
+        private _resources = server getVariable ["NATOresources", 2000];
+
+        // Only the HQ can trade: every other base gets nothing to trade in for this test
+        { server setVariable [format ["vehgarrison%1", _x select 1], [], true] } forEach _bases;
+        server setVariable [format ["vehgarrison%1", OT_NATO_HQ], [selectRandom OT_NATO_Vehicles_GroundSupport], true];
+        server setVariable [format ["airpatrol%1", OT_NATO_HQ], [], true];
+        server setVariable ["NATOresources", 3000];
+
+        private _left = [1500, 0] call OT_fnc_NATOupgradeHeavyGarrisons;
+        private _veh = server getVariable [format ["vehgarrison%1", OT_NATO_HQ], []];
+        private _air = server getVariable [format ["airpatrol%1", OT_NATO_HQ], []];
+        private _paid = 3000 - (server getVariable ["NATOresources", 3000]);
+        private _gotTank = (_veh findIf { _x in OT_NATO_Vehicles_TankSupport }) > -1;
+        ["HQ traded its light vehicle for a tank or patrol aircraft", (_gotTank && { count _veh isEqualTo 1 }) || { _veh isEqualTo [] && { count _air isEqualTo 1 } }, format ["vehicles %1, air patrol %2", _veh, _air]] call OTQA_fnc_check;
+        ["The trade is paid from the occupier's resources", _paid > 0 && { (1500 - _left) isEqualTo _paid }, format ["paid %1", _paid]] call OTQA_fnc_check;
+
+        { server setVariable [format ["vehgarrison%1", (_bases select _forEachIndex) select 1], _x, true] } forEach _savedVeh;
+        { server setVariable [format ["airpatrol%1", (_bases select _forEachIndex) select 1], _x, true] } forEach _savedAir;
+        server setVariable ["NATOresources", _resources];
+    }],
+
+    ["Base patrol aircraft circles near players", {
+        private _cls = selectRandom (OT_NATO_Vehicles_AirSupport + OT_NATO_Vehicles_AirSupport_Small);
+        private _pos = (player getPos [200, getDir player]) findEmptyPosition [0, 150, _cls];
+        if (_pos isEqualTo []) exitWith { "Base air patrol test skipped: no room for a helicopter near you" call OTQA_fnc_manual };
+        private _veh = createVehicle [_cls, _pos, [], 0, "NONE"];
+        private _group = [_veh] call OT_fnc_createNATOCrew;
+        { _x disableAI "TARGET"; _x disableAI "AUTOTARGET"; _x setCaptive true } forEach (crew _veh); // Don't shoot at the player
+        _veh setCaptive true;
+        private _script = [_group, _veh, getPos _veh] spawn OT_fnc_NATOairPatrolBase;
+
+        private _timeout = time + 35;
+        waitUntil { sleep 1; ((waypoints _group) findIf { waypointType _x isEqualTo "LOITER" } > -1) || { time > _timeout } };
+        ["Patrol aircraft circles the base while a player is within 2 km", (waypoints _group) findIf { waypointType _x isEqualTo "LOITER" } > -1, _cls] call OTQA_fnc_check;
+
+        terminate _script;
+        { deleteVehicle _x } forEach (crew _veh);
+        deleteVehicle _veh;
+        deleteGroup _group;
     }]
 ]

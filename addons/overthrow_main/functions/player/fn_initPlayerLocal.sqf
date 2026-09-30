@@ -453,6 +453,18 @@ player addEventHandler [
             } forEach (crew _veh);
             [_veh] call OT_fnc_revealToNATO;
         };
+        _g = _veh getVariable ["airpatrol", false];
+        if (_g isEqualType "") then {
+            private _vg = server getVariable [format ["airpatrol%1", _g], []];
+            private _idx = _vg find (typeOf _veh);
+            if (_idx > -1) then { _vg deleteAt _idx };
+            server setVariable [format ["airpatrol%1", _g], _vg, true]; // Public, this runs on the client
+            _veh setVariable ["airpatrol", nil, true];
+            {
+                _x setCaptive false;
+            } forEach (crew _veh);
+            [_veh] call OT_fnc_revealToNATO;
+        };
     }
 ];
 

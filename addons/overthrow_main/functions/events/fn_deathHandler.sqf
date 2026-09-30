@@ -40,6 +40,7 @@ private _employee = _me getVariable "employee";
 private _vehgarrison = _me getVariable "vehgarrison";
 private _polgarrison = _me getVariable "polgarrison";
 private _airgarrison = _me getVariable "airgarrison";
+private _airpatrol = _me getVariable "airpatrol";
 private _criminal = _me getVariable "criminal";
 private _crimleader = _me getVariable "crimleader";
 private _hvt = _me getVariable "hvt_id";
@@ -152,7 +153,7 @@ call {
         private _mrkid = format ["%1-police", _polgarrison];
         _mrkid setMarkerText format ["%1", _pop];
     };
-    if (!isNil "_garrison" || !isNil "_vehgarrison" || !isNil "_airgarrison") then {
+    if (!isNil "_garrison" || !isNil "_vehgarrison" || !isNil "_airgarrison" || !isNil "_airpatrol") then {
         _killer setVariable ["BLUkills", (_killer getVariable ["BLUkills", 0]) + 1, true];
         if (!isNil "_garrison") then {
             server setVariable ["NATOresourceGain", (server getVariable ["NATOresourceGain", 0]) + 1, true];
@@ -193,6 +194,13 @@ call {
             private _idx = _vg find (typeOf _me);
             if (_idx > -1) then { _vg deleteAt _idx };
             server setVariable [format ["airgarrison%1", _airgarrison], _vg, true];
+        };
+
+        if (!isNil "_airpatrol") then {
+            private _vg = server getVariable [format ["airpatrol%1", _airpatrol], []];
+            private _idx = _vg find (typeOf _me);
+            if (_idx > -1) then { _vg deleteAt _idx };
+            server setVariable [format ["airpatrol%1", _airpatrol], _vg, true];
         };
     } else {
         if (side _me isEqualTo blufor) then {
