@@ -65,6 +65,8 @@ private _abandoned = server getVariable ["NATOabandoned", []];
     if (_toAir) then {
         _airpatrol pushBack _type;
         server setVariable [format ["airpatrol%1", _name], _airpatrol, true];
+        // It flies in from 3-4 km away
+        [_type, _name, _pos] spawn OT_fnc_NATOdeliverAirPatrol;
     } else {
         _garrison pushBack _type;
     };
