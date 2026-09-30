@@ -71,6 +71,8 @@ private _abandoned = server getVariable ["NATOabandoned", []];
         [_type, _name, _pos, _airfield select 0] spawn OT_fnc_NATOdeliverAirPatrol;
     } else {
         _garrison pushBack _type;
+        // Convoyed from the HQ / factory with 2 escorts, or airdropped about 2 km away
+        [_type, _name, _pos] spawn OT_fnc_NATOdeliverHeavy;
     };
     server setVariable [format ["vehgarrison%1", _name], _garrison, true];
     _spend = _spend - _cost;
