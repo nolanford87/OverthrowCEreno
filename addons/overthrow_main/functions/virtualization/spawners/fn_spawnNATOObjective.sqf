@@ -308,6 +308,11 @@ private _vehgarrison = server getVariable [format ["vehgarrison%1", _name], []];
         {
             _x addCuratorEditableObjects [[_veh], true];
         } forEach (allCurators);
+
+        // Crewed vehicles (not static guns) patrol the base while a player is within 2 km
+        if (!(_veh isKindOf "StaticWeapon") && { alive driver _veh }) then {
+            [_vgroup, _veh, _posTown] spawn OT_fnc_NATOvehiclePatrol;
+        };
     };
 } forEach (_vehgarrison);
 

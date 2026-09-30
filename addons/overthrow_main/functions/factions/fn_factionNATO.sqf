@@ -190,6 +190,9 @@ publicVariable "OT_nextNATOTurn";
                 //Upgrade garrisons
                 _spend = [_spend, _chance] call OT_fnc_NATOupgradeGarrisons;
 
+                //Buy vehicles for bases
+                _spend = [_spend, _chance] call OT_fnc_NATOupgradeVehicleGarrisons;
+
                 //Upgrade FOBs
                 _spend = [_spend, _chance] call OT_fnc_NATOupgradeFOBs;
             };

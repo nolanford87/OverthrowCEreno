@@ -53,5 +53,49 @@ OTQA_rv_spawnKill = {
         player call OT_fnc_statsSystem;
         private _after = missionNamespace getVariable ["OT_statsLoopId", 0];
         ["Restarting the stats HUD replaces the old loop", _after isEqualTo (_before + 1), format ["loop id %1 -> %2", _before, _after]] call OTQA_fnc_check;
+    }],
+
+    ["Occupier buys base vehicles", {
+        // Real purchase with a zero chance roll, then the bases' vehicle lists are put back
+        private _bases = OT_objectiveData + OT_airportData;
+        private _saved = _bases apply { +(server getVariable [format ["vehgarrison%1", _x select 1], []]) };
+        private _countVehicles = { { !(_x isKindOf "StaticWeapon") && { _x isKindOf "LandVehicle" } } count _this };
+        private _before = 0;
+        { _before = _before + (_x call _countVehicles) } forEach _saved;
+        private _resources = server getVariable ["NATOresources", 2000];
+        server setVariable ["NATOresources", 3000];
+
+        private _left = [1500, 0] call OT_fnc_NATOupgradeVehicleGarrisons;
+        private _after = 0;
+        { _after = _after + ((server getVariable [format ["vehgarrison%1", _x select 1], []]) call _countVehicles) } forEach _bases;
+        private _paid = 3000 - (server getVariable ["NATOresources", 3000]);
+        ["A base gets one new vehicle", _after isEqualTo (_before + 1), format ["vehicles %1 -> %2 (all bases full or near a player if unchanged)", _before, _after]] call OTQA_fnc_check;
+        ["It is paid from the occupier's resources", _paid in [250, 400] && { (1500 - _left) isEqualTo _paid }, format ["paid %1", _paid]] call OTQA_fnc_check;
+
+        { server setVariable [format ["vehgarrison%1", (_bases select _forEachIndex) select 1], _x, true] } forEach _saved;
+        server setVariable ["NATOresources", _resources];
+    }],
+
+    ["Base vehicle patrols near players", {
+        // A crewed vehicle "parked" at a base right next to the player starts patrolling
+        private _cls = selectRandom OT_NATO_Vehicles_GroundSupport;
+        private _pos = player getPos [150, getDir player];
+        _pos = _pos findEmptyPosition [0, 100, _cls];
+        if (_pos isEqualTo []) exitWith { "Base vehicle patrol test skipped: no room for a vehicle near you" call OTQA_fnc_manual };
+        private _veh = createVehicle [_cls, _pos, [], 0, "NONE"];
+        private _group = [_veh] call OT_fnc_createNATOCrew;
+        { _x disableAI "TARGET"; _x disableAI "AUTOTARGET" } forEach (crew _veh); // Don't shoot at the player
+        _veh setCaptive true;
+        { _x setCaptive true } forEach (crew _veh);
+        private _script = [_group, _veh, getPos _veh] spawn OT_fnc_NATOvehiclePatrol;
+
+        private _timeout = time + 45;
+        waitUntil { sleep 1; (count (waypoints _group) > 1) || { time > _timeout } };
+        ["Vehicle patrols while a player is within 2 km", count (waypoints _group) > 1, format ["%1, %2 waypoints", _cls, count waypoints _group]] call OTQA_fnc_check;
+
+        terminate _script;
+        { deleteVehicle _x } forEach (crew _veh);
+        deleteVehicle _veh;
+        deleteGroup _group;
     }]
 ]
