@@ -84,7 +84,7 @@ _plane setVariable ["OT_deliveryCargo", _vehicle, true];
 // The wind would carry it hundreds of metres from the field on the way down (into the sea on a
 // coast): the parachute steers back over the drop point
 private _released = time;
-private _landTimeout = time + 120;
+private _landTimeout = time + 180;
 private _still = 0;
 waitUntil {
     sleep 0.5;

@@ -167,8 +167,8 @@ OTQA_intel_airdrop = {
     [format ["Airdrop (%1): the Blackfish drops it", _label], !isNull _tank, format ["%1 m from the base", round (_plane distance2D _basePos)]] call OTQA_fnc_check;
     if (isNull _tank) exitWith { [_plane, _baseName, _script, _type, alive _plane] call OTQA_intel_cleanup };
 
-    // Landed and crewed
-    private _timeout = time + 90;
+    // Landed and crewed (a parachute from 400 m can take over 2 minutes)
+    private _timeout = time + 200;
     waitUntil { sleep 1; !alive _tank || { ((getPosATL _tank) select 2) < 3 && { alive driver _tank } } || { time > _timeout } };
     private _landing = getPosATL _tank;
     [format ["Airdrop (%1): lands on land, on the base's island, and is crewed", _label], alive _tank && { alive driver _tank } && { !surfaceIsWater _landing } && { [_landing, _basePos] call OT_fnc_regionIsConnected },
@@ -258,9 +258,9 @@ OTQA_intel_airdrop = {
         ["The markers go when the task ends", (markerType (_taskId + "_from")) isEqualTo "" && { (markerShape (_taskId + "_area")) isEqualTo "" }, _state] call OTQA_fnc_check;
     }, 120],
 
-    ["Intel 2: airdrop destroyed", { ["destroy"] call OTQA_intel_airdrop }, 720],
-    ["Intel 3: airdrop stolen", { ["steal"] call OTQA_intel_airdrop }, 720],
-    ["Intel 4: airdrop delivered", { ["deliver"] call OTQA_intel_airdrop }, 720],
+    ["Intel 2: airdrop destroyed", { ["destroy"] call OTQA_intel_airdrop }, 840],
+    ["Intel 3: airdrop stolen", { ["steal"] call OTQA_intel_airdrop }, 840],
+    ["Intel 4: airdrop delivered", { ["deliver"] call OTQA_intel_airdrop }, 840],
     ["Intel 5: Blackfish shot down", { ["shootdown"] call OTQA_intel_airdrop }, 120],
     ["Intel 6: ground convoy completes", {
         private _base = call OTQA_intel_convoyBase;
