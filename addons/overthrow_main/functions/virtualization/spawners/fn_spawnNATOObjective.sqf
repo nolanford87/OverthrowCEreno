@@ -250,7 +250,7 @@ private _airgarrison = server getVariable [format ["airgarrison%1", _name], []];
     _pos = _pos getPos [28, _dir + 90];
 
     private _veh = _vehtype createVehicle _pos;
-    _veh setVariable ["airgarrison", _name, false];
+    _veh setVariable ["airgarrison", _name, true]; // Public, the stolen vehicle check runs on the player's machine
     _veh setDir _dir;
     sleep 0.5;
     _groups pushBack _veh;
@@ -291,7 +291,7 @@ private _vehgarrison = server getVariable [format ["vehgarrison%1", _name], []];
 
         private _veh = _vehtype createVehicle _pos;
         _veh setPosATL _pos;
-        _veh setVariable ["vehgarrison", _name, false];
+        _veh setVariable ["vehgarrison", _name, true]; // Public, the stolen vehicle check runs on the player's machine
 
         _veh setDir _dir;
         if (random 100 < 99) then {
@@ -316,6 +316,28 @@ private _vehgarrison = server getVariable [format ["vehgarrison%1", _name], []];
     };
 } forEach (_vehgarrison);
 
+// Patrol helicopters / VTOLs, parked and crewed, they take off while a player is within 2 km
+{
+    private _vehtype = _x;
+    private _pos = _posTown findEmptyPosition [25, 300, _vehtype];
+    if (_pos isEqualTo []) then { continue };
+    private _veh = createVehicle [_vehtype, _pos, [], 0, "NONE"];
+    _veh setDir (random 360);
+    _veh setVariable ["airpatrol", _name, true]; // Public, the stolen vehicle check runs on the player's machine
+    private _agroup = [_veh] call OT_fnc_createNATOCrew;
+    _agroup setVariable ["Vcm_Disable", true, false];
+    _groups pushBack _veh;
+    _groups pushBack _agroup;
+    {
+        _x setVariable ["garrison", "HQ", false];
+    } forEach (crew _veh);
+    {
+        _x addCuratorEditableObjects [[_veh], true];
+    } forEach (allCurators);
+    [_agroup, _veh, _posTown] spawn OT_fnc_NATOairPatrolBase;
+    sleep 0.5;
+} forEach (server getVariable [format ["airpatrol%1", _name], []]);
+
 //HVTs
 {
     _x params ["_id", "_loc", "_status"];
@@ -328,7 +350,7 @@ private _vehgarrison = server getVariable [format ["vehgarrison%1", _name], []];
         //His empty APC
         private _veh = OT_NATO_Vehicle_HVT createVehicle _vpos;
         _veh setPos _vpos;
-        _veh setVariable ["vehgarrison", "HQ", false];
+        _veh setVariable ["vehgarrison", "HQ", true];
         _groups pushBack _veh;
         sleep 0.5;
 

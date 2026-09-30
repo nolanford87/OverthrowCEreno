@@ -193,6 +193,9 @@ publicVariable "OT_nextNATOTurn";
                 //Buy vehicles for bases
                 _spend = [_spend, _chance] call OT_fnc_NATOupgradeVehicleGarrisons;
 
+                //Trade base vehicles for tanks or patrol aircraft (HQ and big bases)
+                _spend = [_spend, _chance] call OT_fnc_NATOupgradeHeavyGarrisons;
+
                 //Upgrade FOBs
                 _spend = [_spend, _chance] call OT_fnc_NATOupgradeFOBs;
             };
