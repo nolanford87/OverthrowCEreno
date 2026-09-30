@@ -15,7 +15,7 @@ OT_MapSingleClickEHId = addMissionEventHandler [
                 private _town = _name;
                 private _pop = server getVariable format ["population%1", _town];
                 private _stability = server getVariable format ["stability%1", _town];
-                private _abandon = "Under NATO Control";
+                private _abandon = format ["Under %1 Control", OT_NATO_name];
                 if (_town in (server getVariable ["NATOabandoned", []])) then {
                     if (_stability < 50) then {
                         _abandon = "Anarchy";
@@ -40,7 +40,7 @@ OT_MapSingleClickEHId = addMissionEventHandler [
                 ];
             };
             if (_type in ["Objective", "Radio Tower", "Airport"]) exitWith {
-                private _abandon = "Under NATO Control";
+                private _abandon = format ["Under %1 Control", OT_NATO_name];
                 if (_name in (server getVariable ["NATOabandoned", []])) then {
                     _abandon = "Under Resistance Control";
                 };

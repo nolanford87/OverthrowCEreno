@@ -102,7 +102,7 @@ private _popControl = call OT_fnc_getControlledPopulation;
     if (_population < 100 && { (_stability isEqualTo 0) }) then {
         _abandoned pushBack _town;
         server setVariable [format ["garrison%1", _town], 0, true];
-        format ["NATO has abandoned %1", _town] remoteExec ["OT_fnc_notifyGood", 0, false];
+        format ["%2 has abandoned %1", _town, OT_NATO_name] remoteExec ["OT_fnc_notifyGood", 0, false];
         _countered = true;
         diag_log format ["Overthrow: NATO has abandoned %1", _town];
     };

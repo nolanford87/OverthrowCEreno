@@ -108,7 +108,7 @@ if ((_target distance _posnow) > 2) then {
     };
 };
 if (_escaped) exitWith {
-    "You tried to escape a NATO search" remoteExecCall ["hint", _target, false];
+    format ["You tried to escape a %1 search", OT_NATO_name] remoteExecCall ["hint", _target, false];
     [_group, _cop, _target, _hdl] call _cleanup;
     _target setCaptive false;
     [_target] call OT_fnc_revealToNATO;
@@ -127,7 +127,7 @@ if ((isPlayer _target && !captive _target) || (!alive _cop) || ((time - _timenow
 
 if ((_target distance _posnow) > 2) exitWith {
     if (isPlayer _target) then {
-        "You tried to escape a NATO search" remoteExecCall ["hint", _target, false];
+        format ["You tried to escape a %1 search", OT_NATO_name] remoteExecCall ["hint", _target, false];
     };
     [_group, _cop, _target, _hdl] call _cleanup;
     _target setCaptive false;
@@ -163,7 +163,7 @@ if (isPlayer _target) then {
         if (_foundweapons) then {
             if (isPlayer _target) then {
                 [_cop, "What's this!?"] remoteExec ["globalChat", _target, false];
-                "NATO found weapons" remoteExecCall ["hint", _target, false];
+                format ["%1 found weapons", OT_NATO_name] remoteExecCall ["hint", _target, false];
             };
             _target setCaptive false;
             [_target] call OT_fnc_revealToNATO;
@@ -176,7 +176,7 @@ if (isPlayer _target) then {
                 };
                 if ((random 100) < _chance) then {
                     [_cop, "We found some illegal items and confiscated them, be on your way"] remoteExec ["globalChat", _target, false];
-                    "NATO confiscated illegal items" remoteExecCall ["hint", _target, false];
+                    format ["%1 confiscated illegal items", OT_NATO_name] remoteExecCall ["hint", _target, false];
                 } else {
                     [_cop, "Thank you for your co-operation"] remoteExec ["globalChat", _target, false];
                 };

@@ -6,9 +6,9 @@ private _posTown = server getVariable _town;
 _posTown spawn OT_fnc_NATOSupportRecon;
 sleep (200 + (random 300));
 
-private _tskid = [independent, [format ["attack%1", _town]], [format ["NATO is attempting to recapture %1.", _town], format ["Defend %1", _town], format ["attack%1", _town]], _posTown, 1, 2, true, "Defend", true] call BIS_fnc_taskCreate;
+private _tskid = [independent, [format ["attack%1", _town]], [format ["%2 is attempting to recapture %1.", _town, OT_NATO_name], format ["Defend %1", _town], format ["attack%1", _town]], _posTown, 1, 2, true, "Defend", true] call BIS_fnc_taskCreate;
 
-format ["NATO is counter-attacking %1", _town] remoteExec ["OT_fnc_notifyMinor", 0, false];
+format ["%2 is counter-attacking %1", _town, OT_NATO_name] remoteExec ["OT_fnc_notifyMinor", 0, false];
 
 private _fail = {
     params ["_tskid", "_town"];

@@ -23,7 +23,7 @@ private _fobs = server getVariable ["NATOfobs", []];
     if (_numMil isEqualTo 0 && { _numRes > 0 }) then {
         _countered = true;
         _clearedFOBs pushBack _x;
-        "Cleared NATO FOB" remoteExec ["OT_fnc_notifyMinor", 0, false];
+        format ["Cleared %1 FOB", OT_NATO_name] remoteExec ["OT_fnc_notifyMinor", 0, false];
         private _flag = _pos nearObjects [OT_flag_NATO, 50];
         if (_flag isNotEqualTo []) then {
             deleteVehicle (_flag select 0);

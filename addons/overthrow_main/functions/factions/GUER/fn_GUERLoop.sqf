@@ -200,7 +200,7 @@ if ((date select 4) != _lastmin) then {
             _mrkid setMarkerTypeLocal "mil_Flag";
             _mrkid setMarkerColorLocal "ColorBLUFOR";
             _mrkid setMarkerAlpha 1;
-            format ["Citizens of %1 have revealed intelligence of a nearby NATO FOB", _town] remoteExec ["OT_fnc_notifyMinor", 0, false];
+            format ["Citizens of %1 have revealed intelligence of a nearby %2 FOB", _town, OT_NATO_name] remoteExec ["OT_fnc_notifyMinor", 0, false];
         };
     } forEach (server getVariable ["NATOfobs", []]);
     server setVariable ["revealedFOBs", _revealed, false];

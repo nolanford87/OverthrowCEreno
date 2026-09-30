@@ -21,7 +21,7 @@ OT_NATO_GroundForces = [];
             OT_NATO_GroundForces pushBack _x;
         };
     } forEach ("true" configClasses _config);
-} forEach ("'infantry' in toLower (configName _x)" configClasses (configFile >> "CfgGroups" >> "West" >> OT_faction_NATO));
+} forEach ("'infantry' in toLower (configName _x)" configClasses (configFile >> "CfgGroups" >> OT_NATO_groupSide >> OT_faction_NATO));
 
 // Reset the recon troop size because a smaller group from 'specops' is worth more
 OT_NATO_Group_Recon set [1, 0];
@@ -37,7 +37,7 @@ OT_NATO_Group_Recon set [1, 0];
             OT_NATO_Group_Recon = [_x, _numTroops];
         };
     } forEach ("true" configClasses _config);
-} forEach ("'specops' in toLower (configName _x)" configClasses (configFile >> "CfgGroups" >> "West" >> OT_faction_NATO));
+} forEach ("'specops' in toLower (configName _x)" configClasses (configFile >> "CfgGroups" >> OT_NATO_groupSide >> OT_faction_NATO));
 
 // Remove the specops counter, it's no longer needed
 OT_NATO_Group_Recon = (OT_NATO_Group_Recon # 0);
@@ -48,10 +48,10 @@ OT_NATO_Group_Recon = (OT_NATO_Group_Recon # 0);
     {
         private _name = toLower (configName _x);
         if ("eng" in _name) then {
-            OT_NATO_Group_Engineers = _name;
+            OT_NATO_Group_Engineers = _x;
         };
     } forEach ("true" configClasses _config);
-} forEach ("'support' in toLower (configName _x)" configClasses (configFile >> "CfgGroups" >> "West" >> OT_faction_NATO));
+} forEach ("'support' in toLower (configName _x)" configClasses (configFile >> "CfgGroups" >> OT_NATO_groupSide >> OT_faction_NATO));
 
 OT_NATO_Units_LevelOne = [];
 OT_NATO_Units_LevelTwo = [];
@@ -98,7 +98,7 @@ OT_NATO_Units_CTRGSupport = [];
             spawner setVariable [format ["loadouts_%1", _name], _loadouts, false];
         };
     };
-} forEach (format ["(getNumber (_x >> 'scope') == 2) && (getText (_x >> 'faction') == '%1') && (configName _x) isKindOf 'SoldierWB'", OT_faction_NATO] configClasses (configFile >> "CfgVehicles"));
+} forEach (format ["(getNumber (_x >> 'scope') == 2) && (getText (_x >> 'faction') == '%1') && (configName _x) isKindOf 'CAManBase'", OT_faction_NATO] configClasses (configFile >> "CfgVehicles"));
 
 //Generate and cache gendarm loadouts
 private _loadout = getUnitLoadout OT_NATO_Unit_Police;
@@ -116,6 +116,17 @@ for "_i" from 1 to 5 do {
 spawner setVariable [format ["loadouts_%1", OT_NATO_Unit_PoliceCommander], _loadouts, false];
 
 OT_NATO_Units_LevelTwo = OT_NATO_Units_LevelOne + OT_NATO_Units_LevelTwo;
+
+// Factions without groups in CfgGroups (some mods): squads made of its own soldiers
+if (OT_NATO_GroundForces isEqualTo [] && { OT_NATO_Units_LevelTwo isNotEqualTo [] }) then {
+    for "_i" from 1 to 4 do {
+        private _squad = [OT_NATO_Unit_SquadLeader];
+        for "_j" from 1 to 7 do { _squad pushBack (selectRandom OT_NATO_Units_LevelTwo) };
+        OT_NATO_GroundForces pushBack _squad;
+    };
+    diag_log format ["Overthrow: %1 has no infantry groups, using squads of its soldiers", OT_faction_NATO];
+};
+if (OT_NATO_Group_Recon isEqualTo "") then { OT_NATO_Group_Recon = selectRandom OT_NATO_GroundForces };
 
 OT_NATOobjectives = [];
 OT_NATOcomms = [];
@@ -189,7 +200,7 @@ if ((server getVariable "StartupType") == "NEW" || (server getVariable ["NATOver
 
             if (_name isEqualTo OT_NATO_HQ) then {
                 _garrison = 48;
-                server setVariable [format ["vehgarrison%1", _name], ["B_T_APC_Tracked_01_AA_F", "B_T_APC_Tracked_01_AA_F", "B_GMG_01_high_F", "B_GMG_01_high_F", "B_GMG_01_high_F", "B_HMG_01_high_F", "B_HMG_01_high_F", "B_HMG_01_high_F"], true];
+                server setVariable [format ["vehgarrison%1", _name], +OT_NATO_Vehicles_HQGarrison, true];
                 private _garr = [];
                 {
                     _x params ["_class", "_num"];
@@ -347,7 +358,7 @@ diag_log "Overthrow: NATO Init Done";
         if (_name isEqualTo OT_NATO_HQ) then {
             _mrk setMarkerType "ot_HQ";
         } else {
-            _mrk setMarkerType "flag_NATO";
+            _mrk setMarkerType OT_NATO_markerFlag;
         };
     };
 

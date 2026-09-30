@@ -50,7 +50,8 @@ if (!dialog) then {
                     [
                         format [
                             "<t align='left'><t size='0.7' color='#000000'>Stability</t><br/>
-						<t size='0.6' color='#000000'>Yellow areas indicate towns where stability is lowest.Blue icons indicate known NATO installations.</t><br/><br/>"
+						<t size='0.6' color='#000000'>Yellow areas indicate towns where stability is lowest.Blue icons indicate known %1 installations.</t><br/><br/>",
+                            OT_NATO_name
                         ],
                         -0.5,
                         0.5,
@@ -102,7 +103,7 @@ if (!dialog) then {
                     private _done = {
                         private _options = [
                             [
-                                "I am sick of NATO pushing us around, what can I do about it?",
+                                format ["I am sick of %1 pushing us around, what can I do about it?", OT_NATO_name],
                                 {
                                     private _gundealer = spawner getVariable format ["gundealer%1", player call OT_fnc_nearestTown];
                                     [
@@ -112,14 +113,15 @@ if (!dialog) then {
                                             (_this select 0),
                                             "I hear you. I bet it was even them who shot the protester... I tell you what, take this spare pistol I have laying around.",
                                             "What am I supposed to do with this?",
-                                            "I don't know. But every other guy that's come in here recently that was angry with NATO wanted a gun, and I won't ask questions.",
+                                            format ["I don't know. But every other guy that's come in here recently that was angry with %1 wanted a gun, and I won't ask questions.", OT_NATO_name],
                                             "Um.. thanks I guess",
                                             "No problem, anything you can do to help me stay under their radar is great, I'll pay you $250 if you can take care of them."
                                         ],
                                         {
                                             hint format [
-                                                "The gun is in your pocket, you can equip it in your inventory (%1 key) by dragging it to your hands. But be careful, if NATO sees any weapons they will open fire on you, so best to keep it where it is until you uh... 'need' it",
-                                                "Gear" call OT_fnc_getAssignedKey
+                                                "The gun is in your pocket, you can equip it in your inventory (%1 key) by dragging it to your hands. But be careful, if %2 sees any weapons they will open fire on you, so best to keep it where it is until you uh... 'need' it",
+                                                "Gear" call OT_fnc_getAssignedKey,
+                                                OT_NATO_name
                                             ];
                                             [
                                                 {
@@ -140,7 +142,7 @@ if (!dialog) then {
                                 }
                             ],
                             [
-                                format ["There's too much crime in %1, and NATO isn't doing anything about it", OT_nation],
+                                format ["There's too much crime in %1, and %2 isn't doing anything about it", OT_nation, OT_NATO_name],
                                 {
                                     private _gundealer = spawner getVariable format ["gundealer%1", player call OT_fnc_nearestTown];
                                     [
@@ -161,8 +163,9 @@ if (!dialog) then {
                                         ],
                                         {
                                             hint format [
-                                                "The gun is in your pocket, you can equip it in your inventory (%1 key) by dragging it to your hands. But be careful, if NATO sees any weapons they will open fire on you.",
-                                                "Gear" call OT_fnc_getAssignedKey
+                                                "The gun is in your pocket, you can equip it in your inventory (%1 key) by dragging it to your hands. But be careful, if %2 sees any weapons they will open fire on you.",
+                                                "Gear" call OT_fnc_getAssignedKey,
+                                                OT_NATO_name
                                             ];
                                             [
                                                 {

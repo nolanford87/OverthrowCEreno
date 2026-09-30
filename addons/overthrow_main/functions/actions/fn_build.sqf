@@ -40,9 +40,9 @@ if (!_isBase) then {
 
 if ((!_isBase) && !(_closest in (server getVariable ["NATOabandoned", []]))) exitWith {
     if (_isobj) then {
-        format ["NATO does not allow construction this close to %1.", _closest] call OT_fnc_notifyMinor;
+        format ["%2 does not allow construction this close to %1.", _closest, OT_NATO_name] call OT_fnc_notifyMinor;
     } else {
-        format ["NATO is currently not allowing any construction in %1", _closest] call OT_fnc_notifyMinor;
+        format ["%2 is currently not allowing any construction in %1", _closest, OT_NATO_name] call OT_fnc_notifyMinor;
     };
 };
 

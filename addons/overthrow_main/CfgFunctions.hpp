@@ -31,6 +31,8 @@ class CfgFunctions {
             class revealToNATO {};
             class revealToCRIM {};
             class revealToResistance {};
+            class applyOccupier {};
+            class applyOccupierPools {};
         };
 
         /* Persistent Save */
@@ -538,6 +540,7 @@ class CfgFunctions {
 
             class NATOSupportSniper {};
             class NATOSupportRecon {};
+            class createNATOCrew {};
             class NATOConvoy {};
             class NATOGroupDeployFOB {};
             class NATOMissionDeployFOB {};

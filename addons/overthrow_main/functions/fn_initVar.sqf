@@ -518,18 +518,16 @@ private _allGlasses = "
 " configClasses (configFile >> "CfgGlasses");
 
 OT_allFactions = [];
-// NATO's weapon pools only come from its own factions (and the gendarmerie), not every BLUFOR faction
-// (FIA, CTRG or creator DLC factions)
-private _natoFactions = [OT_faction_NATO, OT_fallback_faction_NATO, getText (_cfgVehicles >> OT_NATO_Unit_Police >> "faction")];
-// Weapon and gear pools for "Randomize NATO loadouts", the lobby setting "ot_randomloadoutpool" picks one:
-// NATO's factions, every BLUFOR faction, or everything in the game (built after the weapons are sorted)
-private _newLoadoutPool = {
+// The weapons, gear and vehicles of every faction. OT_fnc_applyOccupierPools builds the occupier's lists from them:
+// NATO's weapons (supply crates, faction weapon jobs), its vehicles, and the pools for "Randomize NATO loadouts"
+OT_newLoadoutPool = {
     createHashMapFromArray ([
         "rifles", "glRifles", "machineGuns", "sniperRifles", "launchers", "handguns", "smgs", "vests", "helmets"
     ] apply { [_x, []] })
 };
-private _poolNATO = call _newLoadoutPool;
-private _poolBLUFOR = call _newLoadoutPool;
+OT_factionPools = createHashMap;
+OT_factionVehicles = createHashMap; // faction: [offensive vehicles, other vehicles]
+private _weaponKinds = createHashMap; // Weapon: its pool, sorting a weapon is slow and many units share them
 OT_allSubMachineGuns = [];
 OT_allAssaultRifles = [];
 OT_allMachineGuns = [];
@@ -612,6 +610,11 @@ OT_allBLURifleMagazines = [];
     private _side = getNumber (_x >> "side");
     private _flag = getText (_x >> "flag");
     private _numblueprints = 0;
+    private _pool = call OT_newLoadoutPool;
+    OT_factionPools set [_name, _pool];
+    private _offensiveVehicles = [];
+    private _otherVehicles = [];
+    OT_factionVehicles set [_name, [_offensiveVehicles, _otherVehicles]];
 
     //736
 
@@ -632,8 +635,8 @@ OT_allBLURifleMagazines = [];
                 if !(_base in _blacklist) then {
                     private _muzzleEffect = getText (_cfgWeapons >> _base >> "muzzleEffect");
                     if (!(_x in _weapons) && (getNumber (_cfgWeapons >> _base >> "scope") isEqualTo 2)) then { _weapons pushBack _base };
-                    if (_side isEqualTo 1 && { _muzzleEffect isNotEqualTo "BIS_fnc_effectFiredFlares" }) then {
-                        private _key = _base call {
+                    if (_muzzleEffect isNotEqualTo "BIS_fnc_effectFiredFlares") then {
+                        private _key = _weaponKinds getOrDefaultCall [_base, { _base call {
                             if (_this isKindOf ["Rifle", _cfgWeapons]) exitWith {
                                 private _mass = getNumber (_cfgWeapons >> _this >> "WeaponSlotsInfo" >> "mass");
                                 private _itemType = ([_this] call BIS_fnc_itemType) select 1; // The weapon, not the unit
@@ -648,11 +651,8 @@ OT_allBLURifleMagazines = [];
                             if (_this isKindOf ["Launcher", _cfgWeapons]) exitWith { "launchers" };
                             if (_this isKindOf ["Pistol", _cfgWeapons]) exitWith { "handguns" };
                             "";
-                        };
-                        if (_key isNotEqualTo "") then {
-                            (_poolBLUFOR get _key) pushBackUnique _base;
-                            if (_name in _natoFactions) then { (_poolNATO get _key) pushBackUnique _base };
-                        };
+                        } }, true];
+                        if (_key isNotEqualTo "") then { (_pool get _key) pushBackUnique _base };
                     };
                     //Get ammo
                     {
@@ -664,28 +664,22 @@ OT_allBLURifleMagazines = [];
             } forEach (getArray (_cfgVehicles >> _cls >> "weapons"));
 
             //Get vests and helmets for the loadout pools
-            if (_side isEqualTo 1) then {
-                {
-                    private _key = ["", "vests", "helmets"] select (([701, 605] find getNumber (_cfgWeapons >> _x >> "ItemInfo" >> "type")) + 1);
-                    if (_key isNotEqualTo "" && { getNumber (_cfgWeapons >> _x >> "scope") isEqualTo 2 }) then {
-                        (_poolBLUFOR get _key) pushBackUnique _x;
-                        if (_name in _natoFactions) then { (_poolNATO get _key) pushBackUnique _x };
-                    };
-                } forEach (getArray (_cfgVehicles >> _cls >> "linkedItems"));
-            };
+            {
+                private _key = ["", "vests", "helmets"] select (([701, 605] find getNumber (_cfgWeapons >> _x >> "ItemInfo" >> "type")) + 1);
+                if (_key isNotEqualTo "" && { getNumber (_cfgWeapons >> _x >> "scope") isEqualTo 2 }) then {
+                    (_pool get _key) pushBackUnique _x;
+                };
+            } forEach (getArray (_cfgVehicles >> _cls >> "linkedItems"));
         } else {
             //It's a vehicle
             if !(_cls isKindOf "Bag_Base" || _cls isKindOf "StaticWeapon") then {
                 if (_cls isKindOf "LandVehicle" || _cls isKindOf "Air" || _cls isKindOf "Ship") then {
                     _vehicles pushBack _cls;
                     _numblueprints = _numblueprints + 1;
-                    if (_side isEqualTo 1) then {
-                        private _threat = getArray (_x >> "threat");
-                        if (_threat # 0 > 0.5) then {
-                            OT_allBLUOffensiveVehicles pushBackUnique _cls;
-                        } else {
-                            OT_allBLUVehicles pushBackUnique _cls;
-                        };
+                    if ((getArray (_x >> "threat")) param [0, 0] > 0.5) then {
+                        _offensiveVehicles pushBackUnique _cls;
+                    } else {
+                        _otherVehicles pushBackUnique _cls;
                     };
                 };
             };
@@ -701,19 +695,6 @@ OT_allBLURifleMagazines = [];
         OT_allFactions pushBack [_name, _title, _side, _flag];
     };
 } forEach (_allFactions);
-
-// NATO's own weapons, also used for supply crates and faction weapon jobs
-OT_allBLURifles = _poolNATO get "rifles";
-OT_allBLUGLRifles = _poolNATO get "glRifles";
-OT_allBLUMachineGuns = _poolNATO get "machineGuns";
-OT_allBLUSniperRifles = _poolNATO get "sniperRifles";
-OT_allBLULaunchers = _poolNATO get "launchers";
-OT_allBLUPistols = _poolNATO get "handguns";
-OT_allBLUSMG = _poolNATO get "smgs";
-{
-    OT_allBLURifleMagazines append getArray (_cfgWeapons >> _x >> "magazines");
-} forEach OT_allBLURifles;
-OT_allBLURifleMagazines = OT_allBLURifleMagazines arrayIntersect OT_allBLURifleMagazines;
 
 private _caliberRegex = "(\d*\.\d+)\s*x\s*(\d+)|(\d+)\.(\d+)|\.(\d+)|(\d+)x(\d+)|(\d+)\s*GA/i";
 {
@@ -1019,7 +1000,7 @@ OT_allWeapons = OT_allSubMachineGuns + OT_allAssaultRifles + OT_allMachineGuns +
 
 // "Fully random" loadout pool: every weapon, vest and headgear in the game
 private _hasGL = { (getArray (_cfgWeapons >> _this >> "muzzles")) findIf { !(toLowerANSI _x in ["this", "safe"]) } > -1 };
-private _poolAll = call _newLoadoutPool;
+private _poolAll = call OT_newLoadoutPool;
 _poolAll set ["rifles", OT_allAssaultRifles select { !(_x call _hasGL) }];
 _poolAll set ["glRifles", OT_allAssaultRifles select { _x call _hasGL }];
 _poolAll set ["machineGuns", +OT_allMachineGuns];
@@ -1030,10 +1011,10 @@ _poolAll set ["smgs", +OT_allSubMachineGuns];
 _poolAll set ["vests", +OT_allVests];
 _poolAll set ["helmets", OT_allHelmets + OT_allHats];
 
-private _poolSetting = ["ot_randomloadoutpool", 0] call BIS_fnc_getParamValue;
-// All three are kept (the QA tests go through them), OT_randomLoadoutPool is the one in use
-OT_randomLoadoutPools = [_poolNATO, _poolBLUFOR, _poolAll];
-OT_randomLoadoutPool = OT_randomLoadoutPools select ((_poolSetting max 0) min 2);
+OT_loadoutPoolAll = _poolAll;
+
+// NATO's weapons, vehicles and loadout pools, for the occupier chosen so far
+call OT_fnc_applyOccupierPools;
 
 if (isServer) then {
     cost setVariable ["CIV", [80, 0, 0, 0], true];

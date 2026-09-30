@@ -36,6 +36,7 @@ if (!isServer) then {
     // this is all done on server too, no need to execute them again
     call OT_fnc_initBaseVar;
     call compileScript ["initVar.sqf", false];
+    [["ot_enemy_faction", 0] call BIS_fnc_getParamValue] call OT_fnc_applyOccupier; // The save's own is applied once the server is ready
     call OT_fnc_initVar;
     [] spawn OT_fnc_jobSystem;
     addMissionEventHandler ["EntityKilled", OT_fnc_deathHandler];
@@ -95,6 +96,12 @@ OT_gangResourceCap = ["ot_gangresourcecap", 0] call BIS_fnc_getParamValue;
 waitUntil {
     sleep 1;
     !isNil "OT_NATOInitDone";
+};
+
+// The occupier of the save the server started or loaded
+if (!isServer) then {
+    private _occupier = server getVariable ["OT_occupier", OT_occupierChoice];
+    if (_occupier isNotEqualTo OT_occupierChoice) then { [_occupier] call OT_fnc_applyOccupier };
 };
 
 private _aplayers = players_NS getVariable ["OT_allplayers", []];

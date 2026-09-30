@@ -4,6 +4,11 @@ OT_hasAce = true;
 OT_hasTFAR = (isClass (configFile >> "CfgPatches" >> "task_force_radio"));
 OT_hasJetsDLC = ("B_Plane_Fighter_01_F" isKindOf "Air");
 
+//Occupying faction (mission initVar and the occupier templates in \overthrow_main\occupiers override these)
+OT_NATO_name = "NATO"; // Shown to players
+OT_NATO_markerFlag = "flag_NATO"; // Map marker of bases
+OT_NATO_Vehicles_HQGarrison = ["B_T_APC_Tracked_01_AA_F", "B_T_APC_Tracked_01_AA_F", "B_GMG_01_high_F", "B_GMG_01_high_F", "B_GMG_01_high_F", "B_HMG_01_high_F", "B_HMG_01_high_F", "B_HMG_01_high_F"];
+
 //Buildings (mission override)
 OT_shopBuildings = [];
 OT_spawnHouseBuildings = [];

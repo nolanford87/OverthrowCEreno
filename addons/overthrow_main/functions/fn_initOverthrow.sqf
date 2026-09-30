@@ -52,28 +52,9 @@ OT_centerPos = getArray (configFile >> "CfgWorlds" >> worldName >> "centerPositi
 [OT_fnc_initBaseVar] call CBA_fnc_directCall;
 call compileScript ["initVar.sqf", false];
 
-// Get faction before final variable init & detection takes place
-private _faction = ["ot_enemy_faction", 0] call BIS_fnc_getParamValue;
-switch (_faction) do {
-    case 0: { _faction = OT_faction_NATO };
-    case 1: { _faction = "BLU_F" };
-    case 2: { _faction = "BLU_T_F" };
-    case 3: { _faction = "BLU_W_F" };
-    case 4: { _faction = "rhs_faction_usarmy_wd" };
-    case 5: { _faction = "rhs_faction_usarmy_d" };
-    case 6: { _faction = "rhs_faction_usmc_wd" };
-    case 7: { _faction = "rhs_faction_usmc_d" };
-    case 8: { _faction = "rhsgref_faction_hidf" };
-    case 9: { _faction = "UK3CB_AAF_B" };
-    case 10: { _faction = "UK3CB_LDF_B" };
-    case 11: { _faction = "UK3CB_LSM_B" };
-    case 12: { _faction = "UK3CB_MDF_B" };
-    case 13: { _faction = "UK3CB_MEI_B" };
-    default { _faction = OT_faction_NATO };
-};
-
-OT_faction_NATO = _faction;
-publicVariable "OT_faction_NATO";
+// Occupying faction from the lobby before final variable init & detection takes place,
+// a loaded game switches to the one stored in its save (see below)
+[["ot_enemy_faction", 0] call BIS_fnc_getParamValue] call OT_fnc_applyOccupier;
 
 // Dedicated servers need a separate definition for mission params
 if (isDedicated) then {
@@ -107,6 +88,13 @@ OT_tpl_checkpoint = [] call compileScript ["data\templates\NATOcheckpoint.sqf", 
         sleep 0.1;
         server getVariable ["StartupType", ""] != "";
     };
+
+    // The occupier is stored with the save: a new game takes the lobby choice, a loaded game keeps
+    // its own (saves from before this have none, they take the lobby choice too). Clients follow it.
+    private _occupier = server getVariable ["OT_occupier", -1];
+    if (_occupier isEqualTo -1) then { _occupier = ["ot_enemy_faction", 0] call BIS_fnc_getParamValue };
+    if (_occupier isNotEqualTo OT_occupierChoice) then { [_occupier] call OT_fnc_applyOccupier };
+    server setVariable ["OT_occupier", _occupier, true];
 
     private _initStart = diag_tickTime;
 

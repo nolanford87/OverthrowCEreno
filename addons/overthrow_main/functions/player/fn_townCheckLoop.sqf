@@ -14,7 +14,7 @@ if (!isNil "_town" && { OT_Map_EachFrameLastTown != _town }) then {
         if (OT_showTownChange) then {
             private _stability = server getVariable format ["stability%1", _town];
             private _rep = [_town] call OT_fnc_support;
-            private _abandon = "NATO Controlled";
+            private _abandon = format ["%1 Controlled", OT_NATO_name];
             if (_town in (server getVariable ["NATOabandoned", []])) then {
                 private _garrison = server getVariable [format ['police%1', _town], 0];
                 if (_garrison > 0) then {

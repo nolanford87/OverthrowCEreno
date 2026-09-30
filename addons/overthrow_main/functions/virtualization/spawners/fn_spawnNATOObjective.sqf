@@ -124,7 +124,7 @@ if (_numNATO > 0) then {
                 _veh setPosATL [(getPos _building select 0), (getPos _building select 1), (getPosATL _veh select 2)];
                 _veh setDir (getDir _building);
 
-                createVehicleCrew _veh;
+                [_veh] call OT_fnc_createNATOCrew;
                 _numNATO = _numNATO - 1;
 
                 [_veh];
@@ -142,21 +142,21 @@ if (_numNATO > 0) then {
                 _veh setPosATL _p;
                 _veh setDir (getDir _building) - 180;
 
-                createVehicleCrew _veh;
+                [_veh] call OT_fnc_createNATOCrew;
                 _numNATO = _numNATO - 1;
                 [_veh];
             };
 
             private _vehs = [];
             private _veh = createVehicle [OT_NATO_HMG, (_building buildingPos 11), [], 0, "CAN_COLLIDE"];
-            createVehicleCrew _veh;
+            [_veh] call OT_fnc_createNATOCrew;
             _numNATO = _numNATO - 1;
             _vehs pushBack _veh;
 
             sleep 0.5;
 
             _veh = createVehicle [OT_NATO_HMG, (_building buildingPos 13), [], 0, "CAN_COLLIDE"];
-            createVehicleCrew _veh;
+            [_veh] call OT_fnc_createNATOCrew;
             _numNATO = _numNATO - 1;
             _vehs pushBack _veh;
 
@@ -296,7 +296,7 @@ private _vehgarrison = server getVariable [format ["vehgarrison%1", _name], []];
         _veh setDir _dir;
         if (random 100 < 99) then {
             //small chance its not crewed
-            createVehicleCrew _veh;
+            [_veh] call OT_fnc_createNATOCrew;
         };
         sleep 0.5;
         _groups pushBack _veh;

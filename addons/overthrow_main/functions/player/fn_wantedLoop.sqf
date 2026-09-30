@@ -123,14 +123,14 @@ if !(captive _unit) then {
                 _unit setCaptive false;
                 [_unit] call OT_fnc_revealToNATO;
                 if (isPlayer _unit) then {
-                    "NATO has seen your spliff!" call OT_fnc_notifyMinor;
+                    format ["%1 has seen your spliff!", OT_NATO_name] call OT_fnc_notifyMinor;
                 };
             };
             if (_unit call OT_fnc_carriesStaticWeapon) exitWith {
                 _unit setCaptive false;
                 [_unit] call OT_fnc_revealToNATO;
                 if (isPlayer _unit) then {
-                    "NATO has seen the static weapon" call OT_fnc_notifyMinor;
+                    format ["%1 has seen the static weapon", OT_NATO_name] call OT_fnc_notifyMinor;
                 };
             };
             if ((!isNull objectParent _unit) && { _unit call OT_fnc_illegalInCar }) exitWith {
@@ -157,7 +157,7 @@ if !(captive _unit) then {
             };
             if (hmd _unit isNotEqualTo "") exitWith {
                 if (isPlayer _unit) then {
-                    "NATO has spotted your NV Goggles" call OT_fnc_notifyMinor;
+                    format ["%1 has spotted your NV Goggles", OT_NATO_name] call OT_fnc_notifyMinor;
                 };
                 _unit setCaptive false;
                 [_unit] call OT_fnc_revealToNATO;

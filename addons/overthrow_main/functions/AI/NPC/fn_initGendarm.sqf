@@ -21,7 +21,7 @@ _unit addEventHandler [
 ];
 
 // Increase skill levels for heavy units to simulate training
-if (toLowerANSI (typeOf _unit) in ["b_gen_commander_heavy_f", "b_gen_soldier_heavy_f", "b_gen_medic_heavy_f"]) then {
+if (toLowerANSI (typeOf _unit) in ([OT_NATO_Unit_PoliceCommander_Heavy, OT_NATO_Unit_Police_Heavy, OT_NATO_Unit_PoliceMedic_Heavy] apply { toLowerANSI _x })) then {
     _unit setRank "SERGEANT";
     _unit setSkill ["courage", 0.7];
     _unit setSkill ["commanding", 0.7];

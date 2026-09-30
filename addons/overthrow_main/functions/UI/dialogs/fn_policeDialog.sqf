@@ -1,7 +1,7 @@
 disableSerialization;
 
 private _town = player call OT_fnc_nearestTown;
-if !(_town in (server getVariable ["NATOabandoned", []])) exitWith { "This police station is under NATO control" call OT_fnc_notifyMinor };
+if !(_town in (server getVariable ["NATOabandoned", []])) exitWith { format ["This police station is under %1 control", OT_NATO_name] call OT_fnc_notifyMinor };
 
 private _garrison = server getVariable [format ['police%1', _town], 0];
 createDialog "OT_dialog_police";

@@ -14,7 +14,7 @@ if ((count allDeadMen) > 300) exitWith {
 
 if (isNil "OT_NATOInitDone") exitWith {
     if !(_quiet) then {
-        "NATO Init process is not done, wait a bit and try again" remoteExecCall ["OT_fnc_notifyAndLog", 0, false];
+        format ["%1 Init process is not done, wait a bit and try again", OT_NATO_name] remoteExecCall ["OT_fnc_notifyAndLog", 0, false];
     };
 };
 

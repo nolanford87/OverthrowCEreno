@@ -50,7 +50,7 @@ private _params = [_faction, _pickup, _destination, _identity];
 private _markerPos = _destination;
 
 //Build a mission description and title
-private _description = format ["Our intelligence operative %1 is in need of transport from %2 to %3. He is of local descent so you should have no problems passing through NATO checkpoints unnoticed. Please take care of it within 12 hrs.<br/><br/>Reward: +5 (%4), $250", _fullname, _pickupTown, _destinationTown, _factionName];
+private _description = format ["Our intelligence operative %1 is in need of transport from %2 to %3. He is of local descent so you should have no problems passing through %5 checkpoints unnoticed. Please take care of it within 12 hrs.<br/><br/>Reward: +5 (%4), $250", _fullname, _pickupTown, _destinationTown, _factionName, OT_NATO_name];
 private _title = format ["Operative transport for %1", _factionName];
 
 //The data below is what is returned to the gun dealer/faction rep, _markerPos is where to put the mission marker, the code in {} brackets is the actual mission code, only run if the player accepts
