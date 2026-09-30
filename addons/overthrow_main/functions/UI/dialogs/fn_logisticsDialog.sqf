@@ -1,5 +1,6 @@
 closeDialog 0;
 createDialog "OT_dialog_logistics";
+ctrlEnable [1602, false]; // Recover to Garage, for the player's own vehicle once one is selected
 lbClear 1500;
 {
     private _veh = _x;

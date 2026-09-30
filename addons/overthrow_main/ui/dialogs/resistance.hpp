@@ -413,6 +413,16 @@ class OT_dialog_logistics {
             colorBackground[] = {0, 0, 0, 0.8};
             action = "[] call OT_fnc_clearPlayerWaypoint;";
         };
+        class RscButton_1602: RscOverthrowButton {
+            idc = 1602;
+            text = "Recover to Garage";
+            x = "0.654688 * safeZoneW + safeZoneX";
+            y = "0.676 * safeZoneH + safeZoneY";
+            w = "0.118594 * safeZoneW";
+            h = "0.099 * safeZoneH";
+            tooltip = "Pay to have this vehicle taken to the garage nearest it, as it is now";
+            action = "call OT_fnc_garageRecoverSelected;";
+        };
         class RscStructuredText_1100: RscOverthrowStructuredText {
             idc = 1100;
             x = "0.654688 * safeZoneW + safeZoneX";

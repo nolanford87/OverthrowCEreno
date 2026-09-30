@@ -130,6 +130,32 @@ if (_totalAmmo > 0) then {
     };
 };
 
+// Recovery to the garage, for the player's own vehicles
+private _recoverTxt = "";
+if ((_veh getVariable ["owner", ""]) isEqualTo getPlayerUID player) then {
+    (_veh call OT_fnc_garageRecoverPrice) params ["_price", "_garage", "_town", "_modifier"];
+    if (_price < 0) then {
+        ctrlEnable [1602, false];
+        ctrlSetText [1602, "Recover to Garage"];
+        _recoverTxt = "<br/>Recovery needs an owned warehouse or a resistance base";
+    } else {
+        ctrlEnable [1602, true];
+        ctrlSetText [1602, format ["Recover to Garage ($%1)", [_price, 1, 0, true] call CBA_fnc_formatNumber]];
+        _recoverTxt = format ["<br/>Recovery: $%1 to the garage near %2 (%3%4%5, near %6)",
+            [_price, 1, 0, true] call CBA_fnc_formatNumber,
+            _garage call OT_fnc_nearestTown,
+            ["", "+"] select (_modifier > 0),
+            _modifier,
+            "%",
+            _town
+        ];
+    };
+} else {
+    ctrlEnable [1602, false];
+    ctrlSetText [1602, "Recover to Garage"];
+};
+_txt = _txt + _recoverTxt;
+
 private _textctrl = (findDisplay 8000) displayCtrl 1100;
 
 _textctrl ctrlSetStructuredText parseText format [

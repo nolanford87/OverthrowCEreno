@@ -637,6 +637,9 @@ class CfgFunctions {
             file = "\overthrow_main\functions\garage";
             class garageAccessPoint {};
             class garageInitPlayer {};
+            class garageRecover {};
+            class garageRecoverPrice {};
+            class garageRecoverSelected {};
             class garageRestore {};
             class garageStore {};
             class getCargo {};
