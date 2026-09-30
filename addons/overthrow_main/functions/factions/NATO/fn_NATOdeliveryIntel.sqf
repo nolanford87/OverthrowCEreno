@@ -5,17 +5,21 @@
     Reported, the players get a task to destroy or steal it before it arrives: $500 ($250 for a FOB
     vehicle) and +10 influence to whoever does it. It fails when it's delivered (the delivery sets
     "OT_delivered" on it, or removes it on arrival) or after 40 minutes.
+    The task doesn't track the vehicle: for a route (convoy, fly-in) it shows where it comes from and
+    where it goes, for an airdrop an area (off-centre) it may land in.
 
     Parameters:
         _this # 0: OBJECT - The vehicle being delivered
         _this # 1: ARRAY - Where it's going
         _this # 2: STRING - What it's for, e.g. "Zaros Base" or "the FOB near Georgetown"
         _this # 3: NUMBER - Money reward
+        _this # 4: ARRAY - What intelligence knows: ["route", from position] or ["drop", drop position]
 
-    Usage: [_veh, _destination, _name, 500] spawn OT_fnc_NATOdeliveryIntel;
+    Usage: [_veh, _destination, _name, 500, ["route", _start]] spawn OT_fnc_NATOdeliveryIntel;
 */
 
-params ["_veh", "_destination", "_for", ["_reward", 500]];
+params ["_veh", "_destination", "_for", ["_reward", 500], ["_info", []]];
+_info params [["_kind", "route"], ["_where", getPos _veh]];
 
 private _town = _destination call OT_fnc_nearestTown;
 private _support = server getVariable [format ["rep%1", _town], 0];
@@ -25,14 +29,49 @@ if (random 100 >= _chance) exitWith {};
 
 private _vehName = (typeOf _veh) call OT_fnc_vehicleGetName;
 private _taskId = format ["intercept%1", round (diag_tickTime * 1000) + round random 1000];
+
+// What intelligence knows, on the map
+private _markers = [];
+private _taskPos = [];
+private _how = "";
+if (_kind isEqualTo "drop") then {
+    // An area it may land in, not centred on the drop point
+    private _radius = 350;
+    _taskPos = _where getPos [random (_radius * 0.6), random 360];
+    private _area = createMarker [_taskId + "_area", _taskPos];
+    _area setMarkerShape "ELLIPSE";
+    _area setMarkerSize [_radius, _radius];
+    _area setMarkerBrush "FDiagonal";
+    _area setMarkerColor "ColorOPFOR";
+    private _label = createMarker [_taskId + "_label", _taskPos];
+    _label setMarkerType "mil_warning";
+    _label setMarkerColor "ColorOPFOR";
+    _label setMarkerText format ["Possible drop zone: %1", _vehName];
+    _markers = [_area, _label];
+    _how = format ["It will be airdropped somewhere in the marked area near %1, then head for %2.", _taskPos call OT_fnc_nearestTown, _for];
+} else {
+    // Where it comes from and where it goes
+    _taskPos = _where;
+    private _start = createMarker [_taskId + "_from", _where];
+    _start setMarkerType "mil_start";
+    _start setMarkerColor "ColorOPFOR";
+    _start setMarkerText format ["Delivery from: %1", _vehName];
+    private _end = createMarker [_taskId + "_to", _destination];
+    _end setMarkerType "mil_end";
+    _end setMarkerColor "ColorOPFOR";
+    _end setMarkerText format ["Delivery to: %1", _for];
+    _markers = [_start, _end];
+    _how = format ["It is setting out from near %1, heading for %2.", _where call OT_fnc_nearestTown, _for];
+};
+
 [
     independent, [_taskId],
     [
-        format ["Resistance intelligence reports that a %1 is being delivered to %2. Destroy it or steal it before it gets there.<br/><br/>Reward: $%3, +10 influence", _vehName, _for, _reward],
+        format ["Resistance intelligence reports that a %1 is being delivered to %2. %4 Destroy it or steal it before it gets there.<br/><br/>Reward: $%3, +10 influence", _vehName, _for, _reward, _how],
         format ["Intercept the %1", _vehName],
         _taskId
     ],
-    _veh, "CREATED", 1, true, "destroy", true
+    _taskPos, "CREATED", 1, true, "destroy", true
 ] call BIS_fnc_taskCreate;
 _veh setVariable ["OT_interceptTask", _taskId];
 format ["Resistance intelligence: a %1 is being delivered to %2", _vehName, _for] remoteExec ["OT_fnc_notifyMinor", 0, false];
@@ -66,6 +105,8 @@ waitUntil {
     };
     _result isNotEqualTo ""
 };
+
+{ deleteMarker _x } forEach _markers;
 
 if (_result isEqualTo "delivered") exitWith {
     [_taskId, "FAILED", true] call BIS_fnc_taskSetState;
