@@ -122,11 +122,20 @@ OTQA_garage_fill = {
         private _veh = createVehicle [_cls, _pos, [], 0, "NONE"];
         [_veh, getPlayerUID player] call OT_fnc_setOwner;
 
-        (_veh call OT_fnc_garageRecoverPrice) params ["_price", "_garage", "_town", "_modifier"];
-        private _expected = round ((100 + ((_veh distance2D _garage) / 10) + (((cost getVariable [_cls, [0]]) select 0) * 0.02)) * (1 + (_modifier / 100)));
+        clearWeaponCargoGlobal _veh;
+        clearMagazineCargoGlobal _veh;
+        (_veh call OT_fnc_garageRecoverPrice) params ["_price", "_garage", "_town", "_modifier", "_contraband"];
+        private _base = (100 + ((_veh distance2D _garage) / 10) + (((cost getVariable [_cls, [0]]) select 0) * 0.02)) * (1 + (_modifier / 100));
+        private _expected = round (_base * ([1, 1.5] select _contraband));
         private _held = _town in (server getVariable ["NATOabandoned", []]);
         ["Recovery price: distance + 2% of value, town discount / hike", _price isEqualTo _expected && { _modifier isEqualTo ([25, -25] select _held) },
             format ["$%1 to %2, %3%4 near %5", _price, _garage, _modifier, "%", _town]] call OTQA_fnc_check;
+
+        // Contraband makes it 50% more
+        _veh addWeaponCargoGlobal ["arifle_MX_F", 1];
+        (_veh call OT_fnc_garageRecoverPrice) params ["_priceIllegal", "", "", "", "_contrabandNow"];
+        ["Contraband in the vehicle adds 50%", _contrabandNow && { _priceIllegal isEqualTo (round (_base * 1.5)) }, format ["$%1 -> $%2", _price, _priceIllegal]] call OTQA_fnc_check;
+        clearWeaponCargoGlobal _veh;
 
         private _money = player getVariable ["money", 0];
         player setVariable ["money", _price + 1000, true];
