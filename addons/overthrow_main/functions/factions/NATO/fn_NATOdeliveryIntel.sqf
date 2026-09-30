@@ -2,8 +2,8 @@
     Description:
     A delivery to the occupier (a tank, a patrol aircraft or a FOB's vehicle) may be reported by
     resistance intelligence: 20% + the destination town's resistance support / 20, at most 80%.
-    Reported, the players get a task to destroy or steal it before it arrives: $500 ($250 for a FOB
-    vehicle) and +10 influence to whoever does it. It fails when it's delivered (the delivery sets
+    Reported, the players get a task to destroy or steal it before it arrives: $3500 for a tank, $2000
+    for an aircraft, $1000 for a FOB vehicle (the callers pass it) and +10 influence to whoever does it. It fails when it's delivered (the delivery sets
     "OT_delivered" on it, or removes it on arrival) or after 40 minutes.
     The task doesn't track the vehicle: for a route (convoy, fly-in) it shows where it comes from and
     where it goes, for an airdrop an area (off-centre) it may land in.
@@ -12,13 +12,13 @@
         _this # 0: OBJECT - The vehicle being delivered
         _this # 1: ARRAY - Where it's going
         _this # 2: STRING - What it's for, e.g. "Zaros Base" or "the FOB near Georgetown"
-        _this # 3: NUMBER - Money reward
+        _this # 3: NUMBER - Money reward (tank 3500, aircraft 2000, FOB vehicle 1000)
         _this # 4: ARRAY - What intelligence knows: ["route", from position] or ["drop", drop position]
 
-    Usage: [_veh, _destination, _name, 500, ["route", _start]] spawn OT_fnc_NATOdeliveryIntel;
+    Usage: [_veh, _destination, _name, 3500, ["route", _start]] spawn OT_fnc_NATOdeliveryIntel;
 */
 
-params ["_veh", "_destination", "_for", ["_reward", 500], ["_info", []]];
+params ["_veh", "_destination", "_for", ["_reward", 1000], ["_info", []]];
 _info params [["_kind", "route"], ["_where", getPos _veh]];
 
 private _town = _destination call OT_fnc_nearestTown;

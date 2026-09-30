@@ -70,7 +70,7 @@ OTQA_intel_state = {
     }],
 
     ["Stolen delivery pays the thief", {
-        private _veh = [500] call OTQA_intel_start;
+        private _veh = [3500] call OTQA_intel_start; // A tank's reward
         private _taskId = _veh getVariable ["OT_interceptTask", ""];
         private _money = player getVariable ["money", 0];
         private _influence = player getVariable ["influence", 0];
@@ -78,7 +78,7 @@ OTQA_intel_state = {
         private _state = [_veh, _taskId] call OTQA_intel_state;
         sleep 1; // Payment goes through the player's machine
         ["Stealing it completes the task", _state isEqualTo "SUCCEEDED", _state] call OTQA_fnc_check;
-        ["The thief gets $500 and +10 influence", (player getVariable ["money", 0]) isEqualTo (_money + 500) && { (player getVariable ["influence", 0]) isEqualTo (_influence + 10) },
+        ["The thief gets $3500 and +10 influence", (player getVariable ["money", 0]) isEqualTo (_money + 3500) && { (player getVariable ["influence", 0]) isEqualTo (_influence + 10) },
             format ["money +%1, influence +%2", (player getVariable ["money", 0]) - _money, (player getVariable ["influence", 0]) - _influence]] call OTQA_fnc_check;
         { deleteVehicle _x } forEach (crew _veh);
         deleteVehicle _veh;

@@ -31,7 +31,7 @@ private _group = [_veh] call OT_fnc_createNATOCrew;
 _group setVariable ["Vcm_Disable", true, false];
 _group setBehaviour "AWARE";
 _veh flyInHeight 150;
-[_veh, _basePos, _name, 500, ["route", _airfieldPos]] spawn OT_fnc_NATOdeliveryIntel; // Resistance intelligence may report it
+[_veh, _basePos, _name, 2000, ["route", _airfieldPos]] spawn OT_fnc_NATOdeliveryIntel; // Resistance intelligence may report it
 
 private _wp = _group addWaypoint [_basePos, 0];
 _wp setWaypointType "MOVE";
