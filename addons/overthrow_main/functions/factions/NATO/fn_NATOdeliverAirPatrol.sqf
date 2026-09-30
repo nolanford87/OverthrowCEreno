@@ -31,6 +31,7 @@ private _group = [_veh] call OT_fnc_createNATOCrew;
 _group setVariable ["Vcm_Disable", true, false];
 _group setBehaviour "AWARE";
 _veh flyInHeight 150;
+[_veh, _basePos, _name, 500] spawn OT_fnc_NATOdeliveryIntel; // Resistance intelligence may report it
 
 private _wp = _group addWaypoint [_basePos, 0];
 _wp setWaypointType "MOVE";
@@ -39,6 +40,7 @@ _wp setWaypointSpeed "NORMAL";
 private _timeout = time + 600;
 waitUntil { sleep 3; !alive _veh || { ((units _group) findIf { alive _x }) isEqualTo -1 } || { (_veh distance2D _basePos) < 400 } || { time > _timeout } };
 if (!alive _veh) exitWith {};
+_veh setVariable ["OT_delivered", true]; // An intelligence report on it has failed
 
 // Nobody near the base: it's parked there when the base spawns
 if !([_basePos] call OT_fnc_inSpawnDistance) exitWith {

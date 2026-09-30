@@ -71,6 +71,7 @@ call {
         _v = createVehicle [_cls, _start, [], 0, "NONE"];
         _v setDir (_start getDir _pos);
         [_v] call _setup;
+        [_v, _pos, format ["the FOB near %1", _pos call OT_fnc_nearestTown], 250] spawn OT_fnc_NATOdeliveryIntel; // May be reported
         _g = [_v] call _crew;
         _g setBehaviour "SAFE";
         private _wp = _g addWaypoint [_pos, 30];
@@ -92,6 +93,7 @@ call {
     _v allowDamage false;
     _v attachTo [_chute, [0, 0, -1.3]];
     [_v] call _setup;
+    [_v, _pos, format ["the FOB near %1", _pos call OT_fnc_nearestTown], 250] spawn OT_fnc_NATOdeliveryIntel; // May be reported
     waitUntil { sleep 0.5; isNull _chute || { ((getPosATL _v) select 2) < 3 } };
     detach _v;
     if (!isNull _chute) then { deleteVehicle _chute };
@@ -102,6 +104,9 @@ call {
 
 if (alive _v && { !isNull _g }) then {
     [_g, _v, _pos] spawn OT_fnc_NATOvehiclePatrol;
-    // Its last upgrade has arrived: the FOB's takeover timer starts
-    if (_deliver) then { [_pos] call OT_fnc_NATOstartFOBTimer };
+    // Its last upgrade has arrived: the FOB's takeover timer starts, an intelligence report on it has failed
+    if (_deliver) then {
+        _v setVariable ["OT_delivered", true];
+        [_pos] call OT_fnc_NATOstartFOBTimer;
+    };
 };

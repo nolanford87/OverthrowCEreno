@@ -21,6 +21,7 @@ class CfgFunctions {
             // Current QA tests (new changes) and archived QA tests (everything that passed before)
             class testsCurrent {};
             class testsArchive {};
+            class testsIntel {};
             class check {};
             class manual {};
             class spawnWarehouse {}; // Zeus helper
