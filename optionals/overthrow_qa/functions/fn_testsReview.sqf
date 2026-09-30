@@ -209,19 +209,21 @@ OTQA_rv_spawnKill = {
         private _veh = objNull;
         waitUntil {
             sleep 0.5;
-            _veh = vehicles select { (_x getVariable ["OT_fobVehicle", []]) isEqualTo _pos } param [0, objNull];
+            _veh = vehicles select { (_x getVariable ["OT_fobVehicle", []]) isEqualTo _pos || { (_x getVariable ["OT_airdropFOB", []]) isEqualTo _pos } } param [0, objNull];
             !isNull _veh || { time > _timeout }
         };
         sleep 2;
-        private _way = ["not found", "parachuted in", "driving in"] select ([0, [1, 2] select (((getPosATL _veh) select 2) < 5)] select !isNull _veh);
+        private _way = ["not found", "airdrop (Blackfish)", "driving in"] select ([0, [1, 2] select (((getPosATL _veh) select 2) < 5)] select !isNull _veh);
         ["FOB vehicle is on its way (not placed at the FOB)", !isNull _veh && { ((_veh distance2D _pos) > 60) || { ((getPosATL _veh) select 2) > 5 } },
             format ["%1, %2 m from the FOB, %3 m up (%4)", typeOf _veh, round (_veh distance2D _pos), round ((getPosATL _veh) select 2), _way]] call OTQA_fnc_check;
 
         if (!isNull _veh) then {
+            private _group = group driver _veh;
             { deleteVehicle _x } forEach (crew _veh);
             { detach _x; deleteVehicle _x } forEach (attachedObjects _veh);
             if (!isNull attachedTo _veh) then { deleteVehicle (attachedTo _veh) };
             deleteVehicle _veh;
+            if (!isNull _group) then { deleteGroup _group };
         };
         _fobs = server getVariable ["NATOfobs", []];
         _fobs deleteAt (_fobs find _fob);
@@ -355,16 +357,16 @@ OTQA_rv_spawnKill = {
         private _tank = objNull;
         waitUntil {
             sleep 0.5;
-            _tank = vehicles select { (_x getVariable ["vehgarrison", ""]) isEqualTo "OTQA_TEST" } param [0, objNull];
+            _tank = vehicles select { (_x getVariable ["vehgarrison", ""]) isEqualTo "OTQA_TEST" || { (_x getVariable ["OT_airdropFor", ""]) isEqualTo "OTQA_TEST" } } param [0, objNull];
             !isNull _tank || { time > _timeout }
         };
         sleep 2;
         private _escorts = vehicles select { (_x getVariable ["OT_escort", ""]) isEqualTo "OTQA_TEST" };
         private _alt = (getPosATL _tank) select 2;
         private _dist = _tank distance2D _basePos;
-        private _airdrop = _alt > 20 || { (_dist > 1500) && { (_dist < 2500) } && { _escorts isEqualTo [] } };
+        private _airdrop = (typeOf _tank) isEqualTo "B_T_VTOL_01_armed_F" && { _alt > 200 }; // The Blackfish bringing it
         private _convoy = (count _escorts) isEqualTo 2 && { (_escorts findIf { !alive _x || { isNull driver _x } }) isEqualTo -1 };
-        ["Tank is convoyed (2 escorts) or airdropped about 2 km away", !isNull _tank && { _airdrop || _convoy },
+        ["Tank is convoyed (2 escorts) or airdropped (an armed Blackfish flying it in)", !isNull _tank && { _airdrop || _convoy },
             format ["%1: %2, %3 m from the base, %4 m up, %5 escorts", _cls, ["airdrop", "convoy"] select _convoy, round _dist, round _alt, count _escorts]] call OTQA_fnc_check;
 
         terminate _script;

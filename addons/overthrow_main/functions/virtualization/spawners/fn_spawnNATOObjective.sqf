@@ -259,6 +259,8 @@ private _airgarrison = server getVariable [format ["airgarrison%1", _name], []];
 private _vehgarrison = server getVariable [format ["vehgarrison%1", _name], []];
 // A tank already here (on its way after being bought, OT_fnc_NATOdeliverHeavy) isn't spawned again
 private _presentVeh = (vehicles select { alive _x && { (_x getVariable ["vehgarrison", ""]) isEqualTo _name } }) apply { typeOf _x };
+// ... or still in the air, in a Blackfish (OT_fnc_NATOairdropVehicle)
+_presentVeh append ((vehicles select { alive _x && { (_x getVariable ["OT_airdropFor", ""]) isEqualTo _name } && { isNull (_x getVariable ["OT_deliveryCargo", objNull]) } }) apply { _x getVariable ["OT_airdropCargo", ""] });
 {
     private _presentIndex = _presentVeh find _x;
     if (_presentIndex > -1) then { _presentVeh deleteAt _presentIndex; continue };
