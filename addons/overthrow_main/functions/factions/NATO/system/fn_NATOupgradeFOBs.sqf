@@ -64,7 +64,7 @@ private _fobs = server getVariable ["NATOfobs", []];
         _spend = _spend - 250;
         _resources = _resources - 250;
         _upgrades pushBack "Vehicle";
-        [_pos, ["Vehicle"]] spawn OT_fnc_NATOupgradeFOB;
+        [_pos, ["Vehicle"], true] spawn OT_fnc_NATOupgradeFOB; // Delivered: drives in or parachuted
     };
 } forEach (_fobs);
 
