@@ -1,7 +1,7 @@
 /*
     Description:
-    A FOB's vehicle was destroyed or taken by a player: the FOB loses its "Vehicle" upgrade, so the
-    vehicle doesn't come back when the game is loaded, and the FOB can buy another.
+    A FOB's vehicle was destroyed or taken by a player: its "Vehicle" upgrade becomes "VehicleLost",
+    so the vehicle doesn't come back when the game is loaded and the FOB can't buy another.
 
     Parameters:
         _this # 0: OBJECT - The FOB's vehicle
@@ -19,7 +19,7 @@ private _fobs = server getVariable ["NATOfobs", []];
     _x params ["_pos", "", "_upgrades"];
     if (_pos isEqualTo _fobPos) exitWith {
         private _index = _upgrades find "Vehicle";
-        if (_index > -1) then { _upgrades deleteAt _index };
+        if (_index > -1) then { _upgrades set [_index, "VehicleLost"] };
     };
 } forEach _fobs;
 server setVariable ["NATOfobs", _fobs, true];

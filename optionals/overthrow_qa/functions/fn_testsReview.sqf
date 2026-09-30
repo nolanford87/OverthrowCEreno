@@ -153,7 +153,8 @@ OTQA_rv_spawnKill = {
         // A FOB 200 m from the player gets its vehicle upgrade, like OT_fnc_NATOupgradeFOBs buys it
         private _pos = player getPos [200, getDir player];
         private _fobs = server getVariable ["NATOfobs", []];
-        private _fob = [_pos, 4, ["Vehicle"]];
+        // Full garrison and every other upgrade, so a vehicle is the only thing it could still buy
+        private _fob = [_pos, 16, ["Mortar", "Barriers", "HMG", "Vehicle"]];
         _fobs pushBack _fob;
         server setVariable ["NATOfobs", _fobs, true];
         [_pos, ["Vehicle"]] spawn OT_fnc_NATOupgradeFOB;
@@ -173,7 +174,15 @@ OTQA_rv_spawnKill = {
             _veh setDamage 1;
             sleep 1;
         };
-        ["A destroyed FOB vehicle frees the upgrade", !("Vehicle" in (_fob select 2)), format ["upgrades %1", _fob select 2]] call OTQA_fnc_check;
+        ["A destroyed FOB vehicle isn't replaced", !("Vehicle" in (_fob select 2)) && { "VehicleLost" in (_fob select 2) }, format ["upgrades %1", _fob select 2]] call OTQA_fnc_check;
+        // The FOB doesn't buy another one (the only FOB, zero chance roll, plenty to spend)
+        private _resources = server getVariable ["NATOresources", 2000];
+        private _allFobs = server getVariable ["NATOfobs", []];
+        server setVariable ["NATOfobs", [_fob], true];
+        [2000, 0] call OT_fnc_NATOupgradeFOBs;
+        server setVariable ["NATOfobs", _allFobs, true];
+        server setVariable ["NATOresources", _resources];
+        ["The FOB can't buy another vehicle", !("Vehicle" in (_fob select 2)), format ["upgrades %1", _fob select 2]] call OTQA_fnc_check;
 
         if (!isNull _veh) then { { deleteVehicle _x } forEach (crew _veh); deleteVehicle _veh };
         _fobs = server getVariable ["NATOfobs", []];
