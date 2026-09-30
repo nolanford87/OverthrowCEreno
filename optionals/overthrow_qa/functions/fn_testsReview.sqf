@@ -132,7 +132,8 @@ OTQA_rv_spawnKill = {
 
     ["Base patrol aircraft circles near players", {
         private _cls = selectRandom (OT_NATO_Vehicles_AirSupport + OT_NATO_Vehicles_AirSupport_Small);
-        private _pos = (player getPos [200, getDir player]) findEmptyPosition [0, 150, _cls];
+        // An open spot (not in trees, which destroy a spawning helicopter)
+        private _pos = [player getPos [200, getDir player], 0, 200, 15, 0, 0.2, 0, [], [[], []]] call BIS_fnc_findSafePos;
         if (_pos isEqualTo []) exitWith { "Base air patrol test skipped: no room for a helicopter near you" call OTQA_fnc_manual };
         private _veh = createVehicle [_cls, _pos, [], 0, "NONE"];
         private _group = [_veh] call OT_fnc_createNATOCrew;
@@ -142,7 +143,8 @@ OTQA_rv_spawnKill = {
 
         private _timeout = time + 35;
         waitUntil { sleep 1; ((waypoints _group) findIf { waypointType _x isEqualTo "LOITER" } > -1) || { time > _timeout } };
-        ["Patrol aircraft circles the base while a player is within 2 km", (waypoints _group) findIf { waypointType _x isEqualTo "LOITER" } > -1, _cls] call OTQA_fnc_check;
+        ["Patrol aircraft circles the base while a player is within 2 km", (waypoints _group) findIf { waypointType _x isEqualTo "LOITER" } > -1,
+            format ["%1, alive %2, crew %3, %4 waypoints", _cls, alive _veh, count crew _veh, count waypoints _group]] call OTQA_fnc_check;
 
         terminate _script;
         { deleteVehicle _x } forEach (crew _veh);
@@ -250,6 +252,17 @@ OTQA_rv_spawnKill = {
         [_fobVeh] call OT_fnc_createNATOCrew;
         private _townVehicles = +(server getVariable [format ["vehgarrison%1", _town], []]);
 
+        // A resistance police station with police in the town
+        private _stationPos = (_townPos getPos [60, 90]) findEmptyPosition [0, 100, OT_policeStation];
+        if (_stationPos isEqualTo []) then { _stationPos = _townPos getPos [60, 90] };
+        private _station = createVehicle [OT_policeStation, _stationPos, [], 0, "NONE"];
+        [_station, getPlayerUID player] call OT_fnc_setOwner;
+        server setVariable [format ["policepos%1", _town], getPos _station, true];
+        server setVariable [format ["police%1", _town], 2, true];
+        private _policeGroup = createGroup independent;
+        private _officer = _policeGroup createUnit ["I_G_Soldier_F", _stationPos getPos [8, 0], [], 0, "NONE"];
+        _officer setVariable ["polgarrison", _town, true];
+
         // Time's up (the save is disposable, the town really flips)
         _timer set [1, 0];
         call OT_fnc_NATOFOBtimers;
@@ -257,6 +270,10 @@ OTQA_rv_spawnKill = {
         ["The FOB's vehicle joins the town's garrison", (count _newList) isEqualTo ((count _townVehicles) + 1) && { _vehCls in _newList } && { (_fobVeh getVariable ["vehgarrison", ""]) isEqualTo _town },
             format ["%1: %2", _town, _newList]] call OTQA_fnc_check;
         ["The FOB is set to disband", "Disband" in (_fob select 2), ""] call OTQA_fnc_check;
+        sleep 0.5; // Deleting takes a frame
+        ["The resistance police station and its police are removed", isNull _station && { isNull _officer } && { (server getVariable [format ["police%1", _town], -1]) isEqualTo -1 },
+            format ["station %1, officer %2, police %3", !isNull _station, !isNull _officer, server getVariable [format ["police%1", _town], -1]]] call OTQA_fnc_check;
+        deleteGroup _policeGroup;
 
         // It disbands once no player is within 1 km
         call OT_fnc_NATOFOBtimers;

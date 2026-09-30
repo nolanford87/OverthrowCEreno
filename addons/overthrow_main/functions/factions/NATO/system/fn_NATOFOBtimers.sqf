@@ -2,8 +2,8 @@
     Description:
     Counts down the FOB takeover timers (OT_fnc_NATOstartFOBTimer). A timer whose FOB was cleared is
     dropped. When one runs out, the town falls back under the occupier's control: 100% stability,
-    no resistance support, a small occupier garrison, and the FOB's vehicle (if it still has it) joins
-    the town's garrison. The FOB then disbands once no living player is within 1 km of it.
+    no resistance support, a small occupier garrison, the resistance police station and its police are
+    removed, and the FOB's vehicle (if it still has it) joins the town's garrison. The FOB then disbands once no living player is within 1 km of it.
     Run by the NATO loop every few seconds, the time left is saved with the game.
 
     Usage: call OT_fnc_NATOFOBtimers;
@@ -63,6 +63,18 @@ private _keep = [];
 
     [_town, -(server getVariable [format ["rep%1", _town], 0])] call OT_fnc_support;
     [_town, 100 - (server getVariable [format ["stability%1", _town], 0])] call OT_fnc_stability;
+
+    // The resistance's police station goes: building, police count, marker, and its police
+    private _policePos = server getVariable [format ["policepos%1", _town], []];
+    if (_policePos isNotEqualTo []) then {
+        { deleteVehicle _x } forEach ((nearestObjects [_policePos, [OT_policeStation], 30]) select { _x call OT_fnc_hasOwner });
+    };
+    { deleteVehicle _x } forEach (allUnits select { (_x getVariable ["polgarrison", ""]) isEqualTo _town });
+    server setVariable [format ["police%1", _town], nil, true]; // A new station starts fresh
+    server setVariable [format ["policepos%1", _town], nil, true];
+    private _policeMarker = format ["%1-police", _town];
+    _policeMarker remoteExec ["deleteMarkerLocal", 0, false];
+    deleteMarker _policeMarker;
 
     // The garrison a town at 100% stability starts with (initNATO)
     private _garrison = [2, 4] select (_town in OT_NATO_priority);

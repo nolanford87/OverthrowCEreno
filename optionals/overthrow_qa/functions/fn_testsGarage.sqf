@@ -86,6 +86,7 @@ OTQA_garage_fill = {
         // Taking it out: HR Garage creates the vehicle on the player's machine, then Overthrow restores the rest
         private _out = createVehicle [_cls, _pos, [], 0, "NONE"];
         [_out, _vehUID, player] call OT_fnc_garageRestore;
+        sleep 4; // Cargo is restored after ACE has set the new vehicle up
         ["Owner comes back", (_out call OT_fnc_getOwner) isEqualTo getPlayerUID player, ""] call OTQA_fnc_check;
         ["Lock and name come back", (_out getVariable ["OT_locked", false]) && { (_out getVariable ["name", ""]) isEqualTo "OTQA garage test" }, ""] call OTQA_fnc_check;
         private _cargoAfter = [_out call OT_fnc_getCargo] call OTQA_garage_cargoText;
