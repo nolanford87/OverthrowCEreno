@@ -87,6 +87,25 @@ params ["_pos", "_upgrades"];
         _g setCombatMode "BLUE";
         [_v, _g] spawn OT_fnc_NATOMortar;
     };
+    if (_x isEqualTo "Vehicle") then {
+        // A light armed car from the occupier's ground support (no tanks), crewed, patrols the FOB
+        private _cars = OT_NATO_Vehicles_GroundSupport select { (_x isKindOf "Car") && { !(_x isKindOf "Tank") } };
+        private _cls = selectRandom ([_cars, OT_NATO_Vehicles_GroundSupport] select (_cars isEqualTo []));
+        private _p = _pos findEmptyPosition [12, 60, _cls];
+        if (_p isEqualTo []) then { _p = _pos getPos [20, random 360] };
+        private _v = createVehicle [_cls, _p, [], 0, "NONE"];
+        _v setDir (random 360);
+        _v setVariable ["OT_fobVehicle", _pos];
+        _v addEventHandler ["Killed", { [_this select 0] call OT_fnc_NATOreleaseFOBVehicle }];
+        _v addEventHandler ["GetIn", {
+            params ["_veh", "", "_unit"];
+            if (isPlayer _unit) then { [_veh] call OT_fnc_NATOreleaseFOBVehicle };
+        }];
+        private _g = [_v] call OT_fnc_createNATOCrew;
+        { _x setVariable ["garrison", "HQ", false] } forEach (crew _v);
+        { _x addCuratorEditableObjects [[_v], true] } forEach allCurators;
+        [_g, _v, _pos] spawn OT_fnc_NATOvehiclePatrol;
+    };
 
     sleep 0.3;
 } forEach (_upgrades);

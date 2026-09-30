@@ -147,5 +147,37 @@ OTQA_rv_spawnKill = {
         { deleteVehicle _x } forEach (crew _veh);
         deleteVehicle _veh;
         deleteGroup _group;
+    }],
+
+    ["FOB buys a vehicle", {
+        // A FOB 200 m from the player gets its vehicle upgrade, like OT_fnc_NATOupgradeFOBs buys it
+        private _pos = player getPos [200, getDir player];
+        private _fobs = server getVariable ["NATOfobs", []];
+        private _fob = [_pos, 4, ["Vehicle"]];
+        _fobs pushBack _fob;
+        server setVariable ["NATOfobs", _fobs, true];
+        [_pos, ["Vehicle"]] spawn OT_fnc_NATOupgradeFOB;
+
+        private _timeout = time + 10;
+        private _veh = objNull;
+        waitUntil {
+            sleep 0.5;
+            _veh = (_pos nearEntities [["Car"], 80]) select { (_x getVariable ["OT_fobVehicle", []]) isEqualTo _pos } param [0, objNull];
+            !isNull _veh || { time > _timeout }
+        };
+        private _crewOK = !isNull _veh && { (crew _veh) isNotEqualTo [] } && { side group driver _veh isEqualTo blufor };
+        ["FOB vehicle spawns crewed (BLUFOR)", _crewOK, format ["%1", typeOf _veh]] call OTQA_fnc_check;
+
+        if (!isNull _veh) then {
+            { _x disableAI "TARGET"; _x disableAI "AUTOTARGET" } forEach (crew _veh);
+            _veh setDamage 1;
+            sleep 1;
+        };
+        ["A destroyed FOB vehicle frees the upgrade", !("Vehicle" in (_fob select 2)), format ["upgrades %1", _fob select 2]] call OTQA_fnc_check;
+
+        if (!isNull _veh) then { { deleteVehicle _x } forEach (crew _veh); deleteVehicle _veh };
+        _fobs = server getVariable ["NATOfobs", []];
+        _fobs deleteAt (_fobs find _fob);
+        server setVariable ["NATOfobs", _fobs, true];
     }]
 ]
