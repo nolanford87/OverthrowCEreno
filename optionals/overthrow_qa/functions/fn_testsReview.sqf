@@ -9,7 +9,7 @@
 "Multiplayer (as a non-host player): finish a 'Kill NATO' and an 'Operative transport' job, you get the money and the kill count hints, the host doesn't" call OTQA_fnc_manual;
 "Save at night (after 19:00), restart and load: time runs at the night speed straight away" call OTQA_fnc_manual;
 "New game screen: pick Occupier Loadouts (Standard, Faction Random, Fully Random), start, save and reload: the choice stays" call OTQA_fnc_manual;
-"A fully upgraded FOB near a town you hold counter-attacks it (Defend task); its bought vehicle drives in or is parachuted in" call OTQA_fnc_manual;
+"A FOB whose bought vehicle arrives (drives in or parachuted) warns that the nearest town falls back in 15 minutes; clear the FOB in time and it doesn't" call OTQA_fnc_manual;
 "As a general, open the player list and select an offline player who never saved money: shows $0, no script error" call OTQA_fnc_manual;
 
 // Far corner of the map, away from towns and players
@@ -189,6 +189,8 @@ OTQA_rv_spawnKill = {
         _fobs = server getVariable ["NATOfobs", []];
         _fobs deleteAt (_fobs find _fob);
         server setVariable ["NATOfobs", _fobs, true];
+        // Losing the vehicle started this test FOB's takeover timer, drop it
+        server setVariable ["NATOfobTimers", (server getVariable ["NATOfobTimers", []]) select { (_x select 0) isNotEqualTo _pos }];
     }],
 
     ["Bought FOB vehicle is delivered", {
@@ -223,34 +225,38 @@ OTQA_rv_spawnKill = {
         server setVariable ["NATOfobs", _fobs, true];
     }],
 
-    ["Fully upgraded FOB retakes its town", {
+    ["FOB takeover timer", {
+        // A FOB near a town (one the resistance holds if there is one), its timer started as when its vehicle arrives
         private _abandoned = server getVariable ["NATOabandoned", []];
-        private _town = (_abandoned select { _x in OT_allTowns }) param [0, ""];
+        private _town = (_abandoned select { _x in OT_allTowns }) param [0, (getPos player) call OT_fnc_nearestTown];
+        private _townPos = server getVariable [_town, getPos player];
         private _allFobs = server getVariable ["NATOfobs", []];
-        private _saved = [server getVariable ["NATOattacking", ""], server getVariable ["NATOlastattack", 0], server getVariable ["NATOresources", 2000]];
-        server setVariable ["NATOattacking", "", true];
-        server setVariable ["NATOlastattack", -5000, true];
-        server setVariable ["NATOresources", 5000];
+        private _fobPos = _townPos getPos [150, 0];
+        private _fob = [_fobPos, 16, ["Mortar", "Barriers", "HMG", "Vehicle"]];
+        server setVariable ["NATOfobs", _allFobs + [_fob], true];
 
-        // Not fully upgraded: no attack
-        private _townPos = [server getVariable [_town, getPos player], getPos player] select (_town isEqualTo "");
-        server setVariable ["NATOfobs", [[_townPos getPos [300, 0], 12, ["Mortar"]]], true];
-        ["A FOB that isn't fully upgraded doesn't attack", !([] call OT_fnc_NATOFOBretakeTown), ""] call OTQA_fnc_check;
+        [_fobPos] call OT_fnc_NATOstartFOBTimer;
+        private _timer = (server getVariable ["NATOfobTimers", []]) select { (_x select 0) isEqualTo _fobPos } param [0, []];
+        ["Timer starts at 15 minutes for the nearest town", (_timer param [1, 0]) isEqualTo 900 && { (_timer param [2, ""]) isEqualTo _town } && { "TownTimer" in (_fob select 2) }, format ["%1", _timer]] call OTQA_fnc_check;
+        [_fobPos] call OT_fnc_NATOstartFOBTimer;
+        ["Only one timer per FOB", ({ (_x select 0) isEqualTo _fobPos } count (server getVariable ["NATOfobTimers", []])) isEqualTo 1, ""] call OTQA_fnc_check;
 
-        if (_town isEqualTo "") then {
-            "FOB retake test skipped: the resistance holds no town" call OTQA_fnc_manual;
-        } else {
-            // Real counter-attack on the town (the save is disposable)
-            server setVariable ["NATOfobs", [[_townPos getPos [300, 0], 16, ["Mortar", "Barriers", "HMG", "VehicleLost"]]], true];
-            private _started = [] call OT_fnc_NATOFOBretakeTown;
-            ["A fully upgraded FOB counter-attacks the resistance town nearest it", _started && { (server getVariable ["NATOattacking", ""]) isEqualTo _town }, _town] call OTQA_fnc_check;
-        };
+        // Time's up (the save is disposable, the town really flips)
+        _timer set [1, 0];
+        call OT_fnc_NATOFOBtimers;
+        private _stability = server getVariable [format ["stability%1", _town], 0];
+        private _support = server getVariable [format ["rep%1", _town], 0];
+        ["Town is back under occupier control, 100% stability, no resistance support",
+            !(_town in (server getVariable ["NATOabandoned", []])) && { _stability isEqualTo 100 } && { _support isEqualTo 0 },
+            format ["%1: stability %2, support %3", _town, _stability, _support]] call OTQA_fnc_check;
+        ["Timer is done", ((server getVariable ["NATOfobTimers", []]) findIf { (_x select 0) isEqualTo _fobPos }) isEqualTo -1, ""] call OTQA_fnc_check;
 
-        server setVariable ["NATOfobs", _allFobs, true];
-        if (_town isEqualTo "") then {
-            server setVariable ["NATOattacking", _saved select 0, true];
-            server setVariable ["NATOlastattack", _saved select 1, true];
-        };
-        server setVariable ["NATOresources", _saved select 2];
+        // A cleared FOB's timer is dropped
+        private _fob2Pos = _townPos getPos [150, 180];
+        server setVariable ["NATOfobs", _allFobs + [[_fob2Pos, 16, ["Mortar", "Barriers", "HMG", "VehicleLost"]]], true];
+        [_fob2Pos] call OT_fnc_NATOstartFOBTimer;
+        server setVariable ["NATOfobs", _allFobs, true]; // Cleared
+        call OT_fnc_NATOFOBtimers;
+        ["Clearing the FOB cancels its timer", ((server getVariable ["NATOfobTimers", []]) findIf { (_x select 0) isEqualTo _fob2Pos }) isEqualTo -1, ""] call OTQA_fnc_check;
     }]
 ]

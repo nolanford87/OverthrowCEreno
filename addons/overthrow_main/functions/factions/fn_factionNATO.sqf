@@ -22,6 +22,9 @@ publicVariable "OT_nextNATOTurn";
             private _popControl = call OT_fnc_getControlledPopulation;
             private _diff = server getVariable ["OT_difficulty", 1];
 
+            // FOB takeover timers
+            call OT_fnc_NATOFOBtimers;
+
             //scheduler
             if (_schedule isNotEqualTo []) then {
                 private _item = [];
@@ -198,9 +201,6 @@ publicVariable "OT_nextNATOTurn";
 
                 //Upgrade FOBs
                 _spend = [_spend, _chance] call OT_fnc_NATOupgradeFOBs;
-
-                //Fully upgraded FOBs go for the town nearest them
-                [] call OT_fnc_NATOFOBretakeTown;
             };
             //Finish
             private _resources = server getVariable ["NATOresources", 2000];

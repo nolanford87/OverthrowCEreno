@@ -1,7 +1,8 @@
 /*
     Description:
     A FOB's vehicle was destroyed or taken by a player: its "Vehicle" upgrade becomes "VehicleLost",
-    so the vehicle doesn't come back when the game is loaded and the FOB can't buy another.
+    so the vehicle doesn't come back when the game is loaded and the FOB can't buy another. The FOB's
+    takeover timer starts if it hadn't yet (lost on the way).
 
     Parameters:
         _this # 0: OBJECT - The FOB's vehicle
@@ -23,3 +24,4 @@ private _fobs = server getVariable ["NATOfobs", []];
     };
 } forEach _fobs;
 server setVariable ["NATOfobs", _fobs, true];
+[_fobPos] call OT_fnc_NATOstartFOBTimer;

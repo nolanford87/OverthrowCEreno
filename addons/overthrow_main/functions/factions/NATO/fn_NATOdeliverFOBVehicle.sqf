@@ -2,7 +2,8 @@
     Description:
     Brings a FOB its vehicle (the "Vehicle" upgrade). A bought one is delivered: it drives in from the
     nearest occupier base on the same landmass, or is parachuted in over the FOB when no base is
-    reachable by land. It starts patrolling the FOB once there. When a game is loaded it's already at
+    reachable by land. It starts patrolling the FOB once there, and the FOB's takeover timer starts
+    (OT_fnc_NATOstartFOBTimer). When a game is loaded it's already at
     the FOB. Destroyed or taken by a player on the way, the FOB loses it (OT_fnc_NATOreleaseFOBVehicle).
 
     Parameters:
@@ -101,4 +102,6 @@ call {
 
 if (alive _v && { !isNull _g }) then {
     [_g, _v, _pos] spawn OT_fnc_NATOvehiclePatrol;
+    // Its last upgrade has arrived: the FOB's takeover timer starts
+    if (_deliver) then { [_pos] call OT_fnc_NATOstartFOBTimer };
 };
