@@ -92,16 +92,22 @@ OTQA_intel_cleanup = {
     };
 };
 
-// The occupier base nearest the host that a convoy can reach (from the HQ or the factory it holds,
-// on the same land, over 500 m away): [position, name], [] if none
+// The occupier base nearest the host that a convoy can reach, by the rules of OT_fnc_NATOdeliverHeavy
+// (from a place it holds at least 4 km away, same land, a road within 50 m): [position, name], [] if none
 OTQA_intel_convoyBase = {
     private _abandoned = server getVariable ["NATOabandoned", []];
     private _sources = [];
-    if !(OT_NATO_HQ in _abandoned) then { _sources pushBack OT_NATO_HQPos };
-    if !("Factory" in (server getVariable ["GEURowned", []])) then { _sources pushBack OT_factoryPos };
+    if !(OT_NATO_HQ in _abandoned) then { _sources pushBack [OT_NATO_HQPos, OT_NATO_HQ] };
+    if !("Factory" in (server getVariable ["GEURowned", []])) then { _sources pushBack [OT_factoryPos, "Factory"] };
+    { if !((_x select 1) in _abandoned) then { _sources pushBack [_x select 0, _x select 1] } } forEach (OT_objectiveData + OT_airportData + OT_commsData);
     private _bases = (OT_objectiveData + OT_airportData) select {
         private _basePos = _x select 0;
-        !((_x select 1) in _abandoned) && { _sources findIf { (_x distance2D _basePos) > 500 && { [_x, _basePos] call OT_fnc_regionIsConnected } } > -1 }
+        private _baseName = _x select 1;
+        !(_baseName in _abandoned) && {
+            _sources findIf {
+                (_x select 1) isNotEqualTo _baseName && { ((_x select 0) distance2D _basePos) >= 4000 } && { [_x select 0, _basePos] call OT_fnc_regionIsConnected } && { ((_x select 0) nearRoads 50) isNotEqualTo [] }
+            } > -1
+        }
     };
     if (_bases isEqualTo []) exitWith { [] };
     private _base = ([_bases, [], { (_x select 0) distance2D player }, "ASCEND"] call BIS_fnc_sortBy) select 0;
@@ -260,6 +266,9 @@ OTQA_intel_airdrop = {
         private _escorts = vehicles select { (_x getVariable ["OT_escort", ""]) isEqualTo _baseName };
         ["Convoy: a tank with 2 escorts, reported", !isNull _tank && { (count _escorts) isEqualTo 2 } && { (markerType (_taskId + "_from")) isEqualTo "mil_start" },
             format ["%1 to %2, %3 escorts, %4 m to go", _type, _baseName, count _escorts, round (_tank distance2D _basePos)]] call OTQA_fnc_check;
+        private _startPos = getMarkerPos (_taskId + "_from");
+        ["Convoy: it starts on a road, at least 4 km from the base", ((_startPos nearRoads 15) isNotEqualTo []) && { (_startPos distance2D _basePos) >= 3900 },
+            format ["start %1 m from the base", round (_startPos distance2D _basePos)]] call OTQA_fnc_check;
         if (isNull _tank) exitWith {};
 
         // It drives 200-300 m
