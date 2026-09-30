@@ -198,6 +198,9 @@ publicVariable "OT_nextNATOTurn";
 
                 //Upgrade FOBs
                 _spend = [_spend, _chance] call OT_fnc_NATOupgradeFOBs;
+
+                //Fully upgraded FOBs go for the town nearest them
+                [] call OT_fnc_NATOFOBretakeTown;
             };
             //Finish
             private _resources = server getVariable ["NATOresources", 2000];

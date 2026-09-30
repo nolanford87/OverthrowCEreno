@@ -543,6 +543,7 @@ class CfgFunctions {
             class NATOSupportRecon {};
             class createNATOCrew {};
             class NATOreleaseFOBVehicle {};
+            class NATOdeliverFOBVehicle {};
             class NATOvehiclePatrol {};
             class NATOairPatrolBase {};
             class NATOConvoy {};
@@ -577,6 +578,7 @@ class CfgFunctions {
             class NATOsendAirPatrol {};
             class NATOsendGroundPatrol {};
             class NATOupgradeFOBs {};
+            class NATOFOBretakeTown {};
             class NATOupgradeGarrisons {};
             class NATOupgradeVehicleGarrisons {};
             class NATOupgradeHeavyGarrisons {};
