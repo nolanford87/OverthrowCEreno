@@ -144,7 +144,15 @@ private _gangs = OT_civilians getVariable [format ["gangs%1", _town], []];
             {
                 private _civid = _x;
                 private _ident = (OT_civilians getVariable [format ["%1", _civid], []]);
-                _ident params ["_identity"];
+                _ident params [["_identity", []]];
+                if (_identity isEqualTo []) then {
+                    // The member's record is missing (e.g. from an older save), give them a new gang identity like OT_fnc_addToGang
+                    _identity = call OT_fnc_randomLocalIdentity;
+                    _identity set [1, selectRandom OT_CRIM_Clothes];
+                    _identity set [3, selectRandom OT_CRIM_Goggles];
+                    _identity pushBack (selectRandom OT_voices_local);
+                    OT_civilians setVariable [format ["%1", _civid], [_identity, _gangid]];
+                };
 
                 private _pos = _pos getPos [10, random 360];
                 private _civ = _group createUnit [OT_CRIM_Unit, _pos, [], 0, "NONE"];
