@@ -9,9 +9,7 @@
 private _tests = [];
 {
     _tests append (call _x);
-} forEach [
-    OTQA_fnc_testsIntel
-];
+} forEach [];
 
 if (_tests isEqualTo []) then {
     "No current tests yet, everything is in the archived QA tests" call OTQA_fnc_manual;
