@@ -17,8 +17,9 @@ spawner setVariable [_i, [], false];
         continue;
     };
 
-    // Cleanup a vehicle / object
+    // Cleanup a vehicle / object (unless it's already gone: stored in the garage, a cleaned up wreck...)
     if (_x isEqualType objNull) then {
+        if (isNull _x) then { continue };
         if !(_x call OT_fnc_hasOwner) then {
             [_x] call OT_fnc_cleanupVehicle;
         };
