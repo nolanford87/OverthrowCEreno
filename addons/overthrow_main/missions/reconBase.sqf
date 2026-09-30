@@ -6,7 +6,7 @@ private _params = [_base, _count];
 private _effect = "<t size='0.9'>Reward: $500 to player closest to base</t>";
 
 //Build a mission description and title
-private _description = format ["Get information on the NATO forces and vehicles garrisoned at %1. A pair of Binoculars or Rangefinder may come in handy. Be careful not to get too close as NATO bases are restricted areas.<br/><br/>%2", _base, _effect];
+private _description = format ["Get information on the %3 forces and vehicles garrisoned at %1. A pair of Binoculars or Rangefinder may come in handy. Be careful not to get too close as %3 bases are restricted areas.<br/><br/>%2", _base, _effect, OT_NATO_name];
 private _title = format ["Recon of %1", _base];
 
 //The data below is what is returned to the gun dealer/faction rep, _markerPos is where to put the mission marker, the code in {} brackets is the actual mission code, only run if the player accepts

@@ -5,6 +5,7 @@
 
     Parameters:
         _this # 0: STRING - Suite to run, "bugfixes" (the bug fix QA tests) or "followups" (review and DLC QA tests)
+            or "occupiers" (occupier QA tests)
 
     Usage: ["bugfixes"] spawn OTQA_fnc_run;
 */
@@ -13,7 +14,8 @@ params [["_suite", "bugfixes", [""]]];
 
 private _suites = createHashMapFromArray [
     ["bugfixes", ["Bug fix QA tests", OTQA_fnc_testsBugFixes]],
-    ["followups", ["Review and DLC QA tests", OTQA_fnc_testsFollowups]]
+    ["followups", ["Review and DLC QA tests", OTQA_fnc_testsFollowups]],
+    ["occupiers", ["Occupier QA tests", OTQA_fnc_testsOccupiers]]
 ];
 if !(_suite in _suites) exitWith {
     hint format ["Overthrow QA: unknown test suite %1", _suite];

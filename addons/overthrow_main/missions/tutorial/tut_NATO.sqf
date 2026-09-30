@@ -35,8 +35,9 @@ if (_targets isEqualTo []) exitWith {
         [player, _destination, _town] call OT_fnc_givePlayerWaypoint;
 
         format [
-            "There doesnt seem to be any NATO nearby. Head to %1, you should be able to find some NATO there. It's marked on your map",
-            _town
+            "There doesnt seem to be any %2 nearby. Head to %1, you should be able to find some %2 there. It's marked on your map",
+            _town,
+            OT_NATO_name
         ] call OT_fnc_notifyMinor;
 
         [
@@ -61,7 +62,7 @@ if (_targets isEqualTo []) exitWith {
     };
 };
 
-"There is a group of NATO nearby, their position has been marked on your map. Let's show them we've had enough." call OT_fnc_notifyMinor;
+format ["There is a group of %1 nearby, their position has been marked on your map. Let's show them we've had enough.", OT_NATO_name] call OT_fnc_notifyMinor;
 //pick the closest group and reveal
 
 private _sorted = [_targets, [], { _x distance player }, "ASCEND"] call BIS_fnc_sortBy;
@@ -71,7 +72,7 @@ player reveal [leader _group, 4];
 //give waypoint
 private _dest = expectedDestination leader _group;
 private _destpos = _dest select 0;
-private _wp = [player, _destpos, "NATO"] call OT_fnc_givePlayerWaypoint;
+private _wp = [player, _destpos, OT_NATO_name] call OT_fnc_givePlayerWaypoint;
 
 private _total = count units _group;
 

@@ -14,7 +14,7 @@ if (typeOf _building isEqualTo OT_barracks) then {
     };
 };
 if ((typeOf _building == OT_barracks) && isNil "_base") exitWith {};
-if ((typeOf _building == OT_barracks) && !_good) exitWith { "This barracks is under NATO control" call OT_fnc_notifyMinor };
+if ((typeOf _building == OT_barracks) && !_good) exitWith { format ["This barracks is under %1 control", OT_NATO_name] call OT_fnc_notifyMinor };
 
 createDialog "OT_dialog_recruit";
 ctrlSetText [1600, "Recruit"];

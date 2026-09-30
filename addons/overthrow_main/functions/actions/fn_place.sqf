@@ -67,7 +67,7 @@ if !([getPos player, _typecls] call OT_fnc_canPlace) exitWith {
         "Camps cannot be near another building" call OT_fnc_notifyMinor;
     };
     if (_typecls == "Base") exitWith {
-        "Bases cannot be too close to a town, NATO installation or existing base" call OT_fnc_notifyMinor;
+        format ["Bases cannot be too close to a town, %1 installation or existing base", OT_NATO_name] call OT_fnc_notifyMinor;
     };
     "You must be near a base or owned structure" call OT_fnc_notifyMinor;
 };
@@ -256,7 +256,7 @@ if (_cost > 0) then {
             deleteVehicle modeTarget;
             _typecls call {
                 if (_this == "Camp") exitWith { "Camps cannot be near a structure you already own" call OT_fnc_notifyMinor };
-                if (_this == "Base") exitWith { "Bases cannot be near a town, NATO installation or existing base" call OT_fnc_notifyMinor };
+                if (_this == "Base") exitWith { format ["Bases cannot be near a town, %1 installation or existing base", OT_NATO_name] call OT_fnc_notifyMinor };
                 "You must be near a base or owned building" call OT_fnc_notifyMinor;
             };
         };

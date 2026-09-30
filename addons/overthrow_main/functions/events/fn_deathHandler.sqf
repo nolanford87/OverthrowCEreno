@@ -68,7 +68,7 @@ call {
             _idx = _idx + 1;
         } forEach (OT_NATOhvts);
         OT_NATOhvts deleteAt _idx;
-        format ["A high-ranking NATO officer has been killed"] remoteExec ["OT_fnc_notifyMinor", 0, false];
+        format ["A high-ranking %1 officer has been killed", OT_NATO_name] remoteExec ["OT_fnc_notifyMinor", 0, false];
         private _resources = server getVariable ["NATOresources", 0];
         _resources = _resources - 500;
         if (_diff isEqualTo 1) then { _resources = _resources - 500 };

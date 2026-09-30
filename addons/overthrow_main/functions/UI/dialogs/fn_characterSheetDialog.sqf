@@ -15,7 +15,7 @@ _ctrl ctrlSetStructuredText parseText format ["<t size=""2"">Trade</t><br/><t si
 
 private _stealth = player getVariable ["OT_stealth", 1];
 _ctrl = (findDisplay 8003) displayCtrl 1102;
-_ctrl ctrlSetStructuredText parseText format ["<t size=""2"">Stealth</t><br/><t size=""1.1"">Level %1</t><br/><t size=""0.7"">Less chance of NATO finding illegal items</t>", _stealth];
+_ctrl ctrlSetStructuredText parseText format ["<t size=""2"">Stealth</t><br/><t size=""1.1"">Level %1</t><br/><t size=""0.7"">Less chance of %2 finding illegal items</t>", _stealth, OT_NATO_name];
 
 getPerkPrice = {
     private _perk = _this select 0;

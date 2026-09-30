@@ -1,9 +1,9 @@
 params ["_objective", "_strength"];
 private _posTown = getMarkerPos _objective;
 
-private _tskid = [independent, [format ["counter%1", _objective]], [format ["NATO is sending forces to %1. This is our chance to capture it if we can hold the field.", _objective], format ["Capture %1", _objective], format ["counter%1", _objective]], _posTown, 1, 2, true, "Target", true] call BIS_fnc_taskCreate;
+private _tskid = [independent, [format ["counter%1", _objective]], [format ["%2 is sending forces to %1. This is our chance to capture it if we can hold the field.", _objective, OT_NATO_name], format ["Capture %1", _objective], format ["counter%1", _objective]], _posTown, 1, 2, true, "Target", true] call BIS_fnc_taskCreate;
 
-format ["NATO is attacking %1", _objective] remoteExec ["OT_fnc_notifyMinor", 0, false];
+format ["%2 is attacking %1", _objective, OT_NATO_name] remoteExec ["OT_fnc_notifyMinor", 0, false];
 
 private _fail = {
     params ["_tskid", "_objective"];

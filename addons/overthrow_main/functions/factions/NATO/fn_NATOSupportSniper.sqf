@@ -21,7 +21,7 @@ if (isNil "_close") then {
     _close = OT_NATO_HQPos;
 };
 private _start = [_close, 50, 200, 1, 0, 0, 0] call BIS_fnc_findSafePos;
-private _group = [_start, blufor, (configFile >> "CfgGroups" >> "West" >> OT_faction_NATO >> "Infantry" >> OT_NATO_Group_Recon)] call BIS_fnc_spawnGroup;
+private _group = [_start, blufor, OT_NATO_Group_Recon] call BIS_fnc_spawnGroup;
 
 sleep 0.5;
 

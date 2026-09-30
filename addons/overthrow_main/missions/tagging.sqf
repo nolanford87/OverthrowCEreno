@@ -6,7 +6,7 @@ private _markerPos = server getVariable [_town, []];
 private _effect = "Stability in the town will drop 10%, Reward: $200, +5 Resistance Support";
 
 //Build a mission description and title
-private _description = format ["It's time to tell NATO what we think of them and get the public behind the resistance in %1. Do 5 tags in the town. Spraypaint can be purchased from General stores marked with a ($) icon and used on walls with the ACE self-interact key (Ctrl + Windows key by default)<br/><br/>%2", _town, _effect];
+private _description = format ["It's time to tell %3 what we think of them and get the public behind the resistance in %1. Do 5 tags in the town. Spraypaint can be purchased from General stores marked with a ($) icon and used on walls with the ACE self-interact key (Ctrl + Windows key by default)<br/><br/>%2", _town, _effect, OT_NATO_name];
 private _title = format ["Graffiti in %1", _town];
 private _startValue = server getVariable [format ["tagsin%1", _town], 0];
 private _params = [_town, _startValue];

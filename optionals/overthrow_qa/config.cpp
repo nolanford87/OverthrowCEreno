@@ -36,6 +36,8 @@ class CfgFunctions {
             class testsFollowups {};
             class testsReview {};
             class testsDLC {};
+            // Occupier QA tests: every "Occupying faction" lobby option
+            class testsOccupiers {};
         };
     };
 };
@@ -52,6 +54,10 @@ class zen_context_menu_actions {
         class OTQA_followups {
             displayName = "Run review and DLC QA tests";
             statement = "['followups'] spawn OTQA_fnc_run";
+        };
+        class OTQA_occupiers {
+            displayName = "Run occupier QA tests";
+            statement = "['occupiers'] spawn OTQA_fnc_run";
         };
     };
 };

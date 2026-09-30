@@ -68,7 +68,7 @@ if (_version < OT_economyVersion) then {
 
     {
         _x params ["_cls", "_name", "_side"];
-        if (_side != 1) then {
+        if (_side != OT_NATO_factionSide) then { // No reps for factions on the occupier's side
             private _reppos = server getVariable [format ["factionrep%1", _cls], false];
             if !(_reppos isEqualType []) then {
                 private _town = selectRandom OT_allTowns;

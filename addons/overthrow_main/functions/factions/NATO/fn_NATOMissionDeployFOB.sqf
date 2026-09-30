@@ -29,7 +29,8 @@ if (isNil "_close") exitWith {
     spawner setVariable ["NATOdeploying", false, false];
 };
 
-private _group = [_close, blufor, (configFile >> "CfgGroups" >> "West" >> OT_faction_NATO >> "Support" >> OT_NATO_Group_Engineers)] call BIS_fnc_spawnGroup;
+// The occupier's engineer group, or any of its infantry groups if it has none
+private _group = [_close, blufor, [OT_NATO_Group_Engineers, selectRandom OT_NATO_GroundForces] select (OT_NATO_Group_Engineers isEqualType "")] call BIS_fnc_spawnGroup;
 
 sleep 0.5;
 

@@ -27,7 +27,7 @@ private _params = [_faction, _destination, _destinationName, _jobid];
 private _markerPos = _destination; //randomize the marker position a bit
 
 //Build a mission description and title
-private _description = format ["A traitor of %1 has fled here and is hiding in %2 under NATO protection. %1 will pay handsomely and be very grateful if you could just.. make them disappear. <br/><br/>Reward: +20 (%1), $2500", _factionName, _destinationName];
+private _description = format ["A traitor of %1 has fled here and is hiding in %2 under %3 protection. %1 will pay handsomely and be very grateful if you could just.. make them disappear. <br/><br/>Reward: +20 (%1), $2500", _factionName, _destinationName, OT_NATO_name];
 private _title = format ["%1 Traitor in %2", _factionName, _destinationName];
 
 //The data below is what is returned to the gun dealer/faction rep, _markerPos is where to put the mission marker, the code in {} brackets is the actual mission code, only run if the player accepts

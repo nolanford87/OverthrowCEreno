@@ -43,7 +43,7 @@ allowProfileGlasses = 0;
 //Disable ACE blood (just too much of it in a heavy game)
 class Params {
     class ot_enemy_faction {
-        title = "Occupying faction";
+        title = "Occupying faction (new games, a loaded game keeps its own)";
         texts[] = {
             "0. Map default",
             "1. Vanilla NATO",
@@ -58,7 +58,12 @@ class Params {
             "10. 3CB Livonian Defence Force",
             "11. 3CB Livonia Separatist Militia",
             "12. 3CB Malden Defence Force",
-            "13. 3CB Middle East Insurgents"
+            "13. 3CB Middle East Insurgents",
+            "14. Vanilla CSAT",
+            "15. Vanilla CSAT pacific",
+            "16. Vanilla AAF",
+            "17. Vanilla Livonian Defense Force",
+            "18. RHS Russia (MSV)"
         };
         values[] = {
             0, // Map default
@@ -74,7 +79,12 @@ class Params {
             10, // 3CB Livonian Defence Force
             11, // 3CB Livonia Separatist Militia
             12, // 3CB Malden Defence Force
-            13 // 3CB Middle East Insurgents
+            13, // 3CB Middle East Insurgents
+            14, // Vanilla CSAT
+            15, // Vanilla CSAT pacific
+            16, // Vanilla AAF
+            17, // Vanilla Livonian Defense Force
+            18 // RHS Russia (MSV)
         };
         default = 0;
     };

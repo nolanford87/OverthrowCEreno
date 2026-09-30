@@ -473,14 +473,14 @@ if (_canTute) then {
     private _done = player getVariable ["OT_tutesDone", []];
     if !("NATO" in _done) then {
         _options pushBack [
-            "So, about those NATO soldiers...",
+            format ["So, about those %1 soldiers...", OT_NATO_name],
             {
                 private _civ = OT_interactingWith;
                 [
                     player,
                     _civ,
                     [
-                        "So, about those NATO soldiers...",
+                        format ["So, about those %1 soldiers...", OT_NATO_name],
                         "Yes! I will gladly pay you $250 to get them off my back",
                         "Alright I'll see what I can do"
                     ],

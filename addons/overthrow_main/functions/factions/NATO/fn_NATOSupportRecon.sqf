@@ -24,7 +24,7 @@ if (isNil "_close") then {
     } forEach (OT_airportData call BIS_fnc_arrayShuffle);
 };
 
-private _group = [_close, blufor, (configFile >> "CfgGroups" >> "West" >> OT_faction_NATO >> "Infantry" >> OT_NATO_Group_Recon)] call BIS_fnc_spawnGroup;
+private _group = [_close, blufor, OT_NATO_Group_Recon] call BIS_fnc_spawnGroup;
 
 sleep 0.5;
 

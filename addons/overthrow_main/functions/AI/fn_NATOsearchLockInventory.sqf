@@ -19,7 +19,7 @@ if (_lock) then {
         OT_searchInventoryEH = player addEventHandler [
             "InventoryOpened",
             {
-                hint "NATO search is in progress, you cannot open your inventory";
+                hint format ["%1 search is in progress, you cannot open your inventory", OT_NATO_name];
                 true; //<-- inventory override
             }
         ];

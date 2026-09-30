@@ -1,5 +1,5 @@
 //This code is called by the gun dealer or faction rep to retrieve the description and parameters of the mission
-private _title = "Kill NATO";
+private _title = format ["Kill %1", OT_NATO_name];
 
 private _groups = [allGroups, [], { (leader _x) distance2D player }, "ASCEND", { (side leader _x) isEqualTo blufor && (units _x) isNotEqualTo [] && ((leader _x) distance2D player) < 300 }] call BIS_fnc_sortBy;
 if (_groups isEqualTo []) exitWith { [] };
@@ -10,7 +10,7 @@ private _numtokill = count units _group;
 private _reward = _numtokill * 25;
 
 //Build a mission description
-private _description = format ["Nothing spurs on the resistance more than just killing some blues. There is a group of %1 NATO within 300m of here, go find them and take care of them.<br/><br/>Reward: $%2", _numtokill, _reward];
+private _description = format ["Nothing spurs on the resistance more than just killing some blues. There is a group of %1 %3 within 300m of here, go find them and take care of them.<br/><br/>Reward: $%2", _numtokill, _reward, OT_NATO_name];
 private _params = [_group, _reward, _numtokill];
 
 //The data below is what is returned to the gun dealer/faction rep, _markerPos is where to put the mission marker, the code in {} brackets is the actual mission code, only run if the player accepts

@@ -4,8 +4,8 @@ _jobparams params ["_base", "_id"];
 private _params = [_base, _id];
 
 //Build a mission description and title
-private _description = format ["We have received intel that a NATO officer is currently stationed at %1.<br/><br/>If this officer is killed, NATO's resources will be low for some time, reducing the severity of any QRF deployments.", _base];
-private _title = format ["NATO Officer at %1", _base];
+private _description = format ["We have received intel that a %2 officer is currently stationed at %1.<br/><br/>If this officer is killed, %2's resources will be low for some time, reducing the severity of any QRF deployments.", _base, OT_NATO_name];
+private _title = format ["%2 Officer at %1", _base, OT_NATO_name];
 private _markerPos = server getVariable _base;
 
 //The data below is what is returned to the gun dealer/faction rep, _markerPos is where to put the mission marker, the code in {} brackets is the actual mission code, only run if the player accepts

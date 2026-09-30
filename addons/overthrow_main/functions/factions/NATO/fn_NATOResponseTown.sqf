@@ -2,9 +2,9 @@ params ["_town", "_strength"];
 private _posTown = server getVariable _town;
 _town setMarkerAlpha 0;
 
-private _tskid = [independent, [format ["assault%1", _town]], [format ["NATO is assaulting %1.", _town], format ["Battle for %1", _town], format ["assault%1", _town]], _posTown, 1, 2, true, "Defend", true] call BIS_fnc_taskCreate;
+private _tskid = [independent, [format ["assault%1", _town]], [format ["%2 is assaulting %1.", _town, OT_NATO_name], format ["Battle for %1", _town], format ["assault%1", _town]], _posTown, 1, 2, true, "Defend", true] call BIS_fnc_taskCreate;
 
-format ["NATO is attacking %1", _town] remoteExec ["OT_fnc_notifyMinor", 0, false];
+format ["%2 is attacking %1", _town, OT_NATO_name] remoteExec ["OT_fnc_notifyMinor", 0, false];
 
 private _success = {
     params ["_tskid", "_town"];
@@ -19,7 +19,7 @@ private _fail = {
     params ["_tskid", "_town"];
     private _townpop = server getVariable format ["population%1", _town];
     _townpop remoteExec ["OT_fnc_influenceSilent", 0, false];
-    format ["NATO has abandoned %1 (+%2 Influence)", _town, _townpop] remoteExec ["OT_fnc_notifyGood", 0, false];
+    format ["%3 has abandoned %1 (+%2 Influence)", _town, _townpop, OT_NATO_name] remoteExec ["OT_fnc_notifyGood", 0, false];
     [_tskid, "SUCCEEDED", true] spawn BIS_fnc_taskSetState;
     private _abandoned = server getVariable "NATOabandoned";
     _abandoned pushBack _town;

@@ -392,9 +392,10 @@ if (_obpos distance player < 250) then {
         _areaText = format [
             "
 			<t align='left' size='0.8'>%1</t><br/>
-			<t align='left' size='0.65'>Under NATO control</t>
+			<t align='left' size='0.65'>Under %2 control</t>
 		",
-            _obname
+            _obname,
+            OT_NATO_name
         ];
         ctrlEnable [1620, false];
         ctrlEnable [1621, false];
