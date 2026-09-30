@@ -2,6 +2,7 @@
     Description:
     Runs a QA test suite and reports the results on screen and in the RPT (lines starting with "OT_QA").
     Each test runs in its own script, so one failing with a script error doesn't stop the others.
+    A test is [name, code] or [name, code, seconds it may take] (120 by default).
 
     Parameters:
         _this # 0: STRING - Suite to run: "current" (tests for the changes since the last archive) or
@@ -45,15 +46,15 @@ diag_log format ["OT_QA ===== START %1 (build %2, %3) =====", _title, _build, wo
 hint format ["Overthrow QA: running %1...", _title];
 
 {
-    _x params ["_name", "_code"];
+    _x params ["_name", "_code", ["_limit", 120]];
     OTQA_currentTest = _name;
     private _before = count OTQA_results + count OTQA_manual;
     private _handle = [] spawn _code;
-    private _timeout = time + 120;
+    private _timeout = time + _limit;
     waitUntil { sleep 0.2; scriptDone _handle || { time > _timeout } };
     if !(scriptDone _handle) then {
         terminate _handle;
-        [_name, false, "timed out after 120 s"] call OTQA_fnc_check;
+        [_name, false, format ["timed out after %1 s", _limit]] call OTQA_fnc_check;
     } else {
         if ((count OTQA_results + count OTQA_manual) isEqualTo _before) then {
             [_name, false, "no result, the test probably hit a script error (see RPT)"] call OTQA_fnc_check;
