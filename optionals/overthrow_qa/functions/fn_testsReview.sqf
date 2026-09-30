@@ -304,10 +304,14 @@ OTQA_rv_spawnKill = {
     }],
 
     ["Bought patrol aircraft flies in", {
-        // Ordered for a (test) base at the player: it appears 3-4 km away, high up, heading in
+        // Ordered for a (test) base at the player: it appears high above the occupier's nearest airfield
         private _cls = selectRandom (OT_NATO_Vehicles_AirSupport + OT_NATO_Vehicles_AirSupport_Small);
         private _basePos = getPos player;
-        private _script = [_cls, "OTQA_TEST", _basePos] spawn OT_fnc_NATOdeliverAirPatrol;
+        private _airfield = [_basePos, "OTQA_TEST"] call OT_fnc_NATOnearestAirfield;
+        if (_airfield isEqualTo []) exitWith {
+            ["The occupier holds no airfield, so it can't buy aircraft", true, ""] call OTQA_fnc_check;
+        };
+        private _script = [_cls, "OTQA_TEST", _basePos, _airfield select 0] spawn OT_fnc_NATOdeliverAirPatrol;
         private _timeout = time + 10;
         private _veh = objNull;
         waitUntil {
@@ -316,10 +320,16 @@ OTQA_rv_spawnKill = {
             !isNull _veh || { time > _timeout }
         };
         sleep 1;
-        private _dist = round (_veh distance2D _basePos);
+        private _dist = round (_veh distance2D (_airfield select 0));
         private _alt = round ((getPosATL _veh) select 2);
-        ["Patrol aircraft appears 3-4 km away, high up", !isNull _veh && { _dist > 2800 } && { _dist < 4200 } && { _alt > 150 } && { alive _veh },
-            format ["%1, %2 m away, %3 m up", _cls, _dist, _alt]] call OTQA_fnc_check;
+        ["Patrol aircraft appears high above the nearest held airfield", !isNull _veh && { _dist < 400 } && { _alt > 150 } && { alive _veh },
+            format ["%1 over %2: %3 m from it, %4 m up", _cls, _airfield select 1, _dist, _alt]] call OTQA_fnc_check;
+
+        // With no airfield held, no aircraft can be bought
+        private _abandoned = server getVariable ["NATOabandoned", []];
+        server setVariable ["NATOabandoned", _abandoned + (OT_airportData apply { _x select 1 }), true];
+        ["Without a held airfield there's nowhere to buy aircraft from", ([_basePos, "OTQA_TEST"] call OT_fnc_NATOnearestAirfield) isEqualTo [], ""] call OTQA_fnc_check;
+        server setVariable ["NATOabandoned", _abandoned, true];
 
         terminate _script;
         if (!isNull _veh) then {
