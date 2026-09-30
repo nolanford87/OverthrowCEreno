@@ -1,7 +1,8 @@
 /*
     Description:
     A patrol helicopter / VTOL a base just traded for (OT_fnc_NATOupgradeHeavyGarrisons) flies in:
-    it appears 3-4 km from the base high up, descends and flies to the base. It's already on the base's
+    it appears high above the occupier's nearest airfield (OT_fnc_NATOnearestAirfield), descends and
+    flies to the base. It's already on the base's
     air patrol list, shot down on the way it comes off it (tagged "airpatrol"). At the base it lands
     and becomes the base's patrol aircraft when the base is spawned (a player near), otherwise it's
     removed and the base spawns it parked next time.
@@ -10,13 +11,14 @@
         _this # 0: STRING - Aircraft class
         _this # 1: STRING - Base name
         _this # 2: ARRAY - Base position
+        _this # 3: ARRAY - Airfield position it comes from
 
-    Usage: [_type, _name, _pos] spawn OT_fnc_NATOdeliverAirPatrol;
+    Usage: [_type, _name, _pos, _airfieldPos] spawn OT_fnc_NATOdeliverAirPatrol;
 */
 
-params ["_type", "_name", "_basePos"];
+params ["_type", "_name", "_basePos", "_airfieldPos"];
 
-private _from = _basePos getPos [3000 + random 1000, random 360];
+private _from = +_airfieldPos;
 _from set [2, 500];
 private _veh = createVehicle [_type, _from, [], 0, "FLY"];
 _veh setPosATL _from;

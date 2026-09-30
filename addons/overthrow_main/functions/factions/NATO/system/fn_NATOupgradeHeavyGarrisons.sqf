@@ -54,7 +54,9 @@ private _abandoned = server getVariable ["NATOabandoned", []];
     private _numTanks = { _x in _tanks } count _garrison;
     private _airpatrol = server getVariable [format ["airpatrol%1", _name], []];
     private _canTank = _tanks isNotEqualTo [] && { _numTanks < ([2, 3] select _isHQ) } && { _spend >= (_costTank - _refund) };
-    private _canAir = _aircraft isNotEqualTo [] && { count _airpatrol < ([1, 2] select _isHQ) } && { _spend >= (_costAir - _refund) };
+    // Aircraft come from an airfield the occupier holds, without one it can't buy any
+    private _airfield = [_pos, _name] call OT_fnc_NATOnearestAirfield;
+    private _canAir = _aircraft isNotEqualTo [] && { _airfield isNotEqualTo [] } && { count _airpatrol < ([1, 2] select _isHQ) } && { _spend >= (_costAir - _refund) };
     if (!_canTank && !_canAir) then { continue };
 
     private _toAir = _canAir && { !_canTank || { random 100 < 40 } };
@@ -65,8 +67,8 @@ private _abandoned = server getVariable ["NATOabandoned", []];
     if (_toAir) then {
         _airpatrol pushBack _type;
         server setVariable [format ["airpatrol%1", _name], _airpatrol, true];
-        // It flies in from 3-4 km away
-        [_type, _name, _pos] spawn OT_fnc_NATOdeliverAirPatrol;
+        // It flies in from the nearest airfield
+        [_type, _name, _pos, _airfield select 0] spawn OT_fnc_NATOdeliverAirPatrol;
     } else {
         _garrison pushBack _type;
     };
