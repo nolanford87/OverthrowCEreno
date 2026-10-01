@@ -251,6 +251,10 @@ OTQA_intel_airdrop = {
         ["Reported delivery gets an intercept task", _taskId isNotEqualTo "" && { (_taskId call BIS_fnc_taskState) in ["CREATED", "ASSIGNED"] }, format ["%1 to %2", _taskId, _baseName]] call OTQA_fnc_check;
         private _escorts = vehicles select { (_x getVariable ["OT_escort", ""]) isEqualTo _baseName };
         if (_escorts isNotEqualTo []) then {
+            private _column = [_tank] + _escorts;
+            private _offRoad = _column select { !isOnRoad (getPosATL _x) };
+            ["Convoy: all three spawn on a road, alive", _offRoad isEqualTo [] && { (_column findIf { !alive _x }) isEqualTo -1 },
+                format ["off the road: %1; %2 m apart", _offRoad apply { typeOf _x }, _column apply { round (_x distance2D _tank) }]] call OTQA_fnc_check;
             private _dest = _taskId call BIS_fnc_taskDestination;
             ["Convoy: markers where it comes from and goes to, the task points at the start (not the tank)",
                 (markerType (_taskId + "_from")) isEqualTo "mil_start" && { (markerType (_taskId + "_to")) isEqualTo "mil_end" } && { _dest isEqualType [] } && { ((getMarkerPos (_taskId + "_to")) distance2D _basePos) < 5 },

@@ -553,6 +553,7 @@ class CfgFunctions {
             class NATOdeliverHeavy {};
             class NATOairdropVehicle {};
             class NATOdeliveryWait {};
+            class NATOroadPositions {};
             class NATOdeliveryIntel {};
             class NATOnearestAirfield {};
             class NATOConvoy {};

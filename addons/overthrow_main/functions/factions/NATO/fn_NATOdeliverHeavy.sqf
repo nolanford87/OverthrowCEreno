@@ -77,12 +77,13 @@ private _group = grpNull;
 private _escorts = [];
 private _from = [];
 private _start = [];
+private _startRoad = objNull;
 private _drop = [_field select 0, _field select 1, 0];
 if (_convoy) then {
     _from = ([_sources, [], { _x distance2D _basePos }, "ASCEND"] call BIS_fnc_sortBy) select 0;
     // On a road within 50 m of it
-    private _road = ([_from nearRoads 50, [], { _x distance2D _from }, "ASCEND"] call BIS_fnc_sortBy) select 0;
-    _start = getPosATL _road;
+    _startRoad = ([_from nearRoads 50, [], { _x distance2D _from }, "ASCEND"] call BIS_fnc_sortBy) select 0;
+    _start = getPosATL _startRoad;
 };
 
 // Announced to the resistance if intelligence reports it, then it sets off after the wait
@@ -99,17 +100,17 @@ if (_name in (server getVariable ["NATOabandoned", []])) exitWith {
 };
 
 if (_convoy) then {
-    private _dir = _start getDir _basePos;
     private _escortTypes = OT_NATO_Vehicles_Convoy select { !(_x isKindOf "Tank") };
     if (_escortTypes isEqualTo []) then { _escortTypes = OT_NATO_Vehicles_GroundSupport };
+    // One behind the other on the road (off it, a big vehicle can spawn into a building and be wrecked)
+    private _spots = [_startRoad, 3, _basePos] call OT_fnc_NATOroadPositions;
 
     // Escort in front, the tank, escort behind
     {
-        private _p = (_start getPos [_forEachIndex * 25, _dir + 180]) findEmptyPosition [0, 60, _x];
-        if (_p isEqualTo []) then { _p = _start getPos [_forEachIndex * 25, _dir + 180] };
-        private _v = createVehicle [_x, _p, [], 0, "NONE"];
-        _v allowDamage false; // Spawned against a building at the base (a big vehicle can be), it isn't wrecked
+        (_spots param [_forEachIndex, _spots select 0]) params ["_p", "_dir"];
+        private _v = createVehicle [_x, _p, [], 0, "CAN_COLLIDE"];
         _v setDir _dir;
+        _v setPosATL _p;
         private _g = [_v] call _tag;
         if (_forEachIndex isEqualTo 1) then { _tank = _v; _group = _g } else { _escorts pushBack _v; _v setVariable ["OT_escort", _name] };
         _g setBehaviour "SAFE";
@@ -120,11 +121,6 @@ if (_convoy) then {
     } forEach [selectRandom _escortTypes, _type, selectRandom _escortTypes];
     _tank setVariable ["vehgarrison", _name, true]; // Destroyed on the way, it comes off the base's list
     _intel set ["veh", _tank]; // An intelligence report on it follows it
-
-    [[_tank] + _escorts] spawn {
-        sleep 5;
-        { _x allowDamage true } forEach (_this select 0);
-    };
     diag_log format ["Overthrow: %1 convoys a %2 to %3", OT_NATO_name, _type call OT_fnc_vehicleGetName, _name];
 } else {
     // Airdropped by an armed Blackfish over the open field found above (never in the water)
