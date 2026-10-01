@@ -59,10 +59,14 @@ private _start = [];
 private _drop = _pos getPos [random 40, random 360];
 if (_deliver) then {
     if (_from isNotEqualTo []) then {
+        // On the road (off it, it can spawn into a building and be wrecked)
         private _road = [_from, 300] call BIS_fnc_nearestRoad;
-        _start = [getPosATL _road, _from] select (isNull _road);
-        _start = _start findEmptyPosition [0, 100, _cls];
-        if (_start isEqualTo []) then { _start = _from };
+        if (isNull _road) then {
+            _start = _from findEmptyPosition [0, 100, _cls];
+            if (_start isEqualTo []) then { _start = _from };
+        } else {
+            _start = (([_road, 1, _pos] call OT_fnc_NATOroadPositions) select 0) select 0;
+        };
     };
     private _delay = missionNamespace getVariable ["OT_deliveryDelay", 480]; // Changed only by the QA tests
     _intel = [_pos, format ["the FOB near %1", _pos call OT_fnc_nearestTown], 1000, [["drop", _drop], ["route", _start]] select (_from isNotEqualTo []), _cls, _delay] call OT_fnc_NATOdeliveryIntel;
@@ -85,10 +89,9 @@ call {
 
     // Drives in
     if (_from isNotEqualTo []) exitWith {
-        _v = createVehicle [_cls, _start, [], 0, "NONE"];
-        _v allowDamage false; // Spawned against a building at the base, it isn't wrecked
-        _v spawn { sleep 5; _this allowDamage true };
+        _v = createVehicle [_cls, _start, [], 0, "CAN_COLLIDE"];
         _v setDir (_start getDir _pos);
+        _v setPosATL _start;
         [_v] call _setup;
         _intel set ["veh", _v]; // An intelligence report on it follows it
         _g = [_v] call _crew;
