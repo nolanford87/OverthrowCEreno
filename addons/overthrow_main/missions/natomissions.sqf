@@ -2,7 +2,7 @@ params ["", "_jobparams"];
 _jobparams params ["_missiondef"];
 
 private _params = [_missiondef];
-_missiondef params ["", "_missiontype", "_p1", "_p2", "_hour"];
+_missiondef params ["", "_missiontype", "_p1", "_p2", "_hour", ["_left", -1]];
 
 //Build a mission description and title
 private _description = "";
@@ -10,6 +10,10 @@ private _title = "";
 
 if (_missiontype == "CONVOY") then {
     _description = format ["We have received intel that %4 will be running a convoy from %1 to %2 at approximately %3:00 today.", _p1 select 1, _p2 select 1, _hour, OT_NATO_name];
+    if (_left >= 0) then {
+        // Real-time countdown (OT_fnc_NATOscheduleConvoy)
+        _description = format ["We have received intel that %4 will be running a convoy from %1 to %2 in about %3 minutes.", _p1 select 1, _p2 select 1, (ceil (_left / 60)) max 1, OT_NATO_name];
+    };
     _title = format ["%3 Convoy from %1 to %2", _p1 select 1, _p2 select 1, OT_NATO_name];
     //notify the players
     _description remoteExec ["OT_fnc_notifyMinor", 0, false];

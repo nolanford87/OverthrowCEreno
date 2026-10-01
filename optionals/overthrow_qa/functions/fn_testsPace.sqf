@@ -1,29 +1,43 @@
 /*
     Description:
-    Original real-time pace (OT_fnc_timePace, 4 / time speed): job time limits in real time (15 real
-    minutes per game hour), taxes and leases at 1.5x the original rate per real hour, businesses,
-    factory, propaganda and stability drift at the original rate. Part of the current QA tests.
+    The economy runs on real time, at Overthrow's original 4x pace, whatever the time speed (which
+    only sets the day/night cycle and weather): taxes and leases every 15 minutes (a quarter of the
+    full amount, influence rounded up), businesses and propaganda every 15 minutes, the resistance's
+    per-minute work (factory, stability drift) every 15 seconds, job time limits 15 minutes per game
+    hour, scheduled convoys 30 minutes after being ordered. Part of the current QA tests.
 
     Returns: ARRAY - [[name, code], ...]
 */
 
-"Pace: a new job's 'Expires in' shows real time, 15 minutes per game hour of its limit (Kill NATO 30 min, 6 h jobs 1 h 30 min, 24 h jobs 6 h), and counts down by real minutes" call OTQA_fnc_manual;
-"Pace: at 24x tax income comes every 15 minutes at a quarter of the amount it used to be, leases too" call OTQA_fnc_manual;
+"Real time: a new job's 'Expires in' shows real time, 15 minutes per game hour of its limit (Kill NATO 30 min, 6 h jobs 1 h 30 min, 24 h jobs 6 h), and counts down by real minutes" call OTQA_fnc_manual;
+"Real time: tax income comes every 15 minutes at a quarter of the old amount, also after changing the time speed lobby setting" call OTQA_fnc_manual;
+"Real time: a business's info shows 'Next cycle: in N min'" call OTQA_fnc_manual;
 
 [
-    ["Pace: 4 / time speed", {
-        private _pace = call OT_fnc_timePace;
-        ["Pace: 4 / the current time speed", abs (_pace - (4 / (timeMultiplier max 1))) < 0.001, format ["time speed %1, pace %2", timeMultiplier, _pace]] call OTQA_fnc_check;
-    }],
-    ["Pace: income, businesses and propaganda accumulate", {
-        // Each hourly system adds the pace every game hour and runs when it reaches 1
-        private _start = time;
-        private _hour = date select 3;
-        waitUntil { sleep 1; (date select 3) isNotEqualTo _hour || { time > _start + 200 } };
-        sleep 12; // The loops run every 5-10 s
-        private _business = missionNamespace getVariable ["OT_paceBusiness", -1];
-        private _propaganda = missionNamespace getVariable ["propaganda_pace", -1];
-        ["Pace: businesses and propaganda keep their share of an hour", _business >= 0 && { _business < 1 } && { _propaganda >= 0 } && { _propaganda < 1 },
-            format ["businesses %1, propaganda %2 (time speed %3)", _business, _propaganda, timeMultiplier]] call OTQA_fnc_check;
-    }, 240]
+    ["Real time: the economy's timers", {
+        GUER_faction_loop_data params ["_nextMinute", "_nextBusiness"];
+        private _now = time;
+        ["Real time: tax income within the next 15 minutes", (income_system_next - _now) > -10 && { (income_system_next - _now) <= 900 }, format ["in %1 s", round (income_system_next - _now)]] call OTQA_fnc_check;
+        ["Real time: propaganda within the next 15 minutes", (propaganda_system_next - _now) > -15 && { (propaganda_system_next - _now) <= 900 }, format ["in %1 s", round (propaganda_system_next - _now)]] call OTQA_fnc_check;
+        ["Real time: businesses within the next 15 minutes", (_nextBusiness - _now) > -10 && { (_nextBusiness - _now) <= 900 }, format ["in %1 s", round (_nextBusiness - _now)]] call OTQA_fnc_check;
+        ["Real time: per-minute work within the next 15 seconds", (_nextMinute - _now) > -10 && { (_nextMinute - _now) <= 15 }, format ["in %1 s", round (_nextMinute - _now)]] call OTQA_fnc_check;
+
+        // Doubling the time speed doesn't bring them sooner
+        private _speed = timeMultiplier;
+        setTimeMultiplier ((_speed * 2) min 120);
+        sleep 20;
+        GUER_faction_loop_data params ["_nextMinute2", "_nextBusiness2"];
+        ["Real time: a faster clock doesn't bring the next payment sooner", income_system_next isEqualTo (income_system_next max 0) && { (_nextBusiness2 isEqualTo _nextBusiness) || { _nextBusiness2 >= _now + 880 } },
+            format ["time speed %1 -> %2, businesses in %3 s", _speed, timeMultiplier, round (_nextBusiness2 - time)]] call OTQA_fnc_check;
+        setTimeMultiplier _speed;
+    }, 60],
+    ["Real time: a scheduled convoy counts down in real seconds", {
+        private _schedule = server getVariable ["NATOschedule", []];
+        private _fresh = _schedule select { count _x > 5 };
+        if (_fresh isEqualTo []) exitWith { "Real time: no convoy scheduled right now, the countdown wasn't checked" call OTQA_fnc_manual };
+        private _before = (_fresh select 0) select 5;
+        sleep 25;
+        private _after = (_fresh select 0) select 5;
+        ["Real time: the convoy countdown goes down with real time", (_before - _after) >= 15 && { (_before - _after) <= 35 }, format ["%1 s -> %2 s in 25 s", round _before, round _after]] call OTQA_fnc_check;
+    }, 60]
 ]
