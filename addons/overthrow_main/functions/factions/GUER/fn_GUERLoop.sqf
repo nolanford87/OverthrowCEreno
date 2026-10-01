@@ -66,116 +66,122 @@ if (_dead > 150) then {
 
 if ((date select 3) != _lasthr) then {
     _lasthr = date select 3;
-    private _wages = 0;
-    {
-        if (_x != "Factory") then {
-            private _perhr = [OT_nation, "WAGE", 0] call OT_fnc_getPrice;
-            private _num = server getVariable [format ["%1employ", _x], 0];
-            private _enum = _num;
-            if (_enum > 20) then {
-                _enum = 20;
-            };
-            private _funds = [] call OT_fnc_resistanceFunds;
-            private _towage = (_num * _perhr);
-            if (_funds >= _towage) then {
-                [-_towage] call OT_fnc_resistanceFunds;
-                _wages = _wages + (_num * _perhr);
-                private _data = _x call OT_fnc_getBusinessData;
+    // Businesses work at the original real-time pace (OT_fnc_timePace): at 24x every 6th game hour
+    OT_paceBusiness = (missionNamespace getVariable ["OT_paceBusiness", 0]) + (call OT_fnc_timePace);
+    private _runs = floor OT_paceBusiness;
+    OT_paceBusiness = OT_paceBusiness - _runs;
+    for "_run" from 1 to _runs do {
+        private _wages = 0;
+        {
+            if (_x != "Factory") then {
+                private _perhr = [OT_nation, "WAGE", 0] call OT_fnc_getPrice;
+                private _num = server getVariable [format ["%1employ", _x], 0];
+                private _enum = _num;
+                if (_enum > 20) then {
+                    _enum = 20;
+                };
+                private _funds = [] call OT_fnc_resistanceFunds;
+                private _towage = (_num * _perhr);
+                if (_funds >= _towage) then {
+                    [-_towage] call OT_fnc_resistanceFunds;
+                    _wages = _wages + (_num * _perhr);
+                    private _data = _x call OT_fnc_getBusinessData;
 
-                private _pos = _data select 0;
-                private _outnum = 2 * _num;
-                private _innum = 2 * _num;
-                private _intotal = _innum;
-                if (_num > 0) then {
-                    if (count _data isEqualTo 2 && _x != "Factory") then {
-                        private _income = _enum * 200;
-                        [_income] call OT_fnc_resistanceFunds;
-                    };
-                    if (count _data isEqualTo 3) then {
-                        private _input = _data select 2;
-                        private _income = 0;
-                        private _sellprice = round (([OT_nation, _input, 0] call OT_fnc_getSellPrice) * 1.2);
-                        private _container = _pos nearestObject OT_item_CargoContainer;
-                        if (_container isEqualTo objNull) then {
-                            private _p = _pos findEmptyPosition [5, 100, OT_item_CargoContainer];
-                            _container = OT_item_CargoContainer createVehicle _p;
-                            [_container, (server getVariable ["generals", []]) select 0] call OT_fnc_setOwner;
-                            clearWeaponCargoGlobal _container;
-                            clearMagazineCargoGlobal _container;
-                            clearBackpackCargoGlobal _container;
-                            clearItemCargoGlobal _container;
+                    private _pos = _data select 0;
+                    private _outnum = 2 * _num;
+                    private _innum = 2 * _num;
+                    private _intotal = _innum;
+                    if (_num > 0) then {
+                        if (count _data isEqualTo 2 && _x != "Factory") then {
+                            private _income = _enum * 200;
+                            [_income] call OT_fnc_resistanceFunds;
                         };
-                        {
-                            if (_innum <= 0) then { continue };
-                            private _stock = _x call OT_fnc_unitStock;
-                            private _c = _x;
-                            {
-                                _x params ["_cls", "_amt"];
-                                if (_cls isEqualTo _input) exitWith {
-                                    // Pay only for what was taken, the stock also counts backpacks etc. in the container
-                                    private _removed = [_c, _cls, _amt min _innum] call OT_fnc_removeFromCargo;
-                                    _income = _income + (_sellprice * _removed);
-                                    _innum = _innum - _removed;
-                                };
-                            } forEach (_stock);
-                        } forEach (_pos nearObjects [OT_item_CargoContainer, 50]);
-                        [_income] call OT_fnc_resistanceFunds;
-                    };
-                    if (count _data isEqualTo 4) then {
-                        private _input = _data select 2;
-                        private _output = _data select 3;
-                        private _container = _pos nearestObject OT_item_CargoContainer;
-                        if (_container isEqualTo objNull) then {
-                            private _p = _pos findEmptyPosition [5, 100, OT_item_CargoContainer];
-                            _container = OT_item_CargoContainer createVehicle _p;
-                            [_container, (server getVariable ["generals", []]) select 0] call OT_fnc_setOwner;
-                            clearWeaponCargoGlobal _container;
-                            clearMagazineCargoGlobal _container;
-                            clearBackpackCargoGlobal _container;
-                            clearItemCargoGlobal _container;
-                        };
-                        if (_input != "") then {
-                            private _inputnum = 0;
+                        if (count _data isEqualTo 3) then {
+                            private _input = _data select 2;
+                            private _income = 0;
+                            private _sellprice = round (([OT_nation, _input, 0] call OT_fnc_getSellPrice) * 1.2);
+                            private _container = _pos nearestObject OT_item_CargoContainer;
+                            if (_container isEqualTo objNull) then {
+                                private _p = _pos findEmptyPosition [5, 100, OT_item_CargoContainer];
+                                _container = OT_item_CargoContainer createVehicle _p;
+                                [_container, (server getVariable ["generals", []]) select 0] call OT_fnc_setOwner;
+                                clearWeaponCargoGlobal _container;
+                                clearMagazineCargoGlobal _container;
+                                clearBackpackCargoGlobal _container;
+                                clearItemCargoGlobal _container;
+                            };
                             {
                                 if (_innum <= 0) then { continue };
+                                private _stock = _x call OT_fnc_unitStock;
                                 private _c = _x;
                                 {
                                     _x params ["_cls", "_amt"];
                                     if (_cls isEqualTo _input) exitWith {
+                                        // Pay only for what was taken, the stock also counts backpacks etc. in the container
                                         private _removed = [_c, _cls, _amt min _innum] call OT_fnc_removeFromCargo;
-                                        _inputnum = _inputnum + _removed;
+                                        _income = _income + (_sellprice * _removed);
                                         _innum = _innum - _removed;
                                     };
-                                } forEach (_c call OT_fnc_unitStock);
+                                } forEach (_stock);
                             } forEach (_pos nearObjects [OT_item_CargoContainer, 50]);
-                            _outnum = round (_outnum * (_inputnum / _intotal));
+                            [_income] call OT_fnc_resistanceFunds;
                         };
-                        if (_output != "" && _outnum > 0) then {
-                            if (_output in ["OT_Sugarcane", "ACE_Banana"]) then {
-                                private _foundFertilizer = false;
+                        if (count _data isEqualTo 4) then {
+                            private _input = _data select 2;
+                            private _output = _data select 3;
+                            private _container = _pos nearestObject OT_item_CargoContainer;
+                            if (_container isEqualTo objNull) then {
+                                private _p = _pos findEmptyPosition [5, 100, OT_item_CargoContainer];
+                                _container = OT_item_CargoContainer createVehicle _p;
+                                [_container, (server getVariable ["generals", []]) select 0] call OT_fnc_setOwner;
+                                clearWeaponCargoGlobal _container;
+                                clearMagazineCargoGlobal _container;
+                                clearBackpackCargoGlobal _container;
+                                clearItemCargoGlobal _container;
+                            };
+                            if (_input != "") then {
+                                private _inputnum = 0;
                                 {
+                                    if (_innum <= 0) then { continue };
                                     private _c = _x;
                                     {
                                         _x params ["_cls", "_amt"];
-                                        if (_cls isEqualTo "OT_Fertilizer") exitWith {
-                                            _foundFertilizer = ([_c, _cls, 1] call OT_fnc_removeFromCargo) > 0;
+                                        if (_cls isEqualTo _input) exitWith {
+                                            private _removed = [_c, _cls, _amt min _innum] call OT_fnc_removeFromCargo;
+                                            _inputnum = _inputnum + _removed;
+                                            _innum = _innum - _removed;
                                         };
                                     } forEach (_c call OT_fnc_unitStock);
-                                    if (_foundFertilizer) exitWith {};
                                 } forEach (_pos nearObjects [OT_item_CargoContainer, 50]);
-                                if (_foundFertilizer) then {
-                                    _outnum = round (_outnum * 1.5);
-                                };
+                                _outnum = round (_outnum * (_inputnum / _intotal));
                             };
-                            _container addItemCargoGlobal [_output, _outnum];
+                            if (_output != "" && _outnum > 0) then {
+                                if (_output in ["OT_Sugarcane", "ACE_Banana"]) then {
+                                    private _foundFertilizer = false;
+                                    {
+                                        private _c = _x;
+                                        {
+                                            _x params ["_cls", "_amt"];
+                                            if (_cls isEqualTo "OT_Fertilizer") exitWith {
+                                                _foundFertilizer = ([_c, _cls, 1] call OT_fnc_removeFromCargo) > 0;
+                                            };
+                                        } forEach (_c call OT_fnc_unitStock);
+                                        if (_foundFertilizer) exitWith {};
+                                    } forEach (_pos nearObjects [OT_item_CargoContainer, 50]);
+                                    if (_foundFertilizer) then {
+                                        _outnum = round (_outnum * 1.5);
+                                    };
+                                };
+                                _container addItemCargoGlobal [_output, _outnum];
+                            };
                         };
                     };
+                } else {
+                    format ["Resistance was unable to pay wages at %1", _x] remoteExec ["OT_fnc_notifyMinor", 0, false];
                 };
-            } else {
-                format ["Resistance was unable to pay wages at %1", _x] remoteExec ["OT_fnc_notifyMinor", 0, false];
             };
-        };
-    } forEach (server getVariable ["GEURowned", []]);
+        } forEach (server getVariable ["GEURowned", []]);
+    };
 };
 
 if ((date select 4) != _lastmin) then {
@@ -205,11 +211,12 @@ if ((date select 4) != _lastmin) then {
     } forEach (server getVariable ["NATOfobs", []]);
     server setVariable ["revealedFOBs", _revealed, false];
 
-    _stabcounter = _stabcounter + 1;
+    // Stability drifts every 10 game minutes at the original real-time pace (OT_fnc_timePace)
+    _stabcounter = _stabcounter + (call OT_fnc_timePace);
     private _abandoned = server getVariable ["NATOabandoned", []];
 
     if (_stabcounter >= 10) then {
-        _stabcounter = 0;
+        _stabcounter = _stabcounter - 10;
         {
             private _town = _x;
             private _townpos = server getVariable _x;
@@ -323,7 +330,7 @@ if ((date select 4) != _lastmin) then {
                         ["OT_steel", _steel, OT_factoryPos] call OT_fnc_takeFromCargoContainers;
                         ["OT_plastic", _plastic, OT_factoryPos] call OT_fnc_takeFromCargoContainers;
                         [-_costtoproduce] call OT_fnc_resistanceFunds;
-                        _timespent = _timespent + OT_factoryProductionMulti;
+                        _timespent = _timespent + OT_factoryProductionMulti * (call OT_fnc_timePace); // Original real-time pace
                     } else {
                         private _need = "";
                         if !(_dowood) then { _need = _need + format ["%1 x wood ", _wood] };
@@ -334,7 +341,7 @@ if ((date select 4) != _lastmin) then {
                         spawner setVariable ["GEURproduceerror", format ["Factory has insufficient resources to produce item (need: %1)", _need], true];
                     };
                 } else {
-                    _timespent = _timespent + OT_factoryProductionMulti;
+                    _timespent = _timespent + OT_factoryProductionMulti * (call OT_fnc_timePace);
                 };
                 if (_timespent >= _timetoproduce) then {
                     private _produced = true;
