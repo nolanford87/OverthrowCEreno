@@ -108,6 +108,7 @@ if (_convoy) then {
         private _p = (_start getPos [_forEachIndex * 25, _dir + 180]) findEmptyPosition [0, 60, _x];
         if (_p isEqualTo []) then { _p = _start getPos [_forEachIndex * 25, _dir + 180] };
         private _v = createVehicle [_x, _p, [], 0, "NONE"];
+        _v allowDamage false; // Spawned against a building at the base (a big vehicle can be), it isn't wrecked
         _v setDir _dir;
         private _g = [_v] call _tag;
         if (_forEachIndex isEqualTo 1) then { _tank = _v; _group = _g } else { _escorts pushBack _v; _v setVariable ["OT_escort", _name] };
@@ -120,6 +121,10 @@ if (_convoy) then {
     _tank setVariable ["vehgarrison", _name, true]; // Destroyed on the way, it comes off the base's list
     _intel set ["veh", _tank]; // An intelligence report on it follows it
 
+    [[_tank] + _escorts] spawn {
+        sleep 5;
+        { _x allowDamage true } forEach (_this select 0);
+    };
     diag_log format ["Overthrow: %1 convoys a %2 to %3", OT_NATO_name, _type call OT_fnc_vehicleGetName, _name];
 } else {
     // Airdropped by an armed Blackfish over the open field found above (never in the water)
