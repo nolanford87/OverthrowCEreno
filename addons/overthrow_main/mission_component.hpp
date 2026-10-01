@@ -63,7 +63,14 @@ class Params {
             "15. Vanilla CSAT pacific",
             "16. Vanilla AAF",
             "17. Vanilla Livonian Defense Force",
-            "18. RHS Russia (MSV)"
+            "18. RHS Russia (MSV)",
+            "19. Western Sahara UNA",
+            "20. Western Sahara ION Services",
+            "21. Western Sahara NATO (Desert)",
+            "22. Western Sahara SFIA",
+            "23. Western Sahara Tura",
+            "24. Expeditionary Forces MJTF (Desert)",
+            "25. Expeditionary Forces MJTF (Woodland)"
         };
         values[] = {
             0, // Map default
@@ -84,7 +91,14 @@ class Params {
             15, // Vanilla CSAT pacific
             16, // Vanilla AAF
             17, // Vanilla Livonian Defense Force
-            18 // RHS Russia (MSV)
+            18, // RHS Russia (MSV)
+            19, // Western Sahara UNA
+            20, // Western Sahara ION Services
+            21, // Western Sahara NATO (Desert)
+            22, // Western Sahara SFIA
+            23, // Western Sahara Tura
+            24, // Expeditionary Forces MJTF (Desert)
+            25 // Expeditionary Forces MJTF (Woodland)
         };
         default = 0;
     };
