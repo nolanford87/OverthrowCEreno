@@ -2,7 +2,7 @@
     Description:
     An airdrop by an armed Blackfish (whatever the occupier): it flies in at 250-325 m from the
     occupier's nearest airfield (about 5 km out when it holds none), releases the vehicle on a
-    parachute over the drop point, flies on and is removed once no player is within 2 km.
+    parachute 75 m below it over the drop point, flies on and is removed once no player is within 2 km.
     Shot down before the drop, nothing is dropped. Waits until the vehicle has landed.
     The Blackfish carries "OT_airdropCargo" (class) and, once dropped, "OT_deliveryCargo" (the vehicle),
     so an intelligence report on it can follow the delivery (OT_fnc_NATOdeliveryIntel).
@@ -69,8 +69,8 @@ waitUntil { sleep 1; !alive _plane || { (_plane distance2D _dropPoint) < 120 } |
 if (!alive _plane) exitWith { [objNull, _plane] };
 if (time > _timeout) exitWith { [_plane, _planeGroup] call _leave; [objNull, _plane] };
 
-// Release it right over the drop point (an open field), just below the Blackfish
-private _release = [_dropPoint select 0, _dropPoint select 1, ((getPosATL _plane) select 2) - 15];
+// Release it right over the drop point (an open field), 75 m below the Blackfish
+private _release = [_dropPoint select 0, _dropPoint select 1, ((getPosATL _plane) select 2) - 75];
 private _chute = createVehicle ["B_Parachute_02_F", _release, [], 0, "FLY"];
 _chute setPosATL _release;
 private _vehicle = createVehicle [_cargoClass, _release, [], 0, "CAN_COLLIDE"];
@@ -79,29 +79,16 @@ _vehicle attachTo [_chute, [0, 0, -1.3]];
 _plane setVariable ["OT_deliveryCargo", _vehicle, true];
 [_plane, _planeGroup] call _leave;
 
-// Down, or stopped coming down (caught on trees / a roof: the parachute, which carries it, stops
-// falling; not checked in the first seconds while it opens), or taking too long.
-// The wind would carry it hundreds of metres from the field on the way down (into the sea on a
-// coast): high up, the parachute steers back over the drop point and comes down at 6 m/s (pushed
-// sideways, a parachute glides and hardly falls). The last 40 m it comes straight down: hanging
-// under the parachute the vehicle doesn't collide, drifting into a slope it would sink into it
+// It falls under the parachute as it would (the wind may carry it). Down, or stopped coming down
+// (caught on trees / a roof: the parachute, which carries it, stops falling; not checked in the
+// first seconds while it opens), or taking too long. Wherever it ends up wrong (the water, sunk
+// into the ground, caught above it) it's put back on the ground
 private _released = time;
 private _landTimeout = time + 180;
 private _still = 0;
 waitUntil {
     sleep 0.5;
-    if (!isNull _chute) then {
-        private _fall = (velocity _chute) select 2;
-        if (((getPosATL _vehicle) select 2) > 40) then {
-            private _off = (getPosATL _chute) vectorDiff _dropPoint;
-            _off set [2, 0];
-            private _steer = (vectorNormalized _off) vectorMultiply -((vectorMagnitude _off) min 6);
-            _chute setVelocity [_steer select 0, _steer select 1, -6];
-        } else {
-            _chute setVelocity [0, 0, _fall min -3];
-        };
-        if (time > _released + 10 && { _fall > -0.3 }) then { _still = _still + 1 } else { _still = 0 };
-    };
+    if (!isNull _chute && { time > _released + 10 } && { ((velocity _chute) select 2) > -0.3 }) then { _still = _still + 1 } else { _still = 0 };
     isNull _chute || { ((getPosATL _vehicle) select 2) < 3 } || { _still >= 6 } || { time > _landTimeout }
 };
 detach _vehicle;
