@@ -4,7 +4,7 @@
     Global Mobilization, CSLA Iron Curtain, Spearhead 1944, Reaction Forces) to the RPT, to build
     occupier templates from: their factions, units, vehicles, flags and flag markers. Creator DLC
     files are encrypted, the game is the only place to read their config. Lines start "OTDUMP|".
-    Load the creator DLCs to dump.
+    Load the creator DLCs to dump. Archived: no longer in the Zeus menu, run it from the debug console.
 
     Usage: [] spawn OTQA_fnc_dumpFactions;
 */

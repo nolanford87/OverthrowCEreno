@@ -27,7 +27,7 @@ class CfgFunctions {
             class check {};
             class manual {};
             class spawnWarehouse {}; // Zeus helper
-            class dumpFactions {}; // Zeus helper: creator DLC factions to the RPT
+            class dumpFactions {}; // Archived (no Zeus entry): creator DLC factions to the RPT, [] spawn OTQA_fnc_dumpFactions
             // Bug fix QA tests: the suite, and the tests for each fix batch it's made of
             class testsBugFixes {};
             class testsCommon {};
@@ -63,10 +63,6 @@ class zen_context_menu_actions {
         class OTQA_archive {
             displayName = "Run archived QA tests";
             statement = "['archive'] spawn OTQA_fnc_run";
-        };
-        class OTQA_dumpFactions {
-            displayName = "Dump creator DLC factions to RPT";
-            statement = "[] spawn OTQA_fnc_dumpFactions";
         };
         class OTQA_spawnWarehouse {
             displayName = "Spawn my warehouse here";
