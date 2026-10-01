@@ -28,11 +28,11 @@ private _amgen = (getPlayerUID player) in (server getVariable ["generals", []]);
 
 private _text = format ["<t size='0.8'>%1</t><br/>", _name];
 _text = _text + format ["<t size='0.65'>Employees: %1</t><br/>", _anum];
-_text = _text + format ["<t size='0.65'>Wages: $%1 /hr</t><br/>", _wages];
+_text = _text + format ["<t size='0.65'>Wages: $%1 every 15 min</t><br/>", _wages];
 
 _amgen = (getPlayerUID player) in (server getVariable ["generals", []]);
-private _nexthr = ((date select 3) + 1);
-if (_nexthr < 10) then { _nexthr = format ["0%1", _nexthr] };
+// Businesses work every 15 real minutes (OT_fnc_GUERLoop)
+private _nextIn = ceil ((((server getVariable ["OT_nextBusinessAt", serverTime]) - serverTime) max 0) / 60);
 
 if (_amgen) then {
     ctrlEnable [1602, true];
@@ -54,7 +54,7 @@ if (count _data > 2) then {
 } else {
     _text = _text + format ["<t size='0.65'>Income: $%1 /hr</t><br/>", round (_num * 200)];
 };
-_text = _text + format ["<t size='0.65'>Next cycle: %1:00</t><br/>", _nexthr];
+_text = _text + format ["<t size='0.65'>Next cycle: in %1 min</t><br/>", _nextIn];
 
 private _textctrl = (findDisplay 8000) displayCtrl 1104;
 _textctrl ctrlSetStructuredText parseText _text;

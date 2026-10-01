@@ -26,18 +26,29 @@ publicVariable "OT_nextNATOTurn";
             call OT_fnc_NATOFOBtimers;
 
             //scheduler
+            // A convoy sets off when its real-time countdown (seconds, index 5) runs out; one scheduled
+            // in an older save sets off at its game hour
+            private _scheduleElapsed = ((time - (missionNamespace getVariable ["OT_scheduleLast", time])) max 0) min 30;
+            OT_scheduleLast = time;
             if (_schedule isNotEqualTo []) then {
                 private _item = [];
                 private _idx = -1;
                 private _remove = [];
                 {
+                    if (count _x > 5) then { _x set [5, (_x select 5) - _scheduleElapsed] };
                     private _hour = _x select 4;
-                    if (!isNil "_hour" && _hour < 23 && _hour == (date select 3)) exitWith {
+                    private _due = false;
+                    if (count _x > 5) then {
+                        _due = (_x select 5) <= 0;
+                    } else {
+                        _due = !isNil "_hour" && { _hour < 23 } && { _hour == (date select 3) };
+                    };
+                    if (_due) exitWith {
                         _remove pushBack _forEachIndex;
                         _idx = _forEachIndex;
                         _item = _x;
                     };
-                    if (!isNil "_hour" && _hour > 23) then { _remove pushBack _forEachIndex }; //remove old bugged schedules from v0.7.7.3
+                    if (!isNil "_hour" && { _hour > 23 } && { count _x <= 5 }) then { _remove pushBack _forEachIndex }; //remove old bugged schedules from v0.7.7.3
                 } forEach (_schedule);
                 if (_idx > -1) then {
                     _item params ["_id", "_mission", "_p1", "_p2"];

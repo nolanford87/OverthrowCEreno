@@ -37,7 +37,8 @@ if (_end isNotEqualTo []) then {
         spawner setVariable ["NATOlastconvoy", time, false];
         _spend = _spend - 500;
         _resources = _resources - 500;
-        _schedule pushBack [_id, "CONVOY", _start, _end, _hour];
+        // Sets off 30 real minutes from now (2 game hours at Overthrow's original 4x), whatever the time speed
+        _schedule pushBack [_id, "CONVOY", _start, _end, _hour, 1800];
     };
 };
 
