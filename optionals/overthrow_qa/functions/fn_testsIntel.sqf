@@ -206,8 +206,15 @@ OTQA_intel_airdrop = {
             sleep 1;
             { deleteVehicle _x } forEach (crew _tank); // Bodies out of the seats
             sleep 0.5;
-            player moveInDriver _tank;
-            sleep 2;
+            // On foot first (moveInDriver does nothing from another seat or vehicle), a few tries
+            for "_i" from 1 to 3 do {
+                if (!isNull objectParent player) then { moveOut player; sleep 1 };
+                player moveInDriver _tank;
+                sleep 2;
+                if ((objectParent player) isEqualTo _tank) exitWith {};
+            };
+            [format ["Airdrop (%1): the host got in as driver", _label], (objectParent player) isEqualTo _tank,
+                format ["in %1, %2 alive, tank locked %3", typeOf objectParent player, ["not", ""] select (alive player), locked _tank]] call OTQA_fnc_check;
             moveOut player;
         };
         private _state = [_taskId] call OTQA_intel_state;

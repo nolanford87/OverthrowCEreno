@@ -120,18 +120,6 @@ if (_convoy) then {
     _tank setVariable ["vehgarrison", _name, true]; // Destroyed on the way, it comes off the base's list
     _intel set ["veh", _tank]; // An intelligence report on it follows it
 
-    // A convoy vehicle that hasn't moved after a minute is sent on again
-    [[_tank] + _escorts, _basePos] spawn {
-        params ["_vehicles", "_basePos"];
-        private _positions = _vehicles apply { getPosATL _x };
-        sleep 60;
-        {
-            if (alive _x && { ((getPosATL _x) distance2D (_positions select _forEachIndex)) < 20 } && { !isNull driver _x }) then {
-                (group driver _x) move _basePos;
-                (driver _x) doMove _basePos;
-            };
-        } forEach _vehicles;
-    };
     diag_log format ["Overthrow: %1 convoys a %2 to %3", OT_NATO_name, _type call OT_fnc_vehicleGetName, _name];
 } else {
     // Airdropped by an armed Blackfish over the open field found above (never in the water)
@@ -157,9 +145,34 @@ if (_convoy) then {
     };
 };
 
+// Stuck on the way (a steep hill, a tight corner): every 30 seconds a vehicle that hasn't moved is
+// sent on again. The tank stuck for a minute within 400 m of the base counts as arrived
+if (alive _tank) then {
+    [[_tank] + _escorts, _basePos] spawn {
+        params ["_vehicles", "_basePos"];
+        private _tank = _vehicles select 0;
+        private _positions = _vehicles apply { getPosATL _x };
+        private _stalls = 0;
+        while { alive _tank && { !(_tank getVariable ["OT_delivered", false]) } && { (_tank distance2D _basePos) >= 150 } } do {
+            sleep 30;
+            {
+                if (alive _x && { !isNull driver _x } && { ((getPosATL _x) distance2D (_positions select _forEachIndex)) < 10 }) then {
+                    (group driver _x) move _basePos;
+                    (driver _x) doMove _basePos;
+                    if (_x isEqualTo _tank) then { _stalls = _stalls + 1 };
+                } else {
+                    if (_x isEqualTo _tank) then { _stalls = 0 };
+                };
+            } forEach _vehicles;
+            _positions = _vehicles apply { getPosATL _x };
+            if (_stalls >= 2 && { (_tank distance2D _basePos) < 400 }) exitWith { _tank setVariable ["OT_stalledAtBase", true] };
+        };
+    };
+};
+
 // On its way until it arrives or is destroyed
 private _timeout = time + 1800;
-waitUntil { sleep 5; !alive _tank || { (_tank distance2D _basePos) < 150 } || { time > _timeout } };
+waitUntil { sleep 5; !alive _tank || { (_tank distance2D _basePos) < 150 } || { _tank getVariable ["OT_stalledAtBase", false] } || { time > _timeout } };
 
 // The escorts' job is done, they head back and go once nobody is near
 if (_escorts isNotEqualTo []) then {
