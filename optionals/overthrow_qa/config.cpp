@@ -23,6 +23,7 @@ class CfgFunctions {
             class testsArchive {};
             class testsIntel {};
             class testsFOB {};
+            class testsDLCVehicles {};
             class check {};
             class manual {};
             class spawnWarehouse {}; // Zeus helper

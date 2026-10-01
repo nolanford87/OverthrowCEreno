@@ -11,7 +11,8 @@ private _tests = [];
     _tests append (call _x);
 } forEach [
     OTQA_fnc_testsIntel,
-    OTQA_fnc_testsFOB
+    OTQA_fnc_testsFOB,
+    OTQA_fnc_testsDLCVehicles
 ];
 
 if (_tests isEqualTo []) then {
