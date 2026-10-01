@@ -3,7 +3,7 @@ Function: incomeSystem
 ---------------------------------------------------------------------------- */
 //Manages passive income for all players (Lease + taxes)
 //Paid every 15 real minutes whatever the time speed: a quarter of the full amount each time (1.5x Overthrow's original
-//rate, a full payment every 6 game hours at 4x), influence too, rounded up. The time speed only sets the day/night cycle
+//rate, a full payment every 6 game hours at 4x), with half the influence, rounded up. The time speed only sets the day/night cycle
 
 waitUntil {
     sleep 1;
@@ -36,7 +36,7 @@ income_system_next = time + 900;
 
             private _t = call OT_fnc_getTaxIncome;
             _total = round ((_t select 0) * _share);
-            _inf = ceil ((_t select 1) * _share);
+            _inf = ceil ((_t select 1) * 0.5);
 
             private _totax = 0;
             private _tax = server getVariable ['taxrate', 0];

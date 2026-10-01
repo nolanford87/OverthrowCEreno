@@ -2,7 +2,7 @@
     Description:
     The economy runs on real time, at Overthrow's original 4x pace, whatever the time speed (which
     only sets the day/night cycle and weather): taxes and leases every 15 minutes (a quarter of the
-    full amount, influence rounded up), businesses and propaganda every 15 minutes, the resistance's
+    full amount, half the influence rounded up), businesses and propaganda every 15 minutes, the resistance's
     per-minute work (factory, stability drift) every 15 seconds, job time limits 15 minutes per game
     hour, scheduled convoys 30 minutes after being ordered. Part of the current QA tests.
 
