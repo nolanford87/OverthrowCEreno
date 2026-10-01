@@ -12,7 +12,8 @@ private _tests = [];
 } forEach [
     OTQA_fnc_testsIntel,
     OTQA_fnc_testsFOB,
-    OTQA_fnc_testsDLCVehicles
+    OTQA_fnc_testsDLCVehicles,
+    OTQA_fnc_testsOccupiers // Every lobby option, with the creator DLC ones
 ];
 
 if (_tests isEqualTo []) then {

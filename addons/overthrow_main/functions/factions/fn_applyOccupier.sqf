@@ -39,7 +39,15 @@ private _templates = [
     ["csat.sqf", "OPF_T_F", ["pacific"]],                       // 15 CSAT Pacific
     ["aaf.sqf", "IND_F", []],                                   // 16 AAF
     ["ldf.sqf", "IND_E_F", []],                                 // 17 LDF
-    ["rhs_msv.sqf", "rhs_faction_msv", []]                    // 18 RHS Russia (MSV)
+    ["rhs_msv.sqf", "rhs_faction_msv", []],                   // 18 RHS Russia (MSV)
+    // Creator DLCs
+    ["ws_una.sqf", "BLU_UN_lxWS", []],                          // 19 Western Sahara UNA
+    ["ws_ion.sqf", "BLU_ION_lxWS", []],                         // 20 Western Sahara ION Services
+    ["ws_nato.sqf", "BLU_NATO_lxWS", []],                       // 21 Western Sahara NATO (Desert)
+    ["ws_sfia.sqf", "OPF_SFIA_lxWS", []],                       // 22 Western Sahara SFIA
+    ["ws_tura.sqf", "BLU_TURA_lxWS", []],                       // 23 Western Sahara Tura
+    ["ef_mjtf.sqf", "EF_B_MJTF_Des", ["Des"]],                  // 24 Expeditionary Forces MJTF (Desert)
+    ["ef_mjtf.sqf", "EF_B_MJTF_Wdl", ["Wdl"]]                   // 25 Expeditionary Forces MJTF (Woodland)
 ];
 
 // The map's own setup, saved the first time so a template can be swapped for another
