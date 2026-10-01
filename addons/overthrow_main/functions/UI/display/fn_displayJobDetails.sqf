@@ -17,8 +17,9 @@ if (_job isNotEqualTo []) then {
 
     private _remainTxt = "";
     if !(_noexpire) then {
-        private _hrs = floor (_remains / 60);
-        private _mins = _remains - (_hrs * 60);
+        // Real seconds (OT_fnc_startJob)
+        private _hrs = floor (_remains / 3600);
+        private _mins = floor ((_remains - (_hrs * 3600)) / 60);
         _remainTxt = format ["Expires in %1 hrs %2 mins", _hrs, _mins];
     };
 

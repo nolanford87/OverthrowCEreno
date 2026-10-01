@@ -22,7 +22,9 @@ if !(_jobparams call _setup) exitWith {
         params ["_id", "_job", "_repeat", "_info", "_markerPos", "_setup", "_fail", "_success", "_end", "_jobparams", "_expires"];
 
         private _done = false;
-        spawner setVariable [format ["OT_jobRemain%1", _id], _expires * 60, true];
+        // Real seconds left: each game hour of the limit is 15 real minutes (Overthrow's original 4x),
+        // whatever the time speed
+        spawner setVariable [format ["OT_jobRemain%1", _id], _expires * 900, true];
 
         if (_expires < 1) then {
             spawner setVariable [format ["OT_jobNoExpire%1", _id], true, true];
@@ -33,11 +35,10 @@ if !(_jobparams call _setup) exitWith {
                 private _handle = _this select 1;
                 private _remains = spawner getVariable [format ["OT_jobRemain%1", _id], 0];
                 if (!_done) then {
-                    private _date = call OT_fnc_datestamp;
-                    private _elapsed = _date - _lastdate;
-                    if (_elapsed < 0) then { _elapsed = _elapsed + 525600 }; // New Year, datestamp counts minutes since Jan 1
+                    private _now = time;
+                    private _elapsed = ((_now - _lastdate) max 0) min 30; // A pause or reload doesn't eat the time
                     _remains = _remains - _elapsed;
-                    (_this select 0) set [12, _date]; //updates _lastdate
+                    (_this select 0) set [12, _now]; //updates _lastdate
                     if (_expires < 1) then { _remains = 1 };
                     private _wassuccess = false;
                     if (call {
@@ -96,7 +97,7 @@ if !(_jobparams call _setup) exitWith {
                 };
             },
             2,
-            [_done, _id, _job, _repeat, _info, _markerPos, _setup, _fail, _success, _end, _jobparams, _expires, call OT_fnc_datestamp]
+            [_done, _id, _job, _repeat, _info, _markerPos, _setup, _fail, _success, _end, _jobparams, _expires, time]
         ] call CBA_fnc_addPerFrameHandler;
     },
     [_id, _job, _repeat, _info, _markerPos, _setup, _fail, _success, _end, _jobparams, _expires],

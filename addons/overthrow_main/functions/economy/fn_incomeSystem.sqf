@@ -2,6 +2,7 @@
 Function: incomeSystem
 ---------------------------------------------------------------------------- */
 //Manages passive income for all players (Lease + taxes)
+//Paid every 6 game hours, scaled to 1.5x the original real-time rate (time at 4x): at 24x a quarter of the full amount every 15 minutes (OT_fnc_timePace)
 
 waitUntil {
     sleep 1;
@@ -28,8 +29,9 @@ income_system_lasthour = date select 3;
             private _inf = 1;
             private _total = 0;
 
+            private _paceScale = 1.5 * (call OT_fnc_timePace);
             private _t = call OT_fnc_getTaxIncome;
-            _total = _t select 0;
+            _total = round ((_t select 0) * _paceScale);
             _inf = _t select 1;
 
             private _totax = 0;
@@ -47,6 +49,7 @@ income_system_lasthour = date select 3;
                     private _data = [_cls, _town] call OT_fnc_getRealEstateData;
                     _lease = _lease + (_data select 2);
                 } forEach (_owned);
+                _lease = round (_lease * _paceScale);
                 if (_lease > 0) then {
                     private _tt = 0;
                     if (_tax > 0) then {

@@ -393,6 +393,7 @@ class CfgFunctions {
             class resistanceFunds {};
             class incomeSystem {};
             class propagandaSystem {};
+            class timePace {};
             class stability {};
             class getControlledPopulation {};
         };
