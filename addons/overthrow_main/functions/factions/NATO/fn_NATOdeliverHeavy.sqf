@@ -146,7 +146,7 @@ if (_convoy) then {
 };
 
 // Stuck on the way (a steep hill, a tight corner): every 30 seconds a vehicle that hasn't moved is
-// sent on again. The tank stuck for a minute within 400 m of the base counts as arrived
+// sent on again. The tank stuck for a minute within 250 m of the base counts as arrived
 if (alive _tank) then {
     [[_tank] + _escorts, _basePos] spawn {
         params ["_vehicles", "_basePos"];
@@ -165,7 +165,7 @@ if (alive _tank) then {
                 };
             } forEach _vehicles;
             _positions = _vehicles apply { getPosATL _x };
-            if (_stalls >= 2 && { (_tank distance2D _basePos) < 400 }) exitWith { _tank setVariable ["OT_stalledAtBase", true] };
+            if (_stalls >= 2 && { (_tank distance2D _basePos) < 250 }) exitWith { _tank setVariable ["OT_stalledAtBase", true] };
         };
     };
 };
