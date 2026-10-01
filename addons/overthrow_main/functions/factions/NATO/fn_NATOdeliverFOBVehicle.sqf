@@ -86,6 +86,8 @@ call {
     // Drives in
     if (_from isNotEqualTo []) exitWith {
         _v = createVehicle [_cls, _start, [], 0, "NONE"];
+        _v allowDamage false; // Spawned against a building at the base, it isn't wrecked
+        _v spawn { sleep 5; _this allowDamage true };
         _v setDir (_start getDir _pos);
         [_v] call _setup;
         _intel set ["veh", _v]; // An intelligence report on it follows it
