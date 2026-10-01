@@ -107,7 +107,14 @@ if (_convoy) then {
 
     // Escort in front, the tank, escort behind
     {
-        (_spots param [_forEachIndex, _spots select 0]) params ["_p", "_dir"];
+        private _spot = _spots param [_forEachIndex, []];
+        if (_spot isEqualTo []) then {
+            // Not enough clear road: an empty spot near the column, never on top of another vehicle
+            private _near = ((_spots select 0) select 0) findEmptyPosition [10 + 15 * _forEachIndex, 100, _x];
+            if (_near isEqualTo []) then { _near = ((_spots select 0) select 0) getPos [25 * _forEachIndex, ((_spots select 0) select 1) + 180] };
+            _spot = [_near, (_spots select 0) select 1];
+        };
+        _spot params ["_p", "_dir"];
         private _v = createVehicle [_x, _p, [], 0, "CAN_COLLIDE"];
         _v setDir _dir;
         _v setPosATL _p;
@@ -121,6 +128,11 @@ if (_convoy) then {
     } forEach [selectRandom _escortTypes, _type, selectRandom _escortTypes];
     _tank setVariable ["vehgarrison", _name, true]; // Destroyed on the way, it comes off the base's list
     _intel set ["veh", _tank]; // An intelligence report on it follows it
+    // How the column spawned, in the RPT
+    [[_escorts select 0, _tank, _escorts select 1]] spawn {
+        sleep 3;
+        diag_log format ["Overthrow: convoy spawn %1", (_this select 0) apply { [typeOf _x, alive _x, isOnRoad (getPosATL _x), (getPosATL _x) apply { round _x }] }];
+    };
     diag_log format ["Overthrow: %1 convoys a %2 to %3", OT_NATO_name, _type call OT_fnc_vehicleGetName, _name];
 } else {
     // Airdropped by an armed Blackfish over the open field found above (never in the water)
