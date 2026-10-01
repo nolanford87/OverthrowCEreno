@@ -33,6 +33,7 @@ class CfgFunctions {
             class revealToResistance {};
             class applyOccupier {};
             class applyOccupierPools {};
+            class occupierDLCVehicles {};
             class setLoadoutMode {};
         };
 

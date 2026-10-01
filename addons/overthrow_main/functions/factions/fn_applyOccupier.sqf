@@ -72,6 +72,9 @@ if (_file isNotEqualTo "") then {
 };
 diag_log format ["Overthrow: Occupying faction %1: %2 (%3)", _choice, OT_NATO_name, OT_faction_NATO];
 
+// A vanilla occupier gets its side's official DLC vehicles too, owned or not
+if (_choice in [0, 1, 2, 3, 14, 15, 16, 17]) then { call OT_fnc_occupierDLCVehicles };
+
 OT_occupierApplied = _choice;
 call OT_fnc_applyOccupierPools;
 _choice;
