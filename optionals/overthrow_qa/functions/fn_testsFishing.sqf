@@ -89,15 +89,21 @@ OTQA_fish_ground = {
         ["Fishing: turtles are contraband, not for general stores", "OT_Turtle" in OT_illegalItems && { !("OT_Turtle" in OT_fishSellItems) } && { !("OT_Turtle" in OT_allDrugs) }, ""] call OTQA_fnc_check;
 
         // Sold to a faction rep: $400 and +1 influence each
-        if !(player canAdd ["OT_Turtle", 2]) exitWith { "Fishing: no room for 2 turtles, selling them to a faction rep wasn't checked" call OTQA_fnc_manual };
+        // Room for the turtles: an empty carryall for the test (the host's gear is put back after)
+        private _loadout = getUnitLoadout player;
+        removeBackpack player;
+        player addBackpack "B_Carryall_khk";
+        clearAllItemsFromBackpack player;
         private _money = player getVariable ["money", 0];
         private _influence = player getVariable ["influence", 0];
-        for "_i" from 1 to 2 do { player addItem "OT_Turtle" };
+        for "_i" from 1 to 2 do { player addItemToBackpack "OT_Turtle" };
+        private _had = { _x isEqualTo "OT_Turtle" } count (items player);
         call OT_fnc_sellTurtles;
         sleep 1;
         private _left = { _x isEqualTo "OT_Turtle" } count (items player);
-        ["Fishing: a faction rep pays $400 and +1 influence per turtle", _left isEqualTo 0 && { ((player getVariable ["money", 0]) - _money) isEqualTo 800 } && { ((player getVariable ["influence", 0]) - _influence) isEqualTo 2 },
-            format ["%1 left, money +%2, influence +%3", _left, (player getVariable ["money", 0]) - _money, (player getVariable ["influence", 0]) - _influence]] call OTQA_fnc_check;
+        ["Fishing: a faction rep pays $400 and +1 influence per turtle", _had isEqualTo 2 && { _left isEqualTo 0 } && { ((player getVariable ["money", 0]) - _money) isEqualTo 800 } && { ((player getVariable ["influence", 0]) - _influence) isEqualTo 2 },
+            format ["%1 turtles, %2 left, money +%3, influence +%4", _had, _left, (player getVariable ["money", 0]) - _money, (player getVariable ["influence", 0]) - _influence]] call OTQA_fnc_check;
+        player setUnitLoadout _loadout;
     }],
 
     ["Fishing: fisheries at coastal towns", {
