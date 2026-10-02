@@ -215,10 +215,18 @@ if (OT_showEnemyGroups) then {
 //If zoomed in draw shop, owned properties, faction rep, corpse cache and vehicle cache
 private _scale = ctrlMapScale _mapCtrl;
 
-//Fisheries: sized like the shop markers (their icons are drawn small), never smaller than a business's
-{
-    _x setMarkerSizeLocal [(0.1 / _scale) max 6, (0.1 / _scale) max 6];
-} forEach (missionNamespace getVariable ["OT_fisheries", []]);
+//Fisheries and freight brokers: shown and sized like the shop markers (their icons are drawn in the
+//same style), global markers so not in OT_allShopMarkers
+private _likeShops = (missionNamespace getVariable ["OT_fisheries", []])
+    + ((server getVariable ["logisticsBrokers", []]) apply { format ["logistics_%1", _x select 0] });
+if (_scale < 0.1) then {
+    {
+        _x setMarkerAlphaLocal 0.8;
+        _x setMarkerSizeLocal [(0.1 / _scale), (0.1 / _scale)];
+    } forEach _likeShops;
+} else {
+    { _x setMarkerAlphaLocal 0 } forEach _likeShops;
+};
 if (_scale < 0.1) then {
     private _mousepos = [0, 0, 0];
     private _drawDist = 0;

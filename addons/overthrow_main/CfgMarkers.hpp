@@ -103,6 +103,14 @@ class CfgMarkers {
         shadow = 1;
         scope = 1;
     };
+    class ot_Broker {
+        name = "Freight broker";
+        icon = "\overthrow_main\ui\markers\broker.paa";
+        color[] = {1, 1, 1, 1};
+        size = 4;
+        shadow = 0;
+        scope = 1;
+    };
     class ot_Fishery {
         name = "Fishery";
         icon = "\overthrow_main\ui\markers\fishery.paa";

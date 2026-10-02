@@ -13,7 +13,7 @@ private _brokers = [] call OT_fnc_logisticsBrokers;
 // Offers saved from an earlier session are stale (serverTime starts again at 0)
 { server setVariable [format ["logisticsOffers%1", _x select 0], [], true] } forEach _brokers;
 // A civilian car icon where the game has one, a plain box otherwise
-private _type = ["mil_box", "c_car"] select (isClass (configFile >> "CfgMarkers" >> "c_car"));
+private _type = "ot_Broker"; // A box truck, in the shops' style; sized with zoom like them (OT_fnc_mapHandler)
 {
     _x params ["_id", "_name", "_pos"];
     [_pos, OT_fnc_spawnBroker, [_id]] call OT_fnc_registerSpawner;
