@@ -23,8 +23,8 @@ private _cls = ["C_man_1", OT_civType_worker] select (isClass (configFile >> "Cf
 private _civ = _group createUnit [_cls, _pos, [], 0, "CAN_COLLIDE"];
 _civ setPosATL [_pos select 0, _pos select 1, 0];
 _civ setDir (_civ getDir _loading); // Facing his loading spot
-_civ disableAI "MOVE";
 _civ setVariable ["NOAI", true, false];
 _civ setVariable ["OT_broker", _id, true];
+[_civ] call OT_fnc_idleAnim; // Stays put, idling
 
 spawner setVariable [_spawnid, (spawner getVariable [_spawnid, []]) + [_group], false];

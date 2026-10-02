@@ -82,6 +82,12 @@ if (_civ getVariable ["criminal", false]) then {
     _canBuyGuns = false;
     _canMission = false;
 };
+if ((_civ getVariable ["OT_fishery", ""]) isNotEqualTo "") then {
+    _canSellDrugs = false;
+    _canRecruit = false;
+    _canBuyGuns = false;
+    _canMission = false;
+};
 if ((_civ getVariable ["OT_broker", ""]) isNotEqualTo "") then {
     _canSellDrugs = false;
     _canRecruit = false;

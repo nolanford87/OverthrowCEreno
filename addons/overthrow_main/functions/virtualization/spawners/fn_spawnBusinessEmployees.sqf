@@ -32,9 +32,9 @@ if (_name in OT_fisheries) then {
     private _fisherman = _fisherGroup createUnit [_cls, _spot, [], 0, "CAN_COLLIDE"];
     _fisherman setPosATL [_spot select 0, _spot select 1, 0];
     _fisherman setDir (random 360);
-    _fisherman disableAI "MOVE";
     _fisherman setVariable ["NOAI", true, false];
     _fisherman setVariable ["OT_fishery", _name, true];
+    [_fisherman] call OT_fnc_idleAnim; // Stays put, idling
     _fisherGroup setVariable ["Vcm_Disable", true, true];
     spawner setVariable [_spawnid, (spawner getVariable [_spawnid, []]) + _props + [_fisherGroup], false];
 };
