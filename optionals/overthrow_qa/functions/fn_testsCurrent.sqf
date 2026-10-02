@@ -10,6 +10,7 @@ private _tests = [];
 {
     _tests append (call _x);
 } forEach [
+    OTQA_fnc_testsPoachers
 ];
 
 if (_tests isEqualTo []) then {

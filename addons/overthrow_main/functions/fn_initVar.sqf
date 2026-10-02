@@ -363,6 +363,25 @@ OT_huntingWeapons = ((
     }
 }) apply { configName _x };
 
+// Poachers (OT_fnc_initPoachers): each shot in a hunting spot adds 1 heat (a quarter to spots within
+// 1.5 km), full at 5 (half a shot of slack, so 5 shots in about a minute fill it), cooling to nothing
+// over 10 real minutes. $25 for each one killed.
+OT_poacherFull = 5;
+OT_poacherSpill = 0.25;
+OT_poacherSpillRange = 1500;
+OT_poacherCoolTime = 600;
+OT_poacherBounty = 25;
+// Radio chatter for the call for backup (base game sounds, the ones this install has)
+OT_poacherCallSounds = [
+    "A3\Sounds_F\sfx\radio\ambient_radio2.wss",
+    "A3\Sounds_F\sfx\radio\ambient_radio8.wss",
+    "A3\Sounds_F\sfx\radio\ambient_radio17.wss",
+    "A3\Sounds_F\sfx\radio\ambient_radio22.wss"
+];
+if ((OT_poacherCallSounds select { fileExists _x }) isNotEqualTo []) then {
+    OT_poacherCallSounds = OT_poacherCallSounds select { fileExists _x };
+};
+
 //Detecting vehicles and weapons
 
 OT_boats = [
