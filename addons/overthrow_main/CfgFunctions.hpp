@@ -82,6 +82,9 @@ class CfgFunctions {
             class logisticsCargoVehicle {};
             class logisticsUnload {};
             class logisticsUnloadAction {};
+            // Gangs and losing the load
+            class logisticsHijack {};
+            class logisticsDeath {};
         };
 
         /* Persistent Save */
