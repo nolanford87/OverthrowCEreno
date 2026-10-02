@@ -109,7 +109,8 @@ OTQA_fish_ground = {
     ["Fishing: fisheries at coastal towns", {
         if (OT_piers isEqualTo []) exitWith {};
         private _missing = OT_fisheries select { (_x call OT_fnc_getBusinessData) isEqualTo [] || { (server getVariable [_x, []]) isEqualTo [] } || { (markerType _x) isEqualTo "" } };
-        ["Fishing: a fishery at each coastal town's pier, on the map", (count OT_fisheries) > 0 && { _missing isEqualTo [] }, format ["%1 fisheries: %2; missing: %3", count OT_fisheries, OT_fisheries select [0, 4], _missing]] call OTQA_fnc_check;
+        ["Fishing: 3 fisheries on the map, at coastal towns' piers, spread out", (count OT_fisheries) > 0 && { (count OT_fisheries) <= 3 } && { _missing isEqualTo [] },
+            format ["%1 fisheries: %2; missing: %3", count OT_fisheries, OT_fisheries, _missing]] call OTQA_fnc_check;
         if (OT_fisheries isEqualTo []) exitWith {};
 
         // Its cycle: catches 2 per employee into its container, sells what's delivered
