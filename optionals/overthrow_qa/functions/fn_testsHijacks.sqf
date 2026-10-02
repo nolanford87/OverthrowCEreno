@@ -101,7 +101,7 @@ OTQA_hijack_deathJob = {
     sleep 1.5;
     [format ["%1: task failed, no pay, job cleared", _name], ([_taskId] call BIS_fnc_taskState) isEqualTo "FAILED" && { (player getVariable ["money", 0]) isEqualTo _money } && { (player getVariable ["OT_logisticsActive", ""]) isEqualTo "" },
         format ["%1, money %2 -> %3, job '%4'", [_taskId] call BIS_fnc_taskState, _money, player getVariable ["money", 0], player getVariable ["OT_logisticsActive", ""]]] call OTQA_fnc_check;
-    [format ["%1: every crate is gone, out of the rental's cargo", _name], (_crates findIf { !isNull _x }) isEqualTo -1 && { ((_veh getVariable ["ace_cargo_loaded", []]) findIf { isNull _x || { _x in _crates } }) isEqualTo -1 },
+    [format ["%1: every crate is gone, out of the rental's cargo", _name], (_crates findIf { !isNull _x }) isEqualTo -1 && { ((_veh getVariable ["ace_cargo_loaded", []]) findIf { _x isEqualType objNull && { isNull _x || { _x in _crates } } }) isEqualTo -1 },
         format ["%1 of %2 crates left, rental cargo %3", { !isNull _x } count _crates, count _crates, _veh getVariable ["ace_cargo_loaded", []]]] call OTQA_fnc_check;
     [_name, _id, _result, _stubbed] call OTQA_hijack_checkSettle;
     [_crates + [_veh]] call OTQA_hijack_cleanup;

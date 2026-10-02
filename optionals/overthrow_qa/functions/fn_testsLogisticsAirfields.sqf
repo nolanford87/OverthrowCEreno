@@ -162,7 +162,7 @@ OTQA_air_runwayPoints = {
         private _badFormat = _all select {
             (count _x) isNotEqualTo 15
             || { !((_x select 11) isEqualType "") } || { !((_x select 12) isEqualType "") }
-            || { !((_x select 13) isEqualType []) } || { !((_x select 14) isEqualType "") }
+            || { !((_x select 13) isEqualType []) } || { !((_x select 14) isEqualTypeAny ["", 0]) }
             || { (_x select 11) isEqualTo "" && { (_x select 13) isEqualTo [] } && { [_x select 12, _x select 14] isNotEqualTo ["", ""] } }
         };
         ["Logistics airfields: every contract has the 15-element format", _all isNotEqualTo [] && { _badFormat isEqualTo [] },
