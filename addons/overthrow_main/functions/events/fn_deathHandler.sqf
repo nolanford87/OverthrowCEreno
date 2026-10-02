@@ -47,6 +47,7 @@ private _airpatrol = _me getVariable "airpatrol";
 private _criminal = _me getVariable "criminal";
 private _crimleader = _me getVariable "crimleader";
 private _hvt = _me getVariable "hvt_id";
+private _poacher = _me getVariable "OT_poacher";
 
 private _standingChange = 0;
 
@@ -89,6 +90,12 @@ call {
             server setVariable [format ["%1employ", _employee], _pop - 1, true];
         };
         format ["An employee of %1 has died", _employee] remoteExec ["OT_fnc_notifyMinor", 0, false];
+    };
+    // A poacher (OT_fnc_poacherUnit): a bounty, no gang rep or support either way
+    if (!isNil "_poacher") exitWith {
+        _killer setVariable ["OPFkills", (_killer getVariable ["OPFkills", 0]) + 1, true];
+        [_killer, OT_poacherBounty] call OT_fnc_rewardMoney;
+        [_killer, 5] call OT_fnc_experience;
     };
     if (!isNil "_criminal") exitWith {
         _killer setVariable ["OPFkills", (_killer getVariable ["OPFkills", 0]) + 1, true];

@@ -55,6 +55,19 @@ class CfgFunctions {
             class huntingLegalItems {};
         };
 
+        class Poachers {
+            file = "\overthrow_main\functions\poachers";
+            class initPoachers {};
+            class poacherHeat {};
+            class poacherShot {};
+            class poacherLoop {};
+            class poacherUnit {};
+            class poacherPatrol {};
+            class poacherCall {};
+            class poacherBackup {};
+            class poacherEnd {};
+        };
+
         class Fishing {
             file = "\overthrow_main\functions\fishing";
             class initFishing {};
