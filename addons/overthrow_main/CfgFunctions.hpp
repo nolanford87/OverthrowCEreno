@@ -63,6 +63,7 @@ class CfgFunctions {
             class castNet {};
             class fisheryCycle {};
             class sellTurtles {};
+            class sellFishToFishery {};
         };
 
         class Logistics {

@@ -349,6 +349,11 @@ if (_canMission) then {
     };
 };
 
+// Fisherman: buys the player's catch (OT_fnc_sellFishToFishery)
+if ((_civ getVariable ["OT_fishery", ""]) isNotEqualTo "") then {
+    _options pushBack ["Sell your catch (fish on you and in your boat nearby, 10% over a store)", { _this call OT_fnc_sellFishToFishery }, [_civ]];
+};
+
 // Freight broker: haulage contracts (OT_fnc_logisticsMenu)
 private _brokerId = _civ getVariable ["OT_broker", ""];
 if (_brokerId isNotEqualTo "") then {
