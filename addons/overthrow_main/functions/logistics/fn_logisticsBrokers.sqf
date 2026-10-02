@@ -4,16 +4,19 @@
     people or more) and one at each industrial business (mines, lumberyards, plants, factories,
     quarries, or a business that makes steel, wood, lumber or plastic) and the Factory. Fisheries
     have their own trade. Each broker gets a loading spot: flat, empty land for a truck near the
-    location, off the road, where the crates and rented vehicles appear; the broker stands by it.
-    Picked once per save and kept (server variable "logisticsBrokers"), like the hunting spots.
+    location, off the road if possible (roadside in a built-up town), where the crates and rented
+    vehicles appear; the broker stands by it.
+    Picked once per save and kept (server variable "logisticsBrokers"), like the hunting spots; picked
+    again when the way they're picked changes ("logisticsBrokersVersion").
 
     Usage: [] call OT_fnc_logisticsBrokers; (server, scheduled)
 
     Returns: ARRAY - Brokers [id, name, pos, loadingPos]
 */
 
+private _version = 2; // 2: loading spots searched ring by ring, roadside as a fallback
 private _saved = server getVariable ["logisticsBrokers", []];
-if (_saved isNotEqualTo []) exitWith { _saved };
+if (_saved isNotEqualTo [] && { (server getVariable ["logisticsBrokersVersion", 1]) isEqualTo _version }) exitWith { _saved };
 
 // [position, name] of every place that gets a broker, in a fixed order so ids are stable
 private _places = [];
@@ -35,18 +38,26 @@ private _goods = ["OT_Steel", "OT_Wood", "OT_Lumber", "OT_Plastic"];
 } forEach OT_economicData;
 if (!isNil "OT_factoryPos") then { _places pushBack [OT_factoryPos, "Factory"] };
 
-// Flat, empty, dry and off the road, for a truck; tried farther out until one is found
+// Flat, empty, dry land for a truck: points in rings 15 m apart out to 400 m, each checked for room
+// for a truck. Off the road first; in a built-up town with no such spot, by the roadside
 private _findSpot = {
     params ["_center"];
     private _spot = [];
     {
-        private _p = _center findEmptyPosition [_x select 0, _x select 1, "C_Truck_02_transport_F"];
-        if (_p isNotEqualTo []
-            && { !(surfaceIsWater _p) }
-            && { !(isOnRoad _p) }
-            && { (_p isFlatEmpty [-1, -1, 0.3, 6, 0, false, objNull]) isNotEqualTo [] }
-        ) exitWith { _spot = [_p select 0, _p select 1, 0] };
-    } forEach [[10, 80], [40, 150], [80, 250], [150, 400]];
+        private _offRoad = _x;
+        for "_r" from 15 to 400 step 15 do {
+            for "_dir" from 0 to 330 step 30 do {
+                private _p = (_center getPos [_r, _dir]) findEmptyPosition [0, 10, "C_Truck_02_transport_F"];
+                if (_p isNotEqualTo []
+                    && { !(surfaceIsWater _p) }
+                    && { !_offRoad || { !(isOnRoad _p) } }
+                    && { (_p isFlatEmpty [-1, -1, [0.3, 0.5] select !_offRoad, 6, 0, false, objNull]) isNotEqualTo [] }
+                ) exitWith { _spot = [_p select 0, _p select 1, 0] };
+            };
+            if (_spot isNotEqualTo []) exitWith {};
+        };
+        if (_spot isNotEqualTo []) exitWith {};
+    } forEach [true, false];
     _spot;
 };
 
@@ -68,5 +79,6 @@ private _brokers = [];
 } forEach _places;
 
 server setVariable ["logisticsBrokers", _brokers, true];
+server setVariable ["logisticsBrokersVersion", _version, true];
 diag_log format ["Overthrow: %1 freight brokers picked on %2", count _brokers, worldName];
 _brokers;
