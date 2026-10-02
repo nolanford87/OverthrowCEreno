@@ -45,7 +45,7 @@ if (isServer) then {
     };
 } forEach (allVariables _player select {
     _x = toLower _x;
-    !(_x in ["ot_loaded", "morale", "player_uid", "hiding", "randomValue", "saved3deninventory", "babe_em_vars", "marta_reveal", "ot_beingsearched", "ot_logisticsactive"])
+    !(_x in ["ot_loaded", "morale", "player_uid", "hiding", "randomValue", "saved3deninventory", "babe_em_vars", "marta_reveal", "ot_beingsearched", "ot_logisticsactive", "ot_killedby"])
         && { !("diwako_dui" in _x) } // Diwako DUI
         && { !("bettinv_" in _x) } // Better Inventory..?
         && { !("emr_main" in _x) } // Enhanced Movement rework

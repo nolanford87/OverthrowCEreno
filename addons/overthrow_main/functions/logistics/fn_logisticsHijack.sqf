@@ -41,7 +41,7 @@ private _toGangId = {
 // Illegal cargo: an illegal kind or contraband on the contract, or an illegal job's state on the server
 private _job = (missionNamespace getVariable ["OT_logisticsJobs", createHashMap]) getOrDefault [_id, []];
 private _contraband = _contract param [12, false];
-private _illegal = ((_contract param [11, ""]) in ["illegal", "contraband", "smuggling"])
+private _illegal = ((_contract param [11, ""]) in ["illegal", "contraband", "smuggling", "smuggle"])
     || { _contraband isEqualType true && { _contraband } }
     || { _contraband isEqualType "" && { _contraband isNotEqualTo "" } }
     || { _contraband isEqualType [] && { _contraband isNotEqualTo [] } }
@@ -49,6 +49,8 @@ private _illegal = ((_contract param [11, ""]) in ["illegal", "contraband", "smu
 
 // The gang employing the player never hijacks them
 private _employer = (_contract param [14, -1]) call _toGangId;
+// OT_fnc_logisticsStart's entry: [kind, contraband, collateral, gangId, ...]
+if (_employer < 0 && { _job isEqualType [] } && { (count _job) > 3 }) then { _employer = (_job select 3) call _toGangId };
 if (_employer < 0 && { _job isEqualType createHashMap }) then {
     {
         private _g = (_job getOrDefault [_x, -1]) call _toGangId;

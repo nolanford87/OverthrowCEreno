@@ -23,7 +23,7 @@ OTQA_hijack_contract = {
     if (_from isEqualTo []) then { _from = getPosATL player };
     private _to = ((getPosATL player) getPos [120, (getDir player) + 180]) findEmptyPosition [0, 80, "C_Truck_02_box_F"];
     if (_to isEqualTo []) then { _to = (getPosATL player) getPos [60, (getDir player) + 180] };
-    [_id, _from, "QA yard", _to, "QA drop-off", _crates, ["van", "truck"] select (_crates > 2), 1000, 600, 0, "qa", "legal", false, "", _gangId]
+    [_id, _from, "QA yard", _to, "QA drop-off", _crates, ["van", "truck"] select (_crates > 2), 1000, 600, 0, "qa", "", "", [], _gangId]
 };
 
 // A gang to work with: the one with the camp nearest the player, else a new one in the nearest town
