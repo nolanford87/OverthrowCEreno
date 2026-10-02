@@ -49,7 +49,8 @@ OTQA_hunt_animals = {
         // All hidden
         server setVariable ["huntingRevealed", [], true];
         { deleteMarker format ["huntspot%1", _forEachIndex] } forEach _spots;
-        private _shown = _spots select { (markerShape format ["huntspot%1", _forEachIndex]) isNotEqualTo "" };
+        private _shown = [];
+        { if ((markerShape format ["huntspot%1", _forEachIndex]) isNotEqualTo "") then { _shown pushBack _forEachIndex } } forEach _spots;
         ["Hunting: all spots hidden", _shown isEqualTo [], format ["%1 still on the map", count _shown]] call OTQA_fnc_check;
 
         // Into each one: the hunting loop reveals it (run straight away, it also runs every 5 s)
@@ -118,13 +119,14 @@ OTQA_hunt_animals = {
         ["Hunting: a kill counts against the spot", _after isEqualTo (_before - 1), format ["%1 -> %2", _before, _after]] call OTQA_fnc_check;
 
         // Picked up
-        private _meat = OT_huntMeat getOrDefault [typeOf _animal, 0];
+        private _type = typeOf _animal;
+        private _meat = OT_huntMeat getOrDefault [_type, 0];
         private _had = { _x isEqualTo "OT_Meat" } count (items player);
         [_animal] spawn OT_fnc_huntPickup;
         sleep 4.5;
         private _has = { _x isEqualTo "OT_Meat" } count (items player);
         ["Hunting: the carcass becomes raw meat", isNull _animal && { _has >= _had } && { (_has - _had) <= _meat } && { _meat > 0 },
-            format ["%1: +%2 meat in inventory (gives %3)", typeOf _animal, _has - _had, _meat]] call OTQA_fnc_check;
+            format ["%1: +%2 meat in inventory (gives %3)", _type, _has - _had, _meat]] call OTQA_fnc_check;
 
         // Comes back over 30 minutes
         private _state = OT_huntState get _key;
