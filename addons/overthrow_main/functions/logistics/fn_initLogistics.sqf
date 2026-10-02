@@ -1,7 +1,8 @@
 /*
     Description:
-    Starts freight on the server: picks (or loads) the freight brokers (OT_fnc_logisticsBrokers),
-    registers a spawner for each (OT_fnc_spawnBroker) and puts them on everyone's map.
+    Starts freight on the server: picks (or loads) the freight brokers (OT_fnc_logisticsBrokers), puts
+    up their sheds (OT_fnc_logisticsSite, every session: they aren't saved), registers a spawner for
+    each broker (OT_fnc_spawnBroker) and puts them on everyone's map.
 
     Usage: [] spawn OT_fnc_initLogistics; (server)
 */
@@ -12,7 +13,9 @@ waitUntil { sleep 1; !isNil "OT_economyLoadDone" };
 private _brokers = [] call OT_fnc_logisticsBrokers;
 // Offers saved from an earlier session are stale (serverTime starts again at 0)
 { server setVariable [format ["logisticsOffers%1", _x select 0], [], true] } forEach _brokers;
-// A civilian car icon where the game has one, a plain box otherwise
+// Their sheds, by id (OT_fnc_spawnBroker puts the broker in its office)
+OT_brokerSheds = createHashMap;
+{ OT_brokerSheds set [_x select 0, _x call OT_fnc_logisticsSite] } forEach _brokers;
 private _type = "ot_Broker"; // A box truck, in the shops' style; sized with zoom like them (OT_fnc_mapHandler)
 {
     _x params ["_id", "_name", "_pos"];
