@@ -117,6 +117,7 @@ private _tocheck = ((allMissionObjects "Static") + vehicles) select {
         && { !(typeOf _x isKindOf ["CAManBase", _cfgVeh]) }
         && { (_x call OT_fnc_hasOwner) || (_x getVariable ["OT_forceSaveUnowned", false]) }
         && { (_x getVariable ["OT_garrison", false]) isEqualTo false }
+        && { (_x getVariable ["OT_haulRental", ""]) isEqualTo "" } // A freight rental (OT_fnc_logisticsStart) goes with its job
 };
 
 private _tosave = count _tocheck;

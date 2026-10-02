@@ -82,6 +82,12 @@ if (_civ getVariable ["criminal", false]) then {
     _canBuyGuns = false;
     _canMission = false;
 };
+if ((_civ getVariable ["OT_broker", ""]) isNotEqualTo "") then {
+    _canSellDrugs = false;
+    _canRecruit = false;
+    _canBuyGuns = false;
+    _canMission = false;
+};
 if (_civ getVariable ["mayor", false]) then {
     _canSellDrugs = false;
     _canRecruit = false;
@@ -335,6 +341,12 @@ if (_canMission) then {
             { call OT_fnc_sellTurtles }
         ];
     };
+};
+
+// Freight broker: haulage contracts (OT_fnc_logisticsMenu)
+private _brokerId = _civ getVariable ["OT_broker", ""];
+if (_brokerId isNotEqualTo "") then {
+    _options pushBack ["Freight contracts", { _this call OT_fnc_logisticsMenu }, [_brokerId]];
 };
 
 if (_isShop && { (_civ getVariable ["OT_shopCategory", ""]) isEqualTo "General" }) then {
