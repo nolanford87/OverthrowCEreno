@@ -25,9 +25,15 @@ for "_i" from 1 to _count do {
     private _animal = createAgent [_cls, _p, [], 0, "NONE"];
     _animal setDir (random 360);
     _animal setVariable ["OT_huntKey", format ["spot%1", _index]];
+    _animal setVariable ["OT_huntIndex", _index];
     _animal addEventHandler ["Killed", {
-        params ["_animal"];
+        params ["_animal", "_killer", "_instigator"];
         [_animal getVariable ["OT_huntKey", ""], -1] call OT_fnc_huntingAvailable;
+        // Taken by a player or one of the resistance's men: hunting pressure (OT_fnc_poacherKill)
+        private _shooter = [_instigator, _killer] select (isNull _instigator);
+        if (!isNull _shooter && { isPlayer _shooter || { (side group _shooter) isEqualTo resistance } }) then {
+            [_animal getVariable ["OT_huntIndex", -1], typeOf _animal] call OT_fnc_poacherKill;
+        };
     }];
     _animals pushBack _animal;
 };

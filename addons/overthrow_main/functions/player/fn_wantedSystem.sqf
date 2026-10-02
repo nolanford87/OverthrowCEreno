@@ -55,17 +55,6 @@ _unit addEventHandler [
     }
 ];
 
-// Poachers: a shot (from a vehicle's gun too) in a hunting spot heats it up (OT_fnc_poacherShot)
-_unit addEventHandler [
-    "FiredMan",
-    {
-        params ["_me", "_weapon"];
-        if (_weapon in ["Throw", "Put"]) exitWith {};
-        private _index = (getPosATL _me) call OT_fnc_inHuntingSpot;
-        if (_index > -1) then { [_index] remoteExec ["OT_fnc_poacherShot", 2] };
-    }
-];
-
 if ((isPlayer _unit) && isNil "OT_ACEunconsciousChangedEHId") then {
     OT_ACEunconsciousChangedEHId = [
         "ace_unconscious",

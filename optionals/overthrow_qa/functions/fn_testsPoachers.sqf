@@ -1,12 +1,13 @@
 /*
     Description:
-    Poachers (OT_fnc_initPoachers): shots heating a hunting spot (and a little of the spots near it),
-    the heat cooling, a full spot sending a 1-3 patrol dressed as hunters, hostile to the player and
-    the occupier, a patrol that sees the player calling for backup, killing it in time cancelling the
-    call, the backup (a gun truck and a car, every seat filled, 600-900 m out), $25 a poacher, wiping
-    them out resetting the heat, the hunting licence making no difference, leaving once cooled and
-    the cleanup. Part of the current QA tests. Moves the host around, gives them a rifle and fires it,
-    and puts them back; the host can't be hurt while it runs. Run it as the host (it reads and drives
+    Poachers (OT_fnc_initPoachers): animals killed in a hunting spot putting hunting pressure on it
+    by their size (and a little on the spots near it) for 30 minutes, picking up meat rolling for a
+    patrol (more likely the more pressure), the 1-3 patrol dressed as hunters, hostile to the player
+    and the occupier, a patrol that sees the player calling for backup, killing it in time cancelling
+    the call, the backup (a gun truck and a car, every seat filled, 600-900 m out), $25 a poacher,
+    wiping them out clearing the pressure and keeping the spot quiet for 15 minutes, the hunting
+    licence making no difference, leaving when their time is up and the cleanup. Part of the current
+    QA tests. Moves the host around, gives them a shotgun, and puts them back; the host can't be hurt while it runs. Run it as the host (it reads and drives
     the server's poacher state).
 
     Returns: ARRAY - [[name, code, seconds], ...]
@@ -25,7 +26,7 @@ OTQA_poach_spot = {
     [_spots find _pos, _pos]
 };
 
-// A spot's poachers gone at once (deleted, not cleaned up later) and its heat back to nothing
+// A spot's poachers gone at once (deleted, not cleaned up later), its pressure and quiet cleared
 OTQA_poach_clear = {
     params ["_index"];
     private _ev = OT_poacherEvents getOrDefault [_index, createHashMap];
@@ -38,7 +39,7 @@ OTQA_poach_clear = {
         } forEach ((_ev get "patrol") + (_ev get "backup"));
         { if (!isNull _x) then { deleteVehicle _x } } forEach (_ev get "vehicles");
     };
-    [_index, 0, true] call OT_fnc_poacherHeat;
+    [_index, 0, true] call OT_fnc_poacherPressure;
     if (!isNil "OT_poacherQuiet") then { OT_poacherQuiet deleteAt _index };
 };
 
@@ -69,90 +70,81 @@ OTQA_poach_licence = player getVariable ["OT_huntLicence", 0];
 OTQA_poach_damage = isDamageAllowed player;
 
 [
-    ["Poachers: a shot heats its spot, and a little of the spots near it", {
+    ["Poachers: a kill puts pressure on its spot by size, and a little on the spots near it", {
         private _spots = server getVariable ["huntingSpots", []];
-        // A spot over 600 m from the host (no patrol for it) with another within 1.4 km, and one over 1.6 km away
+        // A spot with another within 1.4 km, and one over 1.6 km away
         private _a = -1;
         private _b = -1;
         {
             private _p = _x;
-            if ((_p distance2D player) < 600) then { continue };
-            private _n = _spots findIf { _x isNotEqualTo _p && { (_x distance2D _p) < 1400 } && { (_x distance2D player) > 600 } };
+            private _n = _spots findIf { _x isNotEqualTo _p && { (_x distance2D _p) < 1400 } };
             if (_n > -1) exitWith { _a = _forEachIndex; _b = _n };
         } forEach _spots;
         if (_a < 0) exitWith { ["Poachers: two spots near each other to test", false, format ["%1 spots", count _spots]] call OTQA_fnc_check };
-        private _far = _spots findIf { (_x distance2D (_spots select _a)) > 1600 && { (_x distance2D player) > 600 } };
+        private _far = _spots findIf { (_x distance2D (_spots select _a)) > 1600 };
         { [_x] call OTQA_poach_clear } forEach ([_a, _b, _far] select { _x > -1 });
 
-        [_a] call OT_fnc_poacherShot;
-        private _ha = [_a] call OT_fnc_poacherHeat;
-        private _hb = [_b] call OT_fnc_poacherHeat;
-        private _hf = [[_far] call OT_fnc_poacherHeat, 0] select (_far < 0);
-        ["Poachers: a shot adds 1 heat to its spot", _ha > 0.95 && { _ha <= 1 }, format ["spot %1: %2", _a, _ha]] call OTQA_fnc_check;
-        ["Poachers: and a quarter to a spot within 1.5 km", _hb > 0.2 && { _hb <= 0.25 }, format ["spot %1, %2 m away: %3", _b, round ((_spots select _a) distance2D (_spots select _b)), _hb]] call OTQA_fnc_check;
-        ["Poachers: nothing to a spot further away", _hf isEqualTo 0, format ["spot %1: %2", _far, _hf]] call OTQA_fnc_check;
+        [_a, "Rabbit_F"] call OT_fnc_poacherKill;
+        private _pa = [_a] call OT_fnc_poacherPressure;
+        ["Poachers: a rabbit puts 0.5 on its spot", _pa isEqualTo 0.5, format ["spot %1: %2", _a, _pa]] call OTQA_fnc_check;
+        [_a, "Goat_random_F"] call OT_fnc_poacherKill;
+        _pa = [_a] call OT_fnc_poacherPressure;
+        private _pb = [_b] call OT_fnc_poacherPressure;
+        private _pf = [[_far] call OT_fnc_poacherPressure, 0] select (_far < 0);
+        ["Poachers: a goat puts 1.5 more", _pa isEqualTo 2, format ["%1", _pa]] call OTQA_fnc_check;
+        ["Poachers: and a quarter of each on a spot within 1.5 km", _pb isEqualTo 0.5, format ["spot %1, %2 m away: %3", _b, round ((_spots select _a) distance2D (_spots select _b)), _pb]] call OTQA_fnc_check;
+        ["Poachers: nothing on a spot further away", _pf isEqualTo 0, format ["spot %1: %2", _far, _pf]] call OTQA_fnc_check;
+        ["Poachers: no patrol from kills alone (they come at the pickup)", !(_a in OT_poacherEvents), ""] call OTQA_fnc_check;
 
-        for "_i" from 1 to 4 do { [_a] call OT_fnc_poacherShot };
-        _ha = [_a] call OT_fnc_poacherHeat;
-        ["Poachers: 5 shots fill the meter", _ha >= (OT_poacherFull - 0.5) && { _ha <= OT_poacherFull }, format ["%1 of %2", _ha, OT_poacherFull]] call OTQA_fnc_check;
-        [_a] call OT_fnc_poacherShot;
-        _ha = [_a] call OT_fnc_poacherHeat;
-        _hb = [_b] call OT_fnc_poacherHeat;
-        ["Poachers: it doesn't go over full", _ha <= OT_poacherFull, format ["%1 after 6 shots", _ha]] call OTQA_fnc_check;
-        ["Poachers: the spot near it got a quarter of each", _hb > 1.4 && { _hb <= 1.5 }, format ["%1 after 6 shots", _hb]] call OTQA_fnc_check;
-        ["Poachers: no patrol without a player in the spot", !(_a in OT_poacherEvents), ""] call OTQA_fnc_check;
+        // Kills count for 30 minutes
+        OT_poacherPressure set [_a, [[time - 1801, 1.5], [time - 1000, 0.5]]];
+        _pa = [_a] call OT_fnc_poacherPressure;
+        ["Poachers: kills over 30 minutes old drop out", _pa isEqualTo 0.5, format ["%1", _pa]] call OTQA_fnc_check;
+        OT_poacherPressure set [_a, [[time - 1801, 1.5]]];
+        _pa = [_a] call OT_fnc_poacherPressure;
+        ["Poachers: nothing left, the spot is forgotten", _pa isEqualTo 0 && { !(_a in OT_poacherPressure) }, format ["%1", _pa]] call OTQA_fnc_check;
         { [_x] call OTQA_poach_clear } forEach ([_a, _b, _far] select { _x > -1 });
-        OTQA_poach_test = _a;
     }],
 
-    ["Poachers: the heat cools over 10 minutes", {
-        private _a = missionNamespace getVariable ["OTQA_poach_test", 0];
-        [_a, OT_poacherFull, true] call OT_fnc_poacherHeat;
-        OT_poacherHeat set [_a, [OT_poacherFull, time - 300]];
-        private _h = [_a] call OT_fnc_poacherHeat;
-        ["Poachers: half cooled after 5 minutes", _h > 2.4 && { _h < 2.6 }, format ["%1", _h]] call OTQA_fnc_check;
-        OT_poacherHeat set [_a, [OT_poacherFull, time - 601]];
-        _h = [_a] call OT_fnc_poacherHeat;
-        ["Poachers: cold after 10 minutes", _h isEqualTo 0 && { !(_a in OT_poacherHeat) }, format ["%1", _h]] call OTQA_fnc_check;
-
-        // The test override of the cooling rate
-        OT_poacherCoolRate = 1;
-        [_a, OT_poacherFull] call OT_fnc_poacherHeat;
-        sleep 2;
-        _h = [_a] call OT_fnc_poacherHeat;
-        missionNamespace setVariable ["OT_poacherCoolRate", nil];
-        ["Poachers: OT_poacherCoolRate overrides the rate (1 a second)", _h > 1.5 && { _h < 3.2 }, format ["%1 after 2 s", _h]] call OTQA_fnc_check;
-        [_a] call OTQA_poach_clear;
-    }],
-
-    ["Poachers: a full spot sends a patrol of 1-3 hunters", {
+    ["Poachers: a hunting spot's animal killed by the player puts pressure on it", {
         (call OTQA_poach_spot) params ["_index", "_pos"];
         if (_index < 0) exitWith { ["Poachers: a spot to test", false, "no spots"] call OTQA_fnc_check };
         [_index] call OTQA_poach_clear;
         player allowDamage false;
-        player setPosATL (_pos findEmptyPosition [0, 50, "CAManBase"]);
+        player setPosATL ((_pos findEmptyPosition [0, 50, "CAManBase"]) param [0, _pos]);
+        OTQA_poach_index = _index;
+        private _live = { (agents apply { agent _x }) select { alive _x && { (_x getVariable ["OT_huntIndex", -1]) isEqualTo OTQA_poach_index } } };
+        private _found = [{ (call _live) isNotEqualTo [] }, 15] call OTQA_poach_wait;
+        if (!_found) exitWith { "Poachers: no live animal in the nearest spot (hunted out?); kill one by hand there, its spot gets hunting pressure" call OTQA_fnc_manual };
+        private _animal = (call _live) select 0;
+        _animal setDamage [1, true, player, player];
         sleep 1;
+        private _p = [_index] call OT_fnc_poacherPressure;
+        ["Poachers: the kill counts by its size", _p > 0, format ["%1 (%2)", _p, typeOf _animal]] call OTQA_fnc_check;
+        [_index] call OTQA_poach_clear;
+    }, 30],
 
-        // Fired for real: the shots go to the server from the player's "FiredMan" handler
-        if (isClass (configFile >> "CfgWeapons" >> "arifle_TRG21_F")) then {
-            player addMagazines ["30Rnd_556x45_Stanag", 2];
-            player addWeapon "arifle_TRG21_F";
-            player selectWeapon "arifle_TRG21_F";
-            sleep 1;
-            for "_i" from 1 to 5 do {
-                player forceWeaponFire ["arifle_TRG21_F", "Single"];
-                sleep 0.5;
-            };
-            sleep 1;
-        };
-        private _heat = [_index] call OT_fnc_poacherHeat;
-        private _fired = _heat >= (OT_poacherFull - 0.5) || { _index in OT_poacherEvents };
-        ["Poachers: 5 shots fired in the spot fill its meter", _fired, format ["heat %1", _heat]] call OTQA_fnc_check;
-        if (!_fired) then { for "_i" from 1 to 5 do { [_index] call OT_fnc_poacherShot } };
+    ["Poachers: picking up meat rolls for a patrol, more likely the more is taken", {
+        (call OTQA_poach_spot) params ["_index", "_pos"];
+        if (_index < 0) exitWith {};
+        [_index] call OTQA_poach_clear;
+        player allowDamage false;
+        player setPosATL ((_pos findEmptyPosition [0, 50, "CAManBase"]) param [0, _pos]);
 
-        private _sent = [{ _index in OT_poacherEvents }, 8] call OTQA_poach_wait;
-        ["Poachers: a full spot with a player in it gets a patrol", _sent, format ["spot %1", _index]] call OTQA_fnc_check;
-        if (!_sent) exitWith {};
+        // Pressure 1 or under: never
+        [_index, 1] call OT_fnc_poacherPressure;
+        ["Poachers: no chance at 1 or under", !([_index, 0] call OT_fnc_poacherRoll), ""] call OTQA_fnc_check;
+        // 3 (two goats): 30%
+        [_index, 3, true] call OT_fnc_poacherPressure;
+        ["Poachers: at 3, a roll over 30% misses", !([_index, 0.31] call OT_fnc_poacherRoll) && { !(_index in OT_poacherEvents) }, ""] call OTQA_fnc_check;
+        ["Poachers: at 3, a roll under 30% sends them", [_index, 0.29] call OT_fnc_poacherRoll, ""] call OTQA_fnc_check;
+        ["Poachers: no second patrol while they're there", !([_index, 0] call OT_fnc_poacherRoll), ""] call OTQA_fnc_check;
+        [_index] call OTQA_poach_clear;
+        // A lot: at most 60%
+        [_index, 20] call OT_fnc_poacherPressure;
+        ["Poachers: at most 60%", !([_index, 0.61] call OT_fnc_poacherRoll) && { [_index, 0.59] call OT_fnc_poacherRoll }, ""] call OTQA_fnc_check;
+
+        if !(_index in OT_poacherEvents) exitWith {};
         private _patrol = (OT_poacherEvents get _index) get "patrol";
         private _u = _patrol select 0;
         ["Poachers: 1-3 of them, at the spot", (count _patrol) in [1, 2, 3] && { (_patrol findIf { !alive _x || { (_x distance2D _pos) > 450 } }) isEqualTo -1 },
@@ -164,8 +156,10 @@ OTQA_poach_damage = isDamageAllowed player;
         ["Poachers: not gang members", (_patrol findIf { (_x getVariable ["OT_gangid", -1]) > -1 || { !isNil { _x getVariable "criminal" } } }) isEqualTo -1, ""] call OTQA_fnc_check;
         ["Poachers: the patrol are hunters with hunting guns", (_patrol findIf { (_x getVariable ["OT_poacherLook", ""]) isNotEqualTo "hunter" || { primaryWeapon _x isEqualTo "" } || { uniform _x isEqualTo "" } }) isEqualTo -1,
             format ["%1", _patrol apply { [uniform _x, headgear _x, primaryWeapon _x, primaryWeaponMagazine _x] }]] call OTQA_fnc_check;
+        private _stay = ((OT_poacherEvents get _index) get "until") - time;
+        ["Poachers: they stay 10 minutes", _stay > (OT_poacherStayTime - 30) && { _stay <= OT_poacherStayTime }, format ["%1 s", round _stay]] call OTQA_fnc_check;
 
-        // Another spot, a chosen size: always 1-3
+        // A chosen size: always 1-3
         private _counts = [];
         {
             [_index] call OTQA_poach_clear;
@@ -173,6 +167,7 @@ OTQA_poach_damage = isDamageAllowed player;
             _counts pushBack (count units _g);
         } forEach [0, 0, 0, 5];
         ["Poachers: a patrol is never more than 3", (_counts findIf { _x < 1 || { _x > 3 } }) isEqualTo -1, format ["%1 (the last asked for 5)", _counts]] call OTQA_fnc_check;
+        [_index] call OTQA_poach_clear;
         OTQA_poach_test = _index;
     }, 60],
 
@@ -182,7 +177,6 @@ OTQA_poach_damage = isDamageAllowed player;
         // A fresh patrol (the last test's may have seen the host already)
         [_index] call OTQA_poach_clear;
         [_index, 2] call OT_fnc_poacherPatrol;
-        [_index, OT_poacherFull] call OT_fnc_poacherHeat;
         player allowDamage false;
 
         // A legal hunter: licence, a hunting rifle only, outside towns, in cover
@@ -224,7 +218,7 @@ OTQA_poach_damage = isDamageAllowed player;
         ["Poachers: $25 for each one killed", _paid isEqualTo (OT_poacherBounty * (count _patrol)), format ["+$%1 for %2", _paid, count _patrol]] call OTQA_fnc_check;
         private _over = [{ !(_index in OT_poacherEvents) }, 6] call OTQA_poach_wait;
         ["Poachers: all dead, they're done", _over, ""] call OTQA_fnc_check;
-        ["Poachers: wiping them out resets the spot's heat", ([_index] call OT_fnc_poacherHeat) isEqualTo 0, format ["%1", [_index] call OT_fnc_poacherHeat]] call OTQA_fnc_check;
+        ["Poachers: wiping them out clears the spot's pressure", ([_index] call OT_fnc_poacherPressure) isEqualTo 0, format ["%1", [_index] call OT_fnc_poacherPressure]] call OTQA_fnc_check;
 
         // Long past when the call would have gone through: no backup
         sleep ((((_ev get "callEnd") - time) max 0) + 4);
@@ -238,7 +232,7 @@ OTQA_poach_damage = isDamageAllowed player;
         [_index] call OTQA_poach_clear;
         player allowDamage false;
         [_index, 1] call OT_fnc_poacherPatrol;
-        [_index, OT_poacherFull] call OT_fnc_poacherHeat;
+        [_index, 3] call OT_fnc_poacherPressure;
         ["Poachers: the call starts", [_index, player] call OT_fnc_poacherCall, ""] call OTQA_fnc_check;
         private _ev = OT_poacherEvents get _index;
         _ev set ["callEnd", time];
@@ -263,9 +257,10 @@ OTQA_poach_damage = isDamageAllowed player;
         ["Poachers: they start 600-900 m out", (_dists findIf { _x < 570 || { _x > 930 } }) isEqualTo -1, format ["%1 m", _dists]] call OTQA_fnc_check;
         private _heading = _vehicles select { private _g = group (driver _x); !isNull _g && { ((waypoints _g) findIf { ((waypointPosition _x) distance2D player) < 200 }) > -1 } };
         ["Poachers: they head for the player", (count _heading) isEqualTo 2, format ["%1 of 2", count _heading]] call OTQA_fnc_check;
-        ["Poachers: the backup tops the heat up (they stay a while)", ([_index] call OT_fnc_poacherHeat) >= (OT_poacherFull - 0.1), ""] call OTQA_fnc_check;
+        private _stay = (_ev get "until") - time;
+        ["Poachers: with the backup they stay 10 minutes from then", _stay > (OT_poacherStayTime - 30) && { _stay <= OT_poacherStayTime }, format ["%1 s", round _stay]] call OTQA_fnc_check;
 
-        // All of them dead: paid for, heat reset
+        // All of them dead: paid for, pressure cleared
         private _all = ((_ev get "patrol") + (_ev get "backup")) select { alive _x };
         private _money = player getVariable ["money", 0];
         { _x setDamage [1, true, player, player] } forEach _all;
@@ -273,29 +268,25 @@ OTQA_poach_damage = isDamageAllowed player;
         private _paid = (player getVariable ["money", 0]) - _money;
         ["Poachers: $25 for each of them", _paid isEqualTo (OT_poacherBounty * (count _all)), format ["+$%1 for %2", _paid, count _all]] call OTQA_fnc_check;
         private _over = [{ !(_index in OT_poacherEvents) }, 6] call OTQA_poach_wait;
-        ["Poachers: wiping out the spot resets its heat", _over && { ([_index] call OT_fnc_poacherHeat) isEqualTo 0 }, format ["%1", [_index] call OT_fnc_poacherHeat]] call OTQA_fnc_check;
-        // Quiet for 15 minutes after: a full spot with the player in it gets no patrol, until it's over
+        ["Poachers: wiping out the spot clears its pressure", _over && { ([_index] call OT_fnc_poacherPressure) isEqualTo 0 }, format ["%1", [_index] call OT_fnc_poacherPressure]] call OTQA_fnc_check;
+        // Quiet for 15 minutes after: however much is taken, no patrol until it's over
         private _quiet = (OT_poacherQuiet getOrDefault [_index, 0]) - time;
         ["Poachers: wiped out, the spot is quiet for 15 minutes", _quiet > (OT_poacherQuietTime - 60) && { _quiet <= OT_poacherQuietTime }, format ["%1 s left", round _quiet]] call OTQA_fnc_check;
-        player setPosATL ((_pos findEmptyPosition [0, 60, "CAManBase"]) param [0, _pos]);
-        [_index, OT_poacherFull] call OT_fnc_poacherHeat;
-        call OT_fnc_poacherLoop;
-        ["Poachers: no patrol while it's quiet, however hot it gets", !(_index in OT_poacherEvents), ""] call OTQA_fnc_check;
+        [_index, 20] call OT_fnc_poacherPressure;
+        ["Poachers: no patrol while it's quiet, however much is taken", !([_index, 0] call OT_fnc_poacherRoll) && { !(_index in OT_poacherEvents) }, ""] call OTQA_fnc_check;
         OT_poacherQuiet set [_index, time - 1];
-        [_index, OT_poacherFull] call OT_fnc_poacherHeat;
-        call OT_fnc_poacherLoop;
-        ["Poachers: once the quiet is over, a full spot gets a patrol again", _index in OT_poacherEvents, ""] call OTQA_fnc_check;
+        ["Poachers: once the quiet is over, they can come again", [_index, 0] call OT_fnc_poacherRoll, ""] call OTQA_fnc_check;
         [_index] call OTQA_poach_clear;
         OTQA_poach_left = [(_ev get "patrol") + (_ev get "backup"), _hmg param [0, objNull], _car param [0, objNull], _pos];
     }, 60],
 
-    ["Poachers: they leave once cooled, everything is cleaned up once nobody is near", {
+    ["Poachers: they leave when their time is up, everything is cleaned up once nobody is near", {
         (call OTQA_poach_spot) params ["_index", "_pos"];
         if (_index < 0) exitWith {};
         player allowDamage false;
         (missionNamespace getVariable ["OTQA_poach_left", []]) params [["_dead", []], ["_hmg", objNull], ["_car", objNull]];
 
-        // A patrol in a spot that cools: they go, but stay until nobody is near. The host just outside
+        // A patrol whose time is up: they go, but stay until nobody is near. The host just outside
         // the spot with the patrol close by (so they don't call for backup)
         [_index] call OTQA_poach_clear;
         private _g = [_index, 2] call OT_fnc_poacherPatrol;
@@ -303,12 +294,11 @@ OTQA_poach_damage = isDamageAllowed player;
         private _edge = _pos getPos [320, random 360];
         player setPosATL ([_edge findEmptyPosition [0, 50, "CAManBase"], _edge] select ((_edge findEmptyPosition [0, 50, "CAManBase"]) isEqualTo []));
         { _x setPosATL ((getPosATL player) getPos [30, random 360]) } forEach _patrol;
-        [_index, OT_poacherFull] call OT_fnc_poacherHeat;
         sleep 2.5;
-        ["Poachers: they stay while the spot is warm", _index in OT_poacherEvents, ""] call OTQA_fnc_check;
-        [_index, 0, true] call OT_fnc_poacherHeat;
+        ["Poachers: they stay while their time runs", _index in OT_poacherEvents, ""] call OTQA_fnc_check;
+        (OT_poacherEvents get _index) set ["until", time - 1];
         private _gone = [{ !(_index in OT_poacherEvents) }, 6] call OTQA_poach_wait;
-        ["Poachers: once it's cooled they leave", _gone && { (_patrol findIf { !alive _x }) isEqualTo -1 }, ""] call OTQA_fnc_check;
+        ["Poachers: once it's up they leave", _gone && { (_patrol findIf { !alive _x }) isEqualTo -1 }, ""] call OTQA_fnc_check;
         ["Poachers: still around while the player is near", (_patrol findIf { isNull _x }) isEqualTo -1, format ["%1 m away", _patrol apply { round (_x distance2D player) }]] call OTQA_fnc_check;
 
         // The host 1.5 km away: all gone, but the claimed car

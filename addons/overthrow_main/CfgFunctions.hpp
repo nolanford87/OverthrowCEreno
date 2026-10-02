@@ -58,8 +58,9 @@ class CfgFunctions {
         class Poachers {
             file = "\overthrow_main\functions\poachers";
             class initPoachers {};
-            class poacherHeat {};
-            class poacherShot {};
+            class poacherPressure {};
+            class poacherKill {};
+            class poacherRoll {};
             class poacherLoop {};
             class poacherUnit {};
             class poacherPatrol {};
