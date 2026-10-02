@@ -70,6 +70,7 @@ while { !(isNil "_group") && (units _group) isNotEqualTo [] } do {
         if (_x distance _start > _outerRange) then {
             //Unit has left the area
             _gone pushBack _x;
+            if (!isNull objectParent _x) then { (objectParent _x) setVariable ["OT_haulInspect", nil] }; // Next visit, freight inspected again
             if (isPlayer _x && !(_x in _searched)) then {
                 _x setCaptive false;
                 [_x] call OT_fnc_revealToNATO;
@@ -87,10 +88,22 @@ while { !(isNil "_group") && (units _group) isNotEqualTo [] } do {
                             {
                                 [_x, _v, true] call OT_fnc_dumpStuff;
                             } forEach (crew _v);
+                            // Freight (haul crates in its ACE cargo): legal, but it's inspected, ~10 s more
+                            if (((_v getVariable ["OT_haulInspect", [[], 0]]) select 0) isNotEqualTo _start
+                                && { ((_v getVariable ["ace_cargo_loaded", []]) findIf { _x isEqualType objNull && { (_x getVariable ["OT_haul", ""]) isNotEqualTo "" } }) > -1 }) then {
+                                _v setVariable ["OT_haulInspect", [_start, time + 10]];
+                            };
+                            if (((_v getVariable ["OT_haulInspect", [[], 0]]) select 0) isEqualTo _start) then {
+                                [_leader, { _this globalChat "Checkpoint: inspecting your freight..." }] remoteExec ["call", _x, false];
+                            };
                         };
                     };
                 } else {
-                    if (isPlayer _x && !(_x in _searched)) then {
+                    // Freight still being inspected: keep it stopped, the search ends after
+                    private _inspect = (vehicle _x) getVariable ["OT_haulInspect", [[], 0]];
+                    private _inspecting = ((_inspect select 0) isEqualTo _start) && { time < (_inspect select 1) };
+                    if (_inspecting) then { (vehicle _x) setVelocity [0, 0, 0] };
+                    if (isPlayer _x && !(_x in _searched) && !_inspecting) then {
                         private _msg = "Search complete, be on your way";
                         private _items = [];
                         private _unit = _x;
@@ -142,6 +155,10 @@ while { !(isNil "_group") && (units _group) isNotEqualTo [] } do {
                                     [_x] call OT_fnc_revealToNATO;
                                 } forEach (units vehicle _unit);
                             };
+                        };
+                        // Inspected freight (crates are legal, they don't count as items above)
+                        if (_msg isEqualTo "Search complete, be on your way" && { (((vehicle _unit) getVariable ["OT_haulInspect", [[], 0]]) select 0) isEqualTo _start }) then {
+                            _msg = "Freight checked, move along";
                         };
                         [[_leader, _msg], { (_this select 0) globalChat (_this select 1) }] remoteExec ["call", _x, false];
                         _searched pushBack _x;

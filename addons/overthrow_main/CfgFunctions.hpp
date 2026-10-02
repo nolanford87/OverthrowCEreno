@@ -67,6 +67,7 @@ class CfgFunctions {
 
         class Logistics {
             file = "\overthrow_main\functions\logistics";
+            // Brokers and contracts
             class initLogistics {};
             class logisticsBrokers {};
             class spawnBroker {};
@@ -74,6 +75,9 @@ class CfgFunctions {
             class logisticsPay {};
             class logisticsMenu {};
             class logisticsClaim {};
+            // The haul
+            class logisticsStart {};
+            class logisticsTrack {};
         };
 
         /* Persistent Save */
