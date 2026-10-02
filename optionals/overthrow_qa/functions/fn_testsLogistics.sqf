@@ -41,7 +41,7 @@ OTQA_haul_cleanup = {
 
         ([_contract, player, true] call OT_fnc_logisticsStart) params [["_crates", []], ["_veh", objNull], ["_taskId", ""]];
 
-        ["Logistics: 3 crates spawned at the loading spot", (count _crates) isEqualTo 3 && { (_crates findIf { isNull _x || { (_x distance2D (_contract select 1)) > 30 } }) isEqualTo -1 },
+        ["Logistics: 3 crates spawned at the loading spot", (count _crates) isEqualTo 3 && { (_crates findIf { isNull _x || { (_x distance2D (_contract select 1)) > 40 } }) isEqualTo -1 },
             format ["%1 crates, %2", count _crates, _crates apply { round (_x distance2D (_contract select 1)) }]] call OTQA_fnc_check;
         ["Logistics: crates are ACE-loadable (size 1) and tagged with the job", (_crates findIf { (_x getVariable ["ace_cargo_size", -1]) isNotEqualTo 1 || { !(_x getVariable ["ace_cargo_canLoad", false]) } || { (_x getVariable ["OT_haul", ""]) isNotEqualTo _id } }) isEqualTo -1,
             str (_crates apply { [typeOf _x, _x getVariable ["ace_cargo_size", -1], _x getVariable ["ace_cargo_canLoad", false], _x getVariable ["OT_haul", ""]] })] call OTQA_fnc_check;
@@ -79,7 +79,8 @@ OTQA_haul_cleanup = {
         _timeout = time + 5;
         waitUntil { sleep 0.5; (player getVariable ["money", 0]) isNotEqualTo _money || { time > _timeout } };
         ["Logistics: delivered, task succeeded", ([_taskId] call BIS_fnc_taskState) isEqualTo "SUCCEEDED", [_taskId] call BIS_fnc_taskState] call OTQA_fnc_check;
-        ["Logistics: paid the contract's pay", ((player getVariable ["money", 0]) - _money) isEqualTo 1234, format ["+%1", (player getVariable ["money", 0]) - _money]] call OTQA_fnc_check;
+        // At least the pay: a tax income tick can land at the same time
+        ["Logistics: paid the contract's pay", ((player getVariable ["money", 0]) - _money) >= 1234 && { ((player getVariable ["money", 0]) - _money) < 1234 + 2000 }, format ["+%1", (player getVariable ["money", 0]) - _money]] call OTQA_fnc_check;
         ["Logistics: the job is cleared, marker gone", (player getVariable ["OT_logisticsActive", ""]) isEqualTo "" && { (markerShape format ["OT_haulPickup_%1", _id]) isEqualTo "" },
             str (player getVariable ["OT_logisticsActive", ""])] call OTQA_fnc_check;
         ["Logistics: +1 support in the town it went to", (server getVariable [format ["rep%1", _town], 0]) isEqualTo (_rep + 1), format ["%1: %2 -> %3", _town, _rep, server getVariable [format ["rep%1", _town], 0]]] call OTQA_fnc_check;

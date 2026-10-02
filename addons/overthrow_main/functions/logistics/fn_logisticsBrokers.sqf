@@ -24,7 +24,7 @@ private _places = [];
     };
 } forEach OT_townData;
 
-private _industrial = ["Mine", "Lumber", "Power Plant", "Factory", "Plant", "Quarry"];
+private _industrial = ["Mine", "Lumber", "Power Plant", "Factory", "Quarry"]; // Not "Plant": plantations aren't industrial
 private _goods = ["OT_Steel", "OT_Wood", "OT_Lumber", "OT_Plastic"];
 {
     _x params ["_pos", "_name", ["_input", ""], ["_output", ""]];

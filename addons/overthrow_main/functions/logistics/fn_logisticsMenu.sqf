@@ -21,7 +21,8 @@ if ((player getVariable ["OT_logisticsActive", ""]) isNotEqualTo "") exitWith {
 };
 
 private _broker = (server getVariable ["logisticsBrokers", []]) select { (_x select 0) isEqualTo _brokerId };
-private _name = [(_broker select 0) select 1, "Freight"] select (_broker isEqualTo []);
+private _name = "Freight";
+if (_broker isNotEqualTo []) then { _name = (_broker select 0) select 1 };
 
 "Checking the freight board..." call OT_fnc_notifyMinor;
 private _offers = [_brokerId] call OT_fnc_logisticsOffers;

@@ -23,10 +23,10 @@ private _window = floor (([time, serverTime] select isMultiplayer) / 900);
 
 if (!isServer) exitWith {
     private _cached = server getVariable [_key, []];
-    if ((_cached param [0, -1]) < _window) then {
+    if ((_cached param [0, -1]) isNotEqualTo _window) then {
         [_brokerId] remoteExec ["OT_fnc_logisticsOffers", 2];
         private _timeout = time + 10;
-        waitUntil { sleep 0.2; ((server getVariable [_key, []]) param [0, -1]) >= _window || { time > _timeout } };
+        waitUntil { sleep 0.2; ((server getVariable [_key, []]) param [0, -1]) isEqualTo _window || { time > _timeout } };
         _cached = server getVariable [_key, []];
     };
     _cached param [1, []];
@@ -34,14 +34,14 @@ if (!isServer) exitWith {
 
 // Two players asking at once: the second waits for the first's offers
 private _lock = format ["OT_logisticsMaking%1", _brokerId];
-waitUntil { !(missionNamespace getVariable [_lock, false]) };
+waitUntil { (time - (missionNamespace getVariable [_lock, -100])) > 10 };
 private _cached = server getVariable [_key, []];
 if ((_cached param [0, -1]) isEqualTo _window) exitWith { _cached select 1 };
 
 private _broker = (server getVariable ["logisticsBrokers", []]) select { (_x select 0) isEqualTo _brokerId };
 if (_broker isEqualTo []) exitWith { [] };
 (_broker select 0) params ["", "_fromName", "", "_fromPos"];
-missionNamespace setVariable [_lock, true];
+missionNamespace setVariable [_lock, time];
 
 // Every destination: [position, name, is docks]
 private _places = OT_townData apply { [_x select 0, _x select 1, false] };
@@ -113,5 +113,5 @@ if (_places isNotEqualTo []) then {
 };
 
 server setVariable [_key, [_window, _offers], true];
-missionNamespace setVariable [_lock, false];
+missionNamespace setVariable [_lock, -100];
 _offers;
