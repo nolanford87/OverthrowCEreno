@@ -78,10 +78,11 @@ call compileScript ["data\objectives.sqf", false];
 call compileScript ["data\economy.sqf", false];
 call compileScript ["data\comms.sqf", false];
 
-// Fisheries: a business at the first pier of each coastal town (the piers boat dealers use). Worked
-// out the same way on every machine (terrain objects), so they're in OT_economicData everywhere
-// before the economy and virtualization set businesses up (OT_fnc_fisheryCycle)
+// Fisheries: 3 per map, at coastal towns' piers (the piers boat dealers use), spread as far apart as
+// possible. Worked out the same way on every machine (terrain objects), so they're in OT_economicData
+// everywhere before the economy and virtualization set businesses up (OT_fnc_fisheryCycle)
 OT_fisheries = [];
+private _fisheryCandidates = []; // [land position, name]
 {
     if (OT_piers isEqualTo []) exitWith {}; // No sea (Livonia); an empty class list would find everything
     _x params ["_townPos", "_town"];
@@ -98,10 +99,27 @@ OT_fisheries = [];
         if (_land isNotEqualTo []) exitWith {};
     };
     if (_land isEqualTo [] || { (OT_economicData findIf { ((_x select 0) distance2D _land) < 100 }) > -1 }) then { continue };
-    private _name = format ["%1 Fishery", _town];
+    if ((_fisheryCandidates findIf { ((_x select 0) distance2D _land) < 100 }) > -1) then { continue };
+    _fisheryCandidates pushBack [_land, format ["%1 Fishery", _town]];
+} forEach OT_townData;
+// 3 of them: the first coastal town's, then each time the one farthest from those picked
+private _picked = [];
+if (_fisheryCandidates isNotEqualTo []) then { _picked pushBack (_fisheryCandidates deleteAt 0) };
+while { count _picked < 3 && { _fisheryCandidates isNotEqualTo [] } } do {
+    private _best = -1;
+    private _bestDist = -1;
+    {
+        private _p = _x select 0;
+        private _nearest = selectMin (_picked apply { (_x select 0) distance2D _p });
+        if (_nearest > _bestDist) then { _bestDist = _nearest; _best = _forEachIndex };
+    } forEach _fisheryCandidates;
+    _picked pushBack (_fisheryCandidates deleteAt _best);
+};
+{
+    _x params ["_land", "_name"];
     OT_economicData pushBack [_land, _name, "", "OT_Fish_Mackerel"];
     OT_fisheries pushBack _name;
-} forEach OT_townData;
+} forEach _picked;
 
 //Identity
 OT_faces_local = [];
