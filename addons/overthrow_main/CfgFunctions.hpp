@@ -674,6 +674,7 @@ class CfgFunctions {
 
         class Util {
             file = "\overthrow_main\functions\util";
+            class idleAnim {};
             class getOwner {};
             class getOwnerUnit {};
             class hasOwner {};
