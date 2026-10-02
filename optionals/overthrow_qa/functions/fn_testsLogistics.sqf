@@ -85,8 +85,15 @@ OTQA_haul_cleanup = {
             str (player getVariable ["OT_logisticsActive", ""])] call OTQA_fnc_check;
         ["Logistics: +1 support in the town it went to", (server getVariable [format ["rep%1", _town], 0]) isEqualTo (_rep + 1), format ["%1: %2 -> %3", _town, _rep, server getVariable [format ["rep%1", _town], 0]]] call OTQA_fnc_check;
 
+        // The rental goes back to the broker: not the player's, locked, gone in 20 seconds
+        ["Logistics: the rental is taken back (no owner, locked)", isNull _veh || { !(_veh call OT_fnc_hasOwner) && { (locked _veh) >= 2 } },
+            format ["owner %1, locked %2", if (isNull _veh) then { "-" } else { _veh call OT_fnc_getOwner }, if (isNull _veh) then { "-" } else { locked _veh }]] call OTQA_fnc_check;
+        private _gone = time + 25;
+        waitUntil { sleep 1; isNull _veh || { time > _gone } };
+        ["Logistics: the rental is gone 20 seconds after the job", isNull _veh, ""] call OTQA_fnc_check;
+
         [_crates + [_veh]] call OTQA_haul_cleanup;
-    }, 90],
+    }, 120],
 
     ["Logistics: twice the time limit fails the job, no pay", {
         if (isNil "OT_fnc_logisticsStart") exitWith {};

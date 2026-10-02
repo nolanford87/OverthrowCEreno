@@ -9,7 +9,8 @@
     5 minutes over the time limit; +1 support in the town it went to.
     Failed: every crate is lost (destroyed, or deleted with the vehicle carrying it), or twice the
     time limit has gone by. The player dying doesn't end a legal haul.
-    Afterwards the leftover crates and the rental are deleted once no player is within 300 m.
+    Afterwards the rental goes back to the broker straight away (not the player's any more, locked,
+    gone 20 seconds later) and leftover crates are deleted once no player is within 300 m.
 
     Parameters:
         _this # 0: ARRAY - Contract (see OT_fnc_logisticsStart)
@@ -109,11 +110,29 @@ if (_result isEqualTo "delivered") then {
     };
 } forEach (_crates select { !isNull _x });
 
-// Leftovers (and the rental) go once nobody is around to see it
-[_crates, _veh] spawn {
-    params ["_crates", "_veh"];
+// The rental goes back to the broker as the job ends: no longer the player's, locked, anyone in it
+// out, gone 20 seconds later (it isn't kept once the load is dropped off)
+if (!isNull _veh && { alive _veh }) then {
+    _veh setVariable ["owner", nil, true];
+    [_veh, 2] remoteExec ["lock", _veh];
+    { [_x] remoteExec ["moveOut", _x] } forEach (crew _veh);
+    if (!isNull _player) then { "The broker takes the rental back" remoteExec ["OT_fnc_notifyMinor", _player, false] };
+    [_veh] spawn {
+        params ["_veh"];
+        sleep 20;
+        if (!isNull _veh) then {
+            { [_x] remoteExec ["moveOut", _x] } forEach (crew _veh);
+            sleep 1;
+            deleteVehicle _veh;
+        };
+    };
+};
+
+// Leftover crates go once nobody is around to see it
+[_crates] spawn {
+    params ["_crates"];
     sleep 1; // Crates deleted above are only null from the next frame
-    private _objects = (_crates + [_veh]) select { !isNull _x };
+    private _objects = _crates select { !isNull _x };
     while { _objects isNotEqualTo [] } do {
         {
             private _obj = _x;
