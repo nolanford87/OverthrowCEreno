@@ -32,6 +32,7 @@ class CfgFunctions {
             class manual {};
             class spawnWarehouse {}; // Zeus helper
             class dumpFactions {}; // Archived (no Zeus entry): creator DLC factions to the RPT, [] spawn OTQA_fnc_dumpFactions
+            class probeBuilding {}; // Zeus helper: a building's floor plan to the RPT
             // Bug fix QA tests: the suite, and the tests for each fix batch it's made of
             class testsBugFixes {};
             class testsCommon {};
@@ -67,6 +68,10 @@ class zen_context_menu_actions {
         class OTQA_archive {
             displayName = "Run archived QA tests";
             statement = "['archive'] spawn OTQA_fnc_run";
+        };
+        class OTQA_probeShed {
+            displayName = "Map the industrial shed's floor plan to RPT";
+            statement = "['Land_i_Shed_Ind_F'] spawn OTQA_fnc_probeBuilding";
         };
         class OTQA_spawnWarehouse {
             displayName = "Spawn my warehouse here";
