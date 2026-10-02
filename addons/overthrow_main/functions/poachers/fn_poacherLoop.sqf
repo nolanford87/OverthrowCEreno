@@ -9,7 +9,8 @@
     - once the poachers know about a player (after the call), that player loses their cover within 300
       m of them, so they shoot
     - every poacher in a spot dead: the call (if any) is cut off, the spot's heat goes back to nothing
-      and they're done (OT_fnc_poacherEnd)
+      and they're done (OT_fnc_poacherEnd); no new patrol comes there for OT_poacherQuietTime (15 real
+      minutes), however hot it gets
     - a spot that has cooled to nothing: the poachers leave (OT_fnc_poacherEnd), unless they're
       still on the radio
     - what's left of finished poachers (OT_poacherCleanup) is deleted once no player is within 500 m
@@ -27,6 +28,7 @@ private _spots = server getVariable ["huntingSpots", []];
     private _index = _x;
     private _pos = _spots param [_index, []];
     if (_pos isEqualTo [] || { _index in OT_poacherEvents }) then { continue };
+    if (time < (OT_poacherQuiet getOrDefault [_index, 0])) then { continue }; // Wiped out lately: quiet for a while
     if (([_index] call OT_fnc_poacherHeat) < (OT_poacherFull - 0.5)) then { continue };
     if ((_players findIf { (_x distance2D _pos) < 200 }) isEqualTo -1) then { continue };
     [_index] call OT_fnc_poacherPatrol;
@@ -47,11 +49,12 @@ private _spots = server getVariable ["huntingSpots", []];
     if (_alive isEqualTo []) then {
         if (_near isNotEqualTo []) then {
             ([
-                "The poachers are dead: the hunting ground has gone quiet",
-                "The poachers are dead before their call went through: no backup is coming"
+                "The poachers are dead: the hunting ground will be quiet for a while",
+                "The poachers are dead before their call went through: no backup is coming, and the hunting ground will be quiet for a while"
             ] select (_state isEqualTo "calling")) remoteExec ["OT_fnc_notifyGood", _near, false];
         };
         [_index, 0, true] call OT_fnc_poacherHeat;
+        OT_poacherQuiet set [_index, time + OT_poacherQuietTime];
         [_index] call OT_fnc_poacherEnd;
         continue;
     };

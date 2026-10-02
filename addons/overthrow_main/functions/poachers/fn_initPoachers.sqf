@@ -8,6 +8,8 @@
     State (server, missionNamespace):
         OT_poacherHeat - HASHMAP spot index -> [heat, time it was worked out] (OT_fnc_poacherHeat)
         OT_poacherEvents - HASHMAP spot index -> the poachers there (OT_fnc_poacherPatrol)
+        OT_poacherQuiet - HASHMAP spot index -> time until which no patrol comes (OT_poacherQuietTime
+            after players wiped the poachers there out)
         OT_poacherCleanup - ARRAY of [objects, groups] left behind, deleted once no player is near
         OT_poacherCoolRate - NUMBER (Optional, tests) heat lost per second instead of the normal rate
 
@@ -19,5 +21,6 @@ if (!isNil "OT_poacherLoopId") exitWith {};
 
 if (isNil "OT_poacherHeat") then { OT_poacherHeat = createHashMap };
 if (isNil "OT_poacherEvents") then { OT_poacherEvents = createHashMap };
+if (isNil "OT_poacherQuiet") then { OT_poacherQuiet = createHashMap };
 if (isNil "OT_poacherCleanup") then { OT_poacherCleanup = [] };
 OT_poacherLoopId = [OT_fnc_poacherLoop, 2] call CBA_fnc_addPerFrameHandler;

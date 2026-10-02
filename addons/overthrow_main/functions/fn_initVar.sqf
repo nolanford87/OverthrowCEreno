@@ -370,6 +370,7 @@ OT_poacherFull = 5;
 OT_poacherSpill = 0.25;
 OT_poacherSpillRange = 1500;
 OT_poacherCoolTime = 600;
+OT_poacherQuietTime = 900; // Real seconds a spot stays free of poachers after players wipe them out
 OT_poacherBounty = 25;
 // Radio chatter for the call for backup (base game sounds, the ones this install has)
 OT_poacherCallSounds = [

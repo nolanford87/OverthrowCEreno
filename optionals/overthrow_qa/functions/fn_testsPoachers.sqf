@@ -39,6 +39,7 @@ OTQA_poach_clear = {
         { if (!isNull _x) then { deleteVehicle _x } } forEach (_ev get "vehicles");
     };
     [_index, 0, true] call OT_fnc_poacherHeat;
+    if (!isNil "OT_poacherQuiet") then { OT_poacherQuiet deleteAt _index };
 };
 
 // Waits (up to _limit seconds) for a condition, the poacher loop runs every 2 s
@@ -273,6 +274,18 @@ OTQA_poach_damage = isDamageAllowed player;
         ["Poachers: $25 for each of them", _paid isEqualTo (OT_poacherBounty * (count _all)), format ["+$%1 for %2", _paid, count _all]] call OTQA_fnc_check;
         private _over = [{ !(_index in OT_poacherEvents) }, 6] call OTQA_poach_wait;
         ["Poachers: wiping out the spot resets its heat", _over && { ([_index] call OT_fnc_poacherHeat) isEqualTo 0 }, format ["%1", [_index] call OT_fnc_poacherHeat]] call OTQA_fnc_check;
+        // Quiet for 15 minutes after: a full spot with the player in it gets no patrol, until it's over
+        private _quiet = (OT_poacherQuiet getOrDefault [_index, 0]) - time;
+        ["Poachers: wiped out, the spot is quiet for 15 minutes", _quiet > (OT_poacherQuietTime - 60) && { _quiet <= OT_poacherQuietTime }, format ["%1 s left", round _quiet]] call OTQA_fnc_check;
+        player setPosATL ((_pos findEmptyPosition [0, 60, "CAManBase"]) param [0, _pos]);
+        [_index, OT_poacherFull] call OT_fnc_poacherHeat;
+        call OT_fnc_poacherLoop;
+        ["Poachers: no patrol while it's quiet, however hot it gets", !(_index in OT_poacherEvents), ""] call OTQA_fnc_check;
+        OT_poacherQuiet set [_index, time - 1];
+        [_index, OT_poacherFull] call OT_fnc_poacherHeat;
+        call OT_fnc_poacherLoop;
+        ["Poachers: once the quiet is over, a full spot gets a patrol again", _index in OT_poacherEvents, ""] call OTQA_fnc_check;
+        [_index] call OTQA_poach_clear;
         OTQA_poach_left = [(_ev get "patrol") + (_ev get "backup"), _hmg param [0, objNull], _car param [0, objNull], _pos];
     }, 60],
 
