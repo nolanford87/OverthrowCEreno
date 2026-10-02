@@ -160,6 +160,12 @@ if (isPlayer _target) then {
         };
     } forEach (_target call OT_fnc_getSearchStock);
 
+    // Contraband crates (smuggling) carried or in their vehicle nearby: cover blown, the crates aren't taken here
+    private _foundcontraband = [_target] call OT_fnc_logisticsSearchContraband;
+    if (_foundcontraband) then {
+        [_cop, "What's in these crates!? That's contraband!"] remoteExec ["globalChat", _target, false];
+    };
+
     if (_foundillegal || _foundweapons) then {
         if (_foundweapons) then {
             if (isPlayer _target) then {
@@ -179,12 +185,12 @@ if (isPlayer _target) then {
                     [_cop, "We found some illegal items and confiscated them, be on your way"] remoteExec ["globalChat", _target, false];
                     format ["%1 confiscated illegal items", OT_NATO_name] remoteExecCall ["hint", _target, false];
                 } else {
-                    [_cop, "Thank you for your co-operation"] remoteExec ["globalChat", _target, false];
+                    if (!_foundcontraband) then { [_cop, "Thank you for your co-operation"] remoteExec ["globalChat", _target, false] };
                 };
             };
         };
     } else {
-        [_cop, "Thank you for your co-operation"] remoteExec ["globalChat", _target, false];
+        if (!_foundcontraband) then { [_cop, "Thank you for your co-operation"] remoteExec ["globalChat", _target, false] };
     };
 };
 [_group, _cop, _target, _hdl] call _cleanup;
