@@ -73,7 +73,7 @@ OTQA_haul_cleanup = {
             detach _crate;
             [_crate, false] remoteExec ["hideObjectGlobal", 2];
         };
-        _crate setPosATL (_toPos getPos [4, 270]);
+        _crate setPosATL (_toPos getPos [12, 270]); // Clear of the truck at the drop-off
         private _timeout = time + 15;
         waitUntil { sleep 1; ([_taskId] call BIS_fnc_taskState) isEqualTo "SUCCEEDED" || { time > _timeout } };
         _timeout = time + 5;

@@ -40,6 +40,7 @@ for "_i" from 1 to _count do {
     if (_pos isEqualTo [] || { surfaceIsWater _pos }) then { _pos = _fromPos getPos [random 6, random 360] };
     private _crate = createVehicle [_crateClass, _pos, [], 0, "CAN_COLLIDE"];
     _crate setPosATL [_pos select 0, _pos select 1, 0];
+    _crate allowDamage false; // No cargo damage (only losing the vehicle loses the load); wooden crates break easily
     clearWeaponCargoGlobal _crate;
     clearMagazineCargoGlobal _crate;
     clearItemCargoGlobal _crate;
