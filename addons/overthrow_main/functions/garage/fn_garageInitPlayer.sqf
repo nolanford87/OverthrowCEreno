@@ -72,3 +72,25 @@ player addAction [
     nil, 1.3, false, true, "",
     "!isNull OT_garageNear && { isNull objectParent _this } && { (cursorObject isKindOf 'LandVehicle') || { cursorObject isKindOf 'Air' } || { cursorObject isKindOf 'Ship' } } && { !(cursorObject isKindOf 'StaticWeapon') } && { (_this distance cursorObject) < 10 } && { alive cursorObject } && { (cursorObject getVariable ['owner', '']) isEqualTo getPlayerUID _this || { call OT_fnc_playerIsGeneral } }"
 ];
+
+// Vehicles the occupier impounded (smuggling collateral, OT_fnc_logisticsImpound): back for a fee
+player addAction [
+    "Impound lot",
+    {
+        params ["", "_caller"];
+        private _mine = (server getVariable ["logisticsImpound", []]) select { (_x select 1) isEqualTo getPlayerUID _caller };
+        private _options = [format ["<t align='center' size='1.2'>Impound lot</t><br/><br/><t align='center' size='0.8'>%1 kept these after failed smuggling jobs. Pay the fees and the vehicle is brought to this garage.</t>", OT_NATO_name]];
+        {
+            _x params ["_impoundId", "", "_class", "_price"];
+            _options pushBack [
+                format ["%1: $%2", _class call OT_fnc_vehicleGetName, [_price, 1, 0, true] call CBA_fnc_formatNumber],
+                { [_this, player] remoteExecCall ["OT_fnc_logisticsImpoundRecover", 2] },
+                _impoundId
+            ];
+        } forEach (_mine select [0, 5]);
+        _options pushBack ["Cancel", {}];
+        _options call OT_fnc_playerDecision;
+    },
+    nil, 1.2, false, true, "",
+    "!isNull OT_garageNear && { isNull objectParent _this } && { ((server getVariable ['logisticsImpound', []]) findIf { (_x select 1) isEqualTo getPlayerUID _this }) > -1 }"
+];

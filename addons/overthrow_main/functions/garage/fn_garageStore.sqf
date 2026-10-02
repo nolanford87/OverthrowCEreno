@@ -29,6 +29,8 @@ if ((crew _veh) findIf { alive _x } > -1) exitWith { "Everyone has to get out of
 private _owner = _veh call OT_fnc_getOwner;
 if (isNil "_owner" || { _owner isEqualTo "" }) exitWith { "Take the vehicle first (get in it), then it can be stored" call _hint; false };
 if (_owner isNotEqualTo _uid && { !(_uid in (server getVariable ["generals", []])) }) exitWith { "You can only store your own vehicles" call _hint; false };
+// Smuggling collateral (OT_fnc_logisticsAccept): kept out until the job is over
+if ((_veh getVariable ["OT_collateral", ""]) isNotEqualTo "") exitWith { "That vehicle is collateral for a smuggling job until it's over" call _hint; false };
 
 if (!_remote) then { _access = _player call OT_fnc_garageAccessPoint };
 if (isNull _access) exitWith { "You need to be at an owned warehouse or a resistance base" call _hint; false };

@@ -4,6 +4,23 @@ if !(_player getVariable ["OT_loaded", false]) exitWith {};
 private _uid = getPlayerUID _player;
 private _data = [];
 
+// Smuggling deposits whose job no longer runs (the game was loaded mid-job, or it was delivered while
+// they were away, OT_fnc_logisticsSettle): paid back now, before their money is saved
+if (isServer) then {
+    isNil {
+        private _deposits = server getVariable ["logisticsDeposits", []];
+        private _jobs = missionNamespace getVariable ["OT_logisticsJobs", createHashMap];
+        private _due = _deposits select { (_x select 0) isEqualTo _uid && { !((_x select 2) in _jobs) } };
+        if (_due isNotEqualTo []) then {
+            private _total = 0;
+            { _total = _total + (_x select 1) } forEach _due;
+            server setVariable ["logisticsDeposits", _deposits - _due, true];
+            _player setVariable ["money", (_player getVariable ["money", 0]) + _total, true];
+            format ["Smuggling deposit returned: +$%1", [_total, 1, 0, true] call CBA_fnc_formatNumber] remoteExec ["OT_fnc_notifyMinor", _player, false];
+        };
+    };
+};
+
 {
     private _v = _player getVariable _x;
     if (!isNil "_v") then {
