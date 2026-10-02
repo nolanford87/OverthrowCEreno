@@ -131,6 +131,7 @@ OTQA_haul_cleanup = {
         ["Logistics: brokers were placed", (count _brokers) > 0, format ["%1 brokers on %2: %3", count _brokers, worldName, _brokers apply { _x select 1 }]] call OTQA_fnc_check;
         private _businesses = (OT_economicData apply { _x select 0 }) + [OT_factoryPos];
         private _bad = [];
+        private _gaps = [];
         {
             _x params ["_id", "_name", "_stand", "_loading", "_origin", "_dir"];
             private _shed = (missionNamespace getVariable ["OT_brokerSheds", createHashMap]) getOrDefault [_id, objNull];
@@ -142,8 +143,17 @@ OTQA_haul_cleanup = {
             // The road within 10 m of the shed's long side: the loading spot is 6 m from its south wall
             if (!isNull _shed && { ((_shed modelToWorld [3.75, -2.3, 0]) distance2D _loading) > 10 }) then { _problems pushBack "road too far" };
             if (_problems isNotEqualTo []) then { _bad pushBack [_name, _problems] };
+            // Its floor above the ground everywhere under it
+            if (!isNull _shed) then {
+                private _gap = selectMin ([[-9, -2.3], [16.5, -2.3], [-9, 9], [16.5, 9], [3.75, 3.35]] apply {
+                    private _p = _shed modelToWorldWorld [_x select 0, _x select 1, -1.36];
+                    (_p select 2) - (getTerrainHeightASL _p)
+                });
+                _gaps pushBack [_name, (round (_gap * 100)) / 100];
+            };
         } forEach _brokers;
         ["Logistics: each broker has a shed by a road, 200 m+ from businesses", _bad isEqualTo [], str _bad] call OTQA_fnc_check;
+        ["Logistics: each shed's floor is above the ground (raised 0.5-1 m)", (_gaps findIf { (_x select 1) < 0 }) isEqualTo -1, format ["lowest floor over the ground: %1", _gaps]] call OTQA_fnc_check;
 
         // A broker stands in his shed's office (spawned once a player is near)
         if (_brokers isEqualTo []) exitWith {};

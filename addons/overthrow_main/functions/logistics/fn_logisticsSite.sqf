@@ -24,7 +24,12 @@ private _middle = [(_origin select 0) + (3.75 * cos _dir) + (3.35 * sin _dir), (
 
 private _shed = createVehicle ["Land_i_Shed_Ind_F", _origin, [], 0, "CAN_COLLIDE"];
 _shed setDir _dir;
-_shed setPosATL [_origin select 0, _origin select 1, 0];
+// Raised 0.5 m to 1 m so the floor never sits below the ground: 0.5 m over the highest point under it
+private _ground = [[-9, -2.3], [16.5, -2.3], [-9, 9], [16.5, 9], [3.75, 3.35]] apply {
+    getTerrainHeightASL [(_origin select 0) + ((_x select 0) * cos _dir) + ((_x select 1) * sin _dir), (_origin select 1) - ((_x select 0) * sin _dir) + ((_x select 1) * cos _dir)]
+};
+private _lift = (((selectMax _ground) - (getTerrainHeightASL _origin)) + 0.5) max 0.5 min 1;
+_shed setPosATL [_origin select 0, _origin select 1, _lift];
 _shed allowDamage false;
 _shed setVariable ["OT_brokerShed", _id, true];
 
