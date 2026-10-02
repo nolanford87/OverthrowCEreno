@@ -1,17 +1,16 @@
 /*
     Description:
     Poachers, every 2 seconds on the server (OT_fnc_initPoachers):
-    - a hunting spot whose heat is full (OT_fnc_poacherHeat, within half a shot of OT_poacherFull)
-      with a player in it gets a patrol, day or night (OT_fnc_poacherPatrol)
+    (patrols are sent when a player picks up meat in a hunting spot, OT_fnc_poacherRoll)
     - a patrol that knows about a player in its spot (or within 50 m of it) calls for backup
       (OT_fnc_poacherCall); the radio chatter goes on until the call goes through, 5-10 s later, and
-      the backup comes (OT_fnc_poacherBackup), the spot's heat topped up to full so they stay a while
+      the backup comes (OT_fnc_poacherBackup); they all stay OT_poacherStayTime from then
     - once the poachers know about a player (after the call), that player loses their cover within 300
       m of them, so they shoot
-    - every poacher in a spot dead: the call (if any) is cut off, the spot's heat goes back to nothing
+    - every poacher in a spot dead: the call (if any) is cut off, the spot's hunting pressure is cleared
       and they're done (OT_fnc_poacherEnd); no new patrol comes there for OT_poacherQuietTime (15 real
-      minutes), however hot it gets
-    - a spot that has cooled to nothing: the poachers leave (OT_fnc_poacherEnd), unless they're
+      minutes), however much is hunted there
+    - poachers whose time is up ("until"): they leave (OT_fnc_poacherEnd), unless they're
       still on the radio
     - what's left of finished poachers (OT_poacherCleanup) is deleted once no player is within 500 m
       of it, except a vehicle a player is in or has claimed
@@ -22,17 +21,6 @@
 if (isNil "OT_poacherEvents") exitWith {};
 private _players = (allPlayers - entities "HeadlessClient_F") select { alive _x };
 private _spots = server getVariable ["huntingSpots", []];
-
-// Full spots with a player hunting in them get a patrol
-{
-    private _index = _x;
-    private _pos = _spots param [_index, []];
-    if (_pos isEqualTo [] || { _index in OT_poacherEvents }) then { continue };
-    if (time < (OT_poacherQuiet getOrDefault [_index, 0])) then { continue }; // Wiped out lately: quiet for a while
-    if (([_index] call OT_fnc_poacherHeat) < (OT_poacherFull - 0.5)) then { continue };
-    if ((_players findIf { (_x distance2D _pos) < 200 }) isEqualTo -1) then { continue };
-    [_index] call OT_fnc_poacherPatrol;
-} forEach (keys OT_poacherHeat);
 
 // The poachers out there
 {
@@ -53,7 +41,7 @@ private _spots = server getVariable ["huntingSpots", []];
                 "The poachers are dead before their call went through: no backup is coming, and the hunting ground will be quiet for a while"
             ] select (_state isEqualTo "calling")) remoteExec ["OT_fnc_notifyGood", _near, false];
         };
-        [_index, 0, true] call OT_fnc_poacherHeat;
+        [_index, 0, true] call OT_fnc_poacherPressure;
         OT_poacherQuiet set [_index, time + OT_poacherQuietTime];
         [_index] call OT_fnc_poacherEnd;
         continue;
@@ -80,7 +68,7 @@ private _spots = server getVariable ["huntingSpots", []];
             _ev set ["groups", (_ev get "groups") + _groups];
             _ev set ["vehicles", (_ev get "vehicles") + _vehicles];
             _ev set ["state", "backup"];
-            [_index, OT_poacherFull] call OT_fnc_poacherHeat;
+            _ev set ["until", time + OT_poacherStayTime];
             if (_near isNotEqualTo []) then {
                 "The poachers' backup is on its way: an armed pickup and a car full of them" remoteExec ["OT_fnc_notifyBad", _near, false];
             };
@@ -104,8 +92,8 @@ private _spots = server getVariable ["huntingSpots", []];
         } forEach _near;
     };
 
-    // Cooled: they leave
-    if ((_ev get "state") isNotEqualTo "calling" && { ([_index] call OT_fnc_poacherHeat) <= 0 }) then {
+    // Their time's up: they leave
+    if ((_ev get "state") isNotEqualTo "calling" && { time >= (_ev getOrDefault ["until", 0]) }) then {
         [_index] call OT_fnc_poacherEnd;
     };
 } forEach (keys OT_poacherEvents);

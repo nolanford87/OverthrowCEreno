@@ -2,7 +2,8 @@
     Description:
     Picks up a dead animal (the "Pick up the carcass" action): 2.5 seconds kneeling, then the carcass
     becomes raw meat (OT_Meat) in the player's inventory, as much as the animal gives (OT_huntMeat):
-    rabbits, snakes and hens 1, goats and sheep 3. What doesn't fit is put on the ground.
+    rabbits, snakes and hens 1, goats and sheep 3. What doesn't fit is put on the ground. In a hunting
+    spot the poachers may notice (OT_fnc_poacherRoll).
 
     Parameters:
         _this # 0: OBJECT - The dead animal
@@ -38,7 +39,9 @@ if (_dropped > 0) then {
     private _holder = createVehicle ["GroundWeaponHolder", getPosATL player, [], 0, "CAN_COLLIDE"];
     _holder addItemCargoGlobal ["OT_Meat", _dropped];
 };
+private _spot = (getPosATL _carcass) call OT_fnc_inHuntingSpot;
 deleteVehicle _carcass;
+if (_spot > -1) then { [_spot] remoteExec ["OT_fnc_poacherRoll", 2] };
 
 private _text = format ["+%1 raw meat", _meat];
 if (_dropped > 0) then { _text = _text + format [" (%1 on the ground, no room)", _dropped] };

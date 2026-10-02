@@ -3,7 +3,8 @@
     Sends a poacher patrol into a hunting spot: 1-3 poachers dressed as hunters (OT_fnc_poacherUnit),
     OPFOR like the gangs (hostile to the resistance and the occupier) but no gang's members. They
     start just outside the spot (250 m from its middle), on the far side from the nearest player, and
-    walk around inside it. Nobody is told: the heat meter is hidden. OT_fnc_poacherLoop runs them:
+    walk around inside it. Nobody is told. They stay OT_poacherStayTime (10 real minutes), longer once
+    their backup comes. OT_fnc_poacherLoop runs them:
     spotting a player in the spot starts a call for backup (OT_fnc_poacherCall).
 
     The spot's entry in OT_poacherEvents (HASHMAP):
@@ -17,6 +18,7 @@
         "target" - ARRAY where the backup heads (the player they saw)
         "from" - ARRAY where the patrol came from (and goes back to)
         "started" - NUMBER time they were sent
+        "until" - NUMBER time they leave (unless still on the radio)
 
     Parameters:
         _this # 0: NUMBER - Hunting spot index
@@ -86,7 +88,8 @@ OT_poacherEvents set [_index, createHashMapFromArray [
     ["nextSound", 0],
     ["target", +_pos],
     ["from", _from],
-    ["started", time]
+    ["started", time],
+    ["until", time + OT_poacherStayTime]
 ]];
 diag_log format ["Overthrow: %1 poachers sent into hunting spot %2", _count, _index];
 _group

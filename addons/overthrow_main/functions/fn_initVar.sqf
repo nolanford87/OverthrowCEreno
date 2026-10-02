@@ -363,13 +363,16 @@ OT_huntingWeapons = ((
     }
 }) apply { configName _x };
 
-// Poachers (OT_fnc_initPoachers): each shot in a hunting spot adds 1 heat (a quarter to spots within
-// 1.5 km), full at 5 (half a shot of slack, so 5 shots in about a minute fill it), cooling to nothing
-// over 10 real minutes. $25 for each one killed.
-OT_poacherFull = 5;
-OT_poacherSpill = 0.25;
+// Poachers (OT_fnc_initPoachers): each animal killed in a hunting spot by the resistance adds hunting
+// pressure by its size (a rabbit 0.5, a goat 1.5; a quarter to spots within 1.5 km) for 30 real
+// minutes; picking up the meat brings a patrol at 15% per point over 1, at most 60%. $25 for each one
+// killed.
+OT_poacherWindow = 1800; // Real seconds a kill counts towards a spot's hunting pressure
+OT_poacherChanceStep = 0.15; // Chance per point of pressure over 1, when meat is picked up
+OT_poacherChanceMax = 0.6;
+OT_poacherSpill = 0.25; // Share of a kill's pressure on other spots within OT_poacherSpillRange
 OT_poacherSpillRange = 1500;
-OT_poacherCoolTime = 600;
+OT_poacherStayTime = 600; // Real seconds poachers stay (from when they come, or their backup does)
 OT_poacherQuietTime = 900; // Real seconds a spot stays free of poachers after players wipe them out
 OT_poacherBounty = 25;
 // Radio chatter for the call for backup (base game sounds, the ones this install has)
