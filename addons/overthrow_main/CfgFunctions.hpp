@@ -65,6 +65,17 @@ class CfgFunctions {
             class sellTurtles {};
         };
 
+        class Logistics {
+            file = "\overthrow_main\functions\logistics";
+            class initLogistics {};
+            class logisticsBrokers {};
+            class spawnBroker {};
+            class logisticsOffers {};
+            class logisticsPay {};
+            class logisticsMenu {};
+            class logisticsClaim {};
+        };
+
         /* Persistent Save */
         class Save {
             file = "\overthrow_main\functions\save";
