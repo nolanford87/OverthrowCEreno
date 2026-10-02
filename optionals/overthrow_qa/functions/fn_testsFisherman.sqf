@@ -16,11 +16,12 @@
         private _grp = createGroup civilian;
         private _civ = _grp createUnit ["C_man_1", _pos, [], 0, "CAN_COLLIDE"];
         _civ setVariable ["OT_fishery", "QA Fishery", true];
-        private _boat = createVehicle ["C_Boat_Civil_01_F", (getPosATL player) getPos [15, (getDir player) + 90], [], 0, "NONE"];
+        private _boat = createVehicle ["C_Van_01_transport_F", (getPosATL player) getPos [15, (getDir player) + 90], [], 0, "NONE"];
         [_boat, getPlayerUID player] call OT_fnc_setOwner;
         clearItemCargoGlobal _boat;
         _boat addItemCargoGlobal ["OT_Fish_Tuna", 2];
         _boat addItemCargoGlobal ["OT_Fish_Salema", 3];
+        ["Fisherman: the test van holds the 5 fish", ({ _x in OT_fishSellItems } count (itemCargo _boat)) isEqualTo 5, str (itemCargo _boat)] call OTQA_fnc_check;
         if (isNull (unitBackpack player)) then { player addBackpack "B_Carryall_cbr" };
         player addItem "OT_Fish_Mackerel";
         player addItem "OT_Turtle";
