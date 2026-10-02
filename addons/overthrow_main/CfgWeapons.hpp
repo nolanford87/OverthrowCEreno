@@ -126,6 +126,56 @@ class CfgWeapons {
             mass = 30;
         };
     };
+    // Fish, caught with a boat's net (OT_fnc_castNet); general stores buy them, turtles only faction reps
+    class OT_Fish_Salema: OT_ItemCore {
+        scope = 2;
+        picture = "\overthrow_main\ui\items\cane_x_ca.paa";
+        displayName = "Salema";
+        descriptionShort = "A small, common fish. Any general store will buy it.";
+        descriptionUse = "";
+        class ItemInfo: InventoryItem_Base_F {
+            mass = 10;
+        };
+    };
+    class OT_Fish_Ornate: OT_Fish_Salema {
+        displayName = "Ornate wrasse";
+        descriptionShort = "A small, colourful reef fish. Any general store will buy it.";
+    };
+    class OT_Fish_Mullet: OT_Fish_Salema {
+        displayName = "Mullet";
+        descriptionShort = "A common coastal fish. Any general store will buy it.";
+        class ItemInfo: InventoryItem_Base_F {
+            mass = 15;
+        };
+    };
+    class OT_Fish_Mackerel: OT_Fish_Salema {
+        displayName = "Mackerel";
+        descriptionShort = "An oily fish that fetches a fair price. Any general store will buy it.";
+        class ItemInfo: InventoryItem_Base_F {
+            mass = 15;
+        };
+    };
+    class OT_Fish_Catshark: OT_Fish_Salema {
+        displayName = "Catshark";
+        descriptionShort = "A small shark, uncommon and well paid. Any general store will buy it.";
+        class ItemInfo: InventoryItem_Base_F {
+            mass = 40;
+        };
+    };
+    class OT_Fish_Tuna: OT_Fish_Salema {
+        displayName = "Tuna";
+        descriptionShort = "A big, rare and valuable fish. Any general store will buy it.";
+        class ItemInfo: InventoryItem_Base_F {
+            mass = 60;
+        };
+    };
+    class OT_Turtle: OT_Fish_Salema {
+        displayName = "Sea turtle";
+        descriptionShort = "A protected sea turtle. Contraband: the authorities confiscate it, but the factions' representatives pay well for one.";
+        class ItemInfo: InventoryItem_Base_F {
+            mass = 50;
+        };
+    };
     class OT_Fertilizer: OT_ItemCore {
         scope = 2;
         picture = "\overthrow_main\ui\items\fertilizer_x_ca.paa";

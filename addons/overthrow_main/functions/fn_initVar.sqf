@@ -78,6 +78,31 @@ call compileScript ["data\objectives.sqf", false];
 call compileScript ["data\economy.sqf", false];
 call compileScript ["data\comms.sqf", false];
 
+// Fisheries: a business at the first pier of each coastal town (the piers boat dealers use). Worked
+// out the same way on every machine (terrain objects), so they're in OT_economicData everywhere
+// before the economy and virtualization set businesses up (OT_fnc_fisheryCycle)
+OT_fisheries = [];
+{
+    if (OT_piers isEqualTo []) exitWith {}; // No sea (Livonia); an empty class list would find everything
+    _x params ["_townPos", "_town"];
+    private _piers = nearestObjects [_townPos, OT_piers, [600, 1000] select (_town in (OT_capitals + OT_sprawling)), false];
+    if (_piers isEqualTo []) then { continue };
+    // On land by the pier (its workers and container are there), not shared with another town's
+    private _pierPos = getPosATL (_piers select 0);
+    private _land = [];
+    for "_r" from 0 to 120 step 10 do {
+        for "_dir" from 0 to 330 step 30 do {
+            private _p = _pierPos getPos [_r, _dir];
+            if !(surfaceIsWater _p) exitWith { _land = [round (_p select 0), round (_p select 1), 0] };
+        };
+        if (_land isNotEqualTo []) exitWith {};
+    };
+    if (_land isEqualTo [] || { (OT_economicData findIf { ((_x select 0) distance2D _land) < 100 }) > -1 }) then { continue };
+    private _name = format ["%1 Fishery", _town];
+    OT_economicData pushBack [_land, _name, "", "OT_Fish_Mackerel"];
+    OT_fisheries pushBack _name;
+} forEach OT_townData;
+
 //Identity
 OT_faces_local = [];
 OT_faces_western = [];
@@ -194,7 +219,7 @@ OT_item_BasicGun = "hgun_P07_F"; //Dealers always sell this cheap
 OT_item_BasicAmmo = "16Rnd_9x21_Mag";
 
 OT_allDrugs = ["OT_Ganja", "OT_Blow"];
-OT_illegalItems = OT_allDrugs;
+OT_illegalItems = OT_allDrugs + ["OT_Turtle"]; // Turtles: confiscated in searches, sold to faction reps (OT_fnc_sellTurtles)
 
 OT_item_UAV = "I_UAV_01_F";
 OT_item_UAVterminal = "I_UavTerminal";
@@ -265,7 +290,26 @@ if (isServer) then {
     cost setVariable ["OT_Olives", [7, 0, 0, 0], true];
     cost setVariable ["OT_Fertilizer", [20, 0, 0, 0], true];
     cost setVariable ["OT_Meat", [30, 0, 0, 0], true]; // About $50 a rabbit, $150 a goat (OT_huntMeat)
+    // Fish: about $20 a small one to $150 a tuna at a general store
+    cost setVariable ["OT_Fish_Salema", [12, 0, 0, 0], true];
+    cost setVariable ["OT_Fish_Ornate", [12, 0, 0, 0], true];
+    cost setVariable ["OT_Fish_Mullet", [15, 0, 0, 0], true];
+    cost setVariable ["OT_Fish_Mackerel", [30, 0, 0, 0], true];
+    cost setVariable ["OT_Fish_Catshark", [60, 0, 0, 0], true];
+    cost setVariable ["OT_Fish_Tuna", [90, 0, 0, 0], true];
+    cost setVariable ["OT_Turtle", [400, 0, 0, 0], true]; // What a faction rep pays (OT_fnc_sellTurtles)
 };
+
+// Fishing: the item each fish (agent class) becomes when caught (OT_fnc_castNet)
+OT_fishItems = createHashMapFromArray [
+    ["Salema_F", "OT_Fish_Salema"], ["Ornate_random_F", "OT_Fish_Ornate"], ["Mullet_F", "OT_Fish_Mullet"],
+    ["Mackerel_F", "OT_Fish_Mackerel"], ["CatShark_F", "OT_Fish_Catshark"], ["Tuna_F", "OT_Fish_Tuna"],
+    ["Turtle_F", "OT_Turtle"]
+];
+// What general stores buy (turtles go to faction reps)
+OT_fishSellItems = ["OT_Fish_Salema", "OT_Fish_Ornate", "OT_Fish_Mullet", "OT_Fish_Mackerel", "OT_Fish_Catshark", "OT_Fish_Tuna"];
+// Boats that can cast a net, and how far it reaches (the fishing boat catches a bit more)
+OT_fishingBoats = createHashMapFromArray [["C_Boat_Civil_01_F", 15], ["C_Boat_Civil_04_F", 20]];
 
 // Hunting: raw meat (OT_Meat) per animal picked up (OT_fnc_huntPickup)
 OT_huntMeat = createHashMapFromArray [
@@ -301,8 +345,12 @@ OT_huntingWeapons = ((
 OT_boats = [
     ["C_Scooter_Transport_01_F", 150, 1, 0, 1],
     ["C_Boat_Civil_01_rescue_F", 300, 1, 1, 1],
+    ["C_Boat_Civil_01_F", 400, 1, 1, 1], // Motorboat: can fish (OT_fishingBoats)
     ["C_Boat_Transport_02_F", 600, 1, 0, 1]
 ];
+if (isClass (configFile >> "CfgVehicles" >> "C_Boat_Civil_04_F")) then {
+    OT_boats pushBack ["C_Boat_Civil_04_F", 600, 1, 2, 1]; // Fishing boat: fishes a bit better
+};
 OT_vehicles = [];
 OT_helis = [];
 OT_allVehicles = [];

@@ -55,6 +55,13 @@ class CfgPatches {
             "OT_Olives",
             "OT_Fertilizer",
             "OT_Meat",
+            "OT_Fish_Salema",
+            "OT_Fish_Ornate",
+            "OT_Fish_Mullet",
+            "OT_Fish_Mackerel",
+            "OT_Fish_Catshark",
+            "OT_Fish_Tuna",
+            "OT_Turtle",
             "OT_ammo50cal"
         };
     };
