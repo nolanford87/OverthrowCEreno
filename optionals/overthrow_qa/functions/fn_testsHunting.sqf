@@ -40,6 +40,39 @@ OTQA_hunt_animals = {
             format ["%1 hunting rifles: %2", count OT_huntingWeapons, OT_huntingWeapons select [0, 6]]] call OTQA_fnc_check;
     }],
 
+    ["Hunting: every spot is hidden until walked into", {
+        private _spots = server getVariable ["huntingSpots", []];
+        if (_spots isEqualTo []) exitWith { ["Hunting: spots to reveal", false, "no spots"] call OTQA_fnc_check };
+        private _home = getPosATL player;
+        private _wasRevealed = +(server getVariable ["huntingRevealed", []]);
+
+        // All hidden
+        server setVariable ["huntingRevealed", [], true];
+        { deleteMarker format ["huntspot%1", _forEachIndex] } forEach _spots;
+        private _shown = _spots select { (markerShape format ["huntspot%1", _forEachIndex]) isNotEqualTo "" };
+        ["Hunting: all spots hidden", _shown isEqualTo [], format ["%1 still on the map", count _shown]] call OTQA_fnc_check;
+
+        // Into each one: the hunting loop reveals it (run straight away, it also runs every 5 s)
+        private _missed = [];
+        {
+            private _p = [_x select 0, _x select 1, 0] findEmptyPosition [0, 40, "CAManBase"];
+            if (_p isEqualTo []) then { _p = [_x select 0, _x select 1, 0] };
+            player setPosATL _p;
+            sleep 0.3;
+            call OT_fnc_huntingLoop;
+            private _mrk = format ["huntspot%1", _forEachIndex];
+            if !(_forEachIndex in (server getVariable ["huntingRevealed", []]) && { (markerColor _mrk) isEqualTo "OT_ColorHunting" }) then { _missed pushBack _forEachIndex };
+        } forEach _spots;
+        ["Hunting: walking into each spot reveals it", _missed isEqualTo [], format ["%1 of %2 revealed, missed: %3", (count _spots) - (count _missed), count _spots, _missed]] call OTQA_fnc_check;
+
+        // Back as it was
+        {
+            if !(_forEachIndex in _wasRevealed) then { deleteMarker format ["huntspot%1", _forEachIndex] };
+        } forEach _spots;
+        server setVariable ["huntingRevealed", _wasRevealed, true];
+        player setPosATL _home;
+    }, 600],
+
     ["Hunting: walking in reveals a spot, its animals spawn", {
         (call OTQA_hunt_spot) params [["_index", -1], ["_pos", []]];
         if (_index < 0) exitWith { ["Hunting: a spot to test", false, "no spots"] call OTQA_fnc_check };
