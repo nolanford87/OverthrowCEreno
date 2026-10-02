@@ -26,8 +26,11 @@ diag_log format ["OTPROBE|START|%1|bbox %2 %3", _cls, _min, _max];
 private _positions = (_b buildingPos -1) apply { (_b worldToModel _x) apply { (round (_x * 10)) / 10 } };
 diag_log format ["OTPROBE|POSITIONS|%1", _positions];
 
-// The floor: the model's ground level at its centre
-private _floorZ = (_b modelToWorldWorld [0, 0, _min select 2]) select 2;
+// The floor: the lowest building position (the bounding box goes down into the foundations)
+private _floorModel = selectMin ((_b buildingPos -1) apply { (_b worldToModel _x) select 2 });
+if (isNil "_floorModel") then { _floorModel = _min select 2 };
+private _floorZ = (_b modelToWorldWorld [0, 0, _floorModel]) select 2;
+diag_log format ["OTPROBE|FLOOR|%1", _floorModel];
 for "_y" from (_max select 1) to (_min select 1) step -0.5 do {
     private _row = "";
     for "_x" from (_min select 0) to (_max select 0) step 0.5 do {
