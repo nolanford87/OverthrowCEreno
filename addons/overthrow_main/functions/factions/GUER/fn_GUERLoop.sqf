@@ -72,6 +72,7 @@ if (time >= _nextBusiness) then {
     private _wages = 0;
     {
         if (_x != "Factory") then {
+            if ((_x call OT_fnc_getBusinessData) isEqualTo []) then { continue }; // No longer on the map (e.g. a fishery from an older build), no wages
             private _perhr = [OT_nation, "WAGE", 0] call OT_fnc_getPrice;
             private _num = server getVariable [format ["%1employ", _x], 0];
             private _enum = _num;
