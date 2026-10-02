@@ -7,7 +7,6 @@ private _population = server getVariable [format ["population%1", _town], 0];
 
 private _activeShops = [];
 private _activecar = [];
-private _piers = [];
 private _activeHardware = [];
 
 private _churches = nearestObjects [_posTown, OT_churches, _dist, false];
@@ -78,18 +77,4 @@ diag_log format ["Overthrow: Set up economy in %1 (pop. %2, %3 of %4 shops)", _t
 } forEach (nearestObjects [_posTown, OT_carShops, _dist, false]);
 server setVariable [format ["activecarshopsin%1", _town], _activecar, true];
 
-if (OT_piers isNotEqualTo []) then {
-    {
-        private _po = getPos _x;
-        if !(_po in _piers) then {
-            private _do = true;
-            {
-                if (_x distance _po < 80) exitWith { _do = false };
-            } forEach (_piers);
-            if (_do) then {
-                _piers pushBack _po;
-            };
-        };
-    } forEach (nearestObjects [_posTown, OT_piers, _dist, false]);
-};
-server setVariable [format ["activepiersin%1", _town], _piers, true];
+[_town] call OT_fnc_findTownPiers; // Boat dealers

@@ -417,6 +417,7 @@ class CfgFunctions {
             class getRealEstateData {};
             class getBusinessData {};
             class getBusinessPrice {};
+            class findTownPiers {};
             class getTaxIncome {};
             class resistanceFunds {};
             class incomeSystem {};

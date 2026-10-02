@@ -63,9 +63,10 @@ OTQA_fish_ground = {
         private _tp = getPosASL _target;
         _boat setPosASL [_tp select 0, _tp select 1, 0.5];
         private _caught = [_boat, player] call OT_fnc_castNet;
+        sleep 0.2; // Deleted at the end of the frame
         private _after = [_key] call OT_fnc_huntingAvailable;
         private _cargo = itemCargo _boat;
-        ["Fishing: the net catches the fish into the boat's cargo", _item in _caught && { _item in _cargo } && { !alive _target }, format ["caught %1, cargo %2", _caught, _cargo]] call OTQA_fnc_check;
+        ["Fishing: the net catches the fish into the boat's cargo", _item in _caught && { _item in _cargo } && { isNull _target }, format ["caught %1, cargo %2", _caught, _cargo]] call OTQA_fnc_check;
         ["Fishing: a catch counts against the ground", _after < _before, format ["%1 -> %2", _before, _after]] call OTQA_fnc_check;
         ["Fishing: only boats that fish can cast", ([player, objNull] call OT_fnc_castNet) isEqualTo [] && { (OT_fishingBoats getOrDefault ["C_Boat_Transport_02_F", 0]) isEqualTo 0 }, ""] call OTQA_fnc_check;
 

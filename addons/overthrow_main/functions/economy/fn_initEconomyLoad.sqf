@@ -151,6 +151,10 @@ if (_version < OT_economyVersion) then {
     if ((server getVariable ["EconomyVersion", 0]) < OT_economyVersion) then {
         [_x] call OT_fnc_setupTownEconomy;
     };
+    // A town without boat dealers looks again (piers added to OT_piers since, e.g. Altis's own)
+    if ((server getVariable [format ["activepiersin%1", _x], []]) isEqualTo []) then {
+        [_x] call OT_fnc_findTownPiers;
+    };
 
     private _shops = server getVariable [format ["activeshopsin%1", _x], []];
     _allActiveShops append _shops;
