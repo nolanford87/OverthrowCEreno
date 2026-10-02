@@ -1,7 +1,8 @@
 /*
     Description:
     Spawns a freight broker (spawner, OT_fnc_initLogistics): a worker standing by his loading spot.
-    Talking to him (OT_fnc_talkToCiv) offers freight contracts (OT_fnc_logisticsMenu).
+    Talking to him (OT_fnc_talkToCiv) offers freight contracts (OT_fnc_logisticsMenu). An airfield's
+    freight office is staffed whoever holds the airfield (a civilian, outside its fence).
 
     Parameters:
         _this # 0: STRING - Broker id

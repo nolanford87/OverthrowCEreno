@@ -10,6 +10,9 @@ private _tests = [];
 {
     _tests append (call _x);
 } forEach [
+    OTQA_fnc_testsLogisticsAirfields,
+    OTQA_fnc_testsSmuggling,
+    OTQA_fnc_testsHijacks
 ];
 
 if (_tests isEqualTo []) then {

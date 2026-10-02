@@ -16,6 +16,9 @@
 params ["_id", "_toPos"];
 
 if (!hasInterface) exitWith {};
+// One loop per job: after a respawn the server sends this again while the old loop may still run
+if ((missionNamespace getVariable ["OT_haulUnloadLoop", ""]) isEqualTo _id) exitWith {};
+OT_haulUnloadLoop = _id;
 
 OT_haulUnload = [_id, _toPos];
 // The job flag can arrive a moment after this
@@ -46,3 +49,4 @@ while { (player getVariable ["OT_logisticsActive", ""]) isEqualTo _id } do {
 };
 if (!isNull _unit) then { _unit removeAction _action };
 if (!isNil "OT_haulUnload" && { (OT_haulUnload select 0) isEqualTo _id }) then { OT_haulUnload = nil };
+OT_haulUnloadLoop = nil;

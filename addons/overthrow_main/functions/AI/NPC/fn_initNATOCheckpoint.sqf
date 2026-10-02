@@ -156,6 +156,10 @@ while { !(isNil "_group") && (units _group) isNotEqualTo [] } do {
                                 } forEach (units vehicle _unit);
                             };
                         };
+                        // Contraband crates (smuggling): cover blown, the crates aren't taken here
+                        if ([_unit] call OT_fnc_logisticsSearchContraband) then {
+                            _msg = "What's in these crates?! Contraband!";
+                        };
                         // Inspected freight (crates are legal, they don't count as items above)
                         if (_msg isEqualTo "Search complete, be on your way" && { (((vehicle _unit) getVariable ["OT_haulInspect", [[], 0]]) select 0) isEqualTo _start }) then {
                             _msg = "Freight checked, move along";

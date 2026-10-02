@@ -27,6 +27,8 @@ if (_killer call OT_fnc_unitSeen) then {
 private _town = _me call OT_fnc_nearestTown;
 
 if (isPlayer _me) exitWith {
+    // Who killed them, for a freight haul tracked on the server (OT_fnc_logisticsTrack)
+    _me setVariable ["OT_killedBy", _killer, true];
     if !(_town in (server getVariable ["NATOabandoned", []])) then {
         [_town, 1] call OT_fnc_stability;
     } else {

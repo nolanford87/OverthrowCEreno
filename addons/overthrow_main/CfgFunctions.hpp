@@ -82,6 +82,16 @@ class CfgFunctions {
             class logisticsCargoVehicle {};
             class logisticsUnload {};
             class logisticsUnloadAction {};
+            // Illegal freight: smuggling, contraband add-ons, collateral, searches, impound
+            class logisticsIllegalOffers {};
+            class logisticsAccept {};
+            class logisticsSettle {};
+            class logisticsSearchContraband {};
+            class logisticsImpound {};
+            class logisticsImpoundRecover {};
+            // Gangs and losing the load
+            class logisticsHijack {};
+            class logisticsDeath {};
         };
 
         /* Persistent Save */

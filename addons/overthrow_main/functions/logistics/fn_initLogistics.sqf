@@ -2,7 +2,8 @@
     Description:
     Starts freight on the server: picks (or loads) the freight brokers (OT_fnc_logisticsBrokers), puts
     up their sheds (OT_fnc_logisticsSite, every session: they aren't saved), registers a spawner for
-    each broker (OT_fnc_spawnBroker) and puts them on everyone's map.
+    each broker (OT_fnc_spawnBroker) and puts them on everyone's map. An airfield's freight office
+    works whoever holds the airfield: nothing here or in its spawner checks who does.
 
     Usage: [] spawn OT_fnc_initLogistics; (server)
 */
@@ -18,7 +19,7 @@ OT_brokerSheds = createHashMap;
 { OT_brokerSheds set [_x select 0, _x call OT_fnc_logisticsSite] } forEach _brokers;
 private _type = "ot_Broker"; // A box truck, in the shops' style; sized with zoom like them (OT_fnc_mapHandler)
 {
-    _x params ["_id", "_name", "_pos"];
+    _x params ["_id", "_name", "_pos", "", "", "", "", ["_airfield", ""]];
     [_pos, OT_fnc_spawnBroker, [_id]] call OT_fnc_registerSpawner;
 
     private _mrkName = format ["logistics_%1", _id];
@@ -27,7 +28,7 @@ private _type = "ot_Broker"; // A box truck, in the shops' style; sized with zoo
     _mrk setMarkerShapeLocal "ICON";
     _mrk setMarkerTypeLocal _type;
     _mrk setMarkerColorLocal "ColorWhite";
-    _mrk setMarkerTextLocal "Freight broker";
+    _mrk setMarkerTextLocal (["Freight broker", "Freight office"] select (_airfield isNotEqualTo ""));
     _mrk setMarkerAlpha 0.8; // The last, global command sends it to everyone
 } forEach _brokers;
 
