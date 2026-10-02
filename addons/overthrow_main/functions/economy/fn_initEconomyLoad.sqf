@@ -151,10 +151,9 @@ if (_version < OT_economyVersion) then {
     if ((server getVariable ["EconomyVersion", 0]) < OT_economyVersion) then {
         [_x] call OT_fnc_setupTownEconomy;
     };
-    // A town without boat dealers looks again (piers added to OT_piers since, e.g. Altis's own)
-    if ((server getVariable [format ["activepiersin%1", _x], []]) isEqualTo []) then {
-        [_x] call OT_fnc_findTownPiers;
-    };
+    // Boat dealers worked out on every load (at most 2 per town, OT_fnc_findTownPiers): older saves
+    // kept a dealer every 80 m, and piers added to OT_piers since (Altis's own) are picked up
+    [_x] call OT_fnc_findTownPiers;
 
     private _shops = server getVariable [format ["activeshopsin%1", _x], []];
     _allActiveShops append _shops;
