@@ -83,13 +83,23 @@ if (_rental) then {
     clearItemCargoGlobal _veh;
     clearBackpackCargoGlobal _veh;
     // Room for every crate (and a little more), whatever ACE gives the class
-    [_veh, (_count + 2) max (_veh getVariable ["ace_cargo_space", 0])] call ace_cargo_fnc_setSpace;
+    private _need = 0;
+    { _need = _need + (_x getVariable ["ace_cargo_size", 1]) } forEach _crates;
+    [_veh, (_need + 2) max (_veh getVariable ["ace_cargo_space", 0])] call ace_cargo_fnc_setSpace;
     _veh setVariable ["OT_haulRental", _id, true];
-    // The crates come loaded; any that won't fit stay on the road beside it
+    // The crates come loaded; if ACE turns any away, more room and again
     { [_x, _veh, true] call ace_cargo_fnc_loadItem } forEach _crates;
+    private _out = _crates select { !(_x in (_veh getVariable ["ace_cargo_loaded", []])) };
+    if (_out isNotEqualTo []) then {
+        diag_log format ["Overthrow: freight rental %1 took %2 of %3 crates (space %4), making room", typeOf _veh, (count _crates) - (count _out), count _crates, _veh getVariable ["ace_cargo_space", 0]];
+        [_veh, (_veh getVariable ["ace_cargo_space", 0]) + (count _out) * 2 + _need] call ace_cargo_fnc_setSpace;
+        { [_x, _veh, true] call ace_cargo_fnc_loadItem } forEach _out;
+    };
 };
 
 _player setVariable ["OT_logisticsActive", _id, true];
+// "Unload delivery cargo" at the drop-off
+[_id, _toPos] remoteExec ["OT_fnc_logisticsUnloadAction", _player];
 
 // Pickup marker (removed once the crates are loaded) and the task to the drop-off
 private _marker = createMarker [format ["OT_haulPickup_%1", _id], _fromPos];
@@ -103,7 +113,7 @@ private _minutes = round (_timeLimit / 60);
     _player, _taskId,
     [
         format [
-            "Haul %1 crates from %2 to %3.<br/><br/>Load them into a vehicle at the pickup marker (ACE: Load into vehicle), drive them to %3 and unload them there: delivered when every crate is on the ground within 30 m of the drop-off.<br/><br/>Pay: $%4. Time limit: %5 minutes, then -10%6 of the pay per 5 minutes late; nothing after %7 minutes.%8",
+            "Haul %1 crates from %2 to %3.<br/><br/>Load them into a vehicle at the pickup marker (ACE: Load into vehicle), drive them to %3 and unload them there (Unload delivery cargo, by the vehicle): delivered when every crate is on the ground within 30 m of the drop-off.<br/><br/>Pay: $%4. Time limit: %5 minutes, then -10%6 of the pay per 5 minutes late; nothing after %7 minutes.%8",
             _count, _fromName, _toName, [_pay, 1, 0, true] call CBA_fnc_formatNumber, _minutes, "%", _minutes * 2,
             ["", "<br/><br/>A rented vehicle is parked at the pickup with the crates already loaded."] select _rental
         ],

@@ -79,6 +79,9 @@ class CfgFunctions {
             // The haul
             class logisticsStart {};
             class logisticsTrack {};
+            class logisticsCargoVehicle {};
+            class logisticsUnload {};
+            class logisticsUnloadAction {};
         };
 
         /* Persistent Save */
