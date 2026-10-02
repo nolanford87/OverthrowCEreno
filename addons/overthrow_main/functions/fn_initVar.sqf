@@ -78,15 +78,20 @@ call compileScript ["data\objectives.sqf", false];
 call compileScript ["data\economy.sqf", false];
 call compileScript ["data\comms.sqf", false];
 
-// Fisheries: 3 per map, at coastal towns' piers (the piers boat dealers use), spread as far apart as
-// possible. Worked out the same way on every machine (terrain objects), so they're in OT_economicData
-// everywhere before the economy and virtualization set businesses up (OT_fnc_fisheryCycle)
+// Fisheries: 3 per map, at coastal towns' piers on the sea (OT_fnc_isSeaPier), at least 150 m from
+// the town's boat dealers (their markers would hide each other), spread as far apart as possible.
+// Worked out the same way on every machine (terrain objects), so they're in OT_economicData everywhere
+// before the economy and virtualization set businesses up (OT_fnc_fisheryCycle)
 OT_fisheries = [];
 private _fisheryCandidates = []; // [land position, name]
 {
     if (OT_piers isEqualTo []) exitWith {}; // No sea (Livonia); an empty class list would find everything
     _x params ["_townPos", "_town"];
-    private _piers = nearestObjects [_townPos, OT_piers, [600, 1000] select (_town in (OT_capitals + OT_sprawling)), false];
+    private _dealers = [_town, _townPos, false] call OT_fnc_findTownPiers;
+    private _piers = (nearestObjects [_townPos, OT_piers, [600, 1000] select (_town in (OT_capitals + OT_sprawling)), false]) select {
+        private _po = getPos _x;
+        ((_dealers findIf { (_x distance2D _po) < 150 }) isEqualTo -1) && { _po call OT_fnc_isSeaPier }
+    };
     if (_piers isEqualTo []) then { continue };
     // On land by the pier (its workers and container are there), not shared with another town's
     private _pierPos = getPosATL (_piers select 0);

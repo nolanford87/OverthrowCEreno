@@ -112,6 +112,13 @@ OTQA_fish_ground = {
         ["Fishing: 3 fisheries on the map, at coastal towns' piers, spread out", (count OT_fisheries) > 0 && { (count OT_fisheries) <= 3 } && { _missing isEqualTo [] },
             format ["%1 fisheries: %2; missing: %3", count OT_fisheries, OT_fisheries, _missing]] call OTQA_fnc_check;
         if (OT_fisheries isEqualTo []) exitWith {};
+        // Not on top of a boat dealer (their icons would hide each other), all on the sea
+        private _dealers = [];
+        { _dealers append (server getVariable [format ["activepiersin%1", _x], []]) } forEach OT_allTowns;
+        private _crowded = OT_fisheries select { private _p = (_x call OT_fnc_getBusinessData) select 0; (_dealers findIf { (_x distance2D _p) < 100 }) > -1 };
+        ["Fishing: fisheries keep away from boat dealers", _crowded isEqualTo [], format ["next to a dealer: %1", _crowded]] call OTQA_fnc_check;
+        private _inland = _dealers select { !(_x call OT_fnc_isSeaPier) };
+        ["Fishing: boat dealers are all on the sea (no inland piers)", _inland isEqualTo [], format ["%1 dealers, inland: %2", count _dealers, _inland]] call OTQA_fnc_check;
 
         // Its cycle: catches 2 per employee into its container, sells what's delivered
         private _name = OT_fisheries select 0;
