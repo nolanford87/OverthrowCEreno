@@ -3,6 +3,42 @@ params ["_pos", "_name", "_spawnid"];
 private _count = 0;
 private _groups = [];
 
+// A fishery is marked by a fisherman standing among his gear by the pier, owned or not
+if (_name in OT_fisheries) then {
+    private _spot = _pos findEmptyPosition [0, 25, "C_man_1"];
+    if (_spot isEqualTo []) then { _spot = _pos };
+    private _props = [];
+    {
+        _x params ["_cls", "_dist", "_dir", "_turn"];
+        if !(isClass (configFile >> "CfgVehicles" >> _cls)) then { continue };
+        private _p = _spot getPos [_dist, _dir];
+        if (surfaceIsWater _p) then { continue };
+        private _o = createVehicle [_cls, _p, [], 0, "CAN_COLLIDE"];
+        _o setDir _turn;
+        _o setVectorUp (surfaceNormal _p);
+        _o enableSimulationGlobal false;
+        _props pushBack _o;
+    } forEach [
+        ["Land_FishingGear_01_F", 3, 40, 120],
+        ["Land_FishingGear_02_F", 3.5, 320, 200],
+        ["Land_CrabCages_F", 4, 180, 30],
+        ["Land_WoodenCrate_01_F", 2.5, 100, 15],
+        ["Land_Basket_F", 2, 250, 0],
+        ["Land_Bucket_painted_F", 1.5, 140, 0]
+    ];
+    private _fisherGroup = createGroup civilian;
+    _fisherGroup setBehaviour "CARELESS";
+    private _cls = ["C_man_1", "C_man_fisherman_01_F"] select (isClass (configFile >> "CfgVehicles" >> "C_man_fisherman_01_F"));
+    private _fisherman = _fisherGroup createUnit [_cls, _spot, [], 0, "CAN_COLLIDE"];
+    _fisherman setPosATL [_spot select 0, _spot select 1, 0];
+    _fisherman setDir (random 360);
+    _fisherman disableAI "MOVE";
+    _fisherman setVariable ["NOAI", true, false];
+    _fisherman setVariable ["OT_fishery", _name, true];
+    _fisherGroup setVariable ["Vcm_Disable", true, true];
+    spawner setVariable [_spawnid, (spawner getVariable [_spawnid, []]) + _props + [_fisherGroup], false];
+};
+
 private _numCiv = server getVariable [format ["%1employ", _name], 0];
 if (_numCiv isEqualTo 0) exitWith { [] };
 
