@@ -29,15 +29,24 @@ _contract params ["_id", "_fromPos", "_fromName", "_toPos", "_toName", "_count",
 if ((_player getVariable ["OT_logisticsActive", ""]) isEqualTo _id) exitWith { [] };
 
 _fromPos = [_fromPos select 0, _fromPos select 1, 0];
+// Crates and rentals line up on the road in front of the broker's shed (its direction, OT_fnc_logisticsBrokers)
+private _brokerId = _contract param [10, ""];
+private _roadDir = ((server getVariable ["logisticsBrokers", []]) select { (_x select 0) isEqualTo _brokerId }) param [0, []] param [6, -1];
 
 // Crates: wooden crates, the support box on a game without them (it's emptied)
 private _crateClass = ["Box_NATO_Support_F", "Land_WoodenCrate_01_F"] select (isClass (configFile >> "CfgVehicles" >> "Land_WoodenCrate_01_F"));
 private _crates = [];
 for "_i" from 1 to _count do {
-    // Spread around the loading spot so they don't collide
-    private _near = _fromPos getPos [2 + (_i * 1.5), _i * 47];
-    private _pos = _near findEmptyPosition [0, 25, _crateClass];
-    if (_pos isEqualTo [] || { surfaceIsWater _pos }) then { _pos = _fromPos getPos [random 6, random 360] };
+    private _pos = [];
+    if (_roadDir >= 0) then {
+        // In a row along the road, from the loading spot on
+        _pos = _fromPos getPos [(_i - 1) * 2, _roadDir];
+    } else {
+        // Spread around the loading spot so they don't collide
+        private _near = _fromPos getPos [2 + (_i * 1.5), _i * 47];
+        _pos = _near findEmptyPosition [0, 25, _crateClass];
+        if (_pos isEqualTo [] || { surfaceIsWater _pos }) then { _pos = _fromPos getPos [random 6, random 360] };
+    };
     private _crate = createVehicle [_crateClass, _pos, [], 0, "CAN_COLLIDE"];
     _crate setPosATL [_pos select 0, _pos select 1, 0];
     _crate allowDamage false; // No cargo damage (only losing the vehicle loses the load); wooden crates break easily
@@ -57,10 +66,17 @@ for "_i" from 1 to _count do {
 private _veh = objNull;
 if (_rental) then {
     private _vehClass = ["C_Van_01_box_F", "C_Truck_02_box_F"] select (_size isEqualTo "truck");
-    private _pos = (_fromPos getPos [12, random 360]) findEmptyPosition [0, 60, _vehClass];
-    if (_pos isEqualTo []) then { _pos = _fromPos findEmptyPosition [5, 100, _vehClass] };
-    if (_pos isEqualTo []) then { _pos = _fromPos getPos [15, random 360] };
-    _veh = createVehicle [_vehClass, _pos, [], 0, "NONE"];
+    private _pos = [];
+    if (_roadDir >= 0) then {
+        // On the road behind the crates, facing along it
+        _pos = _fromPos getPos [-9, _roadDir];
+    } else {
+        _pos = (_fromPos getPos [12, random 360]) findEmptyPosition [0, 60, _vehClass];
+        if (_pos isEqualTo []) then { _pos = _fromPos findEmptyPosition [5, 100, _vehClass] };
+        if (_pos isEqualTo []) then { _pos = _fromPos getPos [15, random 360] };
+    };
+    _veh = createVehicle [_vehClass, _pos, [], 0, ["NONE", "CAN_COLLIDE"] select (_roadDir >= 0)];
+    if (_roadDir >= 0) then { _veh setDir _roadDir };
     [_veh, getPlayerUID _player] call OT_fnc_setOwner;
     clearWeaponCargoGlobal _veh;
     clearMagazineCargoGlobal _veh;

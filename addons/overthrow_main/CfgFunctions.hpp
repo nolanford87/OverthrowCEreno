@@ -70,6 +70,7 @@ class CfgFunctions {
             // Brokers and contracts
             class initLogistics {};
             class logisticsBrokers {};
+            class logisticsSite {};
             class spawnBroker {};
             class logisticsOffers {};
             class logisticsPay {};

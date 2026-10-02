@@ -122,5 +122,42 @@ OTQA_haul_cleanup = {
         waitUntil { sleep 1; ([_taskId] call BIS_fnc_taskState) isEqualTo "FAILED" || { time > _timeout } };
         ["Logistics: crates lost, task failed, no pay", ([_taskId] call BIS_fnc_taskState) isEqualTo "FAILED" && { (player getVariable ["money", 0]) isEqualTo _money } && { (player getVariable ["OT_logisticsActive", ""]) isEqualTo "" },
             format ["%1, money %2 -> %3", [_taskId] call BIS_fnc_taskState, _money, player getVariable ["money", 0]]] call OTQA_fnc_check;
-    }, 40]
+    }, 40],
+
+    ["Logistics: brokers work from sheds by a road, away from businesses", {
+        private _brokers = server getVariable ["logisticsBrokers", []];
+        ["Logistics: brokers were placed", (count _brokers) > 0, format ["%1 brokers on %2: %3", count _brokers, worldName, _brokers apply { _x select 1 }]] call OTQA_fnc_check;
+        private _businesses = (OT_economicData apply { _x select 0 }) + [OT_factoryPos];
+        private _bad = [];
+        {
+            _x params ["_id", "_name", "_stand", "_loading", "_origin", "_dir"];
+            private _shed = (missionNamespace getVariable ["OT_brokerSheds", createHashMap]) getOrDefault [_id, objNull];
+            private _middle = if (isNull _shed) then { _origin } else { _shed modelToWorld [3.75, 3.35, 0] };
+            private _problems = [];
+            if (isNull _shed || { (typeOf _shed) isNotEqualTo "Land_i_Shed_Ind_F" }) then { _problems pushBack "no shed" };
+            if ((_businesses findIf { (_x distance2D _middle) < 200 }) > -1) then { _problems pushBack "within 200 m of a business" };
+            if !(isOnRoad _loading) then { _problems pushBack "loading spot not on a road" };
+            // The road within 10 m of the shed's long side: the loading spot is 6 m from its south wall
+            if (!isNull _shed && { ((_shed modelToWorld [3.75, -2.3, 0]) distance2D _loading) > 10 }) then { _problems pushBack "road too far" };
+            if (_problems isNotEqualTo []) then { _bad pushBack [_name, _problems] };
+        } forEach _brokers;
+        ["Logistics: each broker has a shed by a road, 200 m+ from businesses", _bad isEqualTo [], str _bad] call OTQA_fnc_check;
+
+        // A broker stands in his shed's office (spawned once a player is near)
+        if (_brokers isEqualTo []) exitWith {};
+        private _home = getPosATL player;
+        (_brokers select 0) params ["_id", "_name", "_stand"];
+        player setPosATL ((_stand getPos [25, 0]) findEmptyPosition [0, 40, "CAManBase"]);
+        private _broker = objNull;
+        private _timeout = time + 30;
+        waitUntil { sleep 1; _broker = (allUnits select { (_x getVariable ["OT_broker", ""]) isEqualTo _id }) param [0, objNull]; !isNull _broker || { time > _timeout } };
+        private _shed = (missionNamespace getVariable ["OT_brokerSheds", createHashMap]) getOrDefault [_id, objNull];
+        private _inOffice = !isNull _broker && { !isNull _shed } && {
+            private _m = _shed worldToModel (ASLToAGL (getPosASL _broker));
+            (_m select 0) > -9 && { (_m select 0) < -4.5 } && { (_m select 1) > -2.3 } && { (_m select 1) < 2.6 }
+        };
+        ["Logistics: the broker stands in the shed's office", _inOffice,
+            format ["%1 at %2 in the shed's own coordinates", _name, if (isNull _broker || { isNull _shed }) then { "-" } else { (_shed worldToModel (ASLToAGL (getPosASL _broker))) apply { (round (_x * 10)) / 10 } }]] call OTQA_fnc_check;
+        player setPosATL _home;
+    }, 60]
 ]
