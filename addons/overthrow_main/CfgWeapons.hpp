@@ -116,6 +116,16 @@ class CfgWeapons {
             mass = 50;
         };
     };
+    class OT_Meat: OT_ItemCore {
+        scope = 2;
+        picture = "\overthrow_main\ui\items\cane_x_ca.paa";
+        displayName = "Raw meat";
+        descriptionShort = "Fresh game or livestock, taken from a hunt. Any general store will buy it.";
+        descriptionUse = "";
+        class ItemInfo: InventoryItem_Base_F {
+            mass = 30;
+        };
+    };
     class OT_Fertilizer: OT_ItemCore {
         scope = 2;
         picture = "\overthrow_main\ui\items\fertilizer_x_ca.paa";

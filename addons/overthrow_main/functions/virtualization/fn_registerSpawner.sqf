@@ -10,9 +10,13 @@ if ((count _pos) isEqualTo 2) then {
     _end = _pos;
 };
 
-OT_spawnUniqueCounter = OT_spawnUniqueCounter + 1;
-
-private _id = format ["spawn%1", OT_spawnUniqueCounter];
+// Counted and recorded without a break (unscheduled), two scripts registering at once don't share an id
+private _number = 0;
+isNil {
+    OT_spawnUniqueCounter = OT_spawnUniqueCounter + 1;
+    _number = OT_spawnUniqueCounter;
+};
+private _id = format ["spawn%1", _number];
 
 if (OT_deepDebug) then {
     diag_log format ["Overthrow: Registered %1 @ %2 %3", _id, _start, _params];
@@ -20,4 +24,4 @@ if (OT_deepDebug) then {
 
 OT_allSpawners pushBack [_id, _start, _end, _code, _params, 0];
 
-OT_spawnUniqueCounter;
+_number;

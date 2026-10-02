@@ -138,6 +138,7 @@ OT_tpl_checkpoint = [] call compileScript ["data\templates\NATOcheckpoint.sqf", 
     //Init virtualization
     waitUntil { !isNil "OT_economyLoadDone" };
     [] spawn OT_fnc_runVirtualization;
+    [] spawn OT_fnc_initHunting; // Hunting spots, livestock
 
     //ACE3 Arsenal default loadouts
     {

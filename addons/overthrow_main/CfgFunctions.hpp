@@ -37,6 +37,24 @@ class CfgFunctions {
             class setLoadoutMode {};
         };
 
+        class Hunting {
+            file = "\overthrow_main\functions\hunting";
+            class initHunting {};
+            class huntingSpots {};
+            class huntingLoop {};
+            class huntingRevealMarker {};
+            class huntingAvailable {};
+            class spawnHuntingSpot {};
+            class farmAnimalKilled {};
+            class inHuntingSpot {};
+            class isInTown {};
+            class huntPickup {};
+            class buyHuntingLicence {};
+            class huntingLicenceLoop {};
+            class isLegalHunter {};
+            class huntingLegalItems {};
+        };
+
         /* Persistent Save */
         class Save {
             file = "\overthrow_main\functions\save";
