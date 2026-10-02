@@ -4,7 +4,8 @@
     host on open ground, then for every 0.5 m cell of its footprint checks for walls / objects at
     standing height (0.4 m to 1.9 m above its floor) and prints a map, row by row ('#' blocked, '.'
     open floor, ' ' outside), plus its bounding box and building positions, all in the building's own
-    coordinates (x across, y along). Lines start "OTPROBE|". The building is deleted afterwards.
+    coordinates (x across, y along), on flat ground; ground poking through shows as "~". Lines start
+    "OTPROBE|". The building is deleted afterwards.
 
     Parameters:
         _this # 0: STRING - Building class, default "Land_i_Shed_Ind_F"
@@ -14,8 +15,16 @@
 
 params [["_cls", "Land_i_Shed_Ind_F"]];
 
-private _pos = (player getPos [60, getDir player]) findEmptyPosition [0, 100, _cls];
-if (_pos isEqualTo []) exitWith { hint "Probe: no room for the building here" };
+// Flat, open ground (on a slope the ground itself comes up through the floor)
+private _pos = [];
+for "_r" from 40 to 600 step 20 do {
+    for "_dir" from 0 to 330 step 30 do {
+        private _p = player getPos [_r, _dir];
+        if ((_p isFlatEmpty [20, -1, 0.05, 20, 0, false, objNull]) isNotEqualTo []) exitWith { _pos = _p };
+    };
+    if (_pos isNotEqualTo []) exitWith {};
+};
+if (_pos isEqualTo []) exitWith { hint "Probe: no flat open ground within 600 m, try elsewhere" };
 private _b = createVehicle [_cls, _pos, [], 0, "CAN_COLLIDE"];
 _b setDir 0;
 _b setPosATL [_pos select 0, _pos select 1, 0];
@@ -41,7 +50,12 @@ for "_y" from (_max select 1) to (_min select 1) step -0.5 do {
         // Under its roof: something above at 2-12 m
         private _roof = lineIntersectsSurfaces [_high, _high vectorAdd [0, 0, 12], objNull, objNull, true, 1, "GEOM", "NONE"];
         private _char = " ";
-        if (_hit isNotEqualTo []) then { _char = "#" } else { if (_roof isNotEqualTo []) then { _char = "." } };
+        if (_hit isNotEqualTo []) then {
+            // The ground coming up through the floor shows as '~', walls and objects as '#'
+            _char = ["#", "~"] select (isNull ((_hit select 0) select 2));
+        } else {
+            if (_roof isNotEqualTo []) then { _char = "." };
+        };
         _row = _row + _char;
     };
     diag_log format ["OTPROBE|ROW|%1|%2", (round (_y * 10)) / 10, _row];
