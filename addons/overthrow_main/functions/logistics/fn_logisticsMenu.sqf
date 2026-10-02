@@ -1,6 +1,6 @@
 /*
     Description:
-    A freight broker's contracts (talking to him, OT_fnc_talkToCiv): his 3 offers (OT_fnc_logisticsOffers)
+    A freight broker's contracts (talking to him, OT_fnc_talkToCiv): his legal offers, up to 4 with a long haul (OT_fnc_logisticsOffers)
     and, when a gang works near him, sometimes a smuggling contract (OT_fnc_logisticsIllegalOffers),
     marked ILLEGAL, with the gang's name. Picking one goes through accepting it (OT_fnc_logisticsAccept):
     a contraband add-on if it has one, collateral for illegal work, then whether to bring your own
