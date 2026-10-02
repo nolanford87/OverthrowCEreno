@@ -111,7 +111,8 @@ OTQA_poach_damage = isDamageAllowed player;
         if (_index < 0) exitWith { ["Poachers: a spot to test", false, "no spots"] call OTQA_fnc_check };
         [_index] call OTQA_poach_clear;
         player allowDamage false;
-        player setPosATL ((_pos findEmptyPosition [0, 50, "CAManBase"]) param [0, _pos]);
+        private _free = _pos findEmptyPosition [0, 50, "CAManBase"];
+        player setPosATL ([_free, _pos] select (_free isEqualTo []));
         OTQA_poach_index = _index;
         private _live = { (agents apply { agent _x }) select { alive _x && { (_x getVariable ["OT_huntIndex", -1]) isEqualTo OTQA_poach_index } } };
         private _found = [{ (call _live) isNotEqualTo [] }, 15] call OTQA_poach_wait;
@@ -129,7 +130,8 @@ OTQA_poach_damage = isDamageAllowed player;
         if (_index < 0) exitWith {};
         [_index] call OTQA_poach_clear;
         player allowDamage false;
-        player setPosATL ((_pos findEmptyPosition [0, 50, "CAManBase"]) param [0, _pos]);
+        private _free = _pos findEmptyPosition [0, 50, "CAManBase"];
+        player setPosATL ([_free, _pos] select (_free isEqualTo []));
 
         // Pressure 1 or under: never
         [_index, 1] call OT_fnc_poacherPressure;
