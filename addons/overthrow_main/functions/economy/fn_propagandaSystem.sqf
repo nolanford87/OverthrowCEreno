@@ -1,6 +1,6 @@
 if !(isServer) exitWith {};
 // Every 15 real minutes (a game hour at Overthrow's original 4x), whatever the time speed
-propaganda_system_next = 0;
+propaganda_system_next = time + 900; // The first one 15 minutes in, like income
 waitUntil {
     sleep 1;
     server getVariable ["StartupType", ""] != "";
