@@ -327,6 +327,14 @@ if (_canMission) then {
             [OT_nation, _standing, _s, 5] call OT_fnc_buyDialog;
         }
     ];
+    // Sea turtles: contraband, the factions pay for them
+    private _turtles = { _x isEqualTo "OT_Turtle" } count (items player);
+    if (_turtles > 0) then {
+        _options pushBack [
+            format ["Sell %1 sea turtle%2 ($%3 and +1 influence each)", _turtles, ["", "s"] select (_turtles > 1), (cost getVariable ["OT_Turtle", [400]]) select 0],
+            { call OT_fnc_sellTurtles }
+        ];
+    };
 };
 
 if (_isShop && { (_civ getVariable ["OT_shopCategory", ""]) isEqualTo "General" }) then {

@@ -39,6 +39,13 @@ if (_amgen) then {
     ctrlEnable [1603, true];
 };
 
+if (_name in OT_fisheries) exitWith {
+    // OT_fnc_fisheryCycle
+    _text = _text + format ["<t size='0.65'>Catches about %1 fish into its container each cycle</t><br/>", _outnum];
+    _text = _text + format ["<t size='0.65'>Buys up to %1 fish delivered to its container at 1.2x the shop price</t><br/>", 5 * _num];
+    _text = _text + format ["<t size='0.65'>Next cycle: in %1 min</t><br/>", _nextIn];
+    ((findDisplay 8000) displayCtrl 1104) ctrlSetStructuredText parseText _text;
+};
 if (count _data > 2) then {
     private _input = _data select 2;
     private _output = _data select 3;

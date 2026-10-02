@@ -16,6 +16,14 @@ if ((missionNamespace getVariable ["OT_setupPlayerUnit", objNull]) isNotEqualTo 
     player addAction ["Pick up the carcass", { [cursorObject] spawn OT_fnc_huntPickup }, nil, 1.5, true, true, "",
         "isNull objectParent _this && { !isNull cursorObject } && { !alive cursorObject } && { (typeOf cursorObject) in OT_huntMeat } && { (_this distance cursorObject) < 3.5 } && { !(cursorObject getVariable ['OT_pickingUp', false]) }"];
     if (isNil "OT_huntLicenceLoopId") then { OT_huntLicenceLoopId = [OT_fnc_huntingLicenceLoop, 10] call CBA_fnc_addPerFrameHandler };
+    // Fishing: the driver of a fishing boat casts its net, once every 15 seconds, going slowly
+    player addAction ["Cast the net", {
+        params ["_caller"];
+        private _boat = vehicle _caller;
+        _boat setVariable ["OT_netReady", time + 15];
+        [_boat, _caller] remoteExec ["OT_fnc_castNet", 2];
+    }, nil, 1.5, false, true, "",
+        "driver (vehicle _this) isEqualTo _this && { (typeOf vehicle _this) in OT_fishingBoats } && { (speed vehicle _this) < 12 } && { time > ((vehicle _this) getVariable ['OT_netReady', 0]) }"];
 };
 
 player setVariable ["player_uid", getPlayerUID player, true];

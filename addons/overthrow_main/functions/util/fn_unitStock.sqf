@@ -11,7 +11,7 @@ if (_this isEqualType []) then {
         _categoryItems = ["OT_Steel", "OT_Wood", "OT_Plastic", "OT_Fertilizer"];
     };
     if (_category isEqualTo "General") then {
-        _categoryItems = ["OT_Meat"]; // Bought, not sold (OT_items "General" is what's sold)
+        _categoryItems = ["OT_Meat"] + OT_fishSellItems; // Bought, not sold (OT_items "General" is what's sold)
     };
     if (_category isEqualTo "Clothing") then {
         _categoryItems = OT_allLegalClothing + OT_allGlasses + OT_allGoggles + OT_allFacewear;

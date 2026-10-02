@@ -55,6 +55,16 @@ class CfgFunctions {
             class huntingLegalItems {};
         };
 
+        class Fishing {
+            file = "\overthrow_main\functions\fishing";
+            class initFishing {};
+            class fishingGrounds {};
+            class spawnFishingGround {};
+            class castNet {};
+            class fisheryCycle {};
+            class sellTurtles {};
+        };
+
         /* Persistent Save */
         class Save {
             file = "\overthrow_main\functions\save";
