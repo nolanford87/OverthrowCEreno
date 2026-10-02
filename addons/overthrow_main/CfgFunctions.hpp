@@ -89,6 +89,9 @@ class CfgFunctions {
             class logisticsSearchContraband {};
             class logisticsImpound {};
             class logisticsImpoundRecover {};
+            // Gangs and losing the load
+            class logisticsHijack {};
+            class logisticsDeath {};
         };
 
         /* Persistent Save */
