@@ -68,18 +68,14 @@ OTQA_haul_cleanup = {
         ["Logistics: not delivered while a crate is still loaded", ([_taskId] call BIS_fnc_taskState) isNotEqualTo "SUCCEEDED" && { (player getVariable ["OT_logisticsActive", ""]) isEqualTo _id },
             [_taskId] call BIS_fnc_taskState] call OTQA_fnc_check;
 
-        // Unloaded at the drop-off: delivered
-        if (!isNil "ace_cargo_fnc_unloadItem") then { [_crate, _veh] call ace_cargo_fnc_unloadItem };
+        // "Unload delivery cargo" at the drop-off: the last crate comes out behind the truck, delivered
+        ["Logistics: the unload action finds the truck from beside it", ([_veh, _id] call { params ["_v", "_jid"]; private _old = getPosATL player; player setPosATL (_v modelToWorld [4, 0, 0]); sleep 0.5; private _found = [player, _jid] call OT_fnc_logisticsCargoVehicle; player setPosATL _old; _found }) isEqualTo _veh, ""] call OTQA_fnc_check;
+        private _space = _veh getVariable ["ace_cargo_space", 0];
+        private _out = [_veh, _id] call OT_fnc_logisticsUnload;
         sleep 0.5;
-        if (!isNull (attachedTo _crate)) then {
-            "Logistics: ACE couldn't unload the crate here (no room at the test drop-off), unloaded by hand; unload one by hand in a real job to check" call OTQA_fnc_manual;
-            private _list = _veh getVariable ["ace_cargo_loaded", []];
-            _list deleteAt (_list find _crate);
-            _veh setVariable ["ace_cargo_loaded", _list, true];
-            detach _crate;
-            [_crate, false] remoteExec ["hideObjectGlobal", 2];
-        };
-        _crate setPosATL (_toPos getPos [12, 270]); // Clear of the truck at the drop-off
+        ["Logistics: unloading sets the crate down behind the truck, space back", _out isEqualTo 1 && { isNull (attachedTo _crate) } && { !(isObjectHidden _crate) } && { !(_crate in (_veh getVariable ["ace_cargo_loaded", []])) } && { (_veh getVariable ["ace_cargo_space", 0]) isEqualTo (_space + 1) } && { (_crate distance2D _veh) < 15 },
+            format ["unloaded %1, attached %2, hidden %3, %4 m from the truck, space %5 -> %6", _out, attachedTo _crate, isObjectHidden _crate, round (_crate distance2D _veh), _space, _veh getVariable ["ace_cargo_space", 0]]] call OTQA_fnc_check;
+        "Logistics: drive a rented truck to a drop-off; 'Unload delivery cargo' shows within 40 m, by or in the truck, and sets the crates down behind it" call OTQA_fnc_manual;
         private _timeout = time + 15;
         waitUntil { sleep 1; ([_taskId] call BIS_fnc_taskState) isEqualTo "SUCCEEDED" || { time > _timeout } };
         _timeout = time + 5;
