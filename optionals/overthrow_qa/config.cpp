@@ -25,6 +25,7 @@ class CfgFunctions {
             class testsFOB {};
             class testsDLCVehicles {};
             class testsPace {};
+            class testsHunting {};
             class check {};
             class manual {};
             class spawnWarehouse {}; // Zeus helper

@@ -264,7 +264,37 @@ if (isServer) then {
     cost setVariable ["OT_Wine", [25, 0, 0, 0], true];
     cost setVariable ["OT_Olives", [7, 0, 0, 0], true];
     cost setVariable ["OT_Fertilizer", [20, 0, 0, 0], true];
+    cost setVariable ["OT_Meat", [30, 0, 0, 0], true]; // About $50 a rabbit, $150 a goat (OT_huntMeat)
 };
+
+// Hunting: raw meat (OT_Meat) per animal picked up (OT_fnc_huntPickup)
+OT_huntMeat = createHashMapFromArray [
+    ["Rabbit_F", 1], ["Snake_random_F", 1], ["Snake_vipera_random_F", 1],
+    ["Hen_random_F", 1], ["Cock_random_F", 1], ["Cock_white_F", 1],
+    ["Goat_random_F", 3], ["Sheep_random_F", 3]
+];
+// What the general store sells for hunting (OT_fnc_talkToCiv)
+OT_huntingShopItems = ["sgun_HunterShotgun_01_F", "2Rnd_12Gauge_Pellets", "2Rnd_12Gauge_Slug", "srifle_DMR_06_hunter_F", "10Rnd_Mk14_762x51_Mag"] select {
+    isClass (configFile >> "CfgWeapons" >> _x) || { isClass (configFile >> "CfgMagazines" >> _x) }
+};
+// Hunting rifles (OT_fnc_isLegalHunter): shotguns, and rifles named for hunting (the general store's
+// included), with no burst or automatic fire
+OT_huntingWeapons = ((
+    "getNumber (_x >> 'scope') isEqualTo 2 && { (configName _x) isKindOf ['Rifle_Base_F', configFile >> 'CfgWeapons'] }"
+    configClasses (configFile >> "CfgWeapons")
+) select {
+    private _cfg = _x;
+    private _cls = configName _cfg;
+    private _huntLike = ((_cls call BIS_fnc_itemType) select 1) isEqualTo "Shotgun"
+        || { "hunt" in toLowerANSI _cls }
+        || { "hunt" in toLowerANSI (getText (_cfg >> "displayName")) };
+    _huntLike && {
+        (getArray (_cfg >> "modes")) findIf {
+            private _mode = [_cfg >> _x, _cfg] select (_x isEqualTo "this");
+            getNumber (_mode >> "autoFire") > 0 || { getNumber (_mode >> "burst") > 1 }
+        } isEqualTo -1
+    }
+}) apply { configName _x };
 
 //Detecting vehicles and weapons
 

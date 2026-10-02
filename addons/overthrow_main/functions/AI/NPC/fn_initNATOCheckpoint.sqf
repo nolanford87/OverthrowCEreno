@@ -100,10 +100,11 @@ while { !(isNil "_group") && (units _group) isNotEqualTo [] } do {
                         };
 
                         _items = (vehicle _x) call OT_fnc_unitStock;
+                        private _legal = _unit call OT_fnc_huntingLegalItems; // A legal hunter's rifle and ammo
 
                         {
                             private _cls = _x select 0;
-                            if (_cls in OT_allWeapons + OT_allMagazines + OT_illegalHeadgear + OT_illegalVests + OT_allStaticBackpacks + OT_allOptics) then {
+                            if (_cls in OT_allWeapons + OT_allMagazines + OT_illegalHeadgear + OT_illegalVests + OT_allStaticBackpacks + OT_allOptics && { !(_cls in _legal) }) then {
                                 _foundweapons = true;
                             };
                             if (_cls in OT_illegalItems) then {
@@ -119,7 +120,7 @@ while { !(isNil "_group") && (units _group) isNotEqualTo [] } do {
                             };
                         } forEach (_items);
 
-                        if (primaryWeapon _unit != "") then { _foundweapons = true };
+                        if (primaryWeapon _unit != "" && { !(primaryWeapon _unit in _legal) }) then { _foundweapons = true };
                         if (secondaryWeapon _unit != "") then { _foundweapons = true };
                         if (handgunWeapon _unit != "") then { _foundweapons = true };
 

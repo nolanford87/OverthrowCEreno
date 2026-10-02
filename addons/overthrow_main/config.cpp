@@ -54,6 +54,7 @@ class CfgPatches {
             "OT_Wine",
             "OT_Olives",
             "OT_Fertilizer",
+            "OT_Meat",
             "OT_ammo50cal"
         };
     };
@@ -257,6 +258,15 @@ class ACE_Tags {
 };
 
 #include "CfgMarkers.hpp"
+
+// Map colour of revealed hunting spots (yellow-green, no vanilla colour is)
+class CfgMarkerColors {
+    class OT_ColorHunting {
+        name = "Hunting ground";
+        color[] = {0.62, 0.78, 0.16, 1};
+        scope = 2;
+    };
+};
 #include "CfgGlasses.hpp"
 #include "CfgSounds.hpp"
 #include "CfgSettings.hpp"

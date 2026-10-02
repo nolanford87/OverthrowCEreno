@@ -1,6 +1,7 @@
 params ["_me", ["_killer", objNull], ["_instigator", objNull]];
 
 if !(local _me) exitWith {}; //Only run this on the machine where unit is local
+if (_me isKindOf "Animal") exitWith {}; // Hunting, livestock (OT_fnc_farmAnimalKilled)
 
 // For vehicle kills the killer is the vehicle, the instigator is who pulled the trigger (e.g. the gunner)
 if (!isNull _instigator && { _instigator isKindOf "CAManBase" }) then {

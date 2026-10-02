@@ -138,10 +138,11 @@ if ((_target distance _posnow) > 2) exitWith {
 if (isPlayer _target) then {
     private _foundillegal = false;
     private _foundweapons = false;
+    private _legal = _target call OT_fnc_huntingLegalItems; // A legal hunter's rifle and ammo
     {
         private _cls = _x select 0;
         // removeItem needs the player to be local, so run it on the player's machine
-        if (_cls in OT_allWeapons + OT_allMagazines + OT_illegalHeadgear + OT_illegalVests + OT_allStaticBackpacks + OT_allOptics) then {
+        if (_cls in OT_allWeapons + OT_allMagazines + OT_illegalHeadgear + OT_illegalVests + OT_allStaticBackpacks + OT_allOptics && { !(_cls in _legal) }) then {
             private _count = _x select 1;
             for "_i" from 1 to _count do {
                 [_target, _cls] remoteExec ["removeItem", _target, false];

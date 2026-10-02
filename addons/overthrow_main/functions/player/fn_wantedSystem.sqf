@@ -37,7 +37,8 @@ _unit addEventHandler [
     "Fired",
     {
         params ["_me", "_weaponFired"];
-        if (captive _me) then {
+        // A legal hunter firing their hunting rifle out of earshot of towns (400 m beyond them)
+        if (captive _me && { !(_weaponFired isEqualTo primaryWeapon _me && { [_me, 400] call OT_fnc_isLegalHunter }) }) then {
             //See if anyone heard the shots
             private _range = 800;
             (_me weaponAccessories (currentMuzzle _me)) params [["_silencer", ""]];

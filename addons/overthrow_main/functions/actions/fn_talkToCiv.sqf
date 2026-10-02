@@ -329,6 +329,12 @@ if (_canMission) then {
     ];
 };
 
+if (_isShop && { (_civ getVariable ["OT_shopCategory", ""]) isEqualTo "General" }) then {
+    private _left = player getVariable ["OT_huntLicence", 0];
+    private _label = ["Buy a hunting licence ($300, 2.5 hours)", format ["Renew your hunting licence ($300, %1 min left)", ceil (_left / 60)]] select (_left > 0);
+    _options pushBack [_label, { call OT_fnc_buyHuntingLicence }];
+};
+
 if (_canBuy) then {
     _options pushBack [
         "Buy",
@@ -353,6 +359,8 @@ if (_canBuy) then {
                         } forEach (_x select 1);
                     };
                 } forEach (OT_items);
+                // Hunting gear at the general store
+                if (_cat isEqualTo "General") then { _s append (OT_huntingShopItems apply { [_x, -1] }) };
 
                 [_town, _standing, _s] call OT_fnc_buyDialog;
             };
