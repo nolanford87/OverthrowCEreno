@@ -51,13 +51,19 @@ OTQA_haul_cleanup = {
         ["Logistics: task and pickup marker created", ([_taskId] call BIS_fnc_taskExists) && { (markerShape format ["OT_haulPickup_%1", _id]) isNotEqualTo "" },
             format ["task %1 (%2), marker %3", _taskId, [_taskId] call BIS_fnc_taskState, markerShape format ["OT_haulPickup_%1", _id]]] call OTQA_fnc_check;
 
-        // One crate loaded the ACE way, the truck and the other crates at the drop-off: not delivered yet
+        // The rental comes with the crates loaded; at the drop-off two come out, one stays in: not delivered yet
+        ["Logistics: the rental comes with every crate loaded (ACE)", (_crates findIf { !(_x in (_veh getVariable ["ace_cargo_loaded", []])) }) isEqualTo -1,
+            format ["loaded %1 of %2", count ((_veh getVariable ["ace_cargo_loaded", []]) select { _x in _crates }), count _crates]] call OTQA_fnc_check;
         private _crate = _crates select 0;
-        private _loaded = [_crate, _veh, true] call ace_cargo_fnc_loadItem;
-        sleep 0.5;
-        ["Logistics: a crate loads into the rental (ACE)", _loaded && { _crate in (_veh getVariable ["ace_cargo_loaded", []]) }, format ["loaded %1, attached to %2", _loaded, attachedTo _crate]] call OTQA_fnc_check;
         _veh setPosATL _toPos;
-        { _x setPosATL (_toPos getPos [6 + _forEachIndex * 2, 90]) } forEach (_crates select [1, 2]);
+        {
+            private _list = _veh getVariable ["ace_cargo_loaded", []];
+            _list deleteAt (_list find _x);
+            _veh setVariable ["ace_cargo_loaded", _list, true];
+            detach _x;
+            [_x, false] remoteExec ["hideObjectGlobal", 2];
+            _x setPosATL (_toPos getPos [6 + _forEachIndex * 2, 90]);
+        } forEach (_crates select [1, 2]);
         sleep 7;
         ["Logistics: not delivered while a crate is still loaded", ([_taskId] call BIS_fnc_taskState) isNotEqualTo "SUCCEEDED" && { (player getVariable ["OT_logisticsActive", ""]) isEqualTo _id },
             [_taskId] call BIS_fnc_taskState] call OTQA_fnc_check;

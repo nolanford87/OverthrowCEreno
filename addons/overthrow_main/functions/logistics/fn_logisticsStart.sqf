@@ -2,8 +2,8 @@
     Description:
     Starts a freight haul (server): a player accepted a broker's contract (OT logistics, part A).
     Spawns the job's wooden crates at the broker's loading spot, ACE-loadable (size 1 each) and tagged
-    with the job id (OT_haul), and a rented box van or box truck next to them if one was paid for
-    (owned by the player, its ACE cargo space fits the crates, tagged OT_haulRental). Gives the
+    with the job id (OT_haul), and a rented box van or box truck next to them, the crates already
+    loaded in it, if one was paid for (owned by the player, its ACE cargo space fits the crates, tagged OT_haulRental). Gives the
     player a task to the drop-off (pay and time limit in its text) and a pickup marker, then tracks
     the job until it ends (OT_fnc_logisticsTrack).
 
@@ -85,6 +85,8 @@ if (_rental) then {
     // Room for every crate (and a little more), whatever ACE gives the class
     [_veh, (_count + 2) max (_veh getVariable ["ace_cargo_space", 0])] call ace_cargo_fnc_setSpace;
     _veh setVariable ["OT_haulRental", _id, true];
+    // The crates come loaded; any that won't fit stay on the road beside it
+    { [_x, _veh, true] call ace_cargo_fnc_loadItem } forEach _crates;
 };
 
 _player setVariable ["OT_logisticsActive", _id, true];
@@ -103,7 +105,7 @@ private _minutes = round (_timeLimit / 60);
         format [
             "Haul %1 crates from %2 to %3.<br/><br/>Load them into a vehicle at the pickup marker (ACE: Load into vehicle), drive them to %3 and unload them there: delivered when every crate is on the ground within 30 m of the drop-off.<br/><br/>Pay: $%4. Time limit: %5 minutes, then -10%6 of the pay per 5 minutes late; nothing after %7 minutes.%8",
             _count, _fromName, _toName, [_pay, 1, 0, true] call CBA_fnc_formatNumber, _minutes, "%", _minutes * 2,
-            ["", "<br/><br/>A rented vehicle is parked at the pickup."] select _rental
+            ["", "<br/><br/>A rented vehicle is parked at the pickup with the crates already loaded."] select _rental
         ],
         format ["Haul %1 crates to %2", _count, _toName],
         _taskId
