@@ -38,21 +38,20 @@ for "_i" from 1 to (getNumber ((configOf _shed) >> "numberOfDoors")) do {
     if (_p isNotEqualTo [0, 0, 0]) then { _doors pushBack [_p select 0, _p select 1] };
 };
 diag_log format ["Overthrow: freight broker shed %1 doors (own coordinates): %2", _id, _doors apply { _x apply { (round (_x * 10)) / 10 } }];
-// The office's door, the nearest to the broker; a clear lane from it to him (north side if none found)
-private _officeDoor = [-6.75, 2.6];
-if (_doors isNotEqualTo []) then {
-    private _byDist = _doors apply { [_x distance2D _stand, _x] };
-    _byDist sort true;
-    _officeDoor = (_byDist select 0) select 1;
-};
+// The office's doors (within 4 m of the broker: the outside one in the south wall, the one to the
+// hall in the north): a clear lane from each to him (the hall door if none found)
+private _officeDoors = _doors select { (_x distance2D _stand) < 4 };
+if (_officeDoors isEqualTo []) then { _officeDoors = [[-8.3, 2.5]] };
 private _laneDist = {
     params ["_p"];
-    // Distance from _p to the segment broker -> office door
-    private _a = _stand; private _b = _officeDoor;
-    private _ab = [(_b select 0) - (_a select 0), (_b select 1) - (_a select 1)];
-    private _len2 = ((_ab select 0) ^ 2) + ((_ab select 1) ^ 2);
-    private _t = if (_len2 > 0) then { (((((_p select 0) - (_a select 0)) * (_ab select 0)) + (((_p select 1) - (_a select 1)) * (_ab select 1))) / _len2) max 0 min 1 } else { 0 };
-    [_p select 0, _p select 1] distance2D [(_a select 0) + (_t * (_ab select 0)), (_a select 1) + (_t * (_ab select 1))]
+    // Distance from _p to the nearest segment broker -> office door
+    selectMin (_officeDoors apply {
+        private _a = _stand; private _b = _x;
+        private _ab = [(_b select 0) - (_a select 0), (_b select 1) - (_a select 1)];
+        private _len2 = ((_ab select 0) ^ 2) + ((_ab select 1) ^ 2);
+        private _t = if (_len2 > 0) then { (((((_p select 0) - (_a select 0)) * (_ab select 0)) + (((_p select 1) - (_a select 1)) * (_ab select 1))) / _len2) max 0 min 1 } else { 0 };
+        [_p select 0, _p select 1] distance2D [(_a select 0) + (_t * (_ab select 0)), (_a select 1) + (_t * (_ab select 1))]
+    })
 };
 private _inTheWay = {
     params ["_mx", "_my", ["_lane", 0]];
@@ -74,21 +73,20 @@ private _place = {
     _o
 };
 
-// The office: the desk beside the broker (not between him and the door), cabinets and a water cooler
-// against the walls, away from the door and the way in
-private _toDoor = [(_officeDoor select 0) - (_stand select 0), (_officeDoor select 1) - (_stand select 1)];
-private _laneDir = (_toDoor select 0) atan2 (_toDoor select 1); // In its own coordinates, 0 = +y
-private _side = [cos _laneDir, - (sin _laneDir)]; // To the broker's right, facing the door
-private _desk = [(_stand select 0) + (1.1 * (_side select 0)), (_stand select 1) + (1.1 * (_side select 1))];
-if ([_desk select 0, _desk select 1] call _inTheWay) then { _desk = [(_stand select 0) - (1.1 * (_side select 0)), (_stand select 1) - (1.1 * (_side select 1))] };
-["Land_TableDesk_F", _desk select 0, _desk select 1, _laneDir + 90] call _place;
-["Land_Laptop_unfolded_F", _desk select 0, _desk select 1, _laneDir + 180, 0.79] call _place;
+// The office: the desk in front of the broker (he faces east, both doors are behind him to the west),
+// cabinets, a water cooler and a printer along the east side, away from the doors and the ways in
+["Land_TableDesk_F", -6.2, 0.3, 90, 0, 1] call _place;
+["Land_Laptop_unfolded_F", -6.2, 0.0, 270, 0.79, 1] call _place;
+private _lowCabinet = ["Land_OfficeCabinet_02_F", -5.0, -1.8, 180, 0, 1.2] call _place;
+if (!isNull _lowCabinet) then {
+    // The printer on top of it
+    (boundingBoxReal _lowCabinet) params ["_min", "_max"];
+    ["Land_Printer_01_F", -5.0, -1.8, 180, (_max select 2) - (_min select 2), 1.2] call _place;
+};
 [
-    ["Land_OfficeCabinet_01_F", -8.6, -1.6, 90, 0, 1.2],
-    ["Land_OfficeCabinet_02_F", -5.0, -1.8, 180, 0, 1.2],
-    ["Land_WaterCooler_01_new_F", -8.6, 1.4, 90, 0, 1.2],
-    ["Land_FireExtinguisher_F", -4.9, -0.6, 270, 0, 1.2],
-    ["Land_Printer_01_F", -6.4, -1.9, 180, 0, 1.2]
+    ["Land_OfficeCabinet_01_F", -4.9, 1.2, 270, 0, 1.2],
+    ["Land_WaterCooler_01_new_F", -5.6, 2.2, 180, 0, 1.2],
+    ["Land_FireExtinguisher_F", -4.9, -0.6, 270, 0, 1.2]
 ] apply { _x call _place };
 
 // The hall: along the north wall and the east end, the middle and the west door clear
