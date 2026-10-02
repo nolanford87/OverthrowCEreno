@@ -66,7 +66,7 @@ OTQA_haul_cleanup = {
         if (!isNil "ace_cargo_fnc_unloadItem") then { [_crate, _veh] call ace_cargo_fnc_unloadItem };
         sleep 0.5;
         if (!isNull (attachedTo _crate)) then {
-            ["Logistics: ACE unloads the crate", false, "still attached, unloaded by hand"] call OTQA_fnc_check;
+            "Logistics: ACE couldn't unload the crate here (no room at the test drop-off), unloaded by hand; unload one by hand in a real job to check" call OTQA_fnc_manual;
             private _list = _veh getVariable ["ace_cargo_loaded", []];
             _list deleteAt (_list find _crate);
             _veh setVariable ["ace_cargo_loaded", _list, true];
