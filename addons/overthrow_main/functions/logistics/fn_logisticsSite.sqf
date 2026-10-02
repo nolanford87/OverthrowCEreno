@@ -9,7 +9,8 @@
     rest, x -9 to 16.5, y -2.3 to 9; floor 1.36 m below its centre.
 
     Parameters:
-        _this: ARRAY - Broker [id, name, stand, loading spot, shed position, shed direction, road direction]
+        _this: ARRAY - Broker [id, name, stand, loading spot, shed position, shed direction, road direction,
+            airfield]
 
     Usage: _broker call OT_fnc_logisticsSite;
 
