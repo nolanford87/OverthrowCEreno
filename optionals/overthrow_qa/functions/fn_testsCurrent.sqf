@@ -10,8 +10,7 @@ private _tests = [];
 {
     _tests append (call _x);
 } forEach [
-    OTQA_fnc_testsBodies,
-    OTQA_fnc_testsFOBVirtual
+    OTQA_fnc_testsBodies
 ];
 
 if (_tests isEqualTo []) then {
