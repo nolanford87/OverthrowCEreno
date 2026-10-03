@@ -61,8 +61,9 @@ private _server = (allVariables server select {
     // copy array, we might modify them
     if (_val isEqualType []) then { _val = +_val };
 
-    // dont abondon current attacks
-    if (_x isEqualTo "natoabandoned") then {
+    // dont abondon current attacks (a town the occupier is counter-attacking stays the resistance's,
+    // the counter-attack doesn't survive a reload)
+    if (_x isEqualTo "natoabandoned" && { (server getVariable ["NATOattacking", ""]) isNotEqualTo (server getVariable ["NATOcounterTarget", ""]) }) then {
         _val deleteAt (_val find (server getVariable ["NATOattacking", ""]));
     };
 

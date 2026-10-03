@@ -596,6 +596,7 @@ class CfgFunctions {
             class initNATO {};
 
             class NATOQRF {};
+            class NATOQRFfight {};
             class NATOGroundForces {};
             class NATOGroundReinforcements {};
             class CTRGSupport {};
@@ -612,6 +613,10 @@ class CfgFunctions {
             class NATOResponseObjective {};
             class NATOResponseTown {};
             class NATOCounterTown {};
+            class NATOcounterTarget {};
+            class NATOcounterIntel {};
+            class NATOtownGrace {};
+            class NATOretakeTown {};
             class NATOCounterObjective {};
 
             class NATOSupportSniper {};

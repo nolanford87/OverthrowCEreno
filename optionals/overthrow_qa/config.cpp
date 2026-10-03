@@ -34,6 +34,7 @@ class CfgFunctions {
             class testsFisherman {};
             class testsPoachers {};
             class testsAirdropEscort {};
+            class testsCounterattacks {};
             class check {};
             class manual {};
             class spawnWarehouse {}; // Zeus helper

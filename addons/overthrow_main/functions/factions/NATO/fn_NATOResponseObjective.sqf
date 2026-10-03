@@ -25,6 +25,12 @@ private _fail = {
     _abandoned pushBack _objective;
     server setVariable ["NATOabandoned", _abandoned, true];
     format ["%1_restrict", _objective] setMarkerAlpha 0;
+
+    // The first base taken: from now on the occupier counter-attacks resistance towns (OT_fnc_NATOcounterTowns)
+    if !(server getVariable ["NATOcounterUnlocked", false]) then {
+        server setVariable ["NATOcounterUnlocked", true, true];
+        format ["%1 will now try to take back the towns the resistance holds", OT_NATO_name] remoteExec ["OT_fnc_notifyBad", 0, false];
+    };
 };
 
 private _success = {

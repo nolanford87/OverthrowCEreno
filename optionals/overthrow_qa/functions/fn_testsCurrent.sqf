@@ -10,7 +10,8 @@ private _tests = [];
 {
     _tests append (call _x);
 } forEach [
-    OTQA_fnc_testsAirdropEscort
+    OTQA_fnc_testsAirdropEscort,
+    OTQA_fnc_testsCounterattacks
 ];
 
 if (_tests isEqualTo []) then {
