@@ -2,8 +2,8 @@
     Description:
     Removes bodies nobody is near (server): every dead unit farther than _range from all players
     that has been dead at least _minAge real seconds (counted from when this first saw it dead).
-    Run every 5 minutes by OT_fnc_GUERLoop (800 m, 10 minutes), whoever is online, and before a save
-    when there are too many bodies (OT_fnc_saveGame). Bodies near players stay, to be looted.
+    Run before a save when there are over 300 bodies (OT_fnc_saveGame). Bodies near players stay, to
+    be looted. (Day to day, OT_fnc_GUERLoop warns at 200 bodies and cleans them all up at 250.)
 
     Parameters:
         _this # 0: NUMBER - (Optional) Distance from every player, metres (default: 800)

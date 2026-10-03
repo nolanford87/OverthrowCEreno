@@ -1,6 +1,6 @@
 // Real time, whatever the time speed (it only sets the day/night cycle), at Overthrow's original 4x pace:
 // businesses every 15 minutes (a game hour), the per-minute work every 15 seconds (a game minute)
-GUER_faction_loop_data params ["_nextMinute", "_nextBusiness", "_currentProduction", "_stabcounter", "_trackcounter", ["_nextBodies", 0]];
+GUER_faction_loop_data params ["_nextMinute", "_nextBusiness", "_currentProduction", "_stabcounter", "_trackcounter", ["_nextBodyWarning", 0]];
 
 private _numplayers = count (allPlayers - (entities "HeadlessClient_F"));
 if (_numplayers isEqualTo 0) exitWith {};
@@ -40,15 +40,18 @@ if (_trackcounter > 5) then {
     };
 } forEach (groups civilian);
 
-// Every 5 minutes: bodies over 800 m from every player, dead 10 minutes or more, go
-if (time >= _nextBodies) then {
-    _nextBodies = time + 300;
-    [800, 600] call OT_fnc_cleanDistantDead;
-};
-
+// Bodies: from OT_bodyWarnCount (200) a warning to loot or clean them, every 2 minutes; from
+// OT_bodyCleanCount (250) they're cleaned up (OT_fnc_cleanDead, as the options menu does)
 private _dead = count allDeadMen;
-if (_dead > 150) then {
-    format ["There are %1 dead bodies, loot them or clean via options", _dead] remoteExec ["OT_fnc_notifyMinor", 0, false];
+if (_dead >= OT_bodyCleanCount) then {
+    format ["There are %1 dead bodies, cleaning them up", _dead] remoteExec ["OT_fnc_notifyMinor", 0, false];
+    call OT_fnc_cleanDead;
+    _nextBodyWarning = 0;
+} else {
+    if (_dead >= OT_bodyWarnCount && { time >= _nextBodyWarning }) then {
+        _nextBodyWarning = time + 120;
+        format ["There are %1 dead bodies: loot them or clean them via the options; at %2 they're cleaned up", _dead, OT_bodyCleanCount] remoteExec ["OT_fnc_notifyMinor", 0, false];
+    };
 };
 
 {
@@ -192,11 +195,6 @@ if (time >= _nextBusiness) then {
 
 if (time >= _nextMinute) then {
     _nextMinute = time + 15;
-
-    if (!(call OT_fnc_generalIsOnline) && _dead > 300) then {
-        format ["There are %1 dead bodies, initiating auto-cleanup", _dead] remoteExec ["OT_fnc_notifyMinor", 0, false];
-        call OT_fnc_cleanDead;
-    };
 
     //chance to reveal an FOB
     private _revealed = server getVariable ["revealedFOBs", []];
@@ -469,4 +467,4 @@ if (time >= _nextMinute) then {
         };
     } forEach (server getVariable ["recruits", []]);
 };
-GUER_faction_loop_data = [_nextMinute, _nextBusiness, _currentProduction, _stabcounter, _trackcounter, _nextBodies];
+GUER_faction_loop_data = [_nextMinute, _nextBusiness, _currentProduction, _stabcounter, _trackcounter, _nextBodyWarning];

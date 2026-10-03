@@ -1,8 +1,8 @@
 /*
     Description:
-    Bodies (OT_fnc_cleanDistantDead): bodies far from every player that have been dead a while are
-    removed, near or fresh ones stay; a save with over 300 bodies removes the distant ones and goes
-    ahead instead of refusing. Part of the current QA tests. Run it as the host; spawns and kills
+    Bodies: at 200 a warning to loot or clean them, at 250 they're cleaned up (OT_fnc_GUERLoop);
+    a save with over 300 bodies removes the ones far from every player (OT_fnc_cleanDistantDead) and
+    goes ahead instead of refusing; that function keeps bodies near players or freshly dead. Part of the current QA tests. Run it as the host; spawns and kills
     units well away from the host.
 
     Returns: ARRAY - [[name, code, seconds], ...]
@@ -44,7 +44,29 @@ OTQA_bodies_far = {
         { if (!isNull _x) then { deleteVehicle _x } } forEach (_near + _fresh);
     }, 30],
 
+    ["200 bodies: a warning; 250: they're cleaned up", {
+        private _pos = call OTQA_bodies_far;
+        // Up to 210: warned, not cleaned
+        private _need = (210 - (count allDeadMen)) max 0;
+        while { _need > 0 } do { [_pos, 50 min _need] call OTQA_bodies_make; _need = _need - 50; sleep 0.2 };
+        GUER_faction_loop_data set [5, 0];
+        private _timeout = time + 20;
+        waitUntil { sleep 1; ((GUER_faction_loop_data param [5, 0]) > time) || { time > _timeout } };
+        ["Bodies: 200 or more, a warning (every 2 minutes)", (GUER_faction_loop_data param [5, 0]) > time, format ["%1 bodies, next warning in %2 s", count allDeadMen, round ((GUER_faction_loop_data param [5, 0]) - time)]] call OTQA_fnc_check;
+        ["Bodies: under 250, not cleaned", (count allDeadMen) >= 200, format ["%1", count allDeadMen]] call OTQA_fnc_check;
+        // Up to 255: cleaned
+        _need = (255 - (count allDeadMen)) max 0;
+        while { _need > 0 } do { [_pos, 50 min _need] call OTQA_bodies_make; _need = _need - 50; sleep 0.2 };
+        private _before = count allDeadMen;
+        _timeout = time + 20;
+        waitUntil { sleep 1; (count allDeadMen) < 100 || { time > _timeout } };
+        ["Bodies: 250 or more, cleaned up", _before >= 250 && { (count allDeadMen) < 100 }, format ["%1 -> %2", _before, count allDeadMen]] call OTQA_fnc_check;
+    }, 90],
+
     ["Over 300 bodies: the save clears the distant ones and goes ahead", {
+        // The loop's clean-up at 250 held off while this builds up 300
+        private _clean = OT_bodyCleanCount;
+        OT_bodyCleanCount = 100000;
         private _need = (305 - (count allDeadMen)) max 0;
         private _pos = call OTQA_bodies_far;
         for "_i" from 1 to ceil (_need / 50) do { [_pos, 50 min _need] call OTQA_bodies_make; _need = _need - 50; sleep 0.5 };
@@ -60,5 +82,6 @@ OTQA_bodies_far = {
         ["Bodies: over 300 before the save", _before > 300, format ["%1", _before]] call OTQA_fnc_check;
         ["Bodies: the distant ones went", (count allDeadMen) < 300, format ["%1 -> %2", _before, count allDeadMen]] call OTQA_fnc_check;
         ["Bodies: the save went ahead", _saved isEqualTo _mark, format ["saved mark %1, expected %2", _saved, _mark]] call OTQA_fnc_check;
+        OT_bodyCleanCount = _clean;
     }, 90]
 ];
