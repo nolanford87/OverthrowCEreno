@@ -54,3 +54,6 @@ ArmaScriptCompiler.exe
 
 # HEMTT signing key
 .hemttprivatekey
+
+# QA runner: machine-specific mod list
+tools/qa/mods.local.txt
