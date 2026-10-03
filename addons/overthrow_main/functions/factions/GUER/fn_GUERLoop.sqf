@@ -1,6 +1,6 @@
 // Real time, whatever the time speed (it only sets the day/night cycle), at Overthrow's original 4x pace:
 // businesses every 15 minutes (a game hour), the per-minute work every 15 seconds (a game minute)
-GUER_faction_loop_data params ["_nextMinute", "_nextBusiness", "_currentProduction", "_stabcounter", "_trackcounter"];
+GUER_faction_loop_data params ["_nextMinute", "_nextBusiness", "_currentProduction", "_stabcounter", "_trackcounter", ["_nextBodies", 0]];
 
 private _numplayers = count (allPlayers - (entities "HeadlessClient_F"));
 if (_numplayers isEqualTo 0) exitWith {};
@@ -39,6 +39,12 @@ if (_trackcounter > 5) then {
         };
     };
 } forEach (groups civilian);
+
+// Every 5 minutes: bodies over 800 m from every player, dead 10 minutes or more, go
+if (time >= _nextBodies) then {
+    _nextBodies = time + 300;
+    [800, 600] call OT_fnc_cleanDistantDead;
+};
 
 private _dead = count allDeadMen;
 if (_dead > 150) then {
@@ -463,4 +469,4 @@ if (time >= _nextMinute) then {
         };
     } forEach (server getVariable ["recruits", []]);
 };
-GUER_faction_loop_data = [_nextMinute, _nextBusiness, _currentProduction, _stabcounter, _trackcounter];
+GUER_faction_loop_data = [_nextMinute, _nextBusiness, _currentProduction, _stabcounter, _trackcounter, _nextBodies];

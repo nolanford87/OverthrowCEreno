@@ -6,10 +6,9 @@ if (OT_saving) exitWith {
     };
 };
 
-if ((count allDeadMen) > 300) exitWith {
-    if !(_quiet) then {
-        "Too many dead bodies, please clean first" remoteExecCall ["OT_fnc_notifyAndLog", 0, false];
-    };
+// Too many bodies: the ones nobody is near go first (bodies aren't saved), the save goes ahead
+if ((count allDeadMen) > 300) then {
+    [300, 0] call OT_fnc_cleanDistantDead;
 };
 
 if (isNil "OT_NATOInitDone") exitWith {
