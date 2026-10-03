@@ -20,6 +20,7 @@
         _this # 3: ARRAY - What intelligence knows: ["route", from position] or ["drop", drop position]
         _this # 4: STRING - Class of the vehicle delivered
         _this # 5: NUMBER - Seconds until it sets off
+        _this # 6: STRING - (Optional) Class of the attack helicopter escorting an airdrop, "" for none
 
     Usage: private _intel = [_basePos, _name, 3500, ["route", _start], _type, _delay] call OT_fnc_NATOdeliveryIntel;
         ... _intel set ["veh", _tank];
@@ -27,7 +28,7 @@
     Returns: HASHMAP - The handle ("reported": BOOL, "task": STRING)
 */
 
-params ["_destination", "_for", ["_reward", 1000], ["_info", []], ["_vehClass", ""], ["_delay", 0]];
+params ["_destination", "_for", ["_reward", 1000], ["_info", []], ["_vehClass", ""], ["_delay", 0], ["_escortClass", ""]];
 _info params [["_kind", "route"], ["_where", _destination]];
 
 private _intel = createHashMapFromArray [["reported", false], ["task", ""]];
@@ -62,6 +63,9 @@ if (_kind isEqualTo "drop") then {
     _label setMarkerText format ["Possible drop zone: %1", _vehName];
     _markers = [_area, _label];
     _how = format ["%1: it will be airdropped somewhere in the marked area near %2, then head for %3.", _when, _taskPos call OT_fnc_nearestTown, _for];
+    if (_escortClass isNotEqualTo "") then {
+        _how = _how + format [" A %1 is expected to fly ahead to scout the drop zone and escort it.", _escortClass call OT_fnc_vehicleGetName];
+    };
 } else {
     // Where it comes from and where it goes
     _taskPos = _where;

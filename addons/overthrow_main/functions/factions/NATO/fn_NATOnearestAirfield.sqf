@@ -14,8 +14,7 @@
 
 params ["_pos", ["_exclude", ""]];
 
-private _abandoned = server getVariable ["NATOabandoned", []];
-private _held = OT_airportData select { !((_x select 1) in _abandoned) };
+private _held = call OT_fnc_NATOheldAirfields;
 if (_held isEqualTo []) exitWith { [] };
 
 private _others = _held select { (_x select 1) isNotEqualTo _exclude };

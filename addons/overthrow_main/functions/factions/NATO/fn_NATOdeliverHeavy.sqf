@@ -5,7 +5,10 @@
       4 km away and reachable by land, starting on a road within 50 m of it, with 2 escort vehicles
       that protect it until it's delivered or destroyed, then leave
     - airdropped by an armed Blackfish (OT_fnc_NATOairdropVehicle) in an open field about 2 km from the
-      base on its island, then drives in (always possible; shot down before the drop, it's lost)
+      base on its island, then drives in (always possible; shot down before the drop, it's lost).
+      While the occupier holds an airfield its attack helicopter (OT_fnc_NATOattackHelicopter) escorts
+      it (OT_fnc_NATOairdropEscort): it sets off ahead of the Blackfish to scout the drop zone, then
+      follows the tank to the base. Shot down, the delivery carries on alone
     It sets off 8 real minutes after it's ordered (OT_fnc_NATOdeliveryWait), resistance intelligence may
     report it as soon as it's ordered (OT_fnc_NATOdeliveryIntel). The base lost meanwhile, it's called off.
     It's already on the base's vehicle list, destroyed on the way it comes off it (tagged "vehgarrison").
@@ -86,11 +89,36 @@ if (_convoy) then {
     _start = getPosATL _startRoad;
 };
 
-// Announced to the resistance if intelligence reports it, then it sets off after the wait
+// An airdrop is escorted by the occupier's attack helicopter while it holds an airfield. It sets off
+// from the airfield nearest the drop with a head start on the Blackfish (which flies faster), enough to
+// get to the drop zone first: the flight time difference, a minute more to look around, a minute and a
+// half more to take off when it starts on the ground (the occupier holds only that airfield)
+private _escortClass = "";
+private _lead = 0;
+if (!_convoy && { !(missionNamespace getVariable ["OT_noAirdropEscort", false]) }) then { // Set only by the QA tests
+    private _airfields = call OT_fnc_NATOheldAirfields;
+    if (_airfields isEqualTo []) exitWith {};
+    _escortClass = call OT_fnc_NATOattackHelicopter;
+    if (_escortClass isEqualTo "") exitWith {};
+    private _distance = ((([_drop] call OT_fnc_NATOnearestAirfield) select 0) distance2D _drop) max 1;
+    private _heliSpeed = ((getNumber (configFile >> "CfgVehicles" >> _escortClass >> "maxSpeed")) max 200) * 0.6 / 3.6;
+    _lead = (_distance / _heliSpeed) - (_distance / 90) + 60;
+    if ((count _airfields) isEqualTo 1) then { _lead = _lead + 90 };
+    _lead = ceil (_lead max 60);
+};
+
+// Announced to the resistance if intelligence reports it, then it sets off after the wait (longer when
+// the wait is too short for the escort's head start: only in the QA tests)
 private _delay = missionNamespace getVariable ["OT_deliveryDelay", 480]; // Changed only by the QA tests
-private _intel = [_basePos, _name, 3500, [["drop", _drop], ["route", _start]] select _convoy, _type, _delay] call OT_fnc_NATOdeliveryIntel;
-[_name, _type, "vehgarrison", _delay] call OT_fnc_NATOdeliveryWait;
+private _wait = _delay max _lead;
+private _intel = [_basePos, _name, 3500, [["drop", _drop], ["route", _start]] select _convoy, _type, _wait, _escortClass] call OT_fnc_NATOdeliveryIntel;
+private _escort = createHashMap; // Tells the escort about the tank, and when it's over
+if (_escortClass isNotEqualTo "") then {
+    [_escortClass, _drop, _name, _escort, _wait - _lead] spawn OT_fnc_NATOairdropEscort;
+};
+[_name, _type, "vehgarrison", _wait] call OT_fnc_NATOdeliveryWait;
 if (_name in (server getVariable ["NATOabandoned", []])) exitWith {
+    _escort set ["done", true];
     // The base was lost meanwhile: called off, it comes off the list
     private _list = server getVariable [format ["vehgarrison%1", _name], []];
     private _index = _list find _type;
@@ -144,6 +172,7 @@ if (_convoy) then {
         _intel set ["veh", _plane]; // An intelligence report on it follows the Blackfish, then what it drops
     };
     _tank = ([_type, _drop, [_onLaunch, [_name, _intel]]] call OT_fnc_NATOairdropVehicle) select 0;
+    _escort set ["tank", _tank]; // Down: the escort follows it to the base
     if (isNull _tank) then {
         // Shot down with the Blackfish: it comes off the base's list
         private _list = server getVariable [format ["vehgarrison%1", _name], []];
@@ -186,6 +215,7 @@ if (alive _tank) then {
 // On its way until it arrives or is destroyed
 private _timeout = time + 1800;
 waitUntil { sleep 5; !alive _tank || { (_tank distance2D _basePos) < 150 } || { _tank getVariable ["OT_stalledAtBase", false] } || { time > _timeout } };
+_escort set ["done", true]; // Its escort helicopter leaves
 
 // The escorts' job is done, they head back and go once nobody is near
 if (_escorts isNotEqualTo []) then {

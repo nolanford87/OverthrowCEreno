@@ -14,7 +14,8 @@
        and completes the delivery (task fails, stays on the list, escorts head back)
     7. The wait: a delivery is reported as soon as it's ordered and only sets off after the wait (8 real
        minutes in play, 60 seconds here); meanwhile the base doesn't spawn it itself
-    The QA runner makes deliveries set off at once (OT_deliveryDelay 0) except in test 7.
+    The QA runner makes deliveries set off at once (OT_deliveryDelay 0) except in test 7. Airdrops here
+    have no attack helicopter escort (OT_noAirdropEscort), that's OTQA_fnc_testsAirdropEscort.
 
     Returns: ARRAY - [[name, code, seconds], ...]
 */
@@ -53,6 +54,7 @@ OTQA_intel_deliver = {
     private _isFor = { (_x getVariable ["vehgarrison", ""]) isEqualTo _baseName || { (_x getVariable ["OT_airdropFor", ""]) isEqualTo _baseName } };
     private _before = vehicles select _isFor;
     OT_deliveryIntelChance = _chance;
+    OT_noAirdropEscort = true;
     private _script = [_type, _baseName, _basePos, _method] spawn OT_fnc_NATOdeliverHeavy;
     private _tank = objNull;
     private _timeout = time + 15;
@@ -70,6 +72,7 @@ OTQA_intel_deliver = {
         _taskId = _tank getVariable ["OT_interceptTask", ""];
     };
     OT_deliveryIntelChance = nil;
+    OT_noAirdropEscort = nil;
     [_tank, _taskId, _basePos, _baseName, _script, _type];
 };
 
@@ -341,10 +344,12 @@ OTQA_intel_airdrop = {
         private _oldTasks = (player call BIS_fnc_tasksUnit) select { (_x find "intercept") isEqualTo 0 };
         OT_deliveryDelay = 60;
         OT_deliveryIntelChance = 100;
+        OT_noAirdropEscort = true;
         private _ordered = time;
         private _script = [_type, _baseName, _basePos] spawn OT_fnc_NATOdeliverHeavy;
         sleep 5;
         OT_deliveryIntelChance = nil;
+        OT_noAirdropEscort = nil;
         OT_deliveryDelay = 0;
 
         // Announced at once, nothing on its way yet
