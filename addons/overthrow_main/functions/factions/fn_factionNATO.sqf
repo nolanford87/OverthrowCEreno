@@ -8,6 +8,9 @@ server setVariable ["NATOlastattack", 0, true];
 server setVariable ["QRFpos", nil, true];
 server setVariable ["QRFprogress", nil, true];
 server setVariable ["QRFstart", nil, true];
+// A counter-attack on a town (OT_fnc_NATOCounterTown) doesn't survive a reload
+server setVariable ["NATOcounterTarget", "", true];
+server setVariable ["NATOlastTownCounter", 0, true];
 
 OT_nextNATOTurn = time + _nextTurn;
 publicVariable "OT_nextNATOTurn";
@@ -24,6 +27,9 @@ publicVariable "OT_nextNATOTurn";
 
             // FOB takeover timers
             call OT_fnc_NATOFOBtimers;
+
+            // Town grace periods from counter-attacks
+            ["tick"] call OT_fnc_NATOtownGrace;
 
             //scheduler
             // A convoy sets off when its real-time countdown (seconds, index 5) runs out; one scheduled
@@ -132,8 +138,8 @@ publicVariable "OT_nextNATOTurn";
 
                 server setVariable ["NATOlastgain", _gain + _resourceGain + ((round (_popControl * 0.01)) * _mul), true];
 
-                // Counter Towns
-                [_chance] call OT_fnc_NATOcounterTowns;
+                // Counter-attack a resistance town (once a base has been taken)
+                [] call OT_fnc_NATOcounterTowns;
 
                 // Spawn missing drones & counter objectives
                 [] call OT_fnc_NATOcounterObjectives;

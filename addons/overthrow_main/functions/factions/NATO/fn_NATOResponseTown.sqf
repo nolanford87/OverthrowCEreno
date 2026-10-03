@@ -24,6 +24,8 @@ private _fail = {
     private _abandoned = server getVariable "NATOabandoned";
     _abandoned pushBack _town;
     server setVariable ["NATOabandoned", _abandoned, true];
+    // Won the first QRF for it: no counter-attack on it for at least an hour (OT_fnc_NATOcounterTowns)
+    ["set", _town, 3600] call OT_fnc_NATOtownGrace;
 };
 
 [_posTown, _strength, _success, _fail, [_tskid, _town], _town] spawn OT_fnc_NATOQRF;
