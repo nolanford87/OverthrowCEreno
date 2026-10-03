@@ -14,6 +14,7 @@ class CfgFunctions {
             class cleanupUnit {};
             class cleanupVehicle {};
             class cleanDead {};
+            class cleanDistantDead {};
         };
 
         class Factions {
