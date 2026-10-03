@@ -69,5 +69,7 @@ server setVariable ["NATOresources", _resources - _strength];
 server setVariable ["NATOcounterTarget", _town, true];
 server setVariable ["NATOlastTownCounter", time, true];
 diag_log format ["Overthrow: %1 counter-attacking %2 (strength %3, chance was %4%%)", OT_NATO_name, _town, _strength, round _chance];
-[_town, _strength, _warning] spawn OT_fnc_NATOCounterTown;
+// Its state exists from now on (filled in by OT_fnc_NATOCounterTown), not only once the spawned script runs
+OT_counterTownState = createHashMapFromArray [["town", _town], ["phase", "starting"], ["cancel", false]];
+[_town, _strength, _warning, OT_counterTownState] spawn OT_fnc_NATOCounterTown;
 true;
