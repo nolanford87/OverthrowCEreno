@@ -288,7 +288,8 @@ OTQA_blow_stubHeat = {
         ["Blow: 2-3 of the gang's members in the truck, a driver among them", (count _gangCrew) >= 2 && { (count _gangCrew) <= 3 } && { (driver _truck) in _gangCrew } && { side _group isEqualTo opfor },
             format ["%1 of %2 crew, driver %3", count _gangCrew, count (crew _truck), driver _truck]] call OTQA_fnc_check;
         ["Blow: an occupier police car escorts it, its crew in the gang's group", !isNull _escort && { (typeOf _escort) isEqualTo OT_NATO_Vehicle_Police } && { (crew _escort) isNotEqualTo [] } && { ((crew _escort) findIf { (group _x) isNotEqualTo _group }) isEqualTo -1 },
-            if (isNull _escort) then { "no escort" } else { format ["%1, crew %2", typeOf _escort, (crew _escort) apply { [typeOf _x, side group _x] }] }] call OTQA_fnc_check;
+            if (isNull _escort) then { "no escort" } else { format ["%1, crew %2; escort men [alive, in, captive, lifeState, m away]: %3", typeOf _escort, (crew _escort) apply { [typeOf _x, side group _x] },
+                ((units _group) select { _x getVariable ["OT_drugConvoyEscort", false] }) apply { [alive _x, typeOf objectParent _x, captive _x, lifeState _x, round (_x distance _escort)] }] }] call OTQA_fnc_check;
         ["Blow: they drive along peacefully (captive, holding fire) towards where they're going", ((units _group) findIf { !captive _x }) isEqualTo -1 && { (combatMode _group) isEqualTo "BLUE" } && { ((waypoints _group) findIf { ((waypointPosition _x) distance2D _to) < 50 }) > -1 },
             format ["%1 captive of %2, %3", { captive _x } count (units _group), count (units _group), combatMode _group]] call OTQA_fnc_check;
         sleep 1.5;
