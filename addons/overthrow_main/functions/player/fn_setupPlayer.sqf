@@ -15,6 +15,9 @@ if ((missionNamespace getVariable ["OT_setupPlayerUnit", objNull]) isNotEqualTo 
     // Hunting: pick up a dead animal as raw meat, the licence counting down
     player addAction ["Pick up the carcass", { [cursorObject] spawn OT_fnc_huntPickup }, nil, 1.5, true, true, "",
         "isNull objectParent _this && { !isNull cursorObject } && { !alive cursorObject } && { (typeOf cursorObject) in OT_huntMeat } && { (_this distance cursorObject) < 3.5 } && { !(cursorObject getVariable ['OT_pickingUp', false]) }"];
+    // Drugs: harvest a wild ganja plant within 3 m (OT_fnc_ganjaHarvest)
+    player addAction ["Harvest the ganja plant", { [] spawn OT_fnc_ganjaHarvest }, nil, 1.5, true, true, "",
+        "isNull objectParent _this && { isNil 'OT_ganjaPicking' } && { ((missionNamespace getVariable ['OT_ganjaPlants', []]) findIf { !isNull _x && { (_this distance2D _x) < 3 } }) > -1 }"];
     if (isNil "OT_huntLicenceLoopId") then { OT_huntLicenceLoopId = [OT_fnc_huntingLicenceLoop, 10] call CBA_fnc_addPerFrameHandler };
     // Fishing: the driver of a fishing boat casts its net, once every 15 seconds, going slowly
     player addAction ["Cast the net", {

@@ -126,6 +126,8 @@ while { count _picked < 3 && { _fisheryCandidates isNotEqualTo [] } } do {
     OT_fisheries pushBack _name;
 } forEach _picked;
 
+call OT_fnc_drugsVars; // Drugs: ganja zones, dispensaries (businesses, OT_economicData) and gang deals
+
 //Identity
 OT_faces_local = [];
 OT_faces_western = [];

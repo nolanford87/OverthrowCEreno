@@ -39,6 +39,42 @@ if (_name in OT_fisheries) then {
     spawner setVariable [_spawnid, (spawner getVariable [_spawnid, []]) + _props + [_fisherGroup], false];
 };
 
+// A dispensary is marked by its budtender behind a roadside stall, owned or not (OT_fnc_dispensaryStock,
+// OT_fnc_dispensaryUpgrade); once bought its stock container is there too
+if (_name in OT_dispensaries) then {
+    private _spot = _pos findEmptyPosition [0, 25, "Land_MarketShelter_F"];
+    if (_spot isEqualTo []) then { _spot = _pos };
+    private _props = [];
+    {
+        _x params ["_cls", "_dist", "_dir", "_turn"];
+        if !(isClass (configFile >> "CfgVehicles" >> _cls)) then { continue };
+        private _p = _spot getPos [_dist, _dir];
+        if (surfaceIsWater _p) then { continue };
+        private _o = createVehicle [_cls, _p, [], 0, "CAN_COLLIDE"];
+        _o setDir _turn;
+        _o setVectorUp (surfaceNormal _p);
+        _o enableSimulationGlobal false;
+        _props pushBack _o;
+    } forEach [
+        ["Land_MarketShelter_F", 0, 0, 0],
+        ["Land_WoodenCounter_01_F", 1.5, 0, 0],
+        ["Land_Pot_02_F", 2.5, 60, 0],
+        ["Land_Pot_02_F", 2.5, 300, 0],
+        ["Land_CampingChair_V2_F", 1.5, 180, 0]
+    ];
+    private _budGroup = createGroup civilian;
+    _budGroup setBehaviour "CARELESS";
+    private _budtender = _budGroup createUnit ["C_man_1", _spot, [], 0, "CAN_COLLIDE"];
+    _budtender setPosATL [_spot select 0, _spot select 1, 0];
+    _budtender setDir 0;
+    _budtender setVariable ["NOAI", true, false];
+    _budtender setVariable ["OT_dispensary", _name, true];
+    [_budtender] call OT_fnc_idleAnim; // Stays put, idling
+    _budGroup setVariable ["Vcm_Disable", true, true];
+    if (_name in (server getVariable ["GEURowned", []])) then { [_pos] call OT_fnc_dispensaryContainer };
+    spawner setVariable [_spawnid, (spawner getVariable [_spawnid, []]) + _props + [_budGroup], false];
+};
+
 private _numCiv = server getVariable [format ["%1employ", _name], 0];
 if (_numCiv isEqualTo 0) exitWith { [] };
 

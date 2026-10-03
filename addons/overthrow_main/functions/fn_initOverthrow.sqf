@@ -141,6 +141,7 @@ OT_tpl_checkpoint = [] call compileScript ["data\templates\NATOcheckpoint.sqf", 
     [] spawn OT_fnc_initHunting; // Hunting spots, livestock
     [] spawn OT_fnc_initFishing; // Fishing grounds
     [] spawn OT_fnc_initLogistics; // Freight brokers
+    [] spawn OT_fnc_initDrugs; // Wild ganja zones, dispensaries as drug operations
 
     //ACE3 Arsenal default loadouts
     {

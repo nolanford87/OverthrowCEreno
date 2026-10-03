@@ -88,6 +88,12 @@ if ((_civ getVariable ["OT_fishery", ""]) isNotEqualTo "") then {
     _canBuyGuns = false;
     _canMission = false;
 };
+if ((_civ getVariable ["OT_dispensary", ""]) isNotEqualTo "") then {
+    _canSellDrugs = false;
+    _canRecruit = false;
+    _canBuyGuns = false;
+    _canMission = false;
+};
 if ((_civ getVariable ["OT_broker", ""]) isNotEqualTo "") then {
     _canSellDrugs = false;
     _canRecruit = false;
@@ -273,6 +279,12 @@ if (_canGangJob) then {
     };
 };
 
+// Gang members and leaders: bulk drug deals, with enough rep (OT_fnc_gangDrugMenu)
+private _drugGang = _civ getVariable ["OT_gangid", -1];
+if (_drugGang > -1 && { (side group _civ) isEqualTo opfor } && { (OT_civilians getVariable [format ["gang%1", _drugGang], []]) isNotEqualTo [] }) then {
+    _options pushBack ["Can we do business in bulk? (drugs)", { _this call OT_fnc_gangDrugMenu }, [_civ, _drugGang]];
+};
+
 if (_canMission) then {
     private _factionName = _civ getVariable ["factionrepname", ""];
     private _faction = _civ getVariable ["faction", ""];
@@ -352,6 +364,33 @@ if (_canMission) then {
 // Fisherman: buys the player's catch (OT_fnc_sellFishToFishery)
 if ((_civ getVariable ["OT_fishery", ""]) isNotEqualTo "") then {
     _options pushBack ["Sell your catch (fish on you and in your boat nearby, 10% over a store)", { _this call OT_fnc_sellFishToFishery }, [_civ]];
+};
+
+// Budtender: takes the player's ganja (and blow, level 2) for the dispensary's shelves; a general can
+// open the back room (OT_fnc_dispensaryStock, OT_fnc_dispensaryUpgrade)
+private _dispensary = _civ getVariable ["OT_dispensary", ""];
+if (_dispensary isNotEqualTo "") then {
+    private _level = _dispensary call OT_fnc_dispensaryLevel;
+    if (_level < 1) then {
+        _options pushBack [
+            "Is the dispensary open?",
+            { format ["%1 is closed until the resistance buys it (a general, from the main menu nearby)", _this select 0] call OT_fnc_notifyMinor },
+            [_dispensary]
+        ];
+    } else {
+        _options pushBack [
+            ["Stock the shelves with your ganja (sold each cycle, no cover lost)", "Stock the shelves with your ganja and blow (sold each cycle, no cover lost)"] select (_level >= 2),
+            { _this call OT_fnc_dispensaryStock },
+            [_dispensary]
+        ];
+        if (_level < 2 && { call OT_fnc_playerIsGeneral }) then {
+            _options pushBack [
+                format ["Open a back room for blow ($%1 resistance funds)", [OT_dispensaryUpgradeCost, 1, 0, true] call CBA_fnc_formatNumber],
+                { _this call OT_fnc_dispensaryUpgrade },
+                [_dispensary]
+            ];
+        };
+    };
 };
 
 // Freight broker: haulage contracts (OT_fnc_logisticsMenu)

@@ -46,6 +46,19 @@ if (_name in OT_fisheries) exitWith {
     _text = _text + format ["<t size='0.65'>Next cycle: in %1 min</t><br/>", _nextIn];
     ((findDisplay 8000) displayCtrl 1104) ctrlSetStructuredText parseText _text;
 };
+if (_name in OT_dispensaries) exitWith {
+    // OT_fnc_dispensaryCycle
+    private _level = _name call OT_fnc_dispensaryLevel;
+    _text = _text + format ["<t size='0.65'>Level %1: %2</t><br/>", _level max 1, ["a ganja shop", "ganja shop with a back room for blow"] select (_level >= 2)];
+    _text = _text + format ["<t size='0.65'>Sells up to %1 ganja from its container each cycle at the town's drug price</t><br/>", (OT_dispensarySell get "OT_Ganja") * _num];
+    if (_level >= 2) then {
+        _text = _text + format ["<t size='0.65'>Sells up to %1 blow from its container each cycle</t><br/>", (OT_dispensarySell get "OT_Blow") * _num];
+    } else {
+        _text = _text + format ["<t size='0.65'>Back room for blow: $%1 (ask the budtender)</t><br/>", [OT_dispensaryUpgradeCost, 1, 0, true] call CBA_fnc_formatNumber];
+    };
+    _text = _text + format ["<t size='0.65'>Next cycle: in %1 min</t><br/>", _nextIn];
+    ((findDisplay 8000) displayCtrl 1104) ctrlSetStructuredText parseText _text;
+};
 if (count _data > 2) then {
     private _input = _data select 2;
     private _output = _data select 3;
