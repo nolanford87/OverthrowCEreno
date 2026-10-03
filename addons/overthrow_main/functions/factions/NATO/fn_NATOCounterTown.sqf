@@ -10,8 +10,8 @@
        squads in a truck, one by air) costs 200 of the strength: 1 dispatch, 2 from 600 strength, 3
        from 1000, one more with over 2 players; a support vehicle (100) by road from 800.
     3. The fight is a QRF fight for the town (OT_fnc_NATOQRFfight). The occupier winning takes the
-       town back (OT_fnc_NATOretakeTown): its resistance police are removed, stability drops by 30 (to
-       10 at least) and resistance support there drops by half (25 at least). The resistance winning
+       town back (OT_fnc_NATOretakeTown): its resistance police are removed, its stability goes back
+       to 100 (fully the occupier's, as after a FOB takeover) and resistance support there drops by half (25 at least). The resistance winning
        keeps it, with an hour's grace from counter-attacks (OT_fnc_NATOtownGrace).
     While it runs, OT_counterTownState (a hashmap, not saved) says where it's at, for the QA tests.
 
@@ -137,9 +137,8 @@ private _success = {
     // The occupier has won the town back
     { deleteMarker _x } forEach _markers;
     [_tskid, "FAILED", true] spawn BIS_fnc_taskSetState;
-    private _stability = server getVariable [format ["stability%1", _town], 50];
     private _support = server getVariable [format ["rep%1", _town], 0];
-    [_town, (_stability - 30) max 10, 25 max (round (_support * 0.5))] call OT_fnc_NATOretakeTown;
+    [_town, 100, 25 max (round (_support * 0.5))] call OT_fnc_NATOretakeTown;
     format ["%1 has taken %2 back, its police are gone", OT_NATO_name, _town] remoteExec ["OT_fnc_notifyBad", 0, false];
 };
 
