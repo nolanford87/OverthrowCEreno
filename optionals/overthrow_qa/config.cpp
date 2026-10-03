@@ -1,5 +1,6 @@
 // Overthrow CE QA tools - optional addon, only loaded when added to the mod list.
 // Adds "Overthrow QA" to the Zeus Enhanced right-click menu to run the automated QA test suites.
+// Gives every player Zeus while it's loaded (OTQA_fnc_autoZeus).
 // Can also be run from the debug console: ["current"] spawn OTQA_fnc_run; (or "archive")
 
 class CfgPatches {
@@ -18,6 +19,7 @@ class CfgFunctions {
         class QA {
             file = "\OT\addons\overthrow_qa\functions";
             class run {};
+            class autoZeus { postInit = 1; }; // Every player gets Zeus while the QA addon is loaded
             // Current QA tests (new changes) and archived QA tests (everything that passed before)
             class testsCurrent {};
             class testsArchive {};
