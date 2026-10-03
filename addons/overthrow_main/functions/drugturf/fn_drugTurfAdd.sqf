@@ -37,8 +37,8 @@ private _state = [_gangId] call OT_fnc_drugTurfState;
 _state params ["", "_anger", "", "_lastAttack", "_warned", "_bucket"];
 _anger = (_anger + _points) min (OT_drugTurfAttackAt * 2);
 
-// Rep: whole points, the rest carried over
-_bucket = _bucket + (_points / OT_drugTurfRepPer);
+// Rep: whole points, the rest carried over; a friend of the gang loses none (and adds nothing to carry)
+if (_bestRep < OT_drugGangRep) then { _bucket = _bucket + (_points / OT_drugTurfRepPer) };
 if (_bucket >= 0.9999) then {
     private _lost = floor (_bucket + 0.0001);
     _bucket = _bucket - _lost;

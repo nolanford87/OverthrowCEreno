@@ -201,7 +201,7 @@ OTQA_turf_squad = {
         _anger = [_gangid] call OT_fnc_drugTurfAngerOf;
         ["Turf: 7 blow = 14 anger (double), 20 in all: -2 rep for the host", (abs (_anger - 20)) < 0.3 && { (player getVariable [_repKey, 0]) isEqualTo -2 }, format ["anger %1, rep %2", _anger, player getVariable [_repKey, 0]]] call OTQA_fnc_check;
         ["Turf: at 20 anger they warn everyone: 'QA Turf Gang are angry about our dispensary ... pay their cut'", ["QA Turf Gang are angry about our dispensary"] call OTQA_turf_notified, str OT_notifyHistory] call OTQA_fnc_check;
-        ["Turf: the business info says whose turf it's on and that they're angry", "On QA Turf Gang's turf" in (_name call OT_fnc_drugTurfInfo) && { "No deal: they're angry" in (_name call OT_fnc_drugTurfInfo) }, _name call OT_fnc_drugTurfInfo] call OTQA_fnc_check;
+        ["Turf: the business info says whose turf it's on and that they're angry", "On QA Turf Gang's turf" in (_name call OT_fnc_drugTurfInfo) && { (format ["No deal: they're %1", ([_gangid] call OT_fnc_drugTurfAngerOf) call OT_fnc_drugTurfMood]) in (_name call OT_fnc_drugTurfInfo) }, _name call OT_fnc_drugTurfInfo] call OTQA_fnc_check;
         OT_notifyHistory = [];
         _res = [_name, "ganja", 2] call OT_fnc_drugTurf;
         sleep 0.5;
