@@ -18,7 +18,14 @@ private _fobs = server getVariable ["NATOfobs", []];
 
 {
     _x params ["_pos", "_garrison"];
-    private _numMil = { alive _x && { side group _x isEqualTo blufor } } count (_pos nearEntities ["CAManBase", 300]); // Its dead don't hold it
+    // Its garrison is virtualized (OT_fnc_spawnNATOFOB): not spawned (or still spawning), its stored
+    // soldiers hold it, spawned the living occupier soldiers near it do (its dead don't hold it)
+    private _spawnid = OT_fobSpawners getOrDefault [_pos, ""];
+    private _spawned = _spawnid in OT_allSpawned && { (spawner getVariable [format ["spawning%1", _spawnid], -1]) isEqualTo -1 };
+    private _numMil = _garrison;
+    if (_spawned || { _spawnid isEqualTo "" }) then {
+        _numMil = { alive _x && { side group _x isEqualTo blufor } } count (_pos nearEntities ["CAManBase", 300]);
+    };
     private _numRes = { alive _x && { side _x isEqualTo independent || captive _x } } count (_pos nearEntities ["CAManBase", 50]);
     if (_numMil isEqualTo 0 && { _numRes > 0 }) then {
         _countered = true;

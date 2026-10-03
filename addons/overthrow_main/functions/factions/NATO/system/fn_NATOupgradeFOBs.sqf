@@ -20,32 +20,25 @@ private _fobs = server getVariable ["NATOfobs", []];
 {
     _x params ["_pos", "_garrison", "_upgrades"];
     private _max = 16;
+    // Its crewed guns, as OT_fnc_NATOregisterFOB sets them, updated as they're bought
+    if ((count _x) < 5) then {
+        _x set [3, [0, 4] select ("HMG" in _upgrades)];
+        _x set [4, parseNumber ("Mortar" in _upgrades)];
+    };
     if ((_garrison < _max) && { (_spend > 150) } && { (random 100 > _chance) }) exitWith {
+        // 4 more soldiers in its stored garrison, spawned now if a player is near (OT_fnc_spawnNATOFOB)
         _x set [1, _garrison + 4];
         _spend = _spend - 150;
         _resources = _resources - 150;
-        private _group = createGroup blufor;
-        _group deleteGroupWhenEmpty true;
-        private _count = 0;
-        while { _count < 4 } do {
-            private _start = [[[_pos, 50]]] call BIS_fnc_randomPos;
-
-            private _civ = _group createUnit [selectRandom OT_NATO_Units_LevelOne, _start, [], 0, "NONE"];
-            _civ setVariable ["garrison", "HQ", false];
-            _civ setVariable ["OT_fob", _pos];
-            _civ setRank "LIEUTENANT";
-            _civ setVariable ["VCOM_NOPATHING_Unit", true, false];
-            _civ setBehaviour "SAFE";
-
-            _count = _count + 1;
-        };
-        _group call OT_fnc_initMilitaryPatrol;
+        private _id = OT_fobSpawners getOrDefault [_pos, ""];
+        if (_id in OT_allSpawned) then { [_pos, _id] spawn OT_fnc_spawnNATOFOB };
     };
 
     if (!("Mortar" in _upgrades) && { (_spend > 300) } && { (random 100 > _chance) }) exitWith {
         _spend = _spend - 300;
         _resources = _resources - 300;
         _upgrades pushBack "Mortar";
+        _x set [4, 1]; // Crewed once built
         [_pos, ["Mortar"]] spawn OT_fnc_NATOupgradeFOB;
     };
     if (!("Barriers" in _upgrades) && { (_spend > 50) } && { (random 100 > _chance) }) exitWith {
@@ -58,6 +51,7 @@ private _fobs = server getVariable ["NATOfobs", []];
         _spend = _spend - 150;
         _resources = _resources - 150;
         _upgrades pushBack "HMG";
+        _x set [3, 4]; // Crewed once built
         [_pos, ["HMG"]] spawn OT_fnc_NATOupgradeFOB;
     };
     // One vehicle per FOB, a lost one isn't replaced ("VehicleLost")
