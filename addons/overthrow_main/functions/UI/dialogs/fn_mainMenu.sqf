@@ -419,6 +419,11 @@ if (_obpos distance player < 250) then {
                 ];
                 ctrlEnable [1620, false];
                 ctrlEnable [1621, false];
+                if (_obname in (missionNamespace getVariable ["OT_precursorBusinesses", []])) then {
+                    // Industrial: it can make blow precursors as well (OT_fnc_drugPrecursorToggle via OT_fnc_manageArea)
+                    ctrlSetText [1620, (["Make precursors", "Stop precursors"] select (_obname in (server getVariable ["precursorsAt", []])))];
+                    ctrlEnable [1620, call OT_fnc_playerIsGeneral];
+                };
             } else {
                 private _price = _obname call OT_fnc_getBusinessPrice;
                 ctrlSetText [1201, "\overthrow_main\ui\closed.paa"];

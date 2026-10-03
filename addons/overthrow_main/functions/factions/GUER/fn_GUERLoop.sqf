@@ -100,6 +100,9 @@ if (time >= _nextBusiness) then {
                 private _innum = 2 * _num;
                 private _intotal = _innum;
                 if (_num > 0) then {
+                    // An industrial business can make blow precursors as well, a drug lab cooks them into blow
+                    if (_x in (server getVariable ["precursorsAt", []])) then { [_x, _pos, _enum] call OT_fnc_drugPrecursorCycle };
+                    if (_x in (missionNamespace getVariable ["OT_drugLabs", []])) exitWith { [_x, _pos, _enum] call OT_fnc_drugLabCycle };
                     // A fishery catches fish into its container and sells what's delivered (OT_fnc_fisheryCycle)
                     if (_x in OT_fisheries) exitWith { [_x, _pos, _enum] call OT_fnc_fisheryCycle };
                     if (count _data isEqualTo 2 && _x != "Factory") then {

@@ -29,6 +29,7 @@ class CfgPatches {
         units[] = {
             "OT_GanjaItem",
             "OT_BlowItem",
+            "OT_PrecursorsItem",
             "OT_I_Truck_recovery",
             "B_Gen_Soldier_Heavy_F",
             "B_Gen_Commander_Heavy_F",
@@ -44,6 +45,7 @@ class CfgPatches {
         weapons[] = {
             "OT_Ganja",
             "OT_Blow",
+            "OT_Precursors",
             "OT_Wood",
             "OT_Lumber",
             "OT_Steel",

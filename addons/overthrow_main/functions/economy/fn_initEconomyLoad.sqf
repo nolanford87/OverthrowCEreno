@@ -167,6 +167,7 @@ if (_version < OT_economyVersion) then {
 
 //Business Markers
 OT_allEconomic = [];
+private _labs = missionNamespace getVariable ["OT_drugLabs", []]; // OT_fnc_drugLabSites
 {
     _x params ["_pos", "_name"];
     private _mrk = createMarkerLocal [_name, _pos];
@@ -179,7 +180,13 @@ OT_allEconomic = [];
     };
     _mrk setMarkerColorLocal "ColorWhite";
     if (_name in (server getVariable ["GEURowned", []])) then { _mrk setMarkerColorLocal "ColorGUER" };
-    _mrk setMarkerAlpha 0.8;
+    if (_name in _labs) then {
+        // A drug lab: its own icon and name, on the map only once the resistance owns it (OT_fnc_mapHandler)
+        _mrk setMarkerTypeLocal "ot_Lab";
+        _mrk setMarkerTextLocal _name;
+        _mrk setMarkerAlphaLocal 0;
+    };
+    _mrk setMarkerAlpha ([0.8, 0] select (_name in _labs));
     OT_allEconomic pushBack _name;
     server setVariable [_name, _pos, true];
     cost setVariable [_name, _x, true];

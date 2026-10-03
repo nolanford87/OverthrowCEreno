@@ -81,6 +81,30 @@ class CfgFunctions {
             class sellFishToFishery {};
         };
 
+        class DrugLabs {
+            file = "\overthrow_main\functions\druglabs";
+            // Labs, precursors (drugs slice 2: blow)
+            class drugLabsVars {};
+            class drugLabSites {};
+            class drugLabsAdd {};
+            class drugLabsLocal {};
+            class initDrugLabs {};
+            class drugLabSite {};
+            class drugLabData {};
+            class drugLabContainer {};
+            class drugLabRegister {};
+            class drugLabCycle {};
+            class drugPrecursorCycle {};
+            class drugPrecursorToggle {};
+            // Gang chemical convoys
+            class drugConvoyTick {};
+            class drugConvoyStart {};
+            class drugConvoyMonitor {};
+            class drugConvoyHostile {};
+            class drugConvoyCleanup {};
+            class drugConvoyIntel {};
+        };
+
         class Logistics {
             file = "\overthrow_main\functions\logistics";
             // Brokers and contracts

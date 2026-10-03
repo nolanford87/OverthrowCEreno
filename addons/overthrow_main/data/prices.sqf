@@ -4,6 +4,7 @@ OT_priceData = [
     //Drugs
     ['OT_Ganja', [100, 0, 0, 0]],
     ['OT_Blow', [250, 0, 0, 0]],
+    ['OT_Precursors', [150, 0, 0, 0]], // Blow precursors (OT_fnc_drugLabCycle)
     //Gun dealer stuff
     ['Set_HMG', [2190, 0, 0, 0]],
     //Items

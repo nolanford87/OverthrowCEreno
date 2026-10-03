@@ -26,6 +26,16 @@ class CfgWeapons {
             mass = 2;
         };
     };
+    class OT_Precursors: OT_ItemCore {
+        scope = 2;
+        picture = "\overthrow_main\ui\items\precursors_x_ca.paa";
+        displayName = "Blow Precursors";
+        descriptionShort = "A drum of industrial chemicals. Cooked in a lab, it makes blow. Illegal.";
+        descriptionUse = "";
+        class ItemInfo: InventoryItem_Base_F {
+            mass = 10;
+        };
+    };
     class OT_Wood: OT_ItemCore {
         scope = 2;
         picture = "\overthrow_main\ui\items\wood_x_ca.paa";

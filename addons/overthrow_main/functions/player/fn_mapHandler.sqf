@@ -219,6 +219,12 @@ private _scale = ctrlMapScale _mapCtrl;
 //same style), global markers so not in OT_allShopMarkers
 private _likeShops = (missionNamespace getVariable ["OT_fisheries", []])
     + ((server getVariable ["logisticsBrokers", []]) apply { format ["logistics_%1", _x select 0] });
+// Drug labs: like the shops once the resistance owns them, hidden until then
+private _labs = missionNamespace getVariable ["OT_drugLabs", []];
+if (_labs isNotEqualTo []) then {
+    private _owned = server getVariable ["GEURowned", []];
+    { if (_x in _owned) then { _likeShops pushBack _x } else { _x setMarkerAlphaLocal 0 } } forEach _labs;
+};
 if (_scale < 0.1) then {
     {
         _x setMarkerAlphaLocal 0.8;
