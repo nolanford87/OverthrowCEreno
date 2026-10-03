@@ -10,7 +10,8 @@ private _tests = [];
 {
     _tests append (call _x);
 } forEach [
-    OTQA_fnc_testsDrugRaids // Occupier heat and raids on drug operations (drugs slice 3a)
+    OTQA_fnc_testsDrugRaids // Occupier heat and raids on drug operations (drugs slice 3a),
+    OTQA_fnc_testsDrugTurf
 ];
 
 if (_tests isEqualTo []) then {

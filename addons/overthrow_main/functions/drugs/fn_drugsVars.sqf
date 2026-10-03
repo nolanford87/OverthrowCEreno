@@ -35,4 +35,7 @@ OT_drugWholesale = 0.7; // x the dealer's price in the gang's town
 OT_drugBulkSell = 0.6; // x the dealer's price in the gang's town
 OT_drugWholesaleLots = createHashMapFromArray [["OT_Ganja", 10], ["OT_Blow", 5]];
 
+// Gang turf (drugs slice 3b): gangs minding drugs made or sold near their camp, and the deal for their cut
+call OT_fnc_drugTurfVars;
+
 call OT_fnc_dispensarySites;

@@ -156,6 +156,28 @@ class CfgFunctions {
             class drugRaidSeize {};
         };
 
+        class DrugTurf {
+            file = "\overthrow_main\functions\drugturf";
+            // Gang turf (drugs slice 3b): anger over drugs on it, the deal for their cut
+            class drugTurfVars {};
+            class drugTurfGang {};
+            class drugTurfState {};
+            class drugTurfAngerOf {};
+            class drugTurfDealOf {};
+            class drugTurfOpLabel {};
+            class drugTurfMood {};
+            class drugTurfAdd {};
+            class drugTurf {};
+            class drugTurfStreet {};
+            class drugTurfPay {};
+            class drugTurfDeal {};
+            class drugTurfAttack {};
+            class drugTurfSquad {};
+            class drugTurfLoot {};
+            class drugTurfMenu {};
+            class drugTurfInfo {};
+        };
+
         class Logistics {
             file = "\overthrow_main\functions\logistics";
             // Brokers and contracts
