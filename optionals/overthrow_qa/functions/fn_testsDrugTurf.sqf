@@ -253,7 +253,7 @@ OTQA_turf_squad = {
         // The host at the dispensary (in spawn distance), unhurt while they're about
         [_pos] call OTQA_turf_standAt;
         player allowDamage false;
-        [_gangid, OT_drugTurfAttackAt - 1] call OTQA_turf_setAnger;
+        [_gangid, OT_drugTurfAttackAt - 0.5] call OTQA_turf_setAnger; // Half a point of margin: anger fades a little between the set and the sale
         private _res = [_name, "ganja", 1] call OT_fnc_drugTurf;
         sleep 0.5;
         private _group = call OTQA_turf_squad;
@@ -333,7 +333,7 @@ OTQA_turf_squad = {
         [_pos] call OTQA_turf_standAt;
         player allowDamage false;
         OT_notifyHistory = [];
-        [_gangid, OT_drugTurfAttackAt - 1] call OTQA_turf_setAnger;
+        [_gangid, OT_drugTurfAttackAt - 0.5] call OTQA_turf_setAnger; // Half a point of margin: anger fades a little between the set and the sale
         private _res = [player, getPosATL player, "OT_Ganja", 1, 60] call OT_fnc_drugTurfStreet;
         sleep 0.5;
         private _group = call OTQA_turf_squad;
