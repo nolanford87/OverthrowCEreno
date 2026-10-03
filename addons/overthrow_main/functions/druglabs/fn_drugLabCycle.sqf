@@ -3,8 +3,8 @@
     A drug lab's 15-minute business cycle (OT_fnc_GUERLoop, after wages): its employees cook the blow
     precursors in containers within 50 m into blow, into its container (OT_fnc_drugLabContainer).
     Each employee cooks OT_drugLabPerCook (1) precursor, OT_drugLabCap (6) at most per cycle, each
-    one making OT_drugLabYield (3) blow. Whatever it makes is reported to the heat hook
-    (OT_fnc_drugHeat, if there is one) as [lab id, "blow", amount].
+    one making OT_drugLabYield (3) blow. Whatever it makes heats the lab up for the occupier
+    (OT_fnc_drugHeat: [lab id, "blow", amount]). Shut after a raid (OT_fnc_drugOpShut), it cooks nothing.
 
     Parameters:
         _this # 0: STRING - Lab name
@@ -22,6 +22,7 @@ private _site = _name call OT_fnc_drugLabData;
 if (_site isEqualTo []) exitWith { 0 };
 private _opId = _site select 0;
 _name call OT_fnc_drugLabRegister;
+if (([_opId] call OT_fnc_drugOpShut) > 0) exitWith { 0 }; // Raided and shut for a while (OT_fnc_drugRaid)
 private _container = _name call OT_fnc_drugLabContainer;
 
 private _want = ((_num max 0) * OT_drugLabPerCook) min OT_drugLabCap;
@@ -40,10 +41,6 @@ private _used = 0;
 private _qty = _used * OT_drugLabYield;
 if (_qty > 0) then {
     _container addItemCargoGlobal ["OT_Blow", _qty];
-    // Slice 3 (occupier raids and heat) hooks in here, the same as
-    // if (!isNil "OT_fnc_drugHeat") then { [_opId, "blow", _qty] call OT_fnc_drugHeat };
-    // (read from missionNamespace: the function isn't there until slice 3 adds it)
-    private _heat = missionNamespace getVariable "OT_fnc_drugHeat";
-    if (!isNil "_heat") then { [_opId, "blow", _qty] call _heat };
+    [_opId, "blow", _qty] call OT_fnc_drugHeat;
 };
 _qty;

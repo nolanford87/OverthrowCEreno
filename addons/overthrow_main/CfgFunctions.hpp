@@ -136,6 +136,26 @@ class CfgFunctions {
             class drugConvoyIntel {};
         };
 
+        class DrugRaids {
+            file = "\overthrow_main\functions\drugraids";
+            // Occupier heat on drug operations and raids on them (drugs slice 3a)
+            class drugRaidsVars {};
+            class initDrugRaids {};
+            class drugOpBusiness {};
+            class drugOpOwned {};
+            class drugOpShut {};
+            class drugOpInfo {};
+            class drugHeat {};
+            class drugHeatGet {};
+            class drugHeatSet {};
+            class drugHeatTick {};
+            class drugRaidChance {};
+            class drugRaidCheck {};
+            class drugRaid {};
+            class drugRaidPolice {};
+            class drugRaidSeize {};
+        };
+
         class Logistics {
             file = "\overthrow_main\functions\logistics";
             // Brokers and contracts
