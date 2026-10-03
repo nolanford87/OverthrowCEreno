@@ -13,7 +13,7 @@
     7. Spending and frequency: the chance grows with resources and towns held, the cooldowns and the
        300 minimum hold it back, the strength is paid when it starts, one at a time
     8. Forces: from the nearest base, heading for the town; the resistance wins (forced) and keeps it
-    9. Occupier wins (forced): the town is the occupier's again, its police gone, stability -30,
+    9. Occupier wins (forced): the town is the occupier's again, its police gone, stability 100,
        support halved (25 at least)
     The fights' results are forced (OT_QRFforceResult) and their 10 minute set-up skipped
     (OT_QRFsetupTime); NATO turns are held off while the tests run.
@@ -460,7 +460,7 @@ _tests pushBack ["Counter-attacks: the occupier wins the town back", {
     private _police = server getVariable [format ["police%1", _town], 0];
     ["Occupier wins: its police are gone", _police isEqualTo 0 && { isNull _cop }, format ["police %1, officer %2", _police, ["still there", "gone"] select (isNull _cop)]] call OTQA_fnc_check;
     private _stability = server getVariable [format ["stability%1", _town], 0];
-    ["Occupier wins: stability -30", _stability isEqualTo 40, format ["70 -> %1", _stability]] call OTQA_fnc_check;
+    ["Occupier wins: stability back to 100", _stability isEqualTo 100, format ["70 -> %1", _stability]] call OTQA_fnc_check;
     private _rep = server getVariable [format ["rep%1", _town], 0];
     ["Occupier wins: support halved, at least 25 off", _rep isEqualTo 15, format ["40 -> %1", _rep]] call OTQA_fnc_check;
     ["Occupier wins: task failed, markers gone, no grace", ([_task] call BIS_fnc_taskState) isEqualTo "FAILED" && { ((_state getOrDefault ["markers", []]) findIf { _x in allMapMarkers }) isEqualTo -1 }
