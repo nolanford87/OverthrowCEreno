@@ -367,6 +367,9 @@ OT_huntingWeapons = ((
 // pressure by its size (a rabbit 0.5, a goat 1.5; a quarter to spots within 1.5 km) for 30 real
 // minutes; picking up the meat brings a patrol at 15% per point over 1, at most 60%. $25 for each one
 // killed.
+OT_bodyWarnCount = 200; // Dead bodies: a warning to loot or clean them (OT_fnc_GUERLoop)
+OT_bodyCleanCount = 250; // and cleaned up at this many
+
 OT_poacherWindow = 1800; // Real seconds a kill counts towards a spot's hunting pressure
 OT_poacherChanceStep = 0.15; // Chance per point of pressure over 1, when meat is picked up
 OT_poacherChanceMax = 0.6;
