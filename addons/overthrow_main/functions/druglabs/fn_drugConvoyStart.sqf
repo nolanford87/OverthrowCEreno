@@ -180,11 +180,15 @@ private _text = format ["Word is %1 are moving a chemical shipment from near %2 
         [_id, _truck, _toPos] remoteExec ["OT_fnc_drugConvoyIntel", _x, false];
     };
 } forEach (allPlayers - (entities "HeadlessClient_F"));
-[_id, _group, _escortVeh] spawn {
-    params ["_id", "_group", "_escortVeh"];
-    sleep 3;
-    diag_log format ["Overthrow: chemical convoy %1 after 3 s: %2 men, %3 captive, combat %4, escort crew %5", _id, count units _group, { captive _x } count (units _group), combatMode _group, if (isNull _escortVeh) then { "-" } else { count crew _escortVeh }];
+// The state of every man in it (the escort's crew went missing in QA): at once, then after 0.5 s
+OT_drugConvoyDebug = {
+    params ["_id", "_when", "_units", "_escortVeh"];
+    diag_log format ["Overthrow: chemical convoy %1 %2: escort %3 (alive %4, crew %5); men [class, alive, in, captive, side, lifeState, group]: %6",
+        _id, _when, typeOf _escortVeh, alive _escortVeh, count crew _escortVeh,
+        _units apply { [typeOf _x, alive _x, typeOf objectParent _x, captive _x, side group _x, lifeState _x, str group _x] }];
 };
+[_id, "at once", _units, _escortVeh] call OT_drugConvoyDebug;
+[_id, _units, _escortVeh] spawn { params ["_id", "_units", "_escortVeh"]; sleep 0.5; [_id, "after 0.5 s", _units, _escortVeh] call OT_drugConvoyDebug };
 diag_log format ["Overthrow: %1 chemical convoy %2 from %3 to %4 (%5), escort: %6", _gangName, _id, (getPosATL _truck) apply { round _x }, _toName, _toPos apply { round _x }, _withEscort];
 
 [_convoy] spawn OT_fnc_drugConvoyMonitor;
