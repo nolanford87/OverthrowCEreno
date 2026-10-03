@@ -118,7 +118,7 @@ for "_i" from 1 to (2 + floor (random 2)) do {
     _unit setVariable ["OT_gangid", _gangId, true];
     _unit setVariable ["hometown", _town, true];
     _unit setVariable ["OT_drugConvoy", _id, true];
-    if (_i isEqualTo 1) then { _unit moveInDriver _truck } else { _unit moveInCargo _truck };
+    if (_i isEqualTo 1) then { _unit assignAsDriver _truck; _unit moveInDriver _truck } else { _unit assignAsCargo _truck; _unit moveInCargo _truck };
     _units pushBack _unit;
 };
 private _leader = _units select 0;
@@ -129,13 +129,15 @@ if (_withEscort) then {
     _escortVeh = createVehicle [OT_NATO_Vehicle_Police, _ePos, [], 0, "CAN_COLLIDE"];
     _escortVeh setDir _eDir;
     _escortVeh setVariable ["OT_drugConvoy", _id, true];
-    private _crewGroup = createVehicleCrew _escortVeh;
-    private _crew = crew _escortVeh;
-    private _extra = _group createUnit [OT_NATO_Unit_Police, _ePos getPos [6, random 360], [], 0, "NONE"];
-    _extra moveInCargo _escortVeh;
-    _crew pushBack _extra;
-    _crew joinSilent _group;
-    if (!isNull _crewGroup && { _crewGroup isNotEqualTo _group }) then { deleteGroup _crewGroup };
+    // Its crew made in the gang's group from the start and kept on it (joining another group's units
+    // in later can make them get out)
+    private _crew = [];
+    {
+        private _u = _group createUnit [OT_NATO_Unit_Police, _ePos getPos [6, random 360], [], 0, "NONE"];
+        [_u] joinSilent _group;
+        if (_x isEqualTo "driver") then { _u assignAsDriver _escortVeh; _u moveInDriver _escortVeh } else { _u assignAsCargo _escortVeh; _u moveInCargo _escortVeh };
+        _crew pushBack _u;
+    } forEach ["driver", "cargo"];
     {
         _x setVariable ["OT_drugConvoy", _id, true];
         _x setVariable ["OT_drugConvoyEscort", true, true];
@@ -144,6 +146,11 @@ if (_withEscort) then {
     _leader = driver _escortVeh;
 };
 _group selectLeader _leader;
+_group addVehicle _truck;
+if (!isNull _escortVeh) then { _group addVehicle _escortVeh };
+// Nothing hurt settling onto the road (a knock would read as an ambush)
+{ _x allowDamage false } forEach ([_truck, _escortVeh] - [objNull]);
+[[_truck, _escortVeh] - [objNull]] spawn { params ["_vehs"]; sleep 10; { if (!isNull _x) then { _x setDamage 0; _x allowDamage true } } forEach _vehs };
 {
     private _o = _x;
     _o setCaptive true;
@@ -173,6 +180,11 @@ private _text = format ["Word is %1 are moving a chemical shipment from near %2 
         [_id, _truck, _toPos] remoteExec ["OT_fnc_drugConvoyIntel", _x, false];
     };
 } forEach (allPlayers - (entities "HeadlessClient_F"));
+[_id, _group, _escortVeh] spawn {
+    params ["_id", "_group", "_escortVeh"];
+    sleep 3;
+    diag_log format ["Overthrow: chemical convoy %1 after 3 s: %2 men, %3 captive, combat %4, escort crew %5", _id, count units _group, { captive _x } count (units _group), combatMode _group, if (isNull _escortVeh) then { "-" } else { count crew _escortVeh }];
+};
 diag_log format ["Overthrow: %1 chemical convoy %2 from %3 to %4 (%5), escort: %6", _gangName, _id, (getPosATL _truck) apply { round _x }, _toName, _toPos apply { round _x }, _withEscort];
 
 [_convoy] spawn OT_fnc_drugConvoyMonitor;

@@ -10,8 +10,6 @@ private _tests = [];
 {
     _tests append (call _x);
 } forEach [
-    OTQA_fnc_testsBodies,
-    OTQA_fnc_testsDrugsGanja,
     OTQA_fnc_testsDrugsBlow
 ];
 
