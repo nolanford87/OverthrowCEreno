@@ -20,7 +20,9 @@ private _suites = createHashMapFromArray [
     // The parts of the archive, still runnable on their own
     ["bugfixes", ["Bug fix QA tests", OTQA_fnc_testsBugFixes]],
     ["followups", ["Review and DLC QA tests", OTQA_fnc_testsFollowups]],
-    ["occupiers", ["Occupier QA tests", OTQA_fnc_testsOccupiers]]
+    ["occupiers", ["Occupier QA tests", OTQA_fnc_testsOccupiers]],
+    // Surveys (not tests): data for designing features, lines in the RPT
+    ["towns", ["Town survey", OTQA_fnc_dumpTowns]]
 ];
 if !(_suite in _suites) exitWith {
     hint format ["Overthrow QA: unknown test suite %1", _suite];

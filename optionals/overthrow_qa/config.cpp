@@ -49,6 +49,7 @@ class CfgFunctions {
             class spawnWarehouse {}; // Zeus helper
             class dumpFactions {}; // Archived (no Zeus entry): creator DLC factions to the RPT, [] spawn OTQA_fnc_dumpFactions
             class probeBuilding {}; // Zeus helper: a building's floor plan to the RPT
+            class dumpTowns {}; // Survey: town populations and buildings near their centres, ["towns"] spawn OTQA_fnc_run
             // Bug fix QA tests: the suite, and the tests for each fix batch it's made of
             class testsBugFixes {};
             class testsCommon {};
