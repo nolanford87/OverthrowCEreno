@@ -19,22 +19,25 @@
         _this # 0: STRING - Town
         _this # 1: NUMBER - Strength (already paid for by the caller)
         _this # 2: NUMBER - Warning time in seconds, -1 (default) for the intelligence-based one
+        _this # 3: HASHMAP - (Optional) Its state, made by the caller (OT_fnc_NATOcounterTowns) so it's
+            there straight away; a new one if not given
 
     Usage: [_town, _strength] spawn OT_fnc_NATOCounterTown;
 
     Returns: Nothing
 */
 
-params ["_town", "_strength", ["_warning", -1]];
+params ["_town", "_strength", ["_warning", -1], ["_state", createHashMap]];
 
 private _posTown = server getVariable [_town, [0, 0, 0]];
 private _intel = [_town] call OT_fnc_NATOcounterIntel;
 if (_warning < 0) then { _warning = [120, 600] select _intel };
 
-private _state = createHashMapFromArray [
+_state merge [createHashMapFromArray [
     ["town", _town], ["strength", _strength], ["intel", _intel], ["warning", _warning],
-    ["attackAt", time + _warning], ["phase", "warning"], ["from", []], ["byAir", false], ["cancel", false]
-];
+    ["attackAt", time + _warning], ["phase", "warning"], ["from", []], ["byAir", false]
+], true];
+if !("cancel" in _state) then { _state set ["cancel", false] };
 OT_counterTownState = _state;
 server setVariable ["NATOcounterTarget", _town, true];
 
