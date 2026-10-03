@@ -14,6 +14,8 @@ if ((_b select 1) isEqualTo "Business") then {
                 _pos remoteExec ["OT_fnc_resetSpawn", 2, false];
                 format ["%1 is now operational", _name] remoteExec ["OT_fnc_notifyMinor", 0, false];
                 _name setMarkerColor "ColorGUER";
+                // A dispensary is a drug operation (OT_fnc_dispensaryRegister)
+                if (_name in OT_dispensaries) then { [_name] remoteExec ["OT_fnc_dispensaryRegister", 2, false] };
             };
         } else {
             "The resistance cannot afford this" call OT_fnc_notifyMinor;

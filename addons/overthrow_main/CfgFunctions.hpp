@@ -81,6 +81,37 @@ class CfgFunctions {
             class sellFishToFishery {};
         };
 
+        class Drugs {
+            file = "\overthrow_main\functions\drugs";
+            class drugsVars {};
+            class initDrugs {};
+            // Wild ganja zones
+            class ganjaValidSpot {};
+            class ganjaFindSpot {};
+            class ganjaNewZone {};
+            class ganjaRemoveZone {};
+            class ganjaZoneMarker {};
+            class ganjaPublishPlants {};
+            class spawnGanjaZone {};
+            class ganjaLoop {};
+            class ganjaHarvest {};
+            class ganjaPick {};
+            class ganjaGive {};
+            // Dispensaries
+            class dispensarySites {};
+            class dispensaryRegister {};
+            class dispensaryLevel {};
+            class dispensaryContainer {};
+            class dispensaryCycle {};
+            class dispensaryUpgrade {};
+            class dispensaryStock {};
+            // Gang bulk deals
+            class gangDrugPrice {};
+            class gangDrugMenu {};
+            class gangWholesaleBuy {};
+            class gangBulkSell {};
+        };
+
         class Logistics {
             file = "\overthrow_main\functions\logistics";
             // Brokers and contracts

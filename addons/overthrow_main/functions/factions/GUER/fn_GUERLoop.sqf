@@ -102,6 +102,8 @@ if (time >= _nextBusiness) then {
                 if (_num > 0) then {
                     // A fishery catches fish into its container and sells what's delivered (OT_fnc_fisheryCycle)
                     if (_x in OT_fisheries) exitWith { [_x, _pos, _enum] call OT_fnc_fisheryCycle };
+                    // A dispensary sells the ganja (and blow, level 2) players stocked it with (OT_fnc_dispensaryCycle)
+                    if (_x in OT_dispensaries) exitWith { [_x, _pos, _enum] call OT_fnc_dispensaryCycle };
                     if (count _data isEqualTo 2 && _x != "Factory") then {
                         private _income = _enum * 200;
                         [_income] call OT_fnc_resistanceFunds;

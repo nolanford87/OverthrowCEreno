@@ -177,6 +177,10 @@ OT_allEconomic = [];
         _mrk setMarkerTypeLocal "ot_Fishery";
         _mrk setMarkerTextLocal _name;
     };
+    if (_name in OT_dispensaries) then {
+        _mrk setMarkerTypeLocal "ot_Dispensary";
+        _mrk setMarkerTextLocal _name;
+    };
     _mrk setMarkerColorLocal "ColorWhite";
     if (_name in (server getVariable ["GEURowned", []])) then { _mrk setMarkerColorLocal "ColorGUER" };
     _mrk setMarkerAlpha 0.8;

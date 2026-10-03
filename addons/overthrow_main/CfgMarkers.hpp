@@ -119,6 +119,14 @@ class CfgMarkers {
         shadow = 0;
         scope = 1;
     };
+    class ot_Dispensary {
+        name = "Dispensary";
+        icon = "\overthrow_main\ui\markers\dispensary.paa";
+        color[] = {1, 1, 1, 1};
+        size = 4;
+        shadow = 0;
+        scope = 1;
+    };
     class ot_Business {
         name = "Business";
         icon = "\overthrow_main\ui\markers\business.paa";
