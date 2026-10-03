@@ -20,6 +20,7 @@ class CfgFunctions {
             file = "\OT\addons\overthrow_qa\functions";
             class run {};
             class autoZeus { postInit = 1; }; // Every player gets Zeus while the QA addon is loaded
+            class autoRun { postInit = 1; }; // Automated runs started by the QA runner script (tools/qa_run)
             // Current QA tests (new changes) and archived QA tests (everything that passed before)
             class testsCurrent {};
             class testsArchive {};
