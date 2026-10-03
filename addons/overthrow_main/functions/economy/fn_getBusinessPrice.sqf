@@ -1,5 +1,6 @@
 private _data = _this call OT_fnc_getBusinessData;
 private _baseprice = 100000;
+if (_this in (missionNamespace getVariable ["OT_drugLabs", []])) then { _baseprice = OT_drugLabBasePrice; _data = [] }; // A drug lab (OT_fnc_drugLabCycle)
 if (count _data isEqualTo 2) then {
     //turns nothing into money
     _baseprice = round (_baseprice * 1.5);

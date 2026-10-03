@@ -38,6 +38,7 @@ class CfgFunctions {
             class testsBodies {};
             class testsFOBVirtual {};
             class testsDrugsGanja {};
+            class testsDrugsBlow {};
             class check {};
             class manual {};
             class spawnWarehouse {}; // Zeus helper

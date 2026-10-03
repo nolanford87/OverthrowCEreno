@@ -16,6 +16,8 @@ if ((_b select 1) isEqualTo "Business") then {
                 _name setMarkerColor "ColorGUER";
                 // A dispensary is a drug operation (OT_fnc_dispensaryRegister)
                 if (_name in OT_dispensaries) then { [_name] remoteExec ["OT_fnc_dispensaryRegister", 2, false] };
+                // A drug lab goes on the drug operations (OT_fnc_drugLabRegister)
+                if (_name in (missionNamespace getVariable ["OT_drugLabs", []])) then { _name remoteExec ["OT_fnc_drugLabRegister", 2, false] };
             };
         } else {
             "The resistance cannot afford this" call OT_fnc_notifyMinor;

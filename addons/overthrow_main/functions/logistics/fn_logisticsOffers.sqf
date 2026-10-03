@@ -58,6 +58,7 @@ missionNamespace setVariable [_lock, time];
 // pier (the land by it is found below); "port" a fishery; "airfield" an airfield's freight office
 private _places = OT_townData apply { [_x select 0, _x select 1, ""] };
 {
+    if ((_x select 1) in (missionNamespace getVariable ["OT_drugLabs", []])) then { continue }; // Nobody ships freight to a drug lab
     _places pushBack [_x select 0, _x select 1, ["", "port"] select ((_x select 1) in OT_fisheries)];
 } forEach OT_economicData;
 if (!isNil "OT_factoryPos") then { _places pushBack [OT_factoryPos, "Factory", ""] };

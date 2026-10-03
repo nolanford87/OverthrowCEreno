@@ -245,6 +245,7 @@ OT_item_BasicAmmo = "16Rnd_9x21_Mag";
 
 OT_allDrugs = ["OT_Ganja", "OT_Blow"];
 OT_illegalItems = OT_allDrugs + ["OT_Turtle"]; // Turtles: confiscated in searches, sold to faction reps (OT_fnc_sellTurtles)
+OT_illegalItems pushBack "OT_Precursors"; // Blow precursors (drug labs), confiscated like the drugs
 
 OT_item_UAV = "I_UAV_01_F";
 OT_item_UAVterminal = "I_UavTerminal";

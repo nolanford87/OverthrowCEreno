@@ -115,6 +115,15 @@ class CfgVehicles {
             MACRO_ADDITEM(OT_BlowItem,1)
         };
     };
+    class OT_PrecursorsItem: Item_Base_F {
+        scope = 2;
+        scopeCurator = 2;
+        displayName = "Blow Precursors";
+        vehicleClass = "Items";
+        class TransportItems {
+            MACRO_ADDITEM(OT_Precursors,1)
+        };
+    };
 
     //ACE Interactions
     class Man;

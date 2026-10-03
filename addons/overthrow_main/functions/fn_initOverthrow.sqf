@@ -120,6 +120,7 @@ OT_tpl_checkpoint = [] call compileScript ["data\templates\NATOcheckpoint.sqf", 
     [] call OT_fnc_factionCRIM;
     (selectRandom OT_loadingMessages) remoteExec ['OT_fnc_notifyStart', 0];
 
+    [] call OT_fnc_drugLabSites; // Drug labs are businesses: picked (or loaded) before the economy loads
     [OT_fnc_initEconomyLoad] call CBA_fnc_directCall; // [] call OT_fnc_initEconomyLoad;
     (selectRandom OT_loadingMessages) remoteExec ['OT_fnc_notifyStart', 0];
 
@@ -142,6 +143,7 @@ OT_tpl_checkpoint = [] call compileScript ["data\templates\NATOcheckpoint.sqf", 
     [] spawn OT_fnc_initFishing; // Fishing grounds
     [] spawn OT_fnc_initLogistics; // Freight brokers
     [] spawn OT_fnc_initDrugs; // Wild ganja zones, dispensaries as drug operations
+    [] spawn OT_fnc_initDrugLabs; // Drug labs, precursors, gang chemical convoys
 
     //ACE3 Arsenal default loadouts
     {

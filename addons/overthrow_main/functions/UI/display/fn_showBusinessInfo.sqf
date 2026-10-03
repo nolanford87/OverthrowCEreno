@@ -39,6 +39,19 @@ if (_amgen) then {
     ctrlEnable [1603, true];
 };
 
+if (_name in (missionNamespace getVariable ["OT_drugLabs", []])) exitWith {
+    // OT_fnc_drugLabCycle
+    private _cooks = (_num * OT_drugLabPerCook) min OT_drugLabCap;
+    _text = _text + format ["<t size='0.65'>Cooks up to %1 blow precursors (in containers within 50 m) into %2 blow each cycle</t><br/>", _cooks, _cooks * OT_drugLabYield];
+    _text = _text + format ["<t size='0.65'>%1 per employee, %2 at most; each one makes %3 blow</t><br/>", OT_drugLabPerCook, OT_drugLabCap, OT_drugLabYield];
+    _text = _text + format ["<t size='0.65'>Next cycle: in %1 min</t><br/>", _nextIn];
+    ((findDisplay 8000) displayCtrl 1104) ctrlSetStructuredText parseText _text;
+};
+if (_name in (server getVariable ["precursorsAt", []])) then {
+    // OT_fnc_drugPrecursorCycle
+    private _qty = (ceil (_num / OT_precursorPerEmployees)) min OT_precursorMax;
+    _text = _text + format ["<t size='0.65'>Also makes %1 blow precursors each cycle ($%2)</t><br/>", _qty, _qty * OT_precursorCost];
+};
 if (_name in OT_fisheries) exitWith {
     // OT_fnc_fisheryCycle
     _text = _text + format ["<t size='0.65'>Catches about %1 fish into its container each cycle</t><br/>", _outnum];

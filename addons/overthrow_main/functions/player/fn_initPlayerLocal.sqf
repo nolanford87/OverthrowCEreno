@@ -38,6 +38,7 @@ if (!isServer) then {
     call compileScript ["initVar.sqf", false];
     [["ot_enemy_faction", 0] call BIS_fnc_getParamValue] call OT_fnc_applyOccupier; // The save's own is applied once the server is ready
     call OT_fnc_initVar;
+    [] spawn OT_fnc_drugLabsLocal; // Drug labs are businesses, picked by the server
     [] spawn OT_fnc_jobSystem;
     addMissionEventHandler ["EntityKilled", OT_fnc_deathHandler];
     //ACE3 events
