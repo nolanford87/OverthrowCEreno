@@ -127,6 +127,7 @@ while { count _picked < 3 && { _fisheryCandidates isNotEqualTo [] } } do {
 } forEach _picked;
 
 call OT_fnc_drugsVars; // Drugs: ganja zones, dispensaries (businesses, OT_economicData) and gang deals
+call OT_fnc_drugRaidsVars; // Drugs: the occupier's heat on drug operations and its raids on them
 
 //Identity
 OT_faces_local = [];

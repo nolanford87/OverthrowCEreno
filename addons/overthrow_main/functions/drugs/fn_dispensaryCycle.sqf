@@ -4,7 +4,8 @@
     stock players put in its container (or other containers within 50 m), at the town's drug price
     (OT_fnc_getDrugPrice), for resistance funds. Up to 3 ganja per employee (OT_dispensarySell); at
     level 2 its back room also moves up to 1 blow per employee. Legal: it costs nobody cover. Each sale
-    is reported to the heat hook (OT_fnc_drugHeat) when there is one.
+    heats the operation up for the occupier (OT_fnc_drugHeat). Shut after a raid (OT_fnc_drugOpShut),
+    it sells nothing.
 
     Parameters:
         _this # 0: STRING - Dispensary (business name)
@@ -19,6 +20,7 @@
 params ["_name", "_pos", "_num"];
 
 private _level = [_name] call OT_fnc_dispensaryRegister; // Registered once bought, also from older builds
+if (([_name] call OT_fnc_drugOpShut) > 0) exitWith { 0 }; // Raided and shut for a while (OT_fnc_drugRaid)
 [_pos] call OT_fnc_dispensaryContainer;
 private _town = _pos call OT_fnc_nearestTown;
 
@@ -42,7 +44,7 @@ private _income = 0;
     } forEach (nearestObjects [_pos, [OT_item_CargoContainer], 50]);
     if (_sold > 0) then {
         _income = _income + (_sold * ([_town, _cls] call OT_fnc_getDrugPrice));
-        if (!isNil "OT_fnc_drugHeat") then { [_name, _heatType, _sold] call OT_fnc_drugHeat };
+        [_name, _heatType, _sold] call OT_fnc_drugHeat;
     };
 } forEach [["OT_Ganja", "ganja", 1], ["OT_Blow", "blow", 2]];
 
