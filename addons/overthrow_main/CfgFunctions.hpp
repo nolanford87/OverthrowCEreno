@@ -440,6 +440,7 @@ class CfgFunctions {
             class spawnGunDealer {};
             class spawnNATOCheckpoint {};
             class spawnNATOObjective {};
+            class spawnNATOFOB {};
             class spawnPolice {};
             class spawnShops {};
             class spawnStabilityObjects {};
@@ -626,6 +627,8 @@ class CfgFunctions {
             class NATOclearFOB {};
             class NATOdeliverFOBVehicle {};
             class NATOstartFOBTimer {};
+            class NATOregisterFOB {};
+            class NATOFOBunitLost {};
             class NATOvehiclePatrol {};
             class NATOairPatrolBase {};
             class NATOdeliverAirPatrol {};

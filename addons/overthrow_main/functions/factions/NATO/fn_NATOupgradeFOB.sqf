@@ -1,4 +1,18 @@
-// _deliver: bought now, the vehicle is delivered (drives in / parachuted), a loaded game has it at the FOB
+/*
+    Description:
+    Builds a FOB's upgrades: barriers, HMGs with their sandbags, a mortar, its vehicle. The guns are
+    built empty, their crews are part of the FOB's virtualized garrison (OT_fnc_spawnNATOFOB): if the
+    FOB is spawned they're crewed once built.
+
+    Parameters:
+        _this # 0: ARRAY - FOB position
+        _this # 1: ARRAY - Upgrades to build
+        _this # 2: BOOL - (Optional) Bought now: the vehicle is delivered (drives in / parachuted),
+                   a loaded game has it at the FOB. Default false
+
+    Usage: [_pos, ["HMG"]] spawn OT_fnc_NATOupgradeFOB;
+*/
+
 params ["_pos", "_upgrades", ["_deliver", false]];
 
 {
@@ -31,7 +45,7 @@ params ["_pos", "_upgrades", ["_deliver", false]];
         private _p = _pos getPos [8.5, 45];
         private _v = _gun createVehicle _p;
         _v setDir 45;
-        { _x setVariable ["OT_fob", _pos] } forEach units ([_v] call OT_fnc_createNATOCrew);
+        _v setVariable ["OT_fobStatic", _pos];
 
         sleep 0.3;
 
@@ -42,7 +56,7 @@ params ["_pos", "_upgrades", ["_deliver", false]];
         _p = _pos getPos [8.5, 135];
         _v = _gun createVehicle _p;
         _v setDir 135;
-        { _x setVariable ["OT_fob", _pos] } forEach units ([_v] call OT_fnc_createNATOCrew);
+        _v setVariable ["OT_fobStatic", _pos];
 
         sleep 0.3;
 
@@ -53,7 +67,7 @@ params ["_pos", "_upgrades", ["_deliver", false]];
         _p = _pos getPos [8.5, 225];
         _v = _gun createVehicle _p;
         _v setDir 225;
-        { _x setVariable ["OT_fob", _pos] } forEach units ([_v] call OT_fnc_createNATOCrew);
+        _v setVariable ["OT_fobStatic", _pos];
 
         sleep 0.3;
 
@@ -64,7 +78,7 @@ params ["_pos", "_upgrades", ["_deliver", false]];
         _p = _pos getPos [8.5, 315];
         _v = _gun createVehicle _p;
         _v setDir 315;
-        { _x setVariable ["OT_fob", _pos] } forEach units ([_v] call OT_fnc_createNATOCrew);
+        _v setVariable ["OT_fobStatic", _pos];
 
         sleep 0.3;
 
@@ -75,18 +89,7 @@ params ["_pos", "_upgrades", ["_deliver", false]];
     if (_x isEqualTo "Mortar") then {
         private _p = _pos findEmptyPosition [3, 50, OT_NATO_Mortar];
         private _v = OT_NATO_Mortar createVehicle _p;
-        { _x setVariable ["OT_fob", _pos] } forEach units ([_v] call OT_fnc_createNATOCrew);
-
-        private _g = grpNull;
-        {
-            _x disableAI "AUTOTARGET";
-            _x disableAI "FSM";
-            _x disableAI "AUTOCOMBAT";
-            _x setVariable ["NOAI", true, false];
-            _g = group _x;
-        } forEach (crew _v);
-        _g setCombatMode "BLUE";
-        [_v, _g] spawn OT_fnc_NATOMortar;
+        _v setVariable ["OT_fobStatic", _pos];
     };
     if (_x isEqualTo "Vehicle") then {
         [_pos, _deliver] spawn OT_fnc_NATOdeliverFOBVehicle;
@@ -94,3 +97,9 @@ params ["_pos", "_upgrades", ["_deliver", false]];
 
     sleep 0.3;
 } forEach (_upgrades);
+
+// Crews for the new guns if the FOB is spawned (a player near)
+if ((_upgrades findIf { _x in ["HMG", "Mortar"] }) > -1) then {
+    private _id = OT_fobSpawners getOrDefault [_pos, ""];
+    if (_id in OT_allSpawned) then { [_pos, _id] spawn OT_fnc_spawnNATOFOB };
+};

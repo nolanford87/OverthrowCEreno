@@ -58,6 +58,9 @@ if (_bounty > 0) then {
     _me setVariable ["OT_bounty", 0, false];
 };
 
+// One of an occupier FOB's garrison: it comes off the FOB's stored garrison (OT_fnc_spawnNATOFOB)
+if ((_me getVariable ["OT_fobRole", ""]) isNotEqualTo "") then { [_me] call OT_fnc_NATOFOBunitLost };
+
 call {
     if (!isNil "_civ") exitWith {
         _killer setVariable ["CIVkills", (_killer getVariable ["CIVkills", 0]) + 1, true];

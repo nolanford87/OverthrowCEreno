@@ -3,6 +3,7 @@
     Clears what a FOB built: its flag, barriers, sandbags and static weapons (not ones a player has
     taken), its marker and its living soldiers on foot (tagged "OT_fob"). Dead bodies stay, pulled out
     of the statics, until the wrecks and bodies are cleaned up. Its vehicle is left alone.
+    Its garrison's spawner (OT_fnc_NATOregisterFOB) goes too, it isn't spawned again.
     Used when a FOB is cleared by the resistance and when it disbands after taking its town back.
 
     Parameters:
@@ -12,6 +13,16 @@
 */
 
 params ["_fobPos"];
+
+// Its virtualized garrison: no longer spawned, the living ones spawned now are deleted below
+private _spawnid = OT_fobSpawners getOrDefault [_fobPos, ""];
+if (_spawnid isNotEqualTo "") then {
+    OT_fobSpawners deleteAt _fobPos;
+    _spawnid call OT_fnc_deregisterSpawner;
+    private _index = OT_allSpawned find _spawnid;
+    if (_index > -1) then { OT_allSpawned deleteAt _index };
+    spawner setVariable [_spawnid, nil, false];
+};
 
 private _types = [OT_flag_NATO, OT_NATO_Barrier_Small, OT_NATO_Barrier_Large, OT_NATO_Sandbag_Curved, OT_NATO_HMG, OT_NATO_Mortar] + OT_NATO_StaticGarrison_LevelOne;
 {

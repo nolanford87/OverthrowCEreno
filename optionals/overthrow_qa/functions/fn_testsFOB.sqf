@@ -1,7 +1,7 @@
 /*
     Description:
     FOB clear-up (OT_fnc_NATOclearFOB), with a real FOB built 250-400 m from the host like a loaded
-    game builds one (flag, soldiers, upgrades). Part of the current QA tests.
+    game builds one (flag, upgrades, its virtualized garrison spawned as the host is near). Part of the current QA tests.
     1. Lost: its soldiers are killed, the host walks in, the FOB check clears it: its construction
        (flag, barriers, sandbags, HMGs) goes, the bodies stay
     2. Won: its takeover timer runs out, its vehicle joins the town's garrison; with the host over
@@ -18,15 +18,10 @@ OTQA_fob_build = {
     private _pos = [_p select 0, _p select 1, 0];
     OT_flag_NATO createVehicle _pos;
     private _fobs = server getVariable ["NATOfobs", []];
-    _fobs pushBack [_pos, 4, +_upgrades];
+    private _fob = [_pos, 4, +_upgrades];
+    _fobs pushBack _fob;
+    [_fob] call OT_fnc_NATOregisterFOB; // Its 4 soldiers and gun crews are spawned, the host is near
     server setVariable ["NATOfobs", _fobs, true];
-    private _group = createGroup blufor;
-    for "_i" from 1 to 4 do {
-        private _civ = _group createUnit [selectRandom OT_NATO_Units_LevelOne, [[[_pos, 30]]] call BIS_fnc_randomPos, [], 0, "NONE"];
-        _civ setVariable ["garrison", "HQ", false];
-        _civ setVariable ["OT_fob", _pos];
-    };
-    _group call OT_fnc_initMilitaryPatrol;
     [_pos, _upgrades] spawn OT_fnc_NATOupgradeFOB;
     _pos;
 };
@@ -48,8 +43,8 @@ _tests pushBack ["FOB lost: construction cleared, bodies stay", {
     private _home = getPosATL player;
     private _pos = [["Barriers", "HMG"]] call OTQA_fob_build;
     if (_pos isEqualTo []) exitWith { ["FOB lost: a spot for the FOB", false, "none found near the host"] call OTQA_fnc_check };
-    private _timeout = time + 20;
-    waitUntil { sleep 1; ([_pos] call OTQA_fob_built) >= 13 || { time > _timeout } };
+    private _timeout = time + 40;
+    waitUntil { sleep 1; (([_pos] call OTQA_fob_built) >= 13 && { (count ([_pos, true] call OTQA_fob_units)) >= 8 }) || { time > _timeout } };
     private _built = [_pos] call OTQA_fob_built;
     ["FOB lost: it's built", _built >= 13, format ["%1 objects", _built]] call OTQA_fnc_check;
 
@@ -82,11 +77,11 @@ _tests pushBack ["FOB won: vehicle joins the town, construction cleared", {
     private _pos = [["Barriers", "HMG", "Vehicle"]] call OTQA_fob_build;
     if (_pos isEqualTo []) exitWith { ["FOB won: a spot for the FOB", false, "none found near the host"] call OTQA_fnc_check };
     private _veh = objNull;
-    private _timeout = time + 25;
+    private _timeout = time + 40;
     waitUntil {
         sleep 1;
         _veh = vehicles select { alive _x && { (_x getVariable ["OT_fobVehicle", []]) isEqualTo _pos } } param [0, objNull];
-        (([_pos] call OTQA_fob_built) >= 13 && { !isNull _veh }) || { time > _timeout }
+        (([_pos] call OTQA_fob_built) >= 13 && { !isNull _veh } && { (([_pos, true] call OTQA_fob_units) findIf { isNull objectParent _x }) > -1 }) || { time > _timeout }
     };
     ["FOB won: it's built with its vehicle", !isNull _veh, format ["%1 objects, %2", [_pos] call OTQA_fob_built, typeOf _veh]] call OTQA_fnc_check;
     if (isNull _veh) exitWith { player setPosATL _home };

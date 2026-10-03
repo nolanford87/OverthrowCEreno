@@ -487,24 +487,11 @@ publicVariable "OT_allObjectives";
 
 private _revealed = server getVariable ["revealedFOBs", []];
 {
-    _x params ["_pos", "_garrison", "_upgrades"];
+    _x params ["_pos", "", "_upgrades"];
     OT_flag_NATO createVehicle _pos;
 
-    private _count = 0;
-    private _group = createGroup blufor;
-    while { _count < _garrison } do {
-        private _start = [[[_pos, 50]]] call BIS_fnc_randomPos;
-
-        private _civ = _group createUnit [selectRandom OT_NATO_Units_LevelOne, _start, [], 0, "NONE"];
-        _civ setVariable ["garrison", "HQ", false];
-        _civ setVariable ["OT_fob", _pos];
-        _civ setRank "LIEUTENANT";
-        _civ setVariable ["VCOM_NOPATHING_Unit", true, false];
-        _civ setBehaviour "SAFE";
-
-        _count = _count + 1;
-    };
-    _group call OT_fnc_initMilitaryPatrol;
+    // Its soldiers and gun crews are virtualized, spawned only while a player is near (OT_fnc_spawnNATOFOB)
+    [_x] call OT_fnc_NATOregisterFOB;
 
     [_pos, _upgrades] spawn OT_fnc_NATOupgradeFOB; // Sleeps between objects, initNATO runs unscheduled
 

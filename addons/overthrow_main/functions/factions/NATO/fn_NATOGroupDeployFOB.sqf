@@ -29,7 +29,10 @@ if (_near) exitWith {};
 
 OT_flag_NATO createVehicle _targetPos;
 
-{ _x setVariable ["OT_fob", _targetPos] } forEach (units _group); // Cleared with the FOB (OT_fnc_NATOclearFOB)
-_fobs pushBack [_targetPos, count units _group, []];
+// Its garrison is stored and virtualized, this group is its soldiers on foot until no player is near
+// (OT_fnc_NATOregisterFOB). Tagged "OT_fob", they're cleared with the FOB (OT_fnc_NATOclearFOB)
+private _fob = [_targetPos, { alive _x } count (units _group), [], 0, 0];
+_fobs pushBack _fob;
+[_fob, _group] call OT_fnc_NATOregisterFOB;
 server setVariable ["NATOfobs", _fobs, true];
 _group call OT_fnc_initMilitaryPatrol;
