@@ -283,6 +283,8 @@ if (_canGangJob) then {
 private _drugGang = _civ getVariable ["OT_gangid", -1];
 if (_drugGang > -1 && { (side group _civ) isEqualTo opfor } && { (OT_civilians getVariable [format ["gang%1", _drugGang], []]) isNotEqualTo [] }) then {
     _options pushBack ["Can we do business in bulk? (drugs)", { _this call OT_fnc_gangDrugMenu }, [_civ, _drugGang]];
+    // And their turf: our drug operations and dealing near their camp, the deal for their cut (OT_fnc_drugTurfMenu)
+    _options pushBack ["Can we talk about your turf? (our drug business there)", { _this call OT_fnc_drugTurfMenu }, [_civ, _drugGang]];
 };
 
 if (_canMission) then {
@@ -840,9 +842,10 @@ if (_canSellDrugs) then {
                                         if (_drugSell in items player) then {
                                             player removeItem _drugSell;
                                             OT_interactingWith addItem _drugSell;
-                                            [
-                                                round (([player call OT_fnc_nearestTown, _drugSell] call OT_fnc_getDrugPrice) * 1.2)
-                                            ] call OT_fnc_money;
+                                            private _paid = round (([player call OT_fnc_nearestTown, _drugSell] call OT_fnc_getDrugPrice) * 1.2);
+                                            [_paid] call OT_fnc_money;
+                                            // On a gang's turf they want their cut (OT_fnc_drugTurfStreet)
+                                            [player, getPosATL player, _drugSell, 1, _paid] remoteExec ["OT_fnc_drugTurfStreet", 2, false];
                                             private _town = player call OT_fnc_nearestTown;
                                             if ((random 100 > 50) && !isNil "_town") then {
                                                 [_town, -1] call OT_fnc_stability;

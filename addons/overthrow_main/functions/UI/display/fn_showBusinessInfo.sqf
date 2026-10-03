@@ -44,6 +44,7 @@ if (_name in (missionNamespace getVariable ["OT_drugLabs", []])) exitWith {
     private _cooks = (_num * OT_drugLabPerCook) min OT_drugLabCap;
     _text = _text + format ["<t size='0.65'>Cooks up to %1 blow precursors (in containers within 50 m) into %2 blow each cycle</t><br/>", _cooks, _cooks * OT_drugLabYield];
     _text = _text + format ["<t size='0.65'>%1 per employee, %2 at most; each one makes %3 blow</t><br/>", OT_drugLabPerCook, OT_drugLabCap, OT_drugLabYield];
+    _text = _text + (_name call OT_fnc_drugTurfInfo); // On a gang's turf: the deal, or their mood
     _text = _text + format ["<t size='0.65'>Next cycle: in %1 min</t><br/>", _nextIn];
     ((findDisplay 8000) displayCtrl 1104) ctrlSetStructuredText parseText _text;
 };
@@ -69,6 +70,7 @@ if (_name in OT_dispensaries) exitWith {
     } else {
         _text = _text + format ["<t size='0.65'>Back room for blow: $%1 (ask the budtender)</t><br/>", [OT_dispensaryUpgradeCost, 1, 0, true] call CBA_fnc_formatNumber];
     };
+    _text = _text + (_name call OT_fnc_drugTurfInfo); // On a gang's turf: the deal, or their mood
     _text = _text + format ["<t size='0.65'>Next cycle: in %1 min</t><br/>", _nextIn];
     ((findDisplay 8000) displayCtrl 1104) ctrlSetStructuredText parseText _text;
 };
