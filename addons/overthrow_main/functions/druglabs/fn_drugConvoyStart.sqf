@@ -101,6 +101,7 @@ _group setVariable ["lambs_danger_disableGroupAI", true];
 private _truckCls = ["C_Truck_02_covered_F", "C_Truck_02_transport_F", "C_Van_01_box_F", "C_Offroad_01_F"] select { isClass (configFile >> "CfgVehicles" >> _x) } select 0;
 ([[1, 0] select _withEscort, _truckCls] call _spotFor) params ["_tPos", "_tDir"];
 private _truck = createVehicle [_truckCls, _tPos, [], 0, "CAN_COLLIDE"];
+_truck allowDamage false; // Until it has settled (OT_drugConvoyDebug showed vehicles spawned into each other blowing up)
 _truck setDir _tDir;
 _truck setVariable ["OT_drugConvoy", _id, true];
 clearWeaponCargoGlobal _truck;
@@ -126,7 +127,15 @@ private _leader = _units select 0;
 private _escortVeh = objNull;
 if (_withEscort) then {
     ([0, OT_NATO_Vehicle_Police] call _spotFor) params ["_ePos", "_eDir"];
+    // Never on top of the truck: else a clear spot about 25 m ahead of it
+    if ((_ePos distance2D _truck) < 15) then {
+        private _ahead = (getPosATL _truck) getPos [25, _tDir];
+        private _free = _ahead findEmptyPosition [0, 60, OT_NATO_Vehicle_Police];
+        _ePos = [_free, (getPosATL _truck) getPos [40, _tDir]] select (_free isEqualTo [] || { (_free distance2D _truck) < 15 });
+        _eDir = _tDir;
+    };
     _escortVeh = createVehicle [OT_NATO_Vehicle_Police, _ePos, [], 0, "CAN_COLLIDE"];
+    _escortVeh allowDamage false;
     _escortVeh setDir _eDir;
     _escortVeh setVariable ["OT_drugConvoy", _id, true];
     // Its crew made in the gang's group from the start and kept on it (joining another group's units
@@ -148,9 +157,9 @@ if (_withEscort) then {
 _group selectLeader _leader;
 _group addVehicle _truck;
 if (!isNull _escortVeh) then { _group addVehicle _escortVeh };
-// Nothing hurt settling onto the road (a knock would read as an ambush)
-{ _x allowDamage false } forEach ([_truck, _escortVeh] - [objNull]);
-[[_truck, _escortVeh] - [objNull]] spawn { params ["_vehs"]; sleep 10; { if (!isNull _x) then { _x setDamage 0; _x allowDamage true } } forEach _vehs };
+// Nothing hurt settling onto the road (a knock would read as an ambush): vehicles and men for 10 s
+{ _x allowDamage false } forEach (([_truck, _escortVeh] - [objNull]) + _units);
+[([_truck, _escortVeh] - [objNull]) + _units] spawn { params ["_all"]; sleep 10; { if (!isNull _x && { alive _x }) then { _x setDamage 0; _x allowDamage true } } forEach _all };
 {
     private _o = _x;
     _o setCaptive true;
