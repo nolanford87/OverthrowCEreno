@@ -630,6 +630,10 @@ class CfgFunctions {
             class NATOroadPositions {};
             class NATOdeliveryIntel {};
             class NATOnearestAirfield {};
+            class NATOheldAirfields {};
+            class NATOoffMapPoint {};
+            class NATOattackHelicopter {};
+            class NATOairdropEscort {};
             class NATOConvoy {};
             class NATOGroupDeployFOB {};
             class NATOMissionDeployFOB {};

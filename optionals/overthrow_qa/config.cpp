@@ -33,6 +33,7 @@ class CfgFunctions {
             class testsHijacks {};
             class testsFisherman {};
             class testsPoachers {};
+            class testsAirdropEscort {};
             class check {};
             class manual {};
             class spawnWarehouse {}; // Zeus helper

@@ -1,11 +1,14 @@
 /*
     Description:
     An airdrop by an armed Blackfish (whatever the occupier): it flies in at 250-325 m from the
-    occupier's nearest airfield (about 5 km out when it holds none), releases the vehicle on a
-    parachute 75 m below it over the drop point, flies on and is removed once no player is within 2 km.
+    occupier's nearest airfield (when it holds none, from a random map edge, starting a little outside
+    the map: OT_fnc_NATOoffMapPoint), releases the vehicle on a parachute 75 m below it over the drop
+    point, flies on (off the map again when it came from there) and is removed once no player is within
+    2 km or it's off the map.
     Shot down before the drop, nothing is dropped. Waits until the vehicle has landed.
     The Blackfish carries "OT_airdropCargo" (class) and, once dropped, "OT_deliveryCargo" (the vehicle),
-    so an intelligence report on it can follow the delivery (OT_fnc_NATOdeliveryIntel).
+    so an intelligence report on it can follow the delivery (OT_fnc_NATOdeliveryIntel). For the QA tests
+    it also carries "OT_airdropOrigin" (where it started) and "OT_dropTime" (when it dropped).
 
     Parameters:
         _this # 0: STRING - Vehicle class to drop
@@ -22,14 +25,19 @@ params ["_cargoClass", "_dropPoint", ["_onLaunch", []]];
 private _planeClass = "B_T_VTOL_01_armed_F";
 private _altitude = 250 + random 75;
 private _airfield = [_dropPoint] call OT_fnc_NATOnearestAirfield;
-private _origin = [_dropPoint getPos [5000, random 360], _airfield select 0] select (_airfield isNotEqualTo []);
+private _offMap = _airfield isEqualTo [];
+// From the nearest airfield, or a little outside the map on a random edge when the occupier holds none
+private _origin = [];
+if (_offMap) then { _origin = [_dropPoint] call OT_fnc_NATOoffMapPoint } else { _origin = _airfield select 0 };
 _origin = [_origin select 0, _origin select 1, _altitude];
 
 private _plane = createVehicle [_planeClass, _origin, [], 0, "FLY"];
-_plane setPosATL _origin;
+// Above the sea level off the map (over the sea, above the water, not the sea bed)
+_plane setPosASL [_origin select 0, _origin select 1, ((getTerrainHeightASL _origin) max 0) + _altitude];
 _plane setDir (_origin getDir _dropPoint);
 _plane setVelocityModelSpace [0, 80, 0];
 _plane setVariable ["OT_airdropCargo", _cargoClass, true];
+_plane setVariable ["OT_airdropOrigin", _origin, true];
 private _planeGroup = [_plane] call OT_fnc_createNATOCrew;
 { _x setVariable ["garrison", "HQ", false] } forEach (crew _plane);
 { _x addCuratorEditableObjects [[_plane], true] } forEach (allCurators);
@@ -44,17 +52,26 @@ if (_onLaunch isNotEqualTo []) then {
     [_plane, _arguments] call _code;
 };
 
-// It flies on and goes once nobody is near (after the drop, or with nothing to drop)
+// It flies on (out over the nearest map edge when it came from off the map) and goes once nobody is near
+// or it's off the map (after the drop, or with nothing to drop)
 private _leave = {
-    params ["_plane", "_group"];
+    params ["_plane", "_group", "_offMap"];
     for "_i" from (count waypoints _group) - 1 to 0 step -1 do { deleteWaypoint [_group, _i] };
-    _group move (_plane getPos [6000, getDir _plane]);
+    if (_offMap) then {
+        _group move ([getPosATL _plane, true] call OT_fnc_NATOoffMapPoint);
+    } else {
+        _group move (_plane getPos [6000, getDir _plane]);
+    };
     [_plane, _group] spawn {
         params ["_plane", "_group"];
         private _timeout = time + 600;
+        private _size = worldSize;
         waitUntil {
             sleep 10;
-            !alive _plane || { time > _timeout } || { (allPlayers - entities "HeadlessClient_F") findIf { alive _x && { (_x distance2D _plane) < 2000 } } isEqualTo -1 }
+            !alive _plane
+            || { time > _timeout }
+            || { ((getPosATL _plane) select 0) < 0 || { ((getPosATL _plane) select 0) > _size } || { ((getPosATL _plane) select 1) < 0 } || { ((getPosATL _plane) select 1) > _size } }
+            || { (allPlayers - entities "HeadlessClient_F") findIf { alive _x && { (_x distance2D _plane) < 2000 } } isEqualTo -1 }
         };
         if (alive _plane) then {
             { deleteVehicle _x } forEach (crew _plane);
@@ -67,7 +84,7 @@ private _leave = {
 private _timeout = time + 900;
 waitUntil { sleep 1; !alive _plane || { (_plane distance2D _dropPoint) < 120 } || { time > _timeout } };
 if (!alive _plane) exitWith { [objNull, _plane] };
-if (time > _timeout) exitWith { [_plane, _planeGroup] call _leave; [objNull, _plane] };
+if (time > _timeout) exitWith { [_plane, _planeGroup, _offMap] call _leave; [objNull, _plane] };
 
 // Release it right over the drop point (an open field), 75 m below the Blackfish
 private _release = [_dropPoint select 0, _dropPoint select 1, ((getPosATL _plane) select 2) - 75];
@@ -77,7 +94,8 @@ private _vehicle = createVehicle [_cargoClass, _release, [], 0, "CAN_COLLIDE"];
 _vehicle allowDamage false;
 _vehicle attachTo [_chute, [0, 0, -1.3]];
 _plane setVariable ["OT_deliveryCargo", _vehicle, true];
-[_plane, _planeGroup] call _leave;
+_plane setVariable ["OT_dropTime", time, true];
+[_plane, _planeGroup, _offMap] call _leave;
 
 // It falls under the parachute as it would (the wind may carry it). Down, or stopped coming down
 // (caught on trees / a roof: the parachute, which carries it, stops falling; not checked in the
