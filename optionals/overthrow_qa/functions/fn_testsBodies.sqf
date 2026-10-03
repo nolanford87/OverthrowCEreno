@@ -78,7 +78,9 @@ OTQA_bodies_far = {
         private _timeout = time + 30;
         waitUntil { sleep 0.5; !(missionNamespace getVariable ["OT_saving", false]) || { time > _timeout } };
         private _data = missionProfileNamespace getVariable [OT_saveName, []];
-        private _saved = ((_data select { (_x select 0) == "OTQA_saveMark" }) param [0, ["", ""]]) select 1;
+        // Server variables are saved under "server": [[name, value], ...]
+        private _server = ((_data select { (_x select 0) isEqualTo "server" }) param [0, ["", []]]) select 1;
+        private _saved = ((_server select { (_x select 0) == "OTQA_saveMark" }) param [0, ["", ""]]) select 1;
         ["Bodies: over 300 before the save", _before > 300, format ["%1", _before]] call OTQA_fnc_check;
         ["Bodies: the distant ones went", (count allDeadMen) < 300, format ["%1 -> %2", _before, count allDeadMen]] call OTQA_fnc_check;
         ["Bodies: the save went ahead", _saved isEqualTo _mark, format ["saved mark %1, expected %2", _saved, _mark]] call OTQA_fnc_check;
