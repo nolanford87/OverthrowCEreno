@@ -69,6 +69,8 @@ OTQA_turf_setAnger = {
     private _state = [_gangid] call OT_fnc_drugTurfState;
     _state set [1, _anger];
     _state set [3, _lastAttack];
+    _state set [4, _anger >= OT_drugTurfWarnAt]; // Warned only if already past the warning (a fresh start otherwise)
+    _state set [5, 0]; // No rep loss carried over from earlier tests
     [_gangid, _state] call OT_fnc_drugTurfState;
 };
 OTQA_turf_count = {
