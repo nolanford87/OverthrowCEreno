@@ -43,6 +43,8 @@ BUNKER, TOWER = "Land_BagBunker_Small_F", "Land_BagBunker_Tower_F"
 DESK, CHAIR, BOARD, FLAG = "Land_TableDesk_F", "Land_OfficeChair_01_F", "Land_MapBoard_F", "Flag_NATO_F"
 CTABLE, CCHAIR, RADIO = "Land_CampingTable_F", "Land_CampingChair_V2_F", "Land_PortableLongRangeRadio_F"
 
+LAP = 0.3  # How far butted barrier pieces overlap
+
 MAPCHAR = {SHORT: "b", LONG: "b", ROUND: "b", CORNER: "b", HB1: "H", HB3: "H", HB5: "H", HBBIG: "H",
            HBW4: "W", HBW6: "W", HBWC: "W", MIL: "W", CITYGATE: "G", BARGATE: "G", WIRE: "w", HOG: "x",
            CNC: "c", CNC4: "c", BUNKER: "B", TOWER: "B"}
@@ -72,10 +74,18 @@ def yaw(it):
     return (o if it[0] == "guard" else math.degrees(math.atan2(o[0][0], o[0][1]))) % 360
 
 
-def corners(t, it, grow=0.0):
+def is_barrier(it):
+    """Barrier pieces (and bag bunkers, which sit in the lines) may overlap each other at their ends and sides."""
+    return it[0] == "object" and (tl.is_barrier(it[1]) or it[1] == BUNKER)
+
+
+def corners(t, it, core=False):
+    """The footprint's corners; core: a barrier piece's middle only (the part that mustn't overlap: the ends and
+    the sides may, so lines run unbroken)."""
     m = t.to_model(it[2])
     L, D = size(it)
-    L, D = L + grow, D + grow
+    if core:
+        L, D = max(L - 2 * tl.BARRIER_OVERLAP, 0.2), max(D * 0.5, 0.2)
     d = (yaw(it) - t.dir) % 360
     cx, cy = tl.rot(1, 0, d), tl.rot(0, 1, d)
     return [(m[0] + sx * L / 2 * cx[0] + sy * D / 2 * cy[0], m[1] + sx * L / 2 * cx[1] + sy * D / 2 * cy[1])
@@ -87,7 +97,8 @@ def overlap(t, a, b, tol=0.08):
     za, zb = t.to_model(a[2])[2], t.to_model(b[2])[2]
     if abs(za - zb) > 1.6:
         return False
-    pa, pb = corners(t, a), corners(t, b)
+    both = is_barrier(a) and is_barrier(b)
+    pa, pb = corners(t, a, both), corners(t, b, both)
     for poly in (pa, pb):
         for i in range(4):
             j = (i + 1) % 4
@@ -173,21 +184,61 @@ class Draft:
         """A straight run from (x0, y0) along model direction `along`, butted end to end: "H" HBarrier_5 (6 m),
         "h" HBarrier_3 (3.6), "1" HBarrier_1 (1.56), "W" HBarrierWall6 (6.5, tall), "V" HBarrierWall4 (4.5),
         "M" Mil wall (4, tall), "w" razor wire (7.6), "c" concrete block (4), "C" (8), "_" a 1 m gap,
-        "=" a 2 m gap, "G" a 5 m gap (the gate's), "e" a 2 m gap holding a round sandbag (an embrasure).
+        "=" a 2 m gap, "G" a 5 m gap (the gate's), "e" a 1.7 m gap holding a round sandbag (an embrasure).
+        Pieces overlap their neighbours by LAP (the line is one unbroken wall; a gap is still a gap).
         `face` is the side the line faces (default: along - 90, the left). Returns the end point."""
         spec = {"H": (HB5, 6.0), "h": (HB3, 3.6), "1": (HB1, 1.56), "W": (HBW6, 6.5), "V": (HBW4, 4.5),
                 "M": (MIL, 4.0), "w": (WIRE, 7.6), "c": (CNC, 4.0), "C": (CNC4, 8.0), "_": (None, 1.0),
-                "=": (None, 2.0), "G": (None, 5.0), "e": (ROUND, 2.0)}
+                "=": (None, 2.0), "G": (None, 5.0), "e": (ROUND, 1.7)}
         face = (along - 90) if face is None else face
         s = 0.0
         for p in pieces:
             cls, L = spec[p]
             if cls:
                 cx, cy = off(x0, y0, along, s + L / 2)
-                d = face + 180 if cls == ROUND else (face if cls not in (MIL,) else face)
+                d = face + 180 if cls == ROUND else face
                 self.o(cls, cx, cy, d, z, road_ok=road_ok or cls in (WIRE,), nudge=0.0)
-            s += L
+            s += L - (LAP if cls and cls != ROUND else 0.0)
         return off(x0, y0, along, s)
+
+    FAMILIES = {"H": (HB5, HB3, HB1), "W": (HBW6, HBW4), "M": (MIL,), "w": (WIRE,), "c": (CNC4, CNC)}
+
+    def fill(self, x0, y0, x1, y1, face, family="H", z=None, road_ok=False):
+        """One unbroken run of barrier pieces from (x0, y0) to (x1, y1) (the ends overlapped by the first and last
+        piece, the pieces overlapping each other by LAP or more), facing `face`: the family's longest piece
+        repeated, a shorter one at the end when that fits better."""
+        classes = self.FAMILIES[family]
+        dist = math.hypot(x1 - x0, y1 - y0)
+        along = math.degrees(math.atan2(x1 - x0, y1 - y0))
+        best = None
+        for main in classes:
+            L = tl.CLASSES[main][0]
+            for last in classes:
+                Ll = tl.CLASSES[last][0]
+                m = max(0, math.ceil((dist - Ll) / (L - LAP)))  # main pieces before the last one
+                excess = m * (L - LAP) + Ll - dist
+                if m == 0 and Ll < dist:
+                    continue
+                if (m and excess > 2 * tl.BARRIER_OVERLAP - LAP) or (not m and excess > 2 * tl.BARRIER_OVERLAP):
+                    continue
+                cost = (m + 1, excess)
+                if best is None or cost < best[0]:
+                    best = (cost, main, last, m, excess)
+        _, main, last, m, excess = best
+        L, Ll = tl.CLASSES[main][0], tl.CLASSES[last][0]
+        pieces = [(main, i * (L - LAP) + L / 2) for i in range(m)]
+        pieces.append((last, (dist - Ll / 2) if m else dist / 2))
+        for c, at in pieces:
+            cx, cy = off(x0, y0, along, at)
+            self.o(c, cx, cy, face, z, road_ok=road_ok or c == WIRE)
+
+    def embrasure(self, x, y, face, role="hmg", z=None, bag=True):
+        """A round sandbag in a line at (x, y) (bag) and a static weapon 1.7 m behind it (role), firing through."""
+        if bag:
+            self.o(ROUND, x, y, face + 180, z, nudge=0.0)
+        if role:
+            bx, by = off(x, y, face, -1.7)
+            return self.s(role, bx, by, face, z)
 
     def bunker(self, x, y, face, role="autorifleman"):
         """A small bag bunker facing out, a man inside at its slit."""
@@ -358,7 +409,7 @@ def kavala(d):
     # tower's south-west corner) shut with an H-barrier and a man behind it; riflemen behind the low wall before
     # the porch; the forecourt's mouth a bar gate; the back door's post; the roof HMG and the window marksman;
     # a GMG on the roof's south-west covering the square's west half and the west road
-    d.o(HB3, -19.5, -12.6, 180, nudge=0.5)
+    d.fill(-22.2, -12.6, -16.8, -12.6, 180)                  # The west yard's gap, wall end to block corner
     d.g("rifleman", -19.5, -10.6, 180)
     d.g("autorifleman", 1.2, -10.0, 180)
     d.g("rifleman", 5.2, -10.0, 180)
@@ -372,16 +423,18 @@ def kavala(d):
     # east city wall; small bunkers at its corners; the gate on the door's axis with a chicane of two staggered
     # H-barriers outside it; HMG embrasures in the south line (the square) and the east line (the junction);
     # wire in front of the south line, hedgehogs across the east street both ways and the junction road.
-    d.bunker(-9.0, -19.4, 225)                               # The south-west corner, by the house
-    d.line(-6.8, -21.0, 90, "H1eh1", face=180)               # x -6.8 .. 7.9, the embrasure x 0.8..2.8
+    d.bunker(-9.0, -20.2, 180)                               # The south-west corner, against the house
+    d.fill(-11.0, -18.6, -11.0, -12.3, 270)                  # The west side, bunker to the west block
+    d.fill(-7.5, -21.0, 1.0, -21.0, 180)                     # The south line, bunker to the embrasure,
+    d.embrasure(1.8, -21.0, 180)                             # the HMG over the square,
+    d.fill(2.6, -21.0, 8.3, -21.0, 180)                      # on to the gate
     d.o(BARGATE, 10.5, -21.0, 180)                           # The gate, x 8..13 on the door's axis
-    d.line(13.1, -21.0, 90, "1", face=180)
-    d.bunker(16.8, -19.9, 135)                               # The south-east corner
-    d.line(19.6, -17.6, 0, "e1", face=90)                    # East line y -17.6 .. -14, the embrasure first
-    d.o(HB3, 18.7, -13.0, 0)                                 # Tied into the city wall's corner
-    d.line(-11.6, -16.6, 0, "h", face=270)                   # West side: y -16.6 .. -13
-    d.gun("hmg", 1.8, -19.7, 185, bag=False)                 # In the south line's embrasure: the square
-    d.gun("hmg", 18.3, -16.6, 95, bag=False)                 # In the east line's embrasure: the junction
+    d.fill(12.7, -21.0, 16.1, -21.0, 180)
+    d.bunker(17.6, -20.2, 180)                               # The south-east corner
+    d.fill(19.6, -18.6, 19.6, -17.2, 90)                     # The east line, bunker to the embrasure,
+    d.embrasure(19.6, -16.4, 90)                             # the HMG over the junction and the street,
+    d.fill(19.6, -15.6, 19.6, -11.4, 90)                     # on to the city wall's corner
+    d.fill(19.4, -11.4, 16.6, -11.4, 0)
     d.o(HB3, 8.6, -25.0, 180)                                # The chicane: the gate is reached in an S
     d.o(HB3, 12.4, -28.6, 180)
     d.line(-10.5, -24.6, 90, "ww", face=180)                 # Wire in front of the south line,
@@ -429,11 +482,13 @@ def pyrgos(d):
     # mouth (x -23.3..-16.6, an embrasure in it), and from the block's corner across the porch's front to the
     # east wall (y -13.6), a bar gate on the door's axis; men behind it, the back door's post; the roof HMG over
     # the square, a GMG on the roof's west edge over the west lot, the window marksman over the hill
-    d.line(-23.5, 13.0, 180, "MMMMMM", face=270)             # y 13 .. -11
-    d.line(-23.3, -13.4, 90, "11e1", face=180)               # x -23.3 .. -16.6, the embrasure x -20.2..-18.2
-    d.line(-1.6, -13.6, 90, "Hh", face=180)                  # x -1.6 .. 8
+    d.fill(-23.6, 13.3, -23.6, -12.6, 270, "M")              # The west wall, from the low north wall down
+    d.fill(-24.0, -13.3, -21.0, -13.3, 180)                  # The west yard's mouth, a round bag in it (the
+    d.embrasure(-20.2, -13.3, 190, role=None)                # HMG's embrasure at T4)
+    d.fill(-19.4, -13.3, -16.9, -13.3, 180)
+    d.fill(-1.9, -13.6, 8.3, -13.6, 180)                     # The porch's front, block corner to the gate
     d.o(BARGATE, 10.5, -13.6, 180)                           # x 8 .. 13
-    d.line(13.06, -13.6, 90, "1h1", face=180)                # x 13.06 .. 19.8, into the east wall
+    d.fill(12.7, -13.6, 19.2, -13.6, 180)                    # On into the east wall
     d.post("autorifleman", -14.8, 10.6, 0)
     d.g("rifleman", -21.6, -11.9, 180)
     d.g("autorifleman", 1.0, -11.8, 180)
@@ -445,7 +500,7 @@ def pyrgos(d):
     # fence line either side of the chicane, hedgehogs across the square's open middle (vehicles from the road);
     # an HMG in the west yard's embrasure (the square's west half, the lot's mouth), an HMG on the roof's east
     # edge against the hill; men along the line and at the gate
-    d.bunker(-22.6, -16.6, 225)
+    d.bunker(-22.6, -16.4, 200)
     d.bunker(16.0, -16.7, 160)
     d.o(MIL, -23.5, 15.2, 270)                               # The north lane shut at the west wall
     d.o(HB3, 8.3, -21.4, 180)                                # The chicane: the fence gap (x 6-10.6) masked
@@ -453,7 +508,7 @@ def pyrgos(d):
     d.line(12.0, -20.6, 90, "w", face=180)
     for x, y in ((0.0, -28.0), (4.0, -30.0), (9.0, -31.0), (14.0, -30.0), (17.0, -27.5)):
         d.o(HOG, x, y, 45, nudge=1.0)
-    d.gun("hmg", -19.2, -12.0, 190, bag=False)               # In the west yard's embrasure
+    d.embrasure(-20.2, -13.3, 190, bag=False)                # In the west yard's mouth
     d.gun("hmg", 11.8, 6.6, 90, ROOF)
     d.g("autorifleman", 3.6, -11.8, 180)
     d.g("rifleman", 6.0, -11.8, 180)
