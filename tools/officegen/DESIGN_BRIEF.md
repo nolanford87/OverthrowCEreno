@@ -9,7 +9,7 @@ The first drafts (tools/officegen/drafting/*.py, merged into tools/officegen/lay
 user as: **not tactically sensible, wrong amounts per tier, and not looking like a real defence**. Start again from
 the design up; reuse code from those scripts only where it helps.
 
-## The tier ladder: nearly exponential
+## The tier ladder: nearly exponential (superseded for now by the passes below)
 Each tier is a FULL snapshot that keeps everything of the tier before and adds to it.
 - **Tier 1: a police presence.** 2-3 gendarmes, the office furniture (desk, chair, map board), the flag. Barely
   defended.
@@ -77,3 +77,46 @@ biggest 5), but every tier means the same thing everywhere: a hamlet's tier 2 is
   research you drew on; what you'd want checked in the game.
 - Critique comes back as `tools/officegen/review/<your group>/round<N>.md` on your branch (with screenshots beside it,
   top-down and street-level per tier, and measurements). Pull, read it, iterate, push, report again.
+
+## The work is now split into passes (user, 2026-10-04): this replaces the ladder above
+
+Each pass gets one part right on every tier before the next starts. The critiques judge only that pass.
+
+1. **Walls** (NOW): the materials and the placement of the cover. Nothing else.
+2. **Entrances and sentry**: cut sensible entries (gates, chicanes) into the finished walls, and pick strategic vantage
+   points where a tower could go.
+3. **Garrison**: guards and static weapons, placed against the final walls and towers.
+4. **Obstacles and props**: wire, hedgehogs, the flag, the office furniture. Flavour may come later.
+
+### Pass 1: walls
+**In the drafts:** only walls, H-barriers and sandbags. Take everything else out of every tier for this pass: guards,
+statics, towers, wire, hedgehogs, gates, the flag and the furniture. They come back in their own passes. Tiers are
+still full snapshots, each keeping the tier below.
+
+**The ladder:**
+- **Tier 1: no cover at all.** The tier is empty in this pass.
+- **Tier 2: sandbags on the main building**, so those inside can bunker down. Sandbag positions at the doors, the
+  porch and the ground-floor windows, against the office itself. Nothing out in the yard. Material: sandbags only
+  (`Land_BagFence_Long_F`, `_Short_F`, `_Round_F`, `_Corner_F`, `_End_F`).
+- **Tier 3: a small but fully secured perimeter.** A tight ring round the office and its yard, tied into the
+  neighbouring buildings and walls, with NO opening at all (the entrances come in pass 2). Material: H-barriers
+  (`Land_HBarrier_1_F`, `_3_F`, `_5_F`, `Land_HBarrier_Big_F`), 1- or 2-high.
+- **Tier 4: a sizeable outer perimeter of high walls**, giving cover all round, keeping the tier 3 ring as the inner
+  line. A challenging take for the player. Material: high walls (`Land_Mil_WallBig_4m_F` and its corner,
+  `Land_HBarrierWall4_F`, `Land_HBarrierWall6_F`, `Land_HBarrierWall_corner_F`, `Land_CncWall4_F`, `Land_CncWall1_F`),
+  with H-barriers to fill.
+- **Tier 5: an absolute walled garden, a Fort Knox.** Everything of tier 4, plus the inner ring raised to high walls
+  too, so there are two complete high-walled rings. No face of either ring lower than 2-high.
+
+**The rules for walls:**
+- **Closed means closed in the game.** The in-game check walks a man (the engine's own route finding) from the
+  office's door to 8 points 60 m out. `measurements.md` lists every way out with the gap's [x, y]. Tiers 3-5 must
+  say "closed: no way out".
+- **Existing walls count only if they're real barriers**, about 2 m or higher (city and stone walls of full height).
+  Railings, pillars, pipe fences and low garden walls don't count: line them.
+- **Pieces overlap only at their ends** (0.3-0.6 m into each other, a wall or a building), never mid-piece.
+- **Don't close a main road.** A ring may cross a track or a dead-end lane.
+- **Materials as listed per tier.** Other vanilla classes only if one of these can't do the job, and say why.
+
+**Hand-in for pass 1:** your report's line audit per ring (each gap's width, the run that closes it, what each end
+ties into), and the counts per tier.
