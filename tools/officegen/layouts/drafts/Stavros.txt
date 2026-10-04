@@ -23,7 +23,7 @@ OTLAYOUT|Altis|Stavros|ITEM|2|guard|autorifleman|[12898.891,15058.752,32.206]|33
 OTLAYOUT|Altis|Stavros|ITEM|2|object|Land_HBarrier_3_F|[12901.011,15058.053,32.005]|[[0.8306,-0.5569,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Stavros|ITEM|2|object|Land_BagFence_Long_F|[12884.222,15049.083,32.702]|[[-0.5569,-0.8306,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Stavros|ITEM|2|guard|marksman|[12893.155,15060.792,36.550]|3.8|
-OTLAYOUT|Altis|Stavros|TIER|3|49
+OTLAYOUT|Altis|Stavros|TIER|3|50
 OTLAYOUT|Altis|Stavros|ITEM|3|object|Land_TableDesk_F|[12890.429,15057.443,36.550]|[[-0.8306,0.5569,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Stavros|ITEM|3|object|Land_OfficeChair_01_F|[12889.100,15058.334,36.550]|[[-0.8306,0.5569,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Stavros|ITEM|3|object|Land_MapBoard_F|[12890.462,15059.828,36.550]|[[0.8306,-0.5569,0.0000],[0.0000,0.0000,1.0000]]|drop
@@ -66,6 +66,7 @@ OTLAYOUT|Altis|Stavros|ITEM|3|object|Land_CncBarrier_F|[12901.000,15059.024,32.0
 OTLAYOUT|Altis|Stavros|ITEM|3|object|Land_HBarrier_1_F|[12901.545,15059.838,32.018]|[[0.8306,-0.5569,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Stavros|ITEM|3|object|Land_HBarrier_1_F|[12902.080,15060.635,31.992]|[[0.8306,-0.5569,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Stavros|ITEM|3|object|Land_HBarrier_1_F|[12886.000,15060.894,32.688]|[[0.8306,-0.5569,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Stavros|ITEM|3|object|Land_HBarrier_1_F|[12882.979,15051.000,32.779]|[[0.5569,0.8306,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Stavros|ITEM|3|object|Land_HBarrier_3_F|[12895.074,15062.756,32.266]|[[0.5569,0.8306,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Stavros|ITEM|3|guard|rifleman|[12900.006,15060.774,32.128]|33.8|ground
 OTLAYOUT|Altis|Stavros|ITEM|3|guard|at|[12900.670,15060.328,32.101]|33.8|ground

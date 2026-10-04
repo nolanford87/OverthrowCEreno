@@ -1048,7 +1048,7 @@ def line_audit(s, step=0.1, band=1.2):
     return out
 
 
-def closed_audit(s, cell=0.25, man=0.25, reach=40.0):
+def closed_audit(s, cell=0.25, man=0.2, reach=40.0):
     """Whether the top tier's yard is closed: a flood fill from the way in (a man, his shoulders 2 x man wide, on a
     cell m grid) through everything but the barrier pieces, the tower, the neighbours, old walls and the office.
     Returns [] when no man gets out, else where he crosses the ring's outline: [(x, y)], one per hole."""
