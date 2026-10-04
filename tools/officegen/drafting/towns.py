@@ -1281,13 +1281,19 @@ def paros(d, tier):
     # a short run from its corner into the south house, one from its north corner into the city wall, and one
     # closing the north yard's open east side between the east house and the big house. Towers at the north yard's
     # two corners.
-    if tier == 3:
-        d.run("west", (-10.0, -11.0), (-10.0, 13.0), ends=("corner", "corner"))
-        d.run("sw", (-10.0, -11.0), (-4.5, -11.0), ends=("tie", "free"))  # Its south face 0.2 m off the south house
-        d.run("nw", (-10.0, 13.0), (-4.0, 13.0), ends=("tie", "tie"))
-        d.run("ne", (14.0, 3.5), (14.0, 17.0), ends=("tie", "tie"))
-    if tier == 4:
-        pass  # pass 1: the outer ring (to come)
+    if tier == 3:  # (pass 1: the broken city wall north-west of the house is low: the west face runs on up into the
+        # big north house; the south-west run goes into the south house's west face, not alongside it)
+        d.run("west", (-9.5, -13.0), (-9.5, 16.5), ends=("corner", "tie"))
+        d.run("sw", (-9.5, -13.0), (-5.5, -13.0), ends=("tie", "tie"))
+        d.run("ne", (12.5, 4.5), (12.5, 18.5), ends=("tie", "tie"))
+    if tier == 4:  # The outer ring: west of the track (clear of the main road south-west), into the big north house
+        # and the south house; north and east the big houses, the shed, the garage, the old city walls and the shops
+        # close it, with a wall in the one gap in the old city wall east
+        W = WALL_FILL
+        d.run("o_s", (-18.0, -15.8), (-6.35, -15.8), ends=("corner", "tie"), fill=W, out=180)
+        d.run("o_w", (-18.0, -15.8), (-18.0, 18.0), ends=("tie", "corner"), fill=W, out=270)
+        d.run("o_n", (-18.0, 18.0), (-11.1, 18.0), ends=("tie", "tie"), fill=W, out=0)
+        d.run("o_e", (36.9, 4.6), (38.15, 8.6), ends=("tie", "tie"), fill=W, out=17)
 
 
 @site("Rodopoli", entry="W", nest=(-9.0, -1.8, 270), flag=(-9.0, 8.0), spare=[])
