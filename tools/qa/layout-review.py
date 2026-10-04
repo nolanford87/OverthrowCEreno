@@ -73,13 +73,15 @@ def main(argv):
     rpt = args[1] if len(args) > 1 else max(glob.glob(os.path.join(os.environ["LOCALAPPDATA"], "Arma 3", "*.rpt")), key=os.path.getmtime)
     only = argv[argv.index("--group") + 1] if "--group" in argv else None
     groups = json.load(open(os.path.join(REVIEW, "groups.json"), encoding="utf-8"))
-    checks, classes = {}, {}
+    checks, classes, bpos = {}, {}, {}
     for line in open(rpt, encoding="utf-8", errors="replace"):
-        m = re.search(r'"(OT(CHECK|CLASS)\|.*)"\s*$', line)
+        m = re.search(r'"(OT(CHECK|CLASS|BPOS)\|.*)"\s*$', line)
         if not m:
             continue
         f = m.group(1).replace('""', '"').split("|")
-        if f[0] == "OTCHECK":
+        if f[0] == "OTBPOS":
+            bpos[f[1]] = f[2]
+        elif f[0] == "OTCHECK":
             checks.setdefault(f[1], {})[int(f[2])] = f[3:]
         else:
             classes[f[1]] = f[2]
@@ -122,6 +124,10 @@ def main(argv):
             md.append("")
         used = sorted(c for c in classes)
         md += ["## Real sizes of the classes used ([length, depth, height] m, boundingBoxReal)", ""] + [f"- {c}: {classes[c]}" for c in used]
+        if bpos:
+            md += ["", "## Where a man stands on a placed object (its building positions, MODEL coordinates [x, y, z] from its origin)",
+                   "Put a tower's or bunker's guard exactly there (turned with the object) instead of guessing a height.", ""]
+            md += [f"- {c}: {bpos[c]}" for c in sorted(bpos)]
         open(os.path.join(out, "measurements.md"), "w", encoding="utf-8", newline="\n").write("\n".join(md) + "\n")
         print(f"{group}: {len(mine)} towns -> {os.path.relpath(out, ROOT)}")
 
