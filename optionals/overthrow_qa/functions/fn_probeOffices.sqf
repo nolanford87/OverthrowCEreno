@@ -22,7 +22,7 @@ OTQA_probeOffices_classes = [
     "Land_i_House_Big_01_b_blue_F", "Land_i_House_Big_02_b_blue_F", "Land_i_Shop_02_b_blue_F",
     // Tanoa
     "Land_House_Big_01_F", "Land_House_Small_01_F", "Land_House_Small_04_F", "Land_School_01_F", "Land_House_Big_04_F",
-    "Land_House_Big_03_F", "Land_Hotel_01_F", "Land_Hotel_02_F", "Land_House_Big_02_F", "Land_Shop_City_04_F",
+    "Land_House_Big_03_F", "Land_Hotel_01_F", "Land_Hotel_02_F", "Land_House_Big_02_F", "Land_Shop_City_04_F", "Land_Shop_City_06_F",
     "Land_MultistoryBuilding_01_F",
     // Livonia
     "Land_House_1W11_F", "Land_House_1W07_F", "Land_House_2W01_F", "Land_House_2B02_F", "Land_House_1B01_F",
