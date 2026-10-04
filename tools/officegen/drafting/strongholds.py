@@ -762,7 +762,7 @@ def athira(d):
     # south lane (staggered: the gate is reached in an S, the GMG fires over them); wire across the west lot's
     # mouth; hedgehogs in the south-east gap, the strip's mouth on the east road and the west lane; the balcony MG
     d.o(ROUND, 10.6, -12.6, 0)
-    d.s("hmg", *off(10.6, -12.6, 225, -2.6), 225)
+    d.s("hmg", *off(10.6, -12.6, 210, -2.6), 210)
     d.tower(-10.8, -7.2, 235, "marksman", "autorifleman", 270)
     d.tower(16.0, 3.0, 110, "marksman")
     for x in (-3.2, -0.6, 2.0):
