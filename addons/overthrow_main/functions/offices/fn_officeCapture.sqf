@@ -2,7 +2,7 @@
     Description:
     Taking a town by its mayor's office, once the town's stability is down to 0 (OT_fnc_NATOcheckTowns):
     the resistance gets a task to take the office; it's taken once no occupier soldier is left within
-    30 m of it and the resistance has held it for 2 minutes. A town under 100 people is then the
+    30 m of it (more for a big building, OT_fnc_officeRadius) and the resistance has held it for 2 minutes. A town under 100 people is then the
     resistance's; a bigger one the occupier counter-attacks at the office
     (OT_fnc_NATOResponseTown, after its 10 minutes to get there, the time to bunker down): the resistance
     wins the town if it still holds the office when the attack is spent or runs out of time, the occupier
@@ -28,6 +28,7 @@ missionNamespace setVariable [_running, true];
 private _pos = ASLToAGL ((([_town] call OT_fnc_officeLayout) select 0) select 1);
 private _held = format ["officeheld%1", _town];
 private _holdTime = missionNamespace getVariable ["OT_officeHoldTime", 120]; // Shorter only in the QA tests
+private _radius = [_town] call OT_fnc_officeRadius;
 
 if !(server getVariable [_held, false]) then {
     private _task = format ["office%1", _town];
@@ -42,7 +43,7 @@ if !(server getVariable [_held, false]) then {
             continue;
         };
         // Nobody of the occupier's in the office (any floor), somebody of the resistance's
-        private _units = (_pos nearEntities [["CAManBase"], 60]) select { alive _x && { (_x distance2D _pos) <= 30 } && { !(_x getVariable ["ace_isunconscious", false]) } };
+        private _units = (_pos nearEntities [["CAManBase"], _radius + 30]) select { alive _x && { (_x distance2D _pos) <= _radius } && { !(_x getVariable ["ace_isunconscious", false]) } };
         private _theirs = blufor countSide _units;
         private _ours = { side _x isEqualTo independent || { captive _x } } count _units;
         if (_theirs isEqualTo 0 && { _ours > 0 }) then {
@@ -80,7 +81,7 @@ if ((server getVariable [_held, false]) && { !(_town in (server getVariable ["NA
     server setVariable [format ["garrison%1", _town], 0, true];
     server setVariable ["NATOattacking", _town, true];
     server setVariable ["NATOattackstart", time, true];
-    [_town, _strength, _pos] call OT_fnc_NATOResponseTown;
+    [_town, _strength, _pos, _radius] call OT_fnc_NATOResponseTown;
     waitUntil { sleep 5; (server getVariable ["NATOattacking", ""]) isNotEqualTo _town };
 };
 

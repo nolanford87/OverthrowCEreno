@@ -8,13 +8,14 @@
         _this # 0: STRING - Town
         _this # 1: NUMBER - Strength
         _this # 2: ARRAY - (Optional) Its mayor's office position, the fight is for the office
+        _this # 3: NUMBER - (Optional) The office's radius (OT_fnc_officeRadius), default 30
 
     Usage: [_town, _strength] spawn OT_fnc_NATOResponseTown;
 
     Returns: Nothing
 */
 
-params ["_town", "_strength", ["_office", []]];
+params ["_town", "_strength", ["_office", []], ["_radius", 30]];
 private _posTown = [_office, server getVariable _town] select (_office isEqualTo []);
 _town setMarkerAlpha 0;
 
@@ -45,4 +46,4 @@ private _fail = {
     ["set", _town, 3600] call OT_fnc_NATOtownGrace;
 };
 
-[_posTown, _strength, _success, _fail, [_tskid, _town], _town, [0, 30] select (_office isNotEqualTo [])] spawn OT_fnc_NATOQRF;
+[_posTown, _strength, _success, _fail, [_tskid, _town], _town, [0, _radius] select (_office isNotEqualTo [])] spawn OT_fnc_NATOQRF;

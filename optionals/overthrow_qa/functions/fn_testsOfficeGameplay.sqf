@@ -11,6 +11,7 @@
     4. Lost again: the occupier wins the QRF (forced), stability 50, the office theirs again
     5. Called off: the town's stability rises before the office is taken, the task is cancelled
     6. The fight for the office: the occupier holding it with nobody of ours inside wins
+    7. The office's radius: 30 m for a house, out to the wings for Kavala's hospital
     Uses towns far from the host, so their spawners stay out of it. The hold, the QRF's set-up and the
     results are shortened or forced (OT_officeHoldTime, OT_QRFsetupTime, OT_QRFforceResult).
 
@@ -75,7 +76,8 @@ OTQA_og_ours = {
 private _tests = [];
 
 _tests pushBack ["Office: the tier by population bracket, capped", {
-    private _town = "Kavala";
+    // A town whose layout goes to tier 5
+    private _town = (OT_allTowns select { count ((([_x] call OT_fnc_officeLayout) param [1, []]) select { _x isNotEqualTo [] }) isEqualTo 5 }) param [0, "Pyrgos"];
     private _keepPop = server getVariable [format ["population%1", _town], 0];
     private _keepTier = server getVariable [format ["officetier%1", _town], 0];
     private _got = [];
@@ -104,7 +106,12 @@ _tests pushBack ["Office: the tier by population bracket, capped", {
 }, 10];
 
 _tests pushBack ["Office: the spawner, guards only while it's the occupier's", {
-    private _town = (call OTQA_og_towns) select 0;
+    // A town whose layout has guards at its tier (the walls-only drafts have none)
+    private _town = ((([true] call OTQA_og_towns) + (call OTQA_og_towns)) select {
+        private _t = _x;
+        (((([_t] call OT_fnc_officeLayout) select 1) param [([_t] call OT_fnc_officeTier) - 1, []]) findIf { (_x select 0) isEqualTo "guard" }) > -1
+    }) param [0, ""];
+    if (_town isEqualTo "") exitWith { ["Spawner: a town whose layout has guards", false, "none"] call OTQA_fnc_check };
     private _held = format ["officeheld%1", _town];
     private _runs = [];
     {
@@ -213,6 +220,19 @@ _tests pushBack ["Office: called off when stability rises", {
     ["Called off: the task cancelled, the capture over", ([_task] call BIS_fnc_taskState) isEqualTo "CANCELED" && { !(missionNamespace getVariable [format ["OT_officeCapture%1", _town], false]) }, [_task] call BIS_fnc_taskState] call OTQA_fnc_check;
     [_town, _saved] call OTQA_og_restore;
 }, 30];
+
+_tests pushBack ["Office: the radius covers a big building", {
+    private _house = (call OTQA_og_towns) select 0;
+    private _small = [_house] call OT_fnc_officeRadius;
+    // Kavala's hospital as its office for the check (its layout comes from the designers)
+    private _keep = OT_officeLayouts getOrDefault ["Kavala", nil];
+    private _hospital = (nearestObjects [[3760.45, 12990.06, 0], ["Land_Hospital_main_F"], 10, true]) param [0, objNull];
+    OT_officeLayouts set ["Kavala", [["Land_Hospital_main_F", getPosASL _hospital, getDir _hospital, false], [[], [], [], [], []]]];
+    private _big = ["Kavala"] call OT_fnc_officeRadius;
+    if (isNil "_keep") then { OT_officeLayouts deleteAt "Kavala" } else { OT_officeLayouts set ["Kavala", _keep] };
+    ["Radius: 30 m round a house", _small isEqualTo 30, format ["%1: %2 m", _house, _small]] call OTQA_fnc_check;
+    ["Radius: out to the wings round Kavala's hospital", !isNull _hospital && { _big > 45 }, format ["%1 m (hospital found %2)", round _big, !isNull _hospital]] call OTQA_fnc_check;
+}, 10];
 
 _tests pushBack ["Office: the occupier holding it wins the fight", {
     if !(call OTQA_og_idle) exitWith { ["Fight: no QRF running first", false, server getVariable ["NATOattacking", ""]] call OTQA_fnc_check };
