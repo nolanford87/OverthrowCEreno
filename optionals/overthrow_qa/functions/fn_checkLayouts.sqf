@@ -125,6 +125,19 @@
                         // Where a man stands on it (a tower's platform, a bunker's inside): its building positions, model coordinates
                         private _bp = (_o buildingPos -1) apply { (_o worldToModel _x) apply { _x call _r1 } };
                         if (_bp isNotEqualTo []) then { diag_log format ["OTBPOS|%1|%2", typeOf _o, _bp] };
+                        // A tall object's floors (a tower's platform, a bunker's roof): every surface of it hit by a
+                        // ray straight down at its centre and 0.6 m off it each way, model height above its base
+                        if (((_mx select 2) - (_mn select 2)) > 2.2) then {
+                            private _surf = [];
+                            {
+                                private _px = ((_mn select 0) + (_mx select 0)) / 2 + (_x select 0);
+                                private _py = ((_mn select 1) + (_mx select 1)) / 2 + (_x select 1);
+                                private _hits = lineIntersectsSurfaces [_o modelToWorldWorld [_px, _py, (_mx select 2) + 0.5], _o modelToWorldWorld [_px, _py, (_mn select 2) - 0.2], objNull, objNull, true, 8, "GEOM", "NONE"];
+                                private _zs = (_hits select { ((_x select 2) isEqualTo _o) || { (_x select 3) isEqualTo _o } }) apply { (((_o worldToModel (ASLToAGL (_x select 0))) select 2) - (_mn select 2)) call _r1 };
+                                _surf pushBack [_px call _r1, _py call _r1, _zs];
+                            } forEach [[0, 0], [0.6, 0], [-0.6, 0], [0, 0.6], [0, -0.6]];
+                            diag_log format ["OTSURF|%1|%2|base z %3", typeOf _o, _surf, (_mn select 2) call _r1];
+                        };
                     };
                 } forEach (_props + _statics);
 
