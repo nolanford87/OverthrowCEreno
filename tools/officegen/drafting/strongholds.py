@@ -109,6 +109,8 @@ def overlap(t, a, b, tol=0.08):
     if abs(za - zb) > 1.6:
         return False
     both = is_barrier(a) and is_barrier(b)
+    if both:
+        tol = 0.4  # Butted barrier pieces may overlap a little more than their cores (a line has no gaps)
     pa, pb = corners(t, a, both), corners(t, b, both)
     for poly in (pa, pb):
         for i in range(4):
@@ -213,7 +215,7 @@ class Draft:
             s += L - (LAP if cls and cls != ROUND else 0.0)
         return off(x0, y0, along, s)
 
-    FAMILIES = {"H": (HB5, HB3, HB1), "B": (HBBIG, HB5), "W": (HBW6, HBW4), "M": (MIL,), "w": (WIRE,), "c": (CNC4,)}
+    FAMILIES = {"H": (HB5, HB3, HB1), "B": (HBBIG, HB5, HB3, HB1), "W": (HBW6, HBW4), "M": (MIL,), "w": (WIRE,), "c": (CNC4,)}
 
     def fill(self, x0, y0, x1, y1, face, family="H", z=None, road_ok=False):
         """One unbroken run of barrier pieces from (x0, y0) to (x1, y1) (the ends overlapped by the first and last
@@ -222,7 +224,7 @@ class Draft:
         classes = self.FAMILIES[family]
         dist = math.hypot(x1 - x0, y1 - y0)
         along = math.degrees(math.atan2(x1 - x0, y1 - y0))
-        most = 2 * tl.BARRIER_OVERLAP  # The most two pieces may overlap (their cores just touching)
+        most = 2 * tl.BARRIER_OVERLAP + 0.35  # The most two pieces may overlap (their cores just touching)
         options = []
         for main in classes:  # n of one piece, evenly spaced
             L = tl.CLASSES[main][0]
@@ -281,20 +283,22 @@ class Draft:
                 self.g(below, *off(m[0], m[1], below_face if below_face is not None else face, 0.6), below_face if below_face is not None else face, nudge=0.25, ignore=(tw,))
         return tw
 
-    def checkpoint(self, x, y, face, width=7.0, out=6.0, side=1, roles=("rifleman", "autorifleman"), hb=HB5, block=CNC4,
-                   post=None, wire=None):
-        """A checkpoint across a road, traffic coming from `face`: an H-barrier (man-high, the men fire over it)
-        across one half at (x, y) with its two men 1.2 m behind it, a concrete block across the other half `out`
-        metres further out (negative: further in), `side` 1/-1 which half the H-barrier takes (right/left seen
-        from the office). A vehicle can only get through in an S at walking pace, under the men's guns."""
+    def checkpoint(self, x, y, face, width=7.0, out=6.0, side=1, roles=("rifleman", "autorifleman"), hb=HBBIG, block=CNC4,
+                   post=None, wire=None, bag_at=-3.0):
+        """A checkpoint across a road, traffic coming from `face`: a 2-high H-barrier block across one half at
+        (x, y), a concrete block across the other half `out` metres further out (negative: further in): a vehicle
+        chicane, through in an S at walking pace; the men behind a long sandbag on the open lane `bag_at` metres
+        inside the H-barrier (the chicane's exit, their view over the bag), `side` 1/-1 which half the H-barrier
+        takes (right/left seen from the office); a bag bunker at the roadside (post) and wire (wire)."""
         half = side * width / 4
-        hb = self.o(hb, *off(x, y, face, 0.0, half), face, road_ok=True, nudge=0.5)
-        if hb:
-            m = self.t.to_model(hb[2])
-            spread = min(1.5, tl.CLASSES[hb[1]][0] / 2 - 0.4) if len(roles) > 1 else 0.0
-            for role, lat in zip(roles, (-spread, spread)):
-                gx, gy = off(m[0], m[1], face, -2.1, lat)
-                self.g(role, gx, gy, face, nudge=0.5)
+        self.o(hb, *off(x, y, face, 0.0, half), face, road_ok=True, nudge=0.5)
+        if roles:
+            lane = -side * max(5.6 - abs(half), abs(half)) if hb == HBBIG else -half  # Clear of the block's end
+            bag = self.o(LONG, *off(x, y, face, bag_at, lane), face, road_ok=True, nudge=0.5)
+            if bag:
+                m = self.t.to_model(bag[2])
+                for role, lat in zip(roles, (-0.7, 0.7) if len(roles) > 1 else (0.0,)):
+                    self.g(role, *off(m[0], m[1], face, -1.2, lat), face, nudge=0.25)
         if block:
             self.o(block, *off(x, y, face, out, -half), face, road_ok=True, nudge=0.5)
         if post:  # A bag bunker at the roadside, its slit up the road: (metres along, metres to the side)
@@ -541,14 +545,14 @@ def kavala(d):
     # staggered H-barriers outside; HMG embrasures in the south face (the square) and the east face (the junction
     # and the street); wire in front of the south face, hedgehogs across the street both ways
     d.tower(-8.8, -19.4, 195, "marksman", "autorifleman", 180)   # The south-west corner, against the house
-    d.fill(-11.0, -17.4, -11.0, -12.3, 270)                  # The west side, tower to the west block
+    d.fill(-11.0, -17.4, -11.0, -12.3, 270, "B")             # The west side, tower to the west block
     d.fill(-6.9, -21.0, 0.3, -21.0, 180, "B")                # The south face, tower to the embrasure,
     d.embrasure(1.8, -21.0, 180)                             # the HMG over the square,
     d.fill(3.3, -21.0, 8.3, -21.0, 180, "B")                 # on to the gate
     d.o(BARGATE, 10.5, -21.0, 180)                           # The gate, x 8..13 on the door's axis
     d.fill(12.7, -21.0, 15.4, -21.0, 180)
     d.tower(17.5, -19.4, 135, "marksman", "autorifleman", 90)  # The south-east corner
-    d.fill(19.6, -17.6, 19.6, -15.3, 90)                     # The east face, tower to the embrasure,
+    d.fill(19.6, -17.6, 19.6, -15.3, 90, "B")                # The east face, tower to the embrasure,
     d.embrasure(19.6, -14.0, 90)                             # the HMG over the junction and the street,
     d.fill(19.6, -12.5, 19.6, -11.2, 90)                     # on to the city wall's corner
     d.fill(19.4, -11.4, 16.6, -11.4, 0)
@@ -557,8 +561,8 @@ def kavala(d):
     d.o(HB3, 8.6, -25.0, 180)                                # The chicane: the gate is reached in an S
     d.o(HB3, 12.4, -28.6, 180)
     d.fill(-10.5, -24.8, 4.6, -24.8, 180, "w")               # Wire in front of the south face,
-    d.fill(15.0, -24.8, 21.0, -24.8, 180, "w")               # the chicane's lane left open
-    for x, y in ((23.5, -23.5), (26.5, -25.0), (29.5, -23.5), (24.0, 10.5), (27.0, 12.0), (30.0, 10.5)):
+    d.o(WIRE, 16.4, -24.8, 180, road_ok=True)                 # the chicane's lane left open
+    for x, y in ((23.5, -22.0), (26.5, -23.0), (29.5, -22.0), (24.0, 10.5), (27.0, 12.0), (30.0, 10.5)):
         d.o(HOG, x, y, 45, road_ok=True, nudge=1.0)          # Hedgehogs: the street both ways
     tower_t4_inside(d)
 
@@ -566,10 +570,25 @@ def kavala(d):
     # road's mouth on the square (each an H-barrier and a concrete block staggered across the road, a bag bunker
     # at the roadside); a mortar in the north yard; AT on the roof over the street, an AT man at the gate; the kill
     # zone inside
-    d.checkpoint(27.4, 17.0, 10, out=6.0, roles=("autorifleman",), post=(-4.0, 7.0))
-    d.checkpoint(26.8, -30.5, 182, out=6.0, roles=("autorifleman",), post=(-4.0, -6.5))
-    d.checkpoint(36.5, -13.2, 92, out=6.0, side=-1, roles=("autorifleman",), post=(-3.0, 6.5))
+    d.checkpoint(27.4, 17.0, 10, out=6.0, side=-1, roles=("autorifleman",), post=(1.0, 7.5))
+    d.checkpoint(26.8, -31.5, 182, out=-5.5, side=1, roles=("autorifleman", "rifleman"))
+    d.checkpoint(36.5, -13.2, 92, out=6.0, side=-1, roles=("autorifleman",), post=(1.0, 6.5))
     d.checkpoint(-31.0, -16.5, 240, width=10.0, out=5.0, roles=("rifleman", "autorifleman"))
+    # The square walled in: a 2-high ring across it (y -30.5) from the house to the street and up the street's
+    # edge to the yard's tower, a second gate on the door's axis with its own chicane, bag towers at its corners,
+    # a GMG and an HMG in its embrasures (40 m clear over the square's south end and the street)
+    d.fill(-10.6, -30.5, 0.2, -30.5, 180, "B")
+    d.embrasure(1.8, -30.5, 180, role=None)                  # The yard's HMG fires on through this one
+    d.fill(3.4, -30.5, 8.2, -30.5, 180, "B")
+    d.o(BARGATE, 10.5, -30.5, 180)
+    d.fill(12.8, -30.5, 14.4, -30.5, 180)
+    d.embrasure(16.0, -30.5, 165, role="gmg", line_face=180)
+    d.fill(17.6, -30.5, 21.4, -30.5, 180, "B")
+    d.fill(20.9, -29.6, 20.9, -21.4, 90, "B")
+    d.tower(-8.4, -28.3, 200, "marksman")
+    d.tower(18.7, -27.9, 150, "marksman")
+    d.o(HB3, 8.6, -34.6, 180)
+    d.o(HB3, 12.4, -38.4, 180)
     d.s("mortar", -3.0, 18.0, 0)
     d.g("at", 10.5, -18.4, 180)
     tower_t5_inside(d)
@@ -623,6 +642,9 @@ def pyrgos(d):
     d.o(HB1, -0.8, -14.9, 90)
     d.tower(-21.0, -10.6, 210, "marksman", "autorifleman", 180)
     d.tower(16.6, -11.0, 160, "marksman")
+    d.fill(-0.8, -17.4, 7.9, -17.4, 180, "B")                # The outer face on the fence line, 2-high,
+    d.o(BARGATE, 10.5, -17.4, 180)                           # its gate on the door's axis,
+    d.fill(13.1, -17.4, 19.4, -17.4, 180, "B")               # on into the east wall
     d.o(MIL, -23.5, 15.2, 270)                               # The north lane shut at the west wall
     d.o(HB3, 8.3, -21.4, 180)                                # The chicane: the fence gap (x 6-10.6) masked
     d.fill(-19.0, -20.6, 3.8, -20.6, 180, "w")
@@ -640,11 +662,12 @@ def pyrgos(d):
     # the east wall denying the high ground; the mortar behind the tower; AT on the roof over the square, an AT man
     # at the gate; the kill zone inside
     d.checkpoint(8.0, -36.0, 180, out=5.0, roles=("autorifleman",), post=(-1.0, -7.0))
-    d.checkpoint(-36.0, -8.0, 270, out=-6.0, roles=("autorifleman",), post=(-1.0, 7.0))
+    d.checkpoint(-36.0, -8.0, 270, out=-6.0, roles=("autorifleman",), post=(-1.0, -7.0))
     d.o(HB3, -36.0, 15.2, 270)
     d.g("rifleman", -34.4, 14.4, 270)
     d.g("autorifleman", -34.4, 16.0, 270)
     d.bunker(27.0, -4.0, 70)
+    d.tower(-10.0, 10.8, 330, "marksman")                    # Over the low north wall: the lane and the street
     d.s("mortar", 0.0, 11.0, 90)
     d.g("at", 13.6, -11.8, 180)
     tower_t5_inside(d, at=(-8.0, -9.6, 180))
@@ -739,13 +762,16 @@ def athira(d):
     # south lane (staggered: the gate is reached in an S, the GMG fires over them); wire across the west lot's
     # mouth; hedgehogs in the south-east gap, the strip's mouth on the east road and the west lane; the balcony MG
     d.o(ROUND, 10.6, -12.6, 0)
-    d.s("hmg", *off(10.6, -12.6, 215, -2.6), 215)
+    d.s("hmg", *off(10.6, -12.6, 225, -2.6), 225)
     d.tower(-10.8, -7.2, 235, "marksman", "autorifleman", 270)
     d.tower(16.0, 3.0, 110, "marksman")
     for x in (-3.2, -0.6, 2.0):
         d.o(JERSEY, x, -16.6, 180)
     for x in (0.6, 3.2, 5.8):
         d.o(JERSEY, x, -20.6, 180)
+    d.fill(-18.4, -1.0, -18.4, -2.6, 270, "B")              # The lane to the west road walled 2-high, the
+    d.embrasure(-18.4, -4.0, 270, role=None)                 # HMG's line kept open through it
+    d.fill(-18.4, -5.4, -18.4, -7.6, 270, "B")
     d.fill(-15.6, -1.6, -15.6, -8.2, 270, "w")
     for x, y in ((19.6, -19.5), (19.8, -22.0), (24.0, 8.8), (24.0, 11.2), (-10.0, -15.0), (-7.0, -17.0)):
         d.o(HOG, x, y, 45, nudge=1.0)
@@ -820,7 +846,7 @@ def zaros(d):
     d.gun("hmg", -6.6, 11.8, 270)
     d.fill(-17.0, 11.6, -10.0, 11.6, 0, "w")
     d.fill(-16.5, -17.2, -9.5, -17.2, 180, "w")
-    for x, y in ((14.5, 15.0), (17.5, 16.5), (20.5, 15.0), (16.0, -14.0), (19.0, -15.5)):
+    for x, y in ((14.5, 15.0), (17.5, 16.5), (20.5, 15.0), (16.5, -15.0), (18.0, -12.5)):
         d.o(HOG, x, y, 45, road_ok=True, nudge=1.0)
     d.g("mg_gunner", -3.6, -0.6, 270, H1)
     d.g("rifleman", 9.0, 2.0, 135)

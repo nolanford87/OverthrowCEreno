@@ -57,7 +57,7 @@ OTLAYOUT|Altis|Athira|ITEM|3|guard|autorifleman|[14023.657,18684.624,27.148]|119
 OTLAYOUT|Altis|Athira|ITEM|3|guard|rifleman|[14024.347,18685.842,27.161]|119.5|ground
 OTLAYOUT|Altis|Athira|ITEM|3|guard|rifleman|[14017.514,18685.346,30.440]|29.5|
 OTLAYOUT|Altis|Athira|ITEM|3|guard|marksman|[14008.118,18690.671,30.440]|29.5|
-OTLAYOUT|Altis|Athira|TIER|4|60
+OTLAYOUT|Altis|Athira|TIER|4|63
 OTLAYOUT|Altis|Athira|ITEM|4|object|Land_TableDesk_F|[14014.875,18684.543,27.020]|[[0.4930,0.8700,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Athira|ITEM|4|object|Land_OfficeChair_01_F|[14015.664,18685.935,27.020]|[[0.4930,0.8700,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Athira|ITEM|4|object|Land_MapBoard_F|[14013.596,18681.474,27.020]|[[-0.4930,-0.8700,0.0000],[0.0000,0.0000,1.0000]]|drop
@@ -94,7 +94,7 @@ OTLAYOUT|Altis|Athira|ITEM|4|guard|rifleman|[14024.347,18685.842,27.161]|119.5|g
 OTLAYOUT|Altis|Athira|ITEM|4|guard|rifleman|[14017.514,18685.346,30.440]|29.5|
 OTLAYOUT|Altis|Athira|ITEM|4|guard|marksman|[14008.118,18690.671,30.440]|29.5|
 OTLAYOUT|Altis|Athira|ITEM|4|object|Land_BagFence_Round_F|[14027.021,18687.315,27.291]|[[-0.8700,0.4930,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Athira|ITEM|4|static|hmg|[14025.903,18689.662,27.173]|[[0.4299,-0.9029,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Athira|ITEM|4|static|hmg|[14026.110,18689.944,27.179]|[[0.2666,-0.9638,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Athira|ITEM|4|object|Land_BagBunker_Tower_F|[14011.772,18671.359,26.145]|[[0.0952,-0.9955,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Athira|ITEM|4|guard|marksman|[14011.772,18671.359,28.895]|174.5|
 OTLAYOUT|Altis|Athira|ITEM|4|guard|autorifleman|[14011.476,18670.837,26.097]|209.5|ground
@@ -106,6 +106,9 @@ OTLAYOUT|Altis|Athira|ITEM|4|object|Land_CncBarrier_F|[14026.261,18677.861,27.26
 OTLAYOUT|Altis|Athira|ITEM|4|object|Land_CncBarrier_F|[14029.050,18674.670,27.312]|[[0.8700,-0.4930,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Athira|ITEM|4|object|Land_CncBarrier_F|[14030.332,18676.932,27.441]|[[0.8700,-0.4930,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Athira|ITEM|4|object|Land_CncBarrier_F|[14031.614,18679.194,27.573]|[[0.8700,-0.4930,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Athira|ITEM|4|object|Land_HBarrier_1_F|[14003.327,18667.409,25.480]|[[-0.4930,-0.8700,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Athira|ITEM|4|object|Land_BagFence_Round_F|[14005.241,18666.324,25.570]|[[0.4930,0.8700,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Athira|ITEM|4|object|Land_HBarrier_1_F|[14007.416,18665.092,25.686]|[[-0.4930,-0.8700,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Athira|ITEM|4|object|Land_Razorwire_F|[14007.404,18668.317,25.692]|[[-0.4930,-0.8700,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Athira|ITEM|4|object|Land_CzechHedgehog_01_F|[14037.261,18692.466,27.628]|[[-0.2666,0.9638,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Athira|ITEM|4|object|Land_CzechHedgehog_01_F|[14039.735,18690.684,27.703]|[[-0.2666,0.9638,0.0000],[0.0000,0.0000,1.0000]]|ground
@@ -118,7 +121,7 @@ OTLAYOUT|Altis|Athira|ITEM|4|guard|rifleman|[14020.994,18679.925,27.013]|119.5|g
 OTLAYOUT|Altis|Athira|ITEM|4|guard|rifleman|[14022.966,18683.406,27.135]|119.5|ground
 OTLAYOUT|Altis|Athira|ITEM|4|guard|rifleman|[14019.857,18678.731,26.924]|119.5|ground
 OTLAYOUT|Altis|Athira|ITEM|4|guard|rifleman|[14010.192,18691.794,26.302]|59.5|ground
-OTLAYOUT|Altis|Athira|TIER|5|81
+OTLAYOUT|Altis|Athira|TIER|5|86
 OTLAYOUT|Altis|Athira|ITEM|5|object|Land_TableDesk_F|[14014.875,18684.543,27.020]|[[0.4930,0.8700,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Athira|ITEM|5|object|Land_OfficeChair_01_F|[14015.664,18685.935,27.020]|[[0.4930,0.8700,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Athira|ITEM|5|object|Land_MapBoard_F|[14013.596,18681.474,27.020]|[[-0.4930,-0.8700,0.0000],[0.0000,0.0000,1.0000]]|drop
@@ -155,7 +158,7 @@ OTLAYOUT|Altis|Athira|ITEM|5|guard|rifleman|[14024.347,18685.842,27.161]|119.5|g
 OTLAYOUT|Altis|Athira|ITEM|5|guard|rifleman|[14017.514,18685.346,30.440]|29.5|
 OTLAYOUT|Altis|Athira|ITEM|5|guard|marksman|[14008.118,18690.671,30.440]|29.5|
 OTLAYOUT|Altis|Athira|ITEM|5|object|Land_BagFence_Round_F|[14027.021,18687.315,27.291]|[[-0.8700,0.4930,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Athira|ITEM|5|static|hmg|[14025.903,18689.662,27.173]|[[0.4299,-0.9029,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Athira|ITEM|5|static|hmg|[14026.110,18689.944,27.179]|[[0.2666,-0.9638,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Athira|ITEM|5|object|Land_BagBunker_Tower_F|[14011.772,18671.359,26.145]|[[0.0952,-0.9955,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Athira|ITEM|5|guard|marksman|[14011.772,18671.359,28.895]|174.5|
 OTLAYOUT|Altis|Athira|ITEM|5|guard|autorifleman|[14011.476,18670.837,26.097]|209.5|ground
@@ -167,6 +170,9 @@ OTLAYOUT|Altis|Athira|ITEM|5|object|Land_CncBarrier_F|[14026.261,18677.861,27.26
 OTLAYOUT|Altis|Athira|ITEM|5|object|Land_CncBarrier_F|[14029.050,18674.670,27.312]|[[0.8700,-0.4930,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Athira|ITEM|5|object|Land_CncBarrier_F|[14030.332,18676.932,27.441]|[[0.8700,-0.4930,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Athira|ITEM|5|object|Land_CncBarrier_F|[14031.614,18679.194,27.573]|[[0.8700,-0.4930,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Athira|ITEM|5|object|Land_HBarrier_1_F|[14003.327,18667.409,25.480]|[[-0.4930,-0.8700,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Athira|ITEM|5|object|Land_BagFence_Round_F|[14005.241,18666.324,25.570]|[[0.4930,0.8700,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Athira|ITEM|5|object|Land_HBarrier_1_F|[14007.416,18665.092,25.686]|[[-0.4930,-0.8700,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Athira|ITEM|5|object|Land_Razorwire_F|[14007.404,18668.317,25.692]|[[-0.4930,-0.8700,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Athira|ITEM|5|object|Land_CzechHedgehog_01_F|[14037.261,18692.466,27.628]|[[-0.2666,0.9638,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Athira|ITEM|5|object|Land_CzechHedgehog_01_F|[14039.735,18690.684,27.703]|[[-0.2666,0.9638,0.0000],[0.0000,0.0000,1.0000]]|ground
@@ -180,14 +186,16 @@ OTLAYOUT|Altis|Athira|ITEM|5|guard|rifleman|[14022.966,18683.406,27.135]|119.5|g
 OTLAYOUT|Altis|Athira|ITEM|5|guard|rifleman|[14019.857,18678.731,26.924]|119.5|ground
 OTLAYOUT|Altis|Athira|ITEM|5|guard|rifleman|[14010.192,18691.794,26.302]|59.5|ground
 OTLAYOUT|Altis|Athira|ITEM|5|object|Land_HBarrier_3_F|[14000.196,18659.298,25.278]|[[-0.4930,-0.8700,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Athira|ITEM|5|guard|rifleman|[14002.449,18660.435,25.419]|209.5|ground
-OTLAYOUT|Altis|Athira|ITEM|5|guard|autorifleman|[14000.013,18661.816,25.295]|209.5|ground
+OTLAYOUT|Altis|Athira|ITEM|5|object|Land_BagFence_Long_F|[14004.502,18660.306,25.532]|[[-0.4930,-0.8700,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Athira|ITEM|5|guard|rifleman|[14005.703,18661.005,25.599]|209.5|ground
+OTLAYOUT|Altis|Athira|ITEM|5|guard|autorifleman|[14004.485,18661.695,25.531]|209.5|ground
 OTLAYOUT|Altis|Athira|ITEM|5|object|Land_CncBarrier_F|[14000.558,18653.346,25.211]|[[-0.4930,-0.8700,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Athira|ITEM|5|static|at|[14005.800,18662.444,25.608]|[[-0.4930,-0.8700,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Athira|ITEM|5|object|Land_BagFence_Round_F|[14004.864,18660.791,25.552]|[[0.4930,0.8700,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Athira|ITEM|5|object|Land_BagFence_Round_F|[14004.930,18660.550,25.555]|[[0.4930,0.8700,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Athira|ITEM|5|object|Land_HBarrier_3_F|[14033.411,18669.383,27.136]|[[0.8700,-0.4930,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Athira|ITEM|5|guard|rifleman|[14032.274,18671.637,27.254]|119.5|ground
-OTLAYOUT|Altis|Athira|ITEM|5|guard|autorifleman|[14030.893,18669.201,27.010]|119.5|ground
+OTLAYOUT|Altis|Athira|ITEM|5|object|Land_BagFence_Long_F|[14032.033,18673.038,27.345]|[[0.8700,-0.4930,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Athira|ITEM|5|guard|rifleman|[14031.334,18674.238,27.398]|119.5|ground
+OTLAYOUT|Altis|Athira|ITEM|5|guard|autorifleman|[14030.644,18673.020,27.281]|119.5|ground
 OTLAYOUT|Altis|Athira|ITEM|5|object|Land_HBarrier_3_F|[14015.433,18712.502,26.532]|[[0.4930,0.8700,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Athira|ITEM|5|guard|rifleman|[14015.134,18711.062,26.528]|29.5|ground
 OTLAYOUT|Altis|Athira|ITEM|5|guard|autorifleman|[14014.133,18711.629,26.485]|29.5|ground
