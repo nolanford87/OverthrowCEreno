@@ -73,6 +73,7 @@
             player setPosASL ((_pos vectorAdd [0, 0, 0]) getPos [60, 0]);
             sleep 2; // The area streamed in
             skipTime ((12.5 - daytime + 24) % 24); // Still midday (a long run reaches dusk)
+            0 setOvercast 0; 0 setRain 0; 0 setFog [0, 0, 0]; forceWeatherChange; // And clear (the weather system brings the fog back)
             // Every tier the layout has (a town's highest tier in play follows its population, which a new game changes)
             private _b = objNull;
             for "_tier" from 1 to 5 do {
@@ -176,9 +177,9 @@
                     private _name = (_town splitString " ") joinString "_";
                     private _c = getPosASL _b;
                     _cam camPrepareTarget (ASLToAGL (_c vectorAdd [0, 0.5, 0]));
-                    // 48 m above the ground, or 40 m above the roof of a tall office (the Offices_01 tower)
+                    // 55 m above the ground, or 55 m above the roof of a tall office (the Offices_01 tower)
                     (boundingBoxReal _b) params ["", "_top"];
-                    _cam camPreparePos (ASLToAGL (_c vectorAdd [0, 0, 48 max ((_top select 2) + 40)]));
+                    _cam camPreparePos (ASLToAGL (_c vectorAdd [0, 0, 55 max ((_top select 2) + 55)]));
                     _cam camPrepareFOV 0.75;
                     _cam camCommitPrepared 0;
                     sleep 1.5;

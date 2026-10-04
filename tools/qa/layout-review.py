@@ -100,7 +100,7 @@ def main(argv):
               "more than 1 m off his post (stuck in geometry); blind = a guard's view ends within 4 m (facing a wall); blocked = a",
               "static's field of fire ends within 15 m; view = the guards' median clear view (m). A flagged item's [x, y] is where",
               "it stood in the office's model coordinates (your drafts' own). Screenshots beside this file:",
-              "<town>_T<tier>_top.jpg (from 48 m above, north up) and <town>_T<tier>_street.jpg (from 35 m out on the street side, 20 m up).", ""]
+              "<town>_T<tier>_top.jpg (from 55 m above the ground or the roof, north up) and <town>_T<tier>_street.jpg (from 35 m out on the street side, 20 m up).", ""]
         for town in mine:
             md.append(f"## {town}")
             for tier in sorted(checks[town]):
