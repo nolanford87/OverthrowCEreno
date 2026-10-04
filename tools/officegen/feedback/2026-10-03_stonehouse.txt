@@ -1,0 +1,55 @@
+OTFEEDBACK|BUILDING|i_Stone_HouseBig_V1_F
+OTFEEDBACK|i_Stone_HouseBig_V1_F|1|4|gendarme|[-0.4,2.3,-1.3]|good|
+OTFEEDBACK|i_Stone_HouseBig_V1_F|1|1|Land_TableDesk_F|[2,1.45,-1.4]|issue|rotate 180
+OTFEEDBACK|i_Stone_HouseBig_V1_F|1|2|Land_OfficeChair_01_F|[2,2.25,-1.4]|issue|rotate 180
+OTFEEDBACK|i_Stone_HouseBig_V1_F|1|3|gendarme|[3.8,1.7,-1.3]|good|
+OTFEEDBACK|BUILDING|i_House_Big_02_V1_F
+OTFEEDBACK|BUILDING|i_Stone_HouseBig_V1_F
+OTFEEDBACK|TIERDONE|i_Stone_HouseBig_V1_F|1
+OTFEEDBACK|i_Stone_HouseBig_V1_F|1|0|Flag_NATO_F|[6.3,-3.6,-1.4]|good|
+OTFEEDBACK|i_Stone_HouseBig_V1_F|2|0|Land_BagFence_Short_F|[1,-3.2,-1.4]|good|
+OTFEEDBACK|i_Stone_HouseBig_V1_F|2|0|Land_BagFence_Short_F|[1,-3.2,-1.4]|issue|move slightly further out
+OTFEEDBACK|i_Stone_HouseBig_V1_F|2|1|Land_BagFence_Short_F|[5,-3.2,-1.4]|issue|move slightly further out
+OTFEEDBACK|i_Stone_HouseBig_V1_F|1|0|Flag_NATO_F|[6.3,-3.6,-1.4]|good|
+OTFEEDBACK|i_Stone_HouseBig_V1_F|2|3|autorifleman|[4,-2.9,-1.4]|good|
+OTFEEDBACK|i_Stone_HouseBig_V1_F|2|2|rifleman|[2,-2.9,-1.4]|good|
+OTFEEDBACK|i_Stone_HouseBig_V1_F|1|3|gendarme|[3.8,1.7,-1.3]|good|
+OTFEEDBACK|i_Stone_HouseBig_V1_F|1|4|gendarme|[-0.4,2.3,-1.3]|good|
+OTFEEDBACK|i_Stone_HouseBig_V1_F|1|1|Land_TableDesk_F|[2,1.45,-1.4]|issue|rotate 180
+OTFEEDBACK|i_Stone_HouseBig_V1_F|1|2|Land_OfficeChair_01_F|[2,2.25,-1.4]|issue|rotate 180
+OTFEEDBACK|TIERDONE|i_Stone_HouseBig_V1_F|2
+OTFEEDBACK|i_Stone_HouseBig_V1_F|1|3|gendarme|[3.8,1.7,-1.3]|good|
+OTFEEDBACK|i_Stone_HouseBig_V1_F|1|4|gendarme|[-0.4,2.3,-1.3]|good|
+OTFEEDBACK|i_Stone_HouseBig_V1_F|1|2|Land_OfficeChair_01_F|[2,2.25,-1.4]|issue|rotate 180
+OTFEEDBACK|i_Stone_HouseBig_V1_F|1|1|Land_TableDesk_F|[2,1.45,-1.4]|issue|rotate 180
+OTFEEDBACK|i_Stone_HouseBig_V1_F|3|1|rifleman|[-0.6,5,-1.4]|good|
+OTFEEDBACK|i_Stone_HouseBig_V1_F|3|0|Land_HBarrier_3_F|[0.6,-5,-1.4]|issue|this barrier doesnt really do anything
+OTFEEDBACK|TIERDONE|i_Stone_HouseBig_V1_F|3
+OTFEEDBACK|i_Stone_HouseBig_V1_F|1|0|Flag_NATO_F|[6.3,-3.6,-1.4]|good|
+OTFEEDBACK|i_Stone_HouseBig_V1_F|3|0|Land_HBarrier_3_F|[0.6,-5,-1.4]|issue|this barrier doesnt really do anything
+OTFEEDBACK|i_Stone_HouseBig_V1_F|4|4|Land_CncBarrier_stripes_F|[1.4,-8.2,-1.4]|issue|this barrier doesnt really do anything
+OTFEEDBACK|i_Stone_HouseBig_V1_F|4|3|Land_CncBarrier_stripes_F|[5,-6.4,-1.4]|issue|this barrier doesnt really do anything
+OTFEEDBACK|i_Stone_HouseBig_V1_F|2|3|autorifleman|[4,-2.9,-1.4]|good|
+OTFEEDBACK|i_Stone_HouseBig_V1_F|2|2|rifleman|[2,-2.9,-1.4]|good|
+OTFEEDBACK|i_Stone_HouseBig_V1_F|3|2|autorifleman|[0.6,-3.7,-1.4]|issue|was slightly inside sandbag
+OTFEEDBACK|i_Stone_HouseBig_V1_F|1|4|gendarme|[-0.4,2.3,-1.3]|good|
+OTFEEDBACK|i_Stone_HouseBig_V1_F|1|3|gendarme|[3.8,1.7,-1.3]|good|
+OTFEEDBACK|i_Stone_HouseBig_V1_F|3|1|rifleman|[-0.6,5,-1.4]|good|
+OTFEEDBACK|i_Stone_HouseBig_V1_F|4|6|mg_gunner|[-0.9,3.2,1.5]|issue|move to balcony
+OTFEEDBACK|TIERDONE|i_Stone_HouseBig_V1_F|4
+OTFEEDBACK|i_Stone_HouseBig_V1_F|5|1|Land_HBarrier_1_F|[0.33,-13.6,-1.4]|good|
+OTFEEDBACK|i_Stone_HouseBig_V1_F|5|0|Land_HBarrier_5_F|[-3.42,-13.6,-1.4]|good|
+OTFEEDBACK|i_Stone_HouseBig_V1_F|5|0|Land_HBarrier_5_F|[-3.42,-13.6,-1.4]|good|
+OTFEEDBACK|i_Stone_HouseBig_V1_F|5|12|Land_HBarrier_5_F|[-6.5,-9.39,-1.4]|good|
+OTFEEDBACK|i_Stone_HouseBig_V1_F|5|13|Land_HBarrier_5_F|[-6.5,-3.36,-1.4]|good|
+OTFEEDBACK|i_Stone_HouseBig_V1_F|5|14|Land_HBarrier_5_F|[-6.5,2.66,-1.4]|good|
+OTFEEDBACK|i_Stone_HouseBig_V1_F|5|15|Land_HBarrier_3_F|[-6.5,7.49,-1.4]|good|
+OTFEEDBACK|i_Stone_HouseBig_V1_F|5|4|Land_HBarrier_5_F|[-3.48,10.5,-1.4]|good|
+OTFEEDBACK|i_Stone_HouseBig_V1_F|5|5|Land_HBarrier_5_F|[2.57,10.5,-1.4]|good|
+OTFEEDBACK|i_Stone_HouseBig_V1_F|5|6|Land_HBarrier_3_F|[7.42,10.5,-1.4]|good|
+OTFEEDBACK|i_Stone_HouseBig_V1_F|5|7|Land_HBarrier_1_F|[9.88,10.5,-1.4]|good|
+OTFEEDBACK|i_Stone_HouseBig_V1_F|5|11|Land_HBarrier_3_F|[10.5,7.49,-1.4]|good|
+OTFEEDBACK|i_Stone_HouseBig_V1_F|5|20|at|[4.6,-12,-1.4]|good|
+OTFEEDBACK|TIERDONE|i_Stone_HouseBig_V1_F|5
+OTFEEDBACK|END|45 votes, 5 tiers reviewed
+OT_QA PASS [Mayor's office template review] Office review: finished by the reviewer | 8 buildings, 45 votes, 5 tiers reviewed (OTFEEDBACK lines in the RPT)
