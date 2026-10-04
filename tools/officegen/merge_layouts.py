@@ -10,7 +10,8 @@ Lines (the editor logs them on each save, a tier's TIER line first):
     OTLAYOUT|world|town|ITEM|n|kind|what|[x,y,z] ASL|orientation|extra (comma separated flags)
 
 Usage (from the repository root):
-    python tools/officegen/merge_layouts.py [rpt]    the newest RPT in %LOCALAPPDATA%\\Arma 3 when left out
+    python tools/officegen/merge_layouts.py [rpt]    the newest RPT in %LOCALAPPDATA%\\Arma 3 when left out; or a
+                                                     file of bare OTLAYOUT lines (a draft, tools/officegen/townlib.py)
     python tools/officegen/merge_layouts.py --write  only rewrites the data functions from the saved files
 """
 import glob
@@ -58,7 +59,7 @@ def parse(lines):
 def rpt_lines(path):
     out = []
     for line in open(path, encoding="utf-8", errors="replace"):
-        m = re.search(r'"(OTLAYOUT\|.*)"\s*$', line)
+        m = re.search(r'"(OTLAYOUT\|.*)"\s*$', line) or re.match(r'(OTLAYOUT\|.*?)\s*$', line)
         if m:
             out.append(m.group(1))
     return out

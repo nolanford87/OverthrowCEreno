@@ -58,6 +58,7 @@ class CfgFunctions {
             class testsOfficeReviewTown {}; // The review's real town step
             class townLayout {}; // The mayor's office layout editor, ["townlayout"] spawn OTQA_fnc_run
             class testsTownLayout {};
+            class probeTowns {}; // Survey: each town's office surroundings for drafting layouts, ["townprobe"] spawn OTQA_fnc_run
             // Bug fix QA tests: the suite, and the tests for each fix batch it's made of
             class testsBugFixes {};
             class testsCommon {};

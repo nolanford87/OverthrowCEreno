@@ -24,6 +24,7 @@ private _suites = createHashMapFromArray [
     // Surveys (not tests): data for designing features, lines in the RPT
     ["towns", ["Town survey", OTQA_fnc_dumpTowns]],
     ["offices", ["Mayor's office building probe", OTQA_fnc_probeOffices]],
+    ["townprobe", ["Town office probe", OTQA_fnc_probeTowns]],
     // The review by hand of the mayor's office defence templates (ends when the reviewer picks "Review: finished")
     ["officereview", ["Mayor's office template review", OTQA_fnc_officeReview]],
     // Laying out each town's mayor's office by hand with Zeus (ends when the author picks "Layout: finished")
@@ -46,7 +47,7 @@ if (isNil "OT_NATOInitDone") exitWith {
 OTQA_running = true;
 // Look-around modes (reviews, probes, surveys): the host can't be seen or heard by the occupier
 // and stays undercover for the whole run. Not for the test suites: some test losing cover.
-if (_suite in ["officereview", "townlayout", "offices", "towns"]) then {
+if (_suite in ["officereview", "townlayout", "offices", "towns", "townprobe"]) then {
     [] spawn {
         while { !isNil "OTQA_running" } do {
             player setUnitTrait ["camouflageCoef", 0];

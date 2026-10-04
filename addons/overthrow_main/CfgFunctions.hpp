@@ -872,6 +872,7 @@ class CfgFunctions {
             class officeClearTemplate {};
             class officeGuard {};
             class officeLayout {};
+            class officeStatic {};
             class officeSpawnItems {};
             class officeApplyLayout {};
         };

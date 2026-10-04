@@ -26,10 +26,28 @@ private _group = grpNull;
     _item params ["_kind", "_what", "_at", "_orient", ["_extra", []]];
     if (_kind isEqualTo "guard") then {
         if (isNull _group) then { _group = createGroup [_side, true] };
-        private _unit = [_what, ASLToATL _at, _orient, _group, _placeholders] call OT_fnc_officeGuard;
+        private _p = ASLToATL _at;
+        if ("ground" in _extra) then { _p set [2, 0] };
+        private _unit = [_what, _p, _orient, _group, _placeholders] call OT_fnc_officeGuard;
         _unit setVariable ["OT_officeItem", _tag + [_forEachIndex, _item]];
         _guards pushBack _unit;
     } else {
+        if (_kind isEqualTo "static") exitWith {
+            // A static weapon by role (OT_fnc_officeStatic), the occupier's own, crewed unless placeholders
+            private _static = createVehicle [[_what] call OT_fnc_officeStatic, [0, 0, 0], [], 0, "CAN_COLLIDE"];
+            _static setPosASL _at;
+            _static setVectorDirAndUp _orient;
+            if ("ground" in _extra) then { _static setPosATL [_at select 0, _at select 1, 0] };
+            _static setVariable ["OT_officeItem", _tag + [_forEachIndex, _item]];
+            _objects pushBack _static;
+            if (!_placeholders) then {
+                if (isNull _group) then { _group = createGroup [_side, true] };
+                private _gunner = [["rifleman", (getPosATL _static) vectorAdd [0, 0, 1], getDir _static, _group] call OT_fnc_officeGuard];
+                (_gunner select 0) moveInGunner _static;
+                (_gunner select 0) setVariable ["OT_officeItem", _tag + [_forEachIndex, _item]];
+                _guards append _gunner;
+            };
+        };
         private _class = _what;
         if ("flag" in _extra && { !isNil "OT_flag_NATO" } && { isClass (configFile >> "CfgVehicles" >> OT_flag_NATO) }) then {
             _class = OT_flag_NATO;
@@ -41,6 +59,13 @@ private _group = grpNull;
         private _object = createVehicle [_class, [0, 0, 0], [], 0, "CAN_COLLIDE"];
         _object setPosASL _at;
         _object setVectorDirAndUp _orient;
+        // A drafted layout's flags (tools/officegen/townlib.py): "ground" on the terrain here, "drop" down onto
+        // whatever is under it (a floor, the ground); a layout saved in the editor has exact positions
+        if ("ground" in _extra) then { _object setPosATL [_at select 0, _at select 1, 0] };
+        if ("drop" in _extra) then {
+            private _hits = lineIntersectsSurfaces [_at vectorAdd [0, 0, 0.6], _at vectorAdd [0, 0, -1.5], _object, objNull, true, 1, "GEOM", "NONE"];
+            if (_hits isNotEqualTo []) then { _object setPosASL [_at select 0, _at select 1, ((_hits select 0) select 0) select 2] };
+        };
         _object enableSimulationGlobal false;
         _object setVariable ["OT_officeItem", _tag + [_forEachIndex, _item]];
         _objects pushBack _object;

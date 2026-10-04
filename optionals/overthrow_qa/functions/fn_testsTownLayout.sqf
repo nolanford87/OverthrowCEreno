@@ -60,7 +60,8 @@
         private _extra = createVehicle ["Land_BagFence_Short_F", _office getPos [12, 45], [], 0, "CAN_COLLIDE"];
         _extra setDir 33;
         private _extraAt = getPosASL _extra;
-        (OTQA_townLayout get "things") pushBack _extra;
+        private _gmg = createVehicle ["B_GMG_01_high_F", _office getPos [14, 60], [], 0, "CAN_COLLIDE"];
+        (OTQA_townLayout get "things") append [_extra, _gmg];
         private _saved = call OTQA_townLayout_live;
         private _lines = call OTQA_townLayout_saveAndGo;
         private _items = _lines select { ((_x splitString "|") select 3) isEqualTo "ITEM" };
@@ -69,11 +70,13 @@
         {
             private _f = _x splitString "|";
             private _o = _saved select _forEachIndex;
-            if (((parseSimpleArray (_f select 7)) distance (getPosASL _o)) > 0.002 || { ((_f select 5) isEqualTo "guard") isNotEqualTo (_o isKindOf "CAManBase") }) then { _off pushBack [_forEachIndex, _f select 6] };
+            private _kind = ["object", "guard"] select (_o isKindOf "CAManBase");
+            if (_o isKindOf "StaticWeapon") then { _kind = "static" };
+            if (((parseSimpleArray (_f select 7)) distance (getPosASL _o)) > 0.002 || { (_f select 5) isNotEqualTo _kind }) then { _off pushBack [_forEachIndex, _f select 6] };
         } forEach _items;
-        ["Office layouts: the save logs the office, the count and every thing at its exact position, kept as the town's tier 1",
-            ((_lines select 0) find (format ["|%1|OFFICE|%2|", _town, typeOf _office])) > -1 && { (parseNumber (((_lines select 1) splitString "|") select 5)) isEqualTo (count _saved) } && { (count _items) isEqualTo (count _saved) } && { (count _saved) isEqualTo (([1] call _count) + 1) } && { (count _snapshot) isEqualTo (count _saved) } && { _off isEqualTo [] },
-            format ["%1 lines, %2 things (tier 1 + the placed one: %3), %4 kept, off: %5", count _lines, count _saved, ([1] call _count) + 1, count _snapshot, _off]] call OTQA_fnc_check;
+        ["Office layouts: the save logs the office, the count and every thing at its exact position (a static weapon by role), kept as the town's tier 1",
+            ((_lines select 0) find (format ["|%1|OFFICE|%2|", _town, typeOf _office])) > -1 && { (parseNumber (((_lines select 1) splitString "|") select 5)) isEqualTo (count _saved) } && { (count _items) isEqualTo (count _saved) } && { (count _saved) isEqualTo (([1] call _count) + 2) } && { (count _snapshot) isEqualTo (count _saved) } && { _off isEqualTo [] } && { (_items findIf { "|static|gmg|" in _x }) > -1 },
+            format ["%1 lines, %2 things (tier 1 + the 2 placed: %3), %4 kept, off: %5, the GMG as static gmg: %6", count _lines, count _saved, ([1] call _count) + 2, count _snapshot, _off, (_items findIf { "|static|gmg|" in _x }) > -1]] call OTQA_fnc_check;
         private _now = count (call OTQA_townLayout_live);
         ["Office layouts: saving goes on to tier 2 with the generator's additions on top", (OTQA_townLayout get "tier") isEqualTo 2 && { !(OTQA_townLayout get "review") } && { _now isEqualTo ((count _saved) + ([2] call _count)) }, format ["tier %1, %2 things (%3 + %4)", OTQA_townLayout get "tier", _now, count _saved, [2] call _count]] call OTQA_fnc_check;
 
@@ -111,7 +114,7 @@
         call OTQA_townLayout_clear;
         OTQA_townLayout deleteAt "town";
         sleep 2.5;
-        private _left = (_gone + [_extra]) select { !isNull _x && { !isObjectHidden _x } };
+        private _left = (_gone + [_extra, _gmg]) select { !isNull _x && { !isObjectHidden _x } };
         ["Office layouts: cleared, the real office still standing", _left isEqualTo [] && { alive _office } && { !isObjectHidden _office } && { (markerShape _m) isEqualTo "" }, format ["%1 things left, office alive %2, hidden %3, circle %4", count _left, alive _office, isObjectHidden _office, markerShape _m]] call OTQA_fnc_check;
 
         // Another town with the same building starts from this town's layout, moved onto its office, and its next

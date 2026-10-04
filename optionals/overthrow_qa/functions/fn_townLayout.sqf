@@ -137,6 +137,7 @@ OTQA_townLayout_clearThings = {
     private _men = _things select { _x isKindOf "CAManBase" };
     private _groups = [];
     { _groups pushBackUnique (group _x); deleteVehicle _x } forEach _men;
+    { { _groups pushBackUnique (group _x); deleteVehicle _x } forEach (crew _x) } forEach (_things - _men); // A static's gunner
     sleep 0.5;
     { deleteVehicle _x } forEach (_things - _men);
     { if (!isNull _x && { (units _x) isEqualTo [] }) then { deleteGroup _x } } forEach _groups;
@@ -370,6 +371,8 @@ OTQA_townLayout_save = {
         if (_x isKindOf "CAManBase") then {
             ["guard", [_x] call OTQA_townLayout_role, getPosASL _x, getDir _x, []]
         } else {
+            private _static = [_x] call OT_fnc_officeStatic;
+            if (_static isNotEqualTo "") exitWith { ["static", _static, getPosASL _x, [vectorDir _x, vectorUp _x], []] };
             ["object", typeOf _x, getPosASL _x, [vectorDir _x, vectorUp _x], [[], ["flag"]] select (_x isKindOf "FlagCarrier")]
         }
     };
@@ -382,7 +385,7 @@ OTQA_townLayout_save = {
         _lines pushBack (if (_kind isEqualTo "guard") then {
             format ["OTLAYOUT|%1|%2|ITEM|%3|guard|%4|%5|%6|", worldName, _town, _tier, _what, [_at] call OTQA_townLayout_vec, _orient toFixed 1]
         } else {
-            format ["OTLAYOUT|%1|%2|ITEM|%3|object|%4|%5|[%6,%7]|%8", worldName, _town, _tier, _what, [_at] call OTQA_townLayout_vec, [_orient select 0, 4] call OTQA_townLayout_vec, [_orient select 1, 4] call OTQA_townLayout_vec, _extra joinString ","]
+            format ["OTLAYOUT|%1|%2|ITEM|%3|%9|%4|%5|[%6,%7]|%8", worldName, _town, _tier, _what, [_at] call OTQA_townLayout_vec, [_orient select 0, 4] call OTQA_townLayout_vec, [_orient select 1, 4] call OTQA_townLayout_vec, _extra joinString ",", _kind]
         });
     } forEach _items;
     { diag_log _x } forEach _lines;
