@@ -1,0 +1,185 @@
+/*
+    Description:
+    Mayor's office layout check (the "layoutcheck" QA survey): puts each town's layout up tier by tier
+    (OT_fnc_officeApplyLayout, placeholder guards) in daylight and measures it, for the layout designers'
+    critique (tools/qa/layout-review.py turns the lines and screenshots into the review):
+        OTCHECK|town|tier|items|guards|objects|statics|missing|clips|floating|moved|blind|blocked|views
+            items: in the layout; missing: items not made (a class that doesn't exist)
+            clips: [[class, what it cuts into], ...] a prop or fortification with a building, wall, rock or the
+                office's own walls running through it (two rays across its footprint)
+            floating: [[class, gap m], ...] standing more than 0.3 m above whatever is under it
+            moved: [[role, m], ...] guards more than 1 m from their post after settling (pushed out of geometry)
+            blind: [[role, m], ...] guards whose view (a 80 degree cone round their facing, at eye height) ends
+                within 4 m: facing a wall
+            blocked: [[role, m], ...] statics whose field of fire (a 60 degree cone, 40 m) ends within 15 m
+            views: the guards' median clear view in metres
+        OTCLASS|class|[length, depth, height] the real size of every class the layouts use (once)
+    and two screenshots per tier (the profile's Screenshots folder): OTL_<town>_T<tier>_top.png from 60 m
+    above, OTL_<town>_T<tier>_street.png from 40 m out along the office's way to the street, 18 m up.
+    run-qa.ps1 -Suite layoutcheck -Only "town,..." checks those towns (else every town with a layout);
+    OTQA_layoutShots = false skips the screenshots.
+
+    Returns: ARRAY - [[name, code, seconds]]
+*/
+
+[
+    ["Office layout check", {
+        call OTQA_fnc_officeReview;
+        call OTQA_fnc_townLayout;
+        [""] call OT_fnc_officeLayout;
+        private _only = missionNamespace getVariable ["OTQA_only", []];
+        private _towns = if (_only isNotEqualTo []) then { _only select { _x in OT_officeLayouts } } else { (keys OT_officeLayouts) select { _x in OT_allTowns } };
+        _towns sort true;
+        private _shots = missionNamespace getVariable ["OTQA_layoutShots", true];
+
+        // Daylight and a clear sky for the pictures; the host out of them and out of harm's way
+        skipTime ((12.5 - daytime + 24) % 24);
+        0 setOvercast 0; 0 setRain 0; 0 setFog 0; forceWeatherChange;
+        player allowDamage false;
+        player setCaptive true;
+        player hideObjectGlobal true;
+        private _home = getPosASL player;
+        private _cam = objNull;
+        if (_shots) then {
+            _cam = "camera" camCreate (getPosATL player);
+            _cam cameraEffect ["INTERNAL", "BACK"];
+            showCinemaBorder false;
+            cameraEffectEnableHUD false;
+        };
+
+        private _terrainTypes = ["BUILDING", "HOUSE", "CHURCH", "CHAPEL", "FUELSTATION", "HOSPITAL", "RUIN", "BUNKER", "FORTRESS", "VIEW-TOWER", "LIGHTHOUSE", "QUAY", "TRANSMITTER", "WATERTOWER", "WALL", "FENCE", "ROCK", "ROCKS"];
+        private _sizes = createHashMap;
+        // The furthest clear distance over a cone of rays from a point (ASL) round a direction
+        private _cone = {
+            params ["_from", "_dir", "_spread", "_steps", "_len", "_ignore"];
+            private _best = 0;
+            for "_i" from 0 to _steps do {
+                private _d = _dir - _spread / 2 + _spread * _i / (_steps max 1);
+                private _to = _from vectorAdd [_len * sin _d, _len * cos _d, 0];
+                private _hit = lineIntersectsSurfaces [_from, _to, _ignore, objNull, true, 1, "VIEW", "FIRE"];
+                private _clear = if (_hit isEqualTo []) then { _len } else { _from distance ((_hit select 0) select 0) };
+                _best = _best max _clear;
+            };
+            _best
+        };
+        private _r1 = { (round (_this * 10)) / 10 };
+
+        {
+            private _town = _x;
+            private _layout = [_town] call OT_fnc_officeLayout;
+            (_layout select 0) params ["_class", "_pos", "_dir", ["_spawned", false]];
+            player setPosASL ((_pos vectorAdd [0, 0, 0]) getPos [60, 0]);
+            sleep 2; // The area streamed in
+            private _cap = [_town] call OTQA_townLayout_cap;
+            private _b = objNull;
+            for "_tier" from 1 to _cap do {
+                private _items = (_layout select 1) param [_tier - 1, []];
+                if (_items isEqualTo []) then { continue };
+                ([_town, _tier, west, true] call OT_fnc_officeApplyLayout) params ["_office", "_objects", "_guards"];
+                _b = _office;
+                sleep 3; // Settled
+                private _parts = [[_b] call OT_fnc_officeTemplateKey, _b] call OTQA_officeReview_realParts;
+                private _terrain = (nearestTerrainObjects [getPosATL _b, _terrainTypes, 70, false, true]) - _parts;
+                private _statics = _objects select { _x isKindOf "StaticWeapon" };
+                private _props = _objects - _statics;
+
+                // Clipping: a building, wall, rock or the office's walls through a thing's footprint
+                private _clips = [];
+                {
+                    private _o = _x;
+                    (boundingBoxReal _o) params ["_mn", "_mx"];
+                    private _z = ((_mn select 2) + 0.35) min (((_mn select 2) + (_mx select 2)) / 2);
+                    private _ix = 0.4 * ((_mx select 0) - (_mn select 0));
+                    private _iy = 0.4 * ((_mx select 1) - (_mn select 1));
+                    private _cx = ((_mn select 0) + (_mx select 0)) / 2;
+                    private _cy = ((_mn select 1) + (_mx select 1)) / 2;
+                    {
+                        _x params ["_a", "_c"];
+                        private _hits = lineIntersectsSurfaces [_o modelToWorldWorld [_cx + (_a select 0) * _ix, _cy + (_a select 1) * _iy, _z], _o modelToWorldWorld [_cx + (_c select 0) * _ix, _cy + (_c select 1) * _iy, _z], _o, objNull, true, 3, "GEOM", "NONE"];
+                        // A hit's object: its parent (a building's proxy part) or the object itself; terrain has neither
+                        private _of = { private _h = _this select 3; if (isNull _h) then { _h = _this select 2 }; _h };
+                        private _bad = _hits select { private _h = _x call _of; !isNull _h && { (_h in _terrain) || { _h isEqualTo _b } || { _h in _parts } } };
+                        if (_bad isNotEqualTo []) exitWith {
+                            private _h = (_bad select 0) call _of;
+                            _clips pushBack [typeOf _o, [(getModelInfo _h) select 0, "office"] select (_h isEqualTo _b || { _h in _parts })];
+                        };
+                    } forEach [[[-1, -1], [1, 1]], [[-1, 1], [1, -1]]];
+                } forEach (_props + _statics);
+
+                // Floating: the gap under a thing's base
+                private _floating = [];
+                {
+                    private _o = _x;
+                    (boundingBoxReal _o) params ["_mn", "_mx"];
+                    private _base = _o modelToWorldWorld [((_mn select 0) + (_mx select 0)) / 2, ((_mn select 1) + (_mx select 1)) / 2, _mn select 2];
+                    private _hit = lineIntersectsSurfaces [_base vectorAdd [0, 0, 0.05], _base vectorAdd [0, 0, -3], _o, objNull, true, 1, "GEOM", "NONE"];
+                    private _gap = if (_hit isEqualTo []) then { 3 } else { (_base select 2) - (((_hit select 0) select 0) select 2) };
+                    if (_gap > 0.3) then { _floating pushBack [typeOf _o, _gap call _r1] };
+                    if !((typeOf _o) in _sizes) then { _sizes set [typeOf _o, [((_mx select 0) - (_mn select 0)) call _r1, ((_mx select 1) - (_mn select 1)) call _r1, ((_mx select 2) - (_mn select 2)) call _r1]] };
+                } forEach (_props + _statics);
+
+                // Guards: pushed off their post, facing a wall; their views
+                private _moved = [];
+                private _blind = [];
+                private _views = [];
+                {
+                    private _g = _x;
+                    private _item = (_g getVariable ["OT_officeItem", []]) param [3, []];
+                    private _off = (getPosASL _g) distance (_item param [2, getPosASL _g]);
+                    if (_off > 1) then { _moved pushBack [_item param [1, "?"], _off call _r1] };
+                    private _view = [eyePos _g, getDir _g, 80, 8, 30, _g] call _cone;
+                    _views pushBack _view;
+                    if (_view < 4) then { _blind pushBack [_item param [1, "?"], _view call _r1] };
+                } forEach _guards;
+                _views sort true;
+
+                // Statics: their field of fire
+                private _blocked = [];
+                {
+                    private _s = _x;
+                    private _fire = [(getPosASL _s) vectorAdd [0, 0, 1.1], getDir _s, 60, 6, 40, _s] call _cone;
+                    if (_fire < 15) then { _blocked pushBack [[_s] call OT_fnc_officeStatic, _fire call _r1] };
+                } forEach _statics;
+
+                diag_log format ["OTCHECK|%1|%2|%3|%4|%5|%6|%7|%8|%9|%10|%11|%12|%13", _town, _tier, count _items, count _guards, count _props, count _statics,
+                    (count _items) - (count _objects) - (count _guards), _clips, _floating, _moved, _blind, _blocked, (_views param [floor ((count _views) / 2), 0]) call _r1];
+
+                // The pictures: from above, and from out along the way to the street
+                if (_shots) then {
+                    private _name = (_town splitString " ") joinString "_";
+                    private _c = getPosASL _b;
+                    _cam camPrepareTarget (ASLToAGL (_c vectorAdd [0, 0.5, 0]));
+                    _cam camPreparePos (ASLToAGL (_c vectorAdd [0, 0, 60]));
+                    _cam camPrepareFOV 0.75;
+                    _cam camCommitPrepared 0;
+                    sleep 1.5;
+                    screenshot format ["OTL_%1_T%2_top.png", _name, _tier];
+                    sleep 0.5;
+                    ([_b, _parts, _town] call OTQA_townLayout_front) params ["_stand"];
+                    private _out = _b getDir _stand;
+                    private _eye = (_c getPos [40, _out]);
+                    _cam camPrepareTarget (ASLToAGL _c);
+                    _cam camPreparePos [_eye select 0, _eye select 1, ((getTerrainHeightASL _eye) max (_c select 2)) - (getTerrainHeightASL _eye) + 18];
+                    _cam camPrepareFOV 0.7;
+                    _cam camCommitPrepared 0;
+                    sleep 1.5;
+                    screenshot format ["OTL_%1_T%2_street.png", _name, _tier];
+                    sleep 0.5;
+                };
+                [_b] call OT_fnc_officeClearTemplate;
+                sleep 1.5;
+            };
+            if (_spawned && { !isNull _b }) then { deleteVehicle _b };
+        } forEach _towns;
+
+        { diag_log format ["OTCLASS|%1|%2", _x, _y] } forEach _sizes;
+        if (!isNull _cam) then {
+            _cam cameraEffect ["TERMINATE", "BACK"];
+            camDestroy _cam;
+        };
+        player hideObjectGlobal false;
+        player setPosASL _home;
+        player allowDamage true;
+        ["Office layout check: towns checked", true, format ["%1 towns (OTCHECK lines in the RPT%2)", count _towns, [")", ", OTL_*.png in the Screenshots folder)"] select _shots]] call OTQA_fnc_check;
+    }, 7200]
+]
