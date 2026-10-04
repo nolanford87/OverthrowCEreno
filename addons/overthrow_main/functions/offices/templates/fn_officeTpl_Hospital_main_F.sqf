@@ -50,10 +50,9 @@
     ],
     // Tier 3: the back door's post, firing posts at the side doors, window posts
     [
+        ["guard", "rifleman", [-36.1, -8.75, 7.6], 270, ["free"]],
         ["object", "Land_HBarrier_3_F", [8, 17.2, -7.8], 180, ["outside"]],
-        ["guard", "rifleman", [8, 18.7, -7.8], 180, ["outside"]],
-        ["object", "Land_HBarrier_3_F", [-15.5, -23.6, -7.8], 180, ["outside"]],
-        ["guard", "autorifleman", [-15.5, -22.1, -7.8], 180, ["outside"]],
+        ["guard", "autorifleman", [8, 18.7, -7.8], 180, ["outside"]],
         ["object", "Land_CampingTable_F", [-4.1, -1.4, -7.8], 0, []],
         ["object", "Land_PortableLongRangeRadio_F", [-4.4, -1.4, -7.04], 0, []],
         ["object", "Land_Map_altis_F", [-3.7, -1.4, -7.04], 90, []],
@@ -83,7 +82,7 @@
         ["object", "Land_CzechHedgehog_01_F", [-9.3, 13.62, -7.8], 315, ["outside"]],
         ["object", "Land_CzechHedgehog_01_F", [-9.3, 19.22, -7.8], 315, ["outside"]],
         ["guard", "mg_gunner", [4, 41, 5.7], 0, ["free"]],
-        ["guard", "rifleman", [-36.1, -8.75, 7.6], 270, ["free"]]
+        ["guard", "rifleman", [-38.25, -10.9, 7.6], 0, ["free"]]
     ],
     // Tier 5: the perimeter and its gate with the AT man, the airlock, the office's cover, the marksman
     [
@@ -140,6 +139,6 @@
         ["object", "Land_BarGate_F", [-46, 16.43, -7.8], 270, ["outside", "axis", "gate"]],
         ["object", "Land_BagFence_Long_F", [-4.2, 13, -7.8], 90, []],
         ["guard", "at", [-44.5, 12.23, -7.8], 270, ["outside"]],
-        ["guard", "marksman", [-38.25, -10.9, 7.6], 0, ["free"]]
+        ["guard", "marksman", [-38, -14.1, 7.6], 180, ["free"]]
     ]
 ]

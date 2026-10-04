@@ -932,6 +932,18 @@ class Plan:
                 n += 1
         return n
 
+    def nest_wings(self, tier, dw, cls="Land_HBarrier_3_F", lateral=4.2):
+        """H-barriers either side of the main door's nest, square with the door, so the approach is
+        walled in beyond the bags."""
+        d = dw["d"]
+        z = dw["centre"][2]
+        n = 0
+        for lat in (-lateral, lateral):
+            p = self.door_out(dw, NEST_OUT - 0.5, lat)
+            if self.outside_ok(self.b.level_of(z), p, d, size_of(cls)[0] / 2.0) and self.add_object(tier, cls, p, d, z, ["outside"]):
+                n += 1
+        return n
+
     def nest_guards(self, tier, dw, roles):
         """The pair inside the nest, GUARD_BEHIND behind its front, facing out."""
         d = dw["d"]
@@ -1260,9 +1272,14 @@ def build_tiers(b, spec=None):
         if not plan.window_post(2, roles[i % 3], ground, main_d):
             plan.guard_in_building(2, roles[i % 3], ground)
 
-    # Tier 3: the back door's post, firing posts beside the side doors, window posts for the rest
+    # Tier 3: the main door's wings, a sandbagged window post, the back door's post, firing posts
+    # beside the side doors, window posts for the rest
     roles = ["rifleman", "autorifleman", "rifleman"]
     placed = 0
+    if main:
+        plan.nest_wings(3, main)
+    if counts[2] > 0 and (plan.window_post(3, roles[0], ground, main_d) or plan.window_post(3, roles[0], None, main_d)):
+        placed += 1
     if back and placed < counts[2] and plan.door_post(3, back, roles[placed % 3]):
         placed += 1
     for dw in sides:

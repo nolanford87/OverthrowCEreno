@@ -31,6 +31,8 @@
     ],
     // Tier 3: the back door's post, firing posts at the side doors, window posts
     [
+        ["object", "Land_HBarrier_3_F", [7.2, -4.5, -1.4], 180, ["outside"]],
+        ["object", "Land_HBarrier_3_F", [-1.2, -4.5, -1.4], 180, ["outside"]],
         ["guard", "rifleman", [2.3, -0.8, 1.5], 180, []],
         ["guard", "autorifleman", [-0.6, 5, -1.4], 0, []]
     ],

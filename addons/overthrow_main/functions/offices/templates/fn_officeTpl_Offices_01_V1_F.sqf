@@ -40,9 +40,11 @@
     ],
     // Tier 3: the back door's post, firing posts at the side doors, window posts
     [
+        ["object", "Land_HBarrier_3_F", [14.66, -10.2, -6.7], 180, ["outside"]],
+        ["object", "Land_HBarrier_3_F", [6.26, -10.2, -6.7], 180, ["outside"]],
+        ["guard", "rifleman", [12.2, -1.7, 5], 90, []],
         ["object", "Land_BagFence_Short_F", [-14.8, 10.6, -6.7], 0, ["outside", "axis"]],
-        ["guard", "rifleman", [-14.8, 9.48, -6.7], 0, ["free"]],
-        ["guard", "autorifleman", [12.2, -1.7, 5], 90, []],
+        ["guard", "autorifleman", [-14.8, 9.48, -6.7], 0, ["free"]],
         ["object", "Land_CampingTable_F", [5.3, 2.4, 5], 90, []],
         ["object", "Land_PortableLongRangeRadio_F", [5.3, 2.4, 5.76], 90, []],
         ["object", "Land_CampingChair_V2_F", [4.5, 2.4, 5], 90, []],

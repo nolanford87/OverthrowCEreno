@@ -34,9 +34,11 @@
     ],
     // Tier 3: the back door's post, firing posts at the side doors, window posts
     [
+        ["object", "Land_HBarrier_3_F", [0.9, -9.85, -2.5], 180, ["outside"]],
+        ["object", "Land_HBarrier_3_F", [-7.5, -9.85, -2.5], 180, ["outside"]],
+        ["guard", "rifleman", [4.1, -5.25, -2.5], 90, ["free"]],
         ["object", "Land_HBarrier_3_F", [7.5, 1.42, -2.5], 90, ["outside"]],
-        ["guard", "rifleman", [6, 1.42, -2.5], 90, ["outside"]],
-        ["guard", "autorifleman", [4.1, -5.25, -2.5], 90, ["free"]]
+        ["guard", "autorifleman", [6, 1.42, -2.5], 90, ["outside"]]
     ],
     // Tier 4: wire on the doorless sides, the stoppers on the approach, the gunner on the balcony, an upstairs post
     [
