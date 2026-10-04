@@ -9,11 +9,19 @@ The ladder (designed once for this house, fitted per site):
   T1  a police post: the office (desk facing the door, the chair behind it, the map board), the flag at the
       front-east corner, a gendarme on the door outside (the visible police presence), one inside at the back
       of the room. 2 guards.
-  T2  the door held: a C-shaped sandbag nest (a long bag facing the approach, short bags as wings, open towards
-      the house) off one side of the door, square with the front, with a rifleman and an autorifleman 1 m behind
-      it; on the door's other side a bag in front of the gendarme so both flanks of the doorway have covered
-      guns and the way in is a 1 m lane between them; a marksman at the upstairs window over the door; a rifleman
-      on the stair's landing over the east side and the stair. 6 guards.
+  T2  the door held, and visibly so from the street (round 1: a C and a bag were lost in the scene):
+      - a C-shaped sandbag nest (a long bag facing out, short wings back to the house) west of the door, square
+        with the front, a rifleman and an autorifleman 1 m behind it;
+      - an H-barrier blast wall across the door's axis 3-4 m out, so the doorway sits in a fortified pocket: the
+        way in is a 1 m gap between the blast wall and the nest (every visitor passes the nest at arm's length),
+        the east side shut by a bag in front of the gendarme sentry, the flag and the stair;
+      - a post on the main approach: where a road passes within 24 m, a roadside check on the house's side of it
+        (a long bag with a rifleman behind it, striped concrete barriers on the road's edge 4.5 m either side,
+        narrowing the lane past the post); otherwise a small sandbag bunker off the front-east corner whose field
+        crosses the nest's in front of the blast wall;
+      - a short razor-wire run on the most open flank (west or back), so attackers are channelled to the front;
+      - a marksman at the upstairs window over the door; a rifleman on the stair's landing over the east side.
+      7 guards; the fortification footprint about triples.
 Where the site forbids the nest in front (a road, a wall or a building right there), the nest goes to the side
 of the house the threat comes from, still square with the house, still covering the door.
 """
@@ -36,7 +44,11 @@ LANDING = (6.0, 2.5)                 # On the stair's landing
 
 def size_of(kind, what):
     if kind == "object":
-        return tl.CLASSES.get(what, (0.6, 0.6))
+        c = tl.CLASSES.get(what, (0.6, 0.6))
+        m = getattr(tl, "MEASURED", {}).get(what)
+        if m and "BagFence" not in what:  # The in-game boxes (upper bounds) for the clearances of the new pieces
+            return (max(c[0], m[0]), max(c[1], min(m[1], 2.2)))
+        return c
     return (2.0, 2.0) if kind == "static" else (0.5, 0.5)
 
 
@@ -48,31 +60,34 @@ class Site:
         self.placed = []  # (x, y, length, depth, mdir)
 
     def blocked(self, kind, what, x, y, mdir, road_ok=False):
-        """Why a ground footprint can't go here ('' when it can)."""
+        """Why a ground footprint can't go here ('' when it can). road_ok: True anywhere on a road, "edge" with its
+        centre at most 1 m inside the road's edge."""
         t = self.t
-        if math.hypot(x, y) > 44:
+        if math.hypot(x, y) > 43.5:
             return "far"
         ln, dp = size_of(kind, what)
         w = t.to_world(x, y, 0)
         for h in t.hits(w[0], w[1], ln, dp, (t.dir + mdir) % 360, 0.25):
-            if h[0] in ("building", "part", "rock", "wall") or (h[0] == "tree" and kind != "object"):
+            if h[0] in ("building", "part", "rock", "wall") or (h[0] == "tree" and (kind != "object" or "Razorwire" in what)):
                 return h[0]
         if t.on_office(x, y, ln, dp, mdir):
             return "office"
-        # The real house and the stair (the plan's half-cell give lets things touch the walls)
-        hx, hy = (ln / 2, dp / 2) if round(mdir) % 180 == 0 else (dp / 2, ln / 2)
-        for box in (WALLS, STAIR):
-            if x + hx > box[0] and x - hx < box[2] and y + hy > box[1] and y - hy < box[3]:
+        pts = samples(x, y, ln, dp, mdir, 0.05)
+        for box in (WALLS, STAIR):  # The real house and the stair (the plan's half-cell give lets things touch the walls)
+            if any(box[0] < px < box[2] and box[1] < py < box[3] for px, py in pts):
                 return "house"
-        if not road_ok:
-            for k in (-1, 0, 1):
-                px, py = (x + k * hx, y) if hx >= hy else (x, y + k * hy)
+        if road_ok == "edge":
+            if road_depth(t, x, y) > 1.0:
+                return "road"
+        elif not road_ok:
+            for px, py in samples(x, y, ln, dp, mdir, 0.0, 3):
                 pw = t.to_world(px, py, 0)
                 if t.on_road(pw[0], pw[1]):
                     return "road"
+        mine = samples(x, y, ln, dp, mdir, 0.15)
         for px, py, pl, pd, pm in self.placed:
-            ax, ay = (pl / 2, pd / 2) if round(pm) % 180 == 0 else (pd / 2, pl / 2)
-            if abs(x - px) < hx + ax - 0.15 and abs(y - py) < hy + ay - 0.15:
+            if any(in_rect(qx, qy, px, py, pl, pd, pm) for qx, qy in mine) or \
+               any(in_rect(qx, qy, x, y, ln, dp, mdir) for qx, qy in samples(px, py, pl, pd, pm, 0.15)):
                 return "placed"
         return ""
 
@@ -87,6 +102,36 @@ class Site:
         if kind == "guard":
             return tl.guard(t, what, x, y, z, mdir)
         return tl.obj(t, what, x, y, z, mdir, flag=(what == "Flag_NATO_F"))
+
+
+def samples(x, y, ln, dp, mdir, inset=0.0, n=3):
+    """Points over a footprint turned to model direction mdir (its length along the turned x): an n x n grid."""
+    out = []
+    hl, hd = max(ln / 2 - inset, 0.05), max(dp / 2 - inset, 0.05)
+    for i in range(n):
+        for j in range(n):
+            a = -hl + 2 * hl * i / (n - 1)
+            b = -hd + 2 * hd * j / (n - 1)
+            dx, dy = tl.rot(a, b, mdir)
+            out.append((x + dx, y + dy))
+    return out
+
+
+def in_rect(px, py, x, y, ln, dp, mdir):
+    a, b = tl.rot(px - x, py - y, -mdir)
+    return abs(a) <= ln / 2 and abs(b) <= dp / 2
+
+
+def road_depth(t, x, y):
+    """How far a model point is inside the nearest road (negative: outside it)."""
+    w = t.to_world(x, y, 0)
+    near = t.roads_near(w[0], w[1], 20)
+    return max((s["width"] / 2 - d for d, s in near), default=-99)
+
+
+def mdir_along(u):
+    """The model direction that lays a piece's length along the model vector u."""
+    return math.degrees(math.atan2(-u[1], u[0])) % 360
 
 
 # ---- the nest: a C of sandbags, square with the house, facing out from one of its sides
@@ -129,18 +174,19 @@ def place_nest(site, prefer_east=False):
     the west or the back. Returns (parts, note)."""
     t = site.t
     tries = []
-    west = [(x, y, 180, "front, west of the door") for y in (-5.6, -6.1, -5.1, -6.6, -7.2) for x in (1.0, 0.6, 0.2, -0.3, -0.9)]
+    west = [(x, y, 180, "front, west of the door") for y in (-5.6, -6.1, -5.1, -6.6, -7.2) for x in (-1.4, -1.8, -2.2, -1.0, -0.6, 0.2, 0.6)]
     east = [(x, y, 180, "front, east of the door") for y in (-5.8, -6.4, -7.0) for x in (5.0, 5.5, 6.2)]
     tries += (east + west) if prefer_east else (west + east)
     # Hard against the front wall, its front bag on the road's shoulder (a street right in front of the house)
-    tries += [(x, y, 180, "front, west of the door, on the street's edge", True) for y in (-4.7, -4.9, -5.1) for x in (0.6, 0.2, -0.3)]
+    tries += [(x, y, 180, "front, west of the door, on the street's edge", True) for y in (-4.7, -4.9, -5.1) for x in (-1.4, -1.8, -1.0, 0.6, 0.2, -0.3)]
     tries += [(x, y, 180, "front, out on the door's axis") for y in (-7.4, -8.2, -9.0) for x in (3.0, 2.0, 4.0)]
     tries += [(x, y, 180, "off the front-west corner") for x in (-4.0, -5.0, -6.5, -7.5, -8.5, -9.5, -10.5, -11.5) for y in (-4.5, -5.5, -3.5, -6.5)]
     tries += [(x, y, 270, "west side, facing west") for x in (-5.6, -6.2, -6.8, -8.0) for y in (0.5, 1.5, -0.5, 2.5, 3.5)]
     tries += [(x, y, 0, "back, facing north") for y in (9.6, 10.2) for x in (1.0, 0.0, 2.5)]
     for x, y, face, note, *road in tries:
         parts = nest_parts(x, y, face)
-        if all(not site.blocked(k, w, p[0], p[1], d, road_ok=bool(road) and k == "object") and not lane_hit(k, w, p, d) for k, w, p, d in parts):
+        if all(not site.blocked(k, w, p[0], p[1], d, road_ok=("edge" if road and k == "object" else False)) and not lane_hit(k, w, p, d) for k, w, p, d in parts):
+            site.nest = (x - 1.45, x + 1.45, y, face)
             return [site.put(k, w, p[0], p[1], d) for k, w, p, d in parts], f"nest {note} at ({x:.1f}, {y:.1f})"
     return None, "NO ROOM for the nest"
 
@@ -148,9 +194,7 @@ def place_nest(site, prefer_east=False):
 def lane_hit(kind, what, p, d):
     """Whether a footprint stands in the front door's walkway (straight out to 9 m)."""
     ln, dp = size_of(kind, what)
-    hx = ln / 2 if round(d) % 180 == 0 else dp / 2
-    hy = dp / 2 if round(d) % 180 == 0 else ln / 2
-    return p[0] + hx > DOOR_LANE[0] and p[0] - hx < DOOR_LANE[1] and p[1] - hy < -2.5 and p[1] + hy > -9.0
+    return any(DOOR_LANE[0] < qx < DOOR_LANE[1] and -9.0 < qy < -2.5 for qx, qy in samples(p[0], p[1], ln, dp, d, 0.0, 5))
 
 
 # ---- the tiers
@@ -185,6 +229,88 @@ def tier1(site):
     return out, notes
 
 
+def blast_wall(site):
+    """An H-barrier across the door's axis 3-4 m out, never in front of the nest; a clear way in (1 m or more)
+    between its end and the nest, so whoever comes in passes the nest at arm's length."""
+    cls = "Land_HBarrier_3_F"
+    half = size_of("object", cls)[0] / 2
+    nest = getattr(site, "nest", None)
+    for y in (-6.1, -6.5, -7.0, -5.9):
+        for x in (3.3, 3.0, 3.6, 2.7, 2.2, 1.8, 1.2, 0.8):
+            if site.blocked("object", cls, x, y, 180, road_ok="edge"):
+                continue
+            if nest and nest[3] == 180:
+                x0, x1 = x - half, x + half
+                if x1 > nest[0] and x0 < nest[1]:
+                    continue  # It would mask the nest's front
+                gap = x0 - nest[1] if nest[1] <= x0 else nest[0] - x1
+                if gap < 0.9 or gap > 2.5:
+                    continue
+            return site.put("object", cls, x, y, 180), f"blast wall at ({x:.1f}, {y:.1f})"
+    return None, "NO blast wall (no room in front of the door)"
+
+
+def road_check(site):
+    """A roadside check on the house's side of the nearest road within 24 m: a long bag and a rifleman behind it
+    facing the road, striped concrete barriers on the road's edge 4.5 m either side."""
+    t = site.t
+    c = (1.5, 2.0)
+    cw = t.to_world(c[0], c[1], 0)
+    for d0, seg in t.roads_near(cw[0], cw[1], 24)[:4]:
+        a, b = t.to_model(seg["beg"]), t.to_model(seg["end"])
+        vx, vy = b[0] - a[0], b[1] - a[1]
+        ln = math.hypot(vx, vy) or 1
+        u = (vx / ln, vy / ln)
+        k = max(0, min(ln, (c[0] - a[0]) * u[0] + (c[1] - a[1]) * u[1]))
+        P = (a[0] + u[0] * k, a[1] + u[1] * k)
+        n = (-u[1], u[0])
+        if (c[0] - P[0]) * n[0] + (c[1] - P[1]) * n[1] < 0:
+            n = (-n[0], -n[1])
+        half = min(seg["width"], 10) / 2
+        along = mdir_along(u)
+        face = math.degrees(math.atan2(-n[0], -n[1])) % 360  # Towards the road
+        for sh in (0, 3, -3, 6, -6, 9, -9, 12, -12, 15, -15):
+            Q = (P[0] + u[0] * sh, P[1] + u[1] * sh)
+
+            def at(off, sl=0.0):
+                return (Q[0] + n[0] * off + u[0] * sl, Q[1] + n[1] * off + u[1] * sl)
+            parts = [("object", "Land_BagFence_Long_F", at(half + 1.0), along, "edge"),
+                     ("guard", "rifleman", at(half + 2.05), face, False),
+                     ("object", "Land_CncBarrier_stripes_F", at(half - 0.3, 4.5), along, "edge"),
+                     ("object", "Land_CncBarrier_stripes_F", at(half - 0.3, -4.5), along, "edge")]
+            if all(not site.blocked(kd, w, p[0], p[1], d, road_ok=r) and not lane_hit(kd, w, p, d) for kd, w, p, d, r in parts):
+                return [site.put(kd, w, p[0], p[1], d) for kd, w, p, d, r in parts], f"roadside check {math.hypot(*at(half + 1.0)):.0f} m out ({seg['type']}, {seg['width']:.0f} m)"
+    return None, ""
+
+
+def bunker(site):
+    """A small sandbag bunker off the front-east corner (else the front-west), manned, facing the front approach:
+    its field crosses the nest's in front of the blast wall."""
+    cls = "Land_BagBunker_Small_F"
+    for x, y in ((9.5, -6.5), (10.0, -8.5), (8.5, -9.0), (11.0, -5.0), (7.0, -10.5), (-6.5, -9.5), (-8.0, -8.0), (-7.0, -11.5), (3.0, -12.5),
+                 (-11.0, -9.5), (-12.0, -11.0), (-12.5, -1.0)):
+        if not site.blocked("object", cls, x, y, 180) and not site.blocked("guard", "rifleman", x, y + 0.3, 180):
+            return [site.put("object", cls, x, y, 180), tl.guard(site.t, "rifleman", x, y + 0.3, None, 180)], f"bunker at ({x:.1f}, {y:.1f})"
+    return None, "NO bunker"
+
+
+def wire(site):
+    """A razor-wire run along the most open flank (west or back), so attackers are channelled to the front."""
+    def openness(pts):
+        return sum(1 for x, y in pts if not site.blocked("guard", "rifleman", x, y, 0))
+    west = openness([(-x, y) for x in range(6, 16, 2) for y in (-1, 2, 5)])
+    back = openness([(x, y) for y in range(9, 19, 2) for x in (-1, 1.5, 4)])
+    runs = {"west": [(-5.2, y, 90) for y in (2.0, 1.0, 3.0, 0.0)] + [(-6.0, y, 90) for y in (2.0, 1.0, 3.0)],
+            "back": [(x, 9.4, 0) for x in (1.5, 0.5, 2.5, -0.5)] + [(x, 10.2, 0) for x in (1.5, 0.5, 2.5)],
+            "east": [(x, y, 90) for x in (9.0, 9.8) for y in (3.0, 4.0, 2.0)]}
+    order = (["west", "back"] if west >= back else ["back", "west"]) + ["east"]
+    for side in order:
+        for x, y, d in runs[side]:
+            if not site.blocked("object", "Land_Razorwire_F", x, y, d):
+                return [site.put("object", "Land_Razorwire_F", x, y, d)], f"wire on the {side} flank"
+    return [], "no wire (no clear flank)"
+
+
 def tier2(site):
     t = site.t
     f1 = t.floors[1]
@@ -193,16 +319,28 @@ def tier2(site):
     notes.append(note)
     if nest:
         out += nest
+    bw, note = blast_wall(site)
+    notes.append(note)
+    if bw:
+        out.append(bw)
     # A bag in front of the sentry: the doorway's other flank
     if site.sentry:
         sx, sy = site.sentry
         for dy in (1.1, 1.3, 0.9):
-            if not site.blocked("object", "Land_BagFence_Short_F", sx, sy - dy, 180) and not lane_hit("object", "Land_BagFence_Short_F", (sx, sy - dy), 180):
+            if not site.blocked("object", "Land_BagFence_Short_F", sx, sy - dy, 180, road_ok="edge") and not lane_hit("object", "Land_BagFence_Short_F", (sx, sy - dy), 180):
                 out.append(site.put("object", "Land_BagFence_Short_F", sx, sy - dy, 180))
                 notes.append("bag before the sentry")
                 break
         else:
             notes.append("no bag before the sentry")
+    post, note = road_check(site)
+    if not post:
+        post, note = bunker(site)
+    notes.append(note)
+    out += post or []
+    w, note = wire(site)
+    notes.append(note)
+    out += w
     out.append(site.put("guard", "marksman", UP_WINDOW[0], UP_WINDOW[1], 180, z=f1))   # The window over the door
     out.append(site.put("guard", "rifleman", LANDING[0], LANDING[1], getattr(site, "landing_dir", None) or landing_dir(t), z=f1))
     return out, notes
@@ -250,7 +388,12 @@ def site_map(t, items=(), r=18):
     marks = {}
     for kind, what, p, o, extra in items:
         m = t.to_model(p)
-        c = "g" if kind == "guard" else ("S" if kind == "static" else ("f" if "Flag" in what else ("b" if "Bag" in what else "o")))
+        c = "g" if kind == "guard" else ("S" if kind == "static" else ("f" if "Flag" in what else "K" if "Bunker" in what else ("b" if "Bag" in what else "B" if "HBarrier" in what else "w" if "wire" in what else "c" if "Cnc" in what else "o")))
+        if kind == "object" and "ground" in extra:
+            ln, dp = size_of(kind, what)
+            yaw = math.degrees(math.atan2(o[0][0], o[0][1])) - t.dir
+            for qx, qy in samples(m[0], m[1], ln, dp, yaw, 0.2, 5):
+                marks.setdefault((round(qx), round(qy)), c)
         marks[(round(m[0]), round(m[1]))] = c
     rows = []
     for y in range(r, -r - 1, -1):
