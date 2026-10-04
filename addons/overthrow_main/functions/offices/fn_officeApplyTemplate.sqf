@@ -17,13 +17,15 @@
         _this # 3: ARRAY - (Optional) The building's other pieces, remembered with it ("OT_officeParts"), default none
         _this # 4: BOOL - (Optional) Placeholders: the guards stand still, unarmed, can't be hurt and
             don't fight (the template review), default false
+        _this # 5: NUMBER - (Optional) The first tier placed: only tiers _this # 5 to _this # 1 (the layout
+            editor adds one tier's additions to what stands), default 1
 
     Usage: ([_building, 3, west] call OT_fnc_officeApplyTemplate) params ["_objects", "_guards"];
 
     Returns: ARRAY - [objects, guards (units)] made, [[], []] for a building without a template
 */
 
-params [["_building", objNull, [objNull]], ["_tier", 1, [0]], ["_side", west, [west]], ["_parts", [], [[]]], ["_placeholders", false, [false]]];
+params [["_building", objNull, [objNull]], ["_tier", 1, [0]], ["_side", west, [west]], ["_parts", [], [[]]], ["_placeholders", false, [false]], ["_from", 1, [0]]];
 
 private _key = [_building] call OT_fnc_officeTemplateKey;
 private _tiers = [_key] call OT_fnc_officeTemplate;
@@ -34,7 +36,7 @@ private _objects = [];
 private _guards = [];
 private _group = grpNull;
 private _buildingDir = getDir _building;
-for "_t" from 1 to _tier do {
+for "_t" from (_from max 1) to _tier do {
     {
         private _item = _x;
         _item params ["_kind", "_what", "_pos", "_dir", ["_extra", []]];
@@ -44,27 +46,8 @@ for "_t" from 1 to _tier do {
         if (_outside) then { _world set [2, 0] };
         private _d = _buildingDir + _dir;
         if (_kind isEqualTo "guard") then {
-            private _class = [_what] call OT_fnc_officeGuardClass;
             if (isNull _group) then { _group = createGroup [_side, true] };
-            private _unit = _group createUnit [_class, _world, [], 0, "CAN_COLLIDE"];
-            _unit setDir _d;
-            _unit setPosATL _world;
-            _unit setUnitPos "UP";
-            doStop _unit; // Holds the post until the office's own AI takes over
-            // A man put down on an upper floor now and then dies of the knock the engine gives him settling
-            // on the floor (seen by a stair opening), so nothing hurts him for his first moments
-            _unit allowDamage false;
-            if (!_placeholders) then {
-                [_unit] spawn { params ["_unit"]; sleep 3; if (alive _unit) then { _unit allowDamage true } };
-            };
-            if (_placeholders) then {
-                { _unit disableAI _x } forEach ["MOVE", "PATH", "TARGET", "AUTOTARGET", "AUTOCOMBAT", "FSM", "SUPPRESSION"];
-                removeAllWeapons _unit;
-                _unit allowDamage false;
-                _unit setCaptive true;
-                _unit setBehaviour "CARELESS";
-                _unit setVariable ["OT_placeholder", true];
-            };
+            private _unit = [_what, _world, _d, _group, _placeholders] call OT_fnc_officeGuard;
             _unit setVariable ["OT_officeItem", [_key, _t, _forEachIndex, _item]];
             _guards pushBack _unit;
         } else {

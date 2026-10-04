@@ -870,6 +870,14 @@ class CfgFunctions {
             class officeGuardClass {};
             class officeApplyTemplate {};
             class officeClearTemplate {};
+            class officeGuard {};
+            class officeLayout {};
+            class officeApplyLayout {};
+        };
+        // Mayor's office layouts authored in each town (tools/officegen/merge_layouts.py), one per map
+        class OfficeLayouts {
+            file = "\overthrow_main\functions\offices\layouts";
+            class officeLayouts_Altis {};
         };
         /*
          * Mod integration

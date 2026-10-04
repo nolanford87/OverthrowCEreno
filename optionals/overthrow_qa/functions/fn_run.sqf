@@ -7,7 +7,7 @@
     Parameters:
         _this # 0: STRING - Suite to run: "current" (tests for the changes since the last archive) or
             "archive" (every test that passed before); its parts "bugfixes", "followups" and "occupiers"
-            also run on their own; the surveys "towns" and "offices"; "officereview" (by hand)
+            also run on their own; the surveys "towns" and "offices"; "officereview" and "townlayout" (by hand)
 
     Usage: ["current"] spawn OTQA_fnc_run;
 */
@@ -25,7 +25,9 @@ private _suites = createHashMapFromArray [
     ["towns", ["Town survey", OTQA_fnc_dumpTowns]],
     ["offices", ["Mayor's office building probe", OTQA_fnc_probeOffices]],
     // The review by hand of the mayor's office defence templates (ends when the reviewer picks "Review: finished")
-    ["officereview", ["Mayor's office template review", OTQA_fnc_officeReview]]
+    ["officereview", ["Mayor's office template review", OTQA_fnc_officeReview]],
+    // Laying out each town's mayor's office by hand with Zeus (ends when the author picks "Layout: finished")
+    ["townlayout", ["Mayor's office town layouts", OTQA_fnc_townLayout]]
 ];
 if !(_suite in _suites) exitWith {
     hint format ["Overthrow QA: unknown test suite %1", _suite];
@@ -44,7 +46,7 @@ if (isNil "OT_NATOInitDone") exitWith {
 OTQA_running = true;
 // Look-around modes (reviews, probes, surveys): the host can't be seen or heard by the occupier
 // and stays undercover for the whole run. Not for the test suites: some test losing cover.
-if (_suite in ["officereview", "offices", "towns"]) then {
+if (_suite in ["officereview", "townlayout", "offices", "towns"]) then {
     [] spawn {
         while { !isNil "OTQA_running" } do {
             player setUnitTrait ["camouflageCoef", 0];
