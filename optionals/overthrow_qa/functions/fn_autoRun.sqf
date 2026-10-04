@@ -14,6 +14,9 @@ if (!hasInterface || { !isServer }) exitWith {};
 private _suite = uiNamespace getVariable ["OTQA_autoRun", ""];
 if (_suite isEqualTo "") exitWith {};
 uiNamespace setVariable ["OTQA_autoRun", ""]; // Only this once, not the next mission
+// Items a survey suite is limited to (run-qa.ps1 -Only), e.g. building classes for the office probe
+OTQA_only = uiNamespace getVariable ["OTQA_autoOnly", []];
+uiNamespace setVariable ["OTQA_autoOnly", []];
 
 [_suite] spawn {
     params ["_suite"];
