@@ -619,6 +619,50 @@ def report(t, d, tiers):
     return out
 
 
+def leak(t, d, r=36.0, step=0.5):
+    """Whether the compound is closed: a walk on a 0.5 m grid from the house outward, through neither the probe's
+    buildings, walls and rocks nor our barrier pieces (gates count as shut; wire, hedgehogs and the chicane don't),
+    reaching r m out. Returns the walk's cells from the house to the outside (the leak), or [] when it's closed."""
+    import collections
+    bars = [q for q in d.placed if q[5] and (q[2], q[3]) not in (SIZE[WIRE], SIZE[HOG], tl.CLASSES[CNC])] + d.stacked
+    n = int(r / step)
+
+    def shut(i, j):
+        x, y = i * step, j * step
+        if EXTENT[0] <= x <= EXTENT[2] and EXTENT[1] <= y <= EXTENT[3]:
+            return True
+        w = t.to_world(x, y, 0)
+        if any(h[0] in ("building", "part", "wall", "rock") for h in t.hits(w[0], w[1], 0.1, 0.1, 0, 0)):
+            return True
+        return any(d.boxes_overlap((x, y, 0.1, 0.1, 0), q[:5], 0) for q in bars)
+    cache = {}
+    start = [(i, j) for i in range(int(EXTENT[0] / step) - 1, int(EXTENT[2] / step) + 2) for j in (int(EXTENT[1] / step) - 1, int(EXTENT[3] / step) + 1)] +             [(i, j) for j in range(int(EXTENT[1] / step) - 1, int(EXTENT[3] / step) + 2) for i in (int(EXTENT[0] / step) - 1, int(EXTENT[2] / step) + 1)]
+    prev = {}
+    q = collections.deque()
+    for c in start:
+        if not shut(*c):
+            prev[c] = None
+            q.append(c)
+    while q:
+        c = q.popleft()
+        if c[0] * c[0] + c[1] * c[1] >= n * n:
+            path = []
+            while c is not None:
+                path.append((c[0] * step, c[1] * step))
+                c = prev[c]
+            return path[::-1]
+        for dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            nb = (c[0] + dc[0], c[1] + dc[1])
+            if nb in prev:
+                continue
+            if nb not in cache:
+                cache[nb] = shut(*nb)
+            if not cache[nb]:
+                prev[nb] = c
+                q.append(nb)
+    return []
+
+
 def gaps(t, d):
     """Stretches of the drawn lines that nothing closes (no barrier piece, building or the house): [(x, y, length)]."""
     out = []
