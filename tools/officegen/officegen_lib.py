@@ -649,6 +649,8 @@ class Plan:
         if self.main:
             cx, cy, _ = self.main["centre"]
             d = rdir(self.main["d"])
+            need = GATE_GAP / 2.0 + 2.2  # the gap and its run of fence fit either side of the door's axis, so the gate isn't pushed off it
+            x0, x1, y0, y1 = min(x0, cx - need), max(x1, cx + need), min(y0, cy - need), max(y1, cy + need)
             if d == 0:
                 y1 = max(y1, cy + GATE_OUT)
             elif d == 180:

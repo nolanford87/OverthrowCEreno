@@ -78,8 +78,8 @@ for "_t" from 1 to _tier do {
             };
             private _object = createVehicle [_class, [0, 0, 0], [], 0, "CAN_COLLIDE"];
             _object setDir _d;
-            if (_class isKindOf "FlagCarrier") then {
-                _object setVectorUp [0, 0, 1]; // A flag pole stands straight whatever the ground does
+            if (_class isKindOf "FlagCarrier" || { "gate" in _extra }) then {
+                _object setVectorUp [0, 0, 1]; // A flag pole stands straight whatever the ground does, and a gate tilted on a slope lands off its mark
             } else {
                 if (_outside) then {
                     _object setVectorUp (surfaceNormal _world);
