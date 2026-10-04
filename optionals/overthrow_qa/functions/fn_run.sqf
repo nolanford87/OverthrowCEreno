@@ -7,7 +7,7 @@
     Parameters:
         _this # 0: STRING - Suite to run: "current" (tests for the changes since the last archive) or
             "archive" (every test that passed before); its parts "bugfixes", "followups" and "occupiers"
-            also run on their own
+            also run on their own; the surveys "towns" and "offices"; "officereview" (by hand)
 
     Usage: ["current"] spawn OTQA_fnc_run;
 */
@@ -23,7 +23,9 @@ private _suites = createHashMapFromArray [
     ["occupiers", ["Occupier QA tests", OTQA_fnc_testsOccupiers]],
     // Surveys (not tests): data for designing features, lines in the RPT
     ["towns", ["Town survey", OTQA_fnc_dumpTowns]],
-    ["offices", ["Mayor's office building probe", OTQA_fnc_probeOffices]]
+    ["offices", ["Mayor's office building probe", OTQA_fnc_probeOffices]],
+    // The review by hand of the mayor's office defence templates (ends when the reviewer picks "Review: finished")
+    ["officereview", ["Mayor's office template review", OTQA_fnc_officeReview]]
 ];
 if !(_suite in _suites) exitWith {
     hint format ["Overthrow QA: unknown test suite %1", _suite];
