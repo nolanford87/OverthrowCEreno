@@ -53,7 +53,7 @@ SIZES = {
     "Land_TableDesk_F": (1.9, 0.9),
     "Land_OfficeChair_01_F": (0.6, 0.6),
     "Land_OfficeCabinet_01_F": (0.9, 0.5),
-    "Land_FilingCabinet_01_F": (0.6, 0.5),
+    "Land_OfficeCabinet_01_F": (0.6, 0.5),
     "Land_CampingTable_F": (1.2, 0.6),
     "Land_CampingChair_V2_F": (0.6, 0.6),
     "Land_WaterCooler_01_new_F": (0.4, 0.4),
@@ -430,8 +430,8 @@ def offices_01(p):
     # the mayor's corner office on the top floor (east strip): desk facing the door in the west wall
     t.obj(1, "Land_TableDesk_F", (10.8, -2.2, L3), 270, inside=True)
     t.obj(1, "Land_OfficeChair_01_F", (11.6, -2.2, L3), 270, inside=True)
-    t.obj(1, "Land_FilingCabinet_01_F", (9.4, 0.15, L3), 180, inside=True)
-    t.obj(1, "Land_FilingCabinet_01_F", (10.1, 0.15, L3), 180, inside=True)
+    t.obj(1, "Land_OfficeCabinet_01_F", (9.4, 0.15, L3), 180, inside=True)
+    t.obj(1, "Land_OfficeCabinet_01_F", (10.1, 0.15, L3), 180, inside=True)
     t.obj(1, "Land_OfficeCabinet_01_F", (8.95, -2.0, L3), 90, inside=True)
 
     # ---- Tier 2: a military pair, sandbag nests flanking both doors --------------------------
@@ -576,8 +576,8 @@ def hospital(p):
     t.obj(3, "Land_Map_altis_F", (-3.7, -1.4, G + TABLE_TOP), 90)
     t.obj(3, "Land_CampingChair_V2_F", (-2.8, -1.4, G), 270, inside=True)
     t.obj(3, "MapBoard_altis_F", (-6.6, -0.6, G), 90, inside=True)
-    t.obj(3, "Land_FilingCabinet_01_F", (-7.6, -3.5, G), 90, inside=True)
-    t.obj(3, "Land_FilingCabinet_01_F", (-7.6, -4.3, G), 90, inside=True)
+    t.obj(3, "Land_OfficeCabinet_01_F", (-7.6, -3.5, G), 90, inside=True)
+    t.obj(3, "Land_OfficeCabinet_01_F", (-7.6, -4.3, G), 90, inside=True)
     t.obj(3, FLAG, (-11.5, 3.0, G), 0)                   # on the forecourt, south of the lane
 
     # ---- Tier 4: squad; wire on the open sides, roof nests, approach barricades ---------------

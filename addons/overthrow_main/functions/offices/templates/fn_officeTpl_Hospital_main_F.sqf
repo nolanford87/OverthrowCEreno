@@ -66,8 +66,8 @@
         ["object", "Land_Map_altis_F", [-3.7, -1.4, -7.04], 90, []],
         ["object", "Land_CampingChair_V2_F", [-2.8, -1.4, -7.8], 270, []],
         ["object", "MapBoard_altis_F", [-6.6, -0.6, -7.8], 90, []],
-        ["object", "Land_FilingCabinet_01_F", [-7.6, -3.5, -7.8], 90, []],
-        ["object", "Land_FilingCabinet_01_F", [-7.6, -4.3, -7.8], 90, []],
+        ["object", "Land_OfficeCabinet_01_F", [-7.6, -3.5, -7.8], 90, []],
+        ["object", "Land_OfficeCabinet_01_F", [-7.6, -4.3, -7.8], 90, []],
         ["object", OT_flag_NATO, [-11.5, 3, -7.8], 0, []]
     ],
     [ // Tier 4: 10 guards, 63 objects in all

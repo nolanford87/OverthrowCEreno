@@ -31,8 +31,8 @@
         ["object", "MapBoard_altis_F", [-15.3, 5.1, -6.7], 0, []],
         ["object", "Land_TableDesk_F", [10.8, -2.2, 5], 270, []],
         ["object", "Land_OfficeChair_01_F", [11.6, -2.2, 5], 270, []],
-        ["object", "Land_FilingCabinet_01_F", [9.4, 0.15, 5], 180, []],
-        ["object", "Land_FilingCabinet_01_F", [10.1, 0.15, 5], 180, []],
+        ["object", "Land_OfficeCabinet_01_F", [9.4, 0.15, 5], 180, []],
+        ["object", "Land_OfficeCabinet_01_F", [10.1, 0.15, 5], 180, []],
         ["object", "Land_OfficeCabinet_01_F", [8.95, -2, 5], 90, []]
     ],
     [ // Tier 2: 6 guards, 17 objects in all
