@@ -97,7 +97,7 @@ def main(argv):
               "clips = a building, wall, rock or the office's walls runs through it; floating = gap under it (m); moved = a guard pushed",
               "more than 1 m off his post (stuck in geometry); blind = a guard's view ends within 4 m (facing a wall); blocked = a",
               "static's field of fire ends within 15 m; view = the guards' median clear view (m). Screenshots beside this file:",
-              "<town>_T<tier>_top.jpg (from 60 m above, north up) and <town>_T<tier>_street.jpg (from 40 m out on the way to the street).", ""]
+              "<town>_T<tier>_top.jpg (from 48 m above, north up) and <town>_T<tier>_street.jpg (from 35 m out on the street side, 20 m up).", ""]
         for town in mine:
             md.append(f"## {town}")
             for tier in sorted(checks[town]):
