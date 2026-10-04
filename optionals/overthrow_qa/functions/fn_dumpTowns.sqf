@@ -7,7 +7,8 @@
         OTTOWN|BLD|town|class|positions|footprint m2|height|distance from the centre
     Then the classes of enterable buildings near town centres across the map, with counts:
         OTTOWN|CLASS|class|count|positions|footprint m2|height|towns
-    Buildings: within 500 m with 4+ building positions (the distance is logged, so nearer cut-offs can be applied afterwards).
+    Buildings: inside the town (OT_fnc_isInTown's area: 350 m, 1000 m for capitals and sprawling towns, and
+    this town the nearest) with 4+ building positions.
 
     Returns: ARRAY - [[name, code], ...] (one test, so the QA runner can run it as a suite)
 */
@@ -36,7 +37,7 @@
                 _c set [0, (_c select 0) + 1];
                 (_c select 4) pushBackUnique _town;
                 _classes set [typeOf _b, _c];
-            } forEach (nearestObjects [_pos, ["House", "Building"], 500]);
+            } forEach ((nearestObjects [_pos, ["House", "Building"], [350, 1000] select _big]) select { ((getPos _x) call OT_fnc_nearestTown) isEqualTo _town });
             _found sort false;
             {
                 _x params ["_area", "_cls", "_n", "_height", "_dist"];
