@@ -5,7 +5,7 @@ OTLAYOUT|Altis|Agios Konstantinos|ITEM|1|object|Land_OfficeChair_01_F|[3949.617,
 OTLAYOUT|Altis|Agios Konstantinos|ITEM|1|object|Land_MapBoard_F|[3951.083,17311.594,15.330]|[[0.5906,-0.8070,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Agios Konstantinos|ITEM|1|object|Flag_NATO_F|[3943.415,17301.583,10.346]|[[0.8070,0.5906,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
 OTLAYOUT|Altis|Agios Konstantinos|ITEM|1|guard|gendarme|[3944.563,17303.909,11.890]|233.8|
-OTLAYOUT|Altis|Agios Konstantinos|ITEM|1|guard|gendarme|[3955.047,17311.087,11.736]|53.8|ground
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|1|guard|gendarme|[3955.284,17310.765,11.718]|53.8|ground
 OTLAYOUT|Altis|Agios Konstantinos|ITEM|1|guard|gendarme|[3955.245,17304.044,15.330]|143.8|
 OTLAYOUT|Altis|Agios Konstantinos|TIER|2|16
 OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|object|Land_TableDesk_F|[3950.562,17308.920,15.330]|[[-0.5906,0.8070,0.0000],[0.0000,0.0000,1.0000]]|drop
@@ -13,7 +13,7 @@ OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|object|Land_OfficeChair_01_F|[3949.617,
 OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|object|Land_MapBoard_F|[3951.083,17311.594,15.330]|[[0.5906,-0.8070,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|object|Flag_NATO_F|[3943.415,17301.583,10.346]|[[0.8070,0.5906,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
 OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|guard|gendarme|[3944.563,17303.909,11.890]|233.8|
-OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|guard|gendarme|[3955.047,17311.087,11.736]|53.8|ground
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|guard|gendarme|[3955.284,17310.765,11.718]|53.8|ground
 OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|guard|gendarme|[3955.245,17304.044,15.330]|143.8|
 OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|object|Land_BagFence_Long_F|[3939.016,17305.054,9.989]|[[-0.8070,-0.5906,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|object|Land_BagFence_Short_F|[3940.706,17304.184,10.111]|[[-0.5906,0.8070,0.0000],[0.0000,0.0000,1.0000]]|ground

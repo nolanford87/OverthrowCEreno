@@ -5,7 +5,7 @@ OTLAYOUT|Altis|Galati|ITEM|1|object|Land_OfficeChair_01_F|[10229.940,19027.522,1
 OTLAYOUT|Altis|Galati|ITEM|1|object|Land_MapBoard_F|[10231.547,19028.739,121.680]|[[0.5000,-0.8660,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Galati|ITEM|1|object|Flag_NATO_F|[10222.844,19019.614,117.180]|[[0.8660,0.5000,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
 OTLAYOUT|Altis|Galati|ITEM|1|guard|gendarme|[10224.235,19021.803,118.240]|240.0|
-OTLAYOUT|Altis|Galati|ITEM|1|guard|gendarme|[10235.434,19027.807,118.035]|60.0|ground
+OTLAYOUT|Altis|Galati|ITEM|1|guard|gendarme|[10235.634,19027.461,118.016]|60.0|ground
 OTLAYOUT|Altis|Galati|ITEM|1|guard|gendarme|[10225.318,19020.928,121.680]|240.0|
 OTLAYOUT|Altis|Galati|TIER|2|16
 OTLAYOUT|Altis|Galati|ITEM|2|object|Land_TableDesk_F|[10230.740,19026.136,121.680]|[[-0.5000,0.8660,0.0000],[0.0000,0.0000,1.0000]]|drop
@@ -13,7 +13,7 @@ OTLAYOUT|Altis|Galati|ITEM|2|object|Land_OfficeChair_01_F|[10229.940,19027.522,1
 OTLAYOUT|Altis|Galati|ITEM|2|object|Land_MapBoard_F|[10231.547,19028.739,121.680]|[[0.5000,-0.8660,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Galati|ITEM|2|object|Flag_NATO_F|[10222.844,19019.614,117.180]|[[0.8660,0.5000,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
 OTLAYOUT|Altis|Galati|ITEM|2|guard|gendarme|[10224.235,19021.803,118.240]|240.0|
-OTLAYOUT|Altis|Galati|ITEM|2|guard|gendarme|[10235.434,19027.807,118.035]|60.0|ground
+OTLAYOUT|Altis|Galati|ITEM|2|guard|gendarme|[10235.634,19027.461,118.016]|60.0|ground
 OTLAYOUT|Altis|Galati|ITEM|2|guard|gendarme|[10225.318,19020.928,121.680]|240.0|
 OTLAYOUT|Altis|Galati|ITEM|2|object|Land_BagFence_Long_F|[10218.845,19023.541,116.827]|[[-0.8660,-0.5000,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Galati|ITEM|2|object|Land_BagFence_Short_F|[10220.431,19022.493,117.073]|[[-0.5000,0.8660,0.0000],[0.0000,0.0000,1.0000]]|ground

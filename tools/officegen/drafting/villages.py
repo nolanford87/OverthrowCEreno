@@ -42,31 +42,31 @@ OUT = {"back": 180, "front": 0, "left": 270, "right": 90}
 # open sides, the neighbours close the rest); tall (the sides facing a road or open ground: 2-high); statics
 # ([(role, [(side, lateral, skew), ...])]: the posts tried, the one with the longest field of fire taken); nest_a /
 # nest_side (the tier 2 nest's distance out from the door and its side); screen_a (the second door's screen);
-# gate_at (the gate off the door's axis); tower "gate" (the tower beside the gate, not at a corner).
+# gate_at (the gate off the door's axis); avoid ([(x, y, r)]: no gun there, measured blocked in the game); tower "gate" (the tower beside the gate, not at a corner).
 TOWNS = {
-    "Alikampos": {"ring": (-10, 8, -10, 12), "nest_a": 2.0, "tall": ("back", "right"),
+    "Alikampos": {"ring": (-10, 8, -10, 12), "nest_a": 2.0, "tall": ("back", "right", "front"),
                   "statics": [("hmg", [("right", -6, 30), ("right", -2, 45), ("back", 5, -30)]),
                               ("gmg", [("back", -8, 30), ("front", -6, -30), ("left", 10, -30)])]},
-    "Dorida": {"entry": "front", "ring": (-8, 13, -11, 9.9), "nest_a": 2.4, "tall": ("front", "right"),
+    "Dorida": {"entry": "front", "ring": (-19, 17, -11, 9.9), "nest_a": 2.4, "tall": ("front", "right", "left"),
                "statics": [("hmg", [("front", 8, 30), ("front", 10, 0), ("right", 7, 0)]),
                            ("gmg", [("right", -6, 30), ("right", -8, 60), ("back", 8, -30), ("back", -4, 0)])]},
     "Gravia": {"ring": (-9, 9, -13, 11.2), "tall": ("back", "front"),
                "statics": [("hmg", [("back", 4, 0), ("back", 6, -20), ("back", 2, 0)]),
                            ("gmg", [("front", -4, -30), ("front", -2, -15), ("left", 9, -30)])]},
-    "Kore": {"ring": (-10, 10, -14, 12), "tall": ("back", "front"),
+    "Kore": {"ring": (-16, 17.5, -14, 12), "tall": ("back", "front", "left", "right"),
              "statics": [("hmg", [("back", -6, 30), ("back", 5, -30)]), ("gmg", [("front", -5, -30), ("front", 4, 20)])]},
-    "Lakka": {"ring": (-10, 10, -14, 12), "tall": ("back", "right"),
+    "Lakka": {"ring": (-10, 10, -14, 12), "tall": ("back", "right", "left", "front"),
               "statics": [("hmg", [("back", 6, -30), ("right", -10, 30)]), ("gmg", [("front", -6, -30), ("left", 6, -30)])]},
     "Neri": {"ring": (-10, 10, -12.5, 12), "gate_at": -3.2, "tall": ("back", "left"),
              "statics": [("hmg", [("back", -7, 30), ("left", -8, -30), ("back", 6, -30), ("back", 4, 0)]),
                          ("gmg", [("left", 8, 30), ("left", 4, 0)])]},
-    "Poliakko": {"ring": (-9, 7.3, -13, 12), "tall": ("right", "back"),
+    "Poliakko": {"ring": (-18, 7.3, -13, 12), "tall": ("right", "back", "left"),
                  "statics": [("hmg", [("right", -8, 30), ("right", -5, 45)]), ("gmg", [("right", 8, -30), ("right", 5, -45)])]},
-    "Selakano": {"ring": (-10, 8, -9.6, 12), "tower": "gate", "nest_a": 1.9, "nest_side": -1, "tall": ("back", "left"),
+    "Selakano": {"ring": (-17.5, 15.5, -9.6, 12), "tower": "gate", "nest_a": 1.9, "nest_side": -1, "tall": ("back", "left", "right", "front"),
                  "statics": [("hmg", [("back", -8, 30), ("left", -6, -30)]), ("gmg", [("front", -6, -30), ("left", 8, 30)])]},
-    "Stavros": {"entry": "front", "ring": (-8, 5.5, -7.5, 12), "tall": ("back", "left"),
+    "Stavros": {"avoid": [(-7.5, 7.5, 3.5)], "entry": "front", "ring": (-8, 5.5, -7.5, 12), "tall": ("back", "left", "front"),
                 "statics": [("hmg", [("left", -4, -30), ("back", -5, 30), ("left", 0, -45)]), ("gmg", [("left", 8, 0), ("front", -5, -30)])]},
-    "Telos": {"ring": (-9, 10, -14, 8.0), "screen_a": 1.5, "tall": ("front", "back", "right"),
+    "Telos": {"nest_side": -1, "ring": (-21, 10, -14, 7.6), "tall": ("front", "back", "right", "left"),
               "statics": [("hmg", [("right", 4, 0), ("right", 0, 30), ("front", 7, 30)]), ("gmg", [("back", -6, 30), ("back", 5, -30)])]},
     "Abdera": {},
     "Agios Konstantinos": {},
@@ -178,6 +178,8 @@ class Site:
         if t.on_office(x, y, 0.2, 0.2):
             return True
         if upstairs:
+            if origin is not None and math.dist(origin, (x, y)) < 5 and [h for h in t.hits(w[0], w[1], 2.0, 2.0, 0, 0) if h[0] == "tree"]:
+                return True  # A tree's crown right in front of a balcony
             return False  # From a balcony or the tower's platform the yard's pieces are below the line of sight
         for it in self.placed:
             if it[0] != "object" or "ground" not in it[4]:
@@ -239,6 +241,10 @@ class Site:
                     if 0 <= a <= ln and abs((cx - x) * uy - (cy - y) * ux) <= hw:
                         return False
         for b in self.placed:
+            if bar and b[0] == "object" and "Land_BagFence_Round_F" in (it[1], b[1]) and barrierish(b[1]):
+                if self.overlap(it, b, 0.3):  # Nothing in front of a gun's bags
+                    return False
+                continue
             if bar and b[0] == "object" and barrierish(b[1]):
                 if self.overlap(it, b, 0.1, core=True):
                     return False
@@ -385,7 +391,7 @@ def tier1(s):
         s.first([s.G("gendarme", x, -5.8, d, f0) for x in (-1.9, -0.9, 1.0) for d in (180, 200, 160)], "second gendarme")
     else:
         a = s.cfg.get("screen_a", 2.3) - 1.3
-        s.first([s.G("gendarme", *s.ef(max(a, 1.0), l, D2, d2), d) for l in (-1.6, 1.6, -2.2, 2.2, -3.0, -3.8) for d in (0, 20, 340, 320, 40, 300, 60)] +
+        s.first([s.G("gendarme", *s.ef(max(a, 1.0), l, D2, d2), d) for l in (-1.2, 1.2, -1.6, 1.6, -2.2, 2.2) for d in (0, 340, 20)] +
                 [s.G("gendarme", 4.1, 2.9, 90, f0)], "second gendarme", see=6)
     # Upstairs, at the opening with the longest view
     s.upstairs("gendarme", WINDOW + (BACK_BALCONY[:1] if s.entry == "porch_s" else FRONT_BALCONY[:1]), "office gendarme")
@@ -470,13 +476,13 @@ def ring_side(s, side, gate=None, tall=False):
         u = start + step * 0.3  # Into the gate's post a little
         while (end - u) * step > 0.0:
             room = abs(end - u)
-            here = pt(u + step * 3.0)
-            near_gate = (gate is not None and abs(u - gate) < 7) or any(math.dist(here, q) < r for q, r in s.low_spots)
-            pieces = ([("Land_HBarrier_Big_F", 8.4)] if tall and not near_gate else []) + \
+            pieces = ([("Land_HBarrier_Big_F", 8.4)] if tall else []) + \
                 [("Land_HBarrier_5_F", 6.0), ("Land_HBarrier_3_F", 3.6), ("Land_HBarrier_1_F", 1.56), ("Land_CncBarrier_F", 1.6)]
             for cls, ln in pieces:
                 if ln > room + 1.2 and ln > 1.6:
                     continue
+                if cls == "Land_HBarrier_Big_F" and low_here(s, pt, u + step * (ln / 2 - 0.3), ln, gate):
+                    continue  # 1-high by the gate, the guns and the second door: the men there fire over it
                 it = s.O(cls, *pt(u + step * (ln / 2 - 0.3)), mdir)
                 if s.add(it):
                     placed.append(it)
@@ -485,6 +491,21 @@ def ring_side(s, side, gate=None, tall=False):
             else:
                 u += step * 0.5  # Blocked here (a neighbour, a wall, a road, a gun post): a bit further on
     return placed
+
+
+def low_here(s, pt, centre, ln, gate):
+    """Whether a 2-high piece centred at centre (along its line) would stand by the gate, a gun or the second door."""
+    if gate is not None and abs(centre - gate) < ln / 2 + 2.5 + 1.5:
+        return True
+    c = pt(centre)
+    a, b = pt(centre + 1.0)
+    ux, uy = a - c[0], b - c[1]
+    for (qx, qy), r in s.low_spots:
+        along = abs((qx - c[0]) * ux + (qy - c[1]) * uy)
+        across = abs((qx - c[0]) * uy - (qy - c[1]) * ux)
+        if along < ln / 2 + r and across < 7.0:
+            return True
+    return False
 
 
 def static_post(s, role, prefs, gate_side, gate_at):
@@ -505,9 +526,11 @@ def static_post(s, role, prefs, gate_side, gate_at):
             if min(abs(u - e) for e in ends) < 3.0:
                 continue  # Off the corners, or the next side's line is in its field of fire
             lx, ly = (u, y0 if side == "back" else y1) if side in ("back", "front") else (x0 if side == "left" else x1, u)
-            if any(math.dist((lx, ly), q) < 9 for q, r in s.low_spots if r == 6.0):
+            if any(math.dist((lx, ly), q) < 9 for q in s.guns):
                 continue  # The other gun covers here: spread them over different approaches
             for dsk in (0, 15, -15, 30, -30, 45, -45):
+                if abs(((skew + dsk) + 180) % 360 - 180) > 20:
+                    continue  # Square enough with its line that the bags, not the next H-barrier, are in front
                 d = OUT[side] + skew + dsk
                 if abs(((d - OUT[side]) + 180) % 360 - 180) > 60:
                     continue
@@ -515,8 +538,14 @@ def static_post(s, role, prefs, gate_side, gate_at):
                 bag = s.O("Land_BagFence_Round_F", lx + ox * 0.2, ly + oy * 0.2, d + 180)
                 gun = s.S(role, lx + ox * 0.2 - fx * 1.0, ly + oy * 0.2 - fy * 1.0, d)
                 gx, gy = lx + ox * 0.2 - fx * 1.0, ly + oy * 0.2 - fy * 1.0
-                slope = abs(s.t.ground_model(gx + fx, gy + fy) - s.t.ground_model(gx - fx, gy - fy))
-                if slope > 0.6 or not s.ok(bag) or not s.ok(gun):
+                hs = [s.t.ground_model(gx + ex * 1.3, gy + ey * 1.3) for ex, ey in ((1, 0), (-1, 0), (0, 1), (0, -1), (0, 0))]
+                slope = max(hs) - min(hs)
+                if any(math.dist((gx, gy), (ax, ay)) < ar for ax, ay, ar in s.cfg.get("avoid", ())):
+                    continue  # A post the game measured blocked
+                gw = s.t.to_world(gx, gy, 0)
+                if [h for h in s.t.hits(gw[0], gw[1], 3.5, 3.5, 0, 0) if h[0] == "wall"]:
+                    continue  # Clear of old walls and buildings all round (the gun swings, its crew climbs on)
+                if slope > 0.35 or not s.ok(bag) or not s.ok(gun):
                     continue
                 n = len(s.cur)
                 s.cur += [bag, gun]
@@ -528,13 +557,14 @@ def static_post(s, role, prefs, gate_side, gate_at):
                     break
             if best and best[0] >= 30:
                 break
-        if best and best[0] >= 30:
-            break
+        if best and (best[0] >= 30 or (best[0] >= 12 and (side, lat, skew) in prefs)):
+            break  # The town's posts aim down a road: across it is enough
     if best is None:
         s.skipped.append(f"static {role}")
         return None
     s.cur += [best[1], best[2]]
-    s.low_spots.append((tuple(s.t.to_model(best[1][2])[:2]), 6.0))
+    s.low_spots.append((tuple(s.t.to_model(best[1][2])[:2]), 1.8))
+    s.guns.append(tuple(s.t.to_model(best[1][2])[:2]))
     if best[0] < 30:
         s.skipped.append(f"static {role}: field of fire only {best[0]} m")
     return best[0]
@@ -612,7 +642,8 @@ def tier3(s):
     else:
         s.skipped.append("tower")
     # The statics, each where its field of fire is longest; the lines stay 1-high round them and the second door
-    s.low_spots = [(s.D2, 9.0)]
+    s.low_spots = [(s.D2, 1.8)]
+    s.guns = []
     s.fire = {}
     for role, prefs in s.cfg.get("statics", []):
         s.fire[role] = static_post(s, role, prefs, gate_side, gate_at)
