@@ -13,9 +13,10 @@
                 within 4 m: facing a wall
             blocked: [[role, m, [x, y]], ...] statics whose field of fire (a 60 degree cone, 40 m) ends within 15 m
             views: the guards' median clear view in metres
-        OTPATH|town|tier|[[bearing, [x, y]], ...] the ways out: a man's route (the engine's path finding) from the
-            office's door to a point 60 m out at that bearing from the office's front, and [x, y] where it passes
-            nearest the fortifications (the gap). [] = no way out on any bearing
+        OTPATH|town|tier|bearing|[x, y]|[[x, y], ...] a way out: a man's route (the engine's path finding) from the
+            office's door to a point 60 m out at that bearing from the office's front, [x, y] where it last passes
+            within 3 m of a fortification (the gap), and the route every ~5 m out to 45 m; OTPATH|town|tier|closed
+            when every route was computed and none gets out, "unknown (...)" when some weren't computed
         OTCLASS|class|[length, depth, height] the real size of every class the layouts use (once)
     and two screenshots per tier (the profile's Screenshots folder): OTL_<town>_T<tier>_top.png from 60 m
     above, OTL_<town>_T<tier>_street.png from 35 m out on the street side, 20 m up (the first bearing with a clear view).
@@ -55,6 +56,16 @@
         private _terrainTypes = ["BUILDING", "HOUSE", "CHURCH", "CHAPEL", "FUELSTATION", "HOSPITAL", "RUIN", "BUNKER", "FORTRESS", "VIEW-TOWER", "LIGHTHOUSE", "QUAY", "TRANSMITTER", "WATERTOWER", "WALL", "FENCE", "ROCK", "ROCKS"];
         private _sizes = createHashMap;
         // The furthest clear distance over a cone of rays from a point (ASL) round a direction
+        // A man's route (the engine's path finding) between two points, [] when it isn't computed in 10 s
+        private _route = {
+            params ["_from", "_to"];
+            OTQA_pathDone = nil;
+            private _agent = calculatePath ["man", "safe", _from, _to];
+            _agent addEventHandler ["PathCalculated", { OTQA_pathDone = _this select 1 }];
+            private _t = time + 10;
+            waitUntil { sleep 0.2; !isNil "OTQA_pathDone" || { time > _t } };
+            missionNamespace getVariable ["OTQA_pathDone", []]
+        };
         private _cone = {
             params ["_from", "_dir", "_spread", "_steps", "_len", "_ignore"];
             private _best = 0;
@@ -77,6 +88,28 @@
             sleep 2; // The area streamed in
             skipTime ((12.5 - daytime + 24) % 24); // Still midday (a long run reaches dusk)
             0 setOvercast 0; 0 setRain 0; 0 setFog [0, 0, 0]; forceWeatherChange; // And clear (the weather system brings the fog back)
+            // Where the closure routes start: the first spot from which a man gets 60 m out on the bare site, before
+            // anything of the layout stands. Inside the office first (its lowest positions: inside any ring round it,
+            // where a spot by a door may be outside a line run tight across the front), then its exits and sides
+            private _start = [];
+            private _site = (nearestObjects [ASLToAGL _pos, [_class], 3, true]) param [0, objNull];
+            if (!isNull _site) then {
+                (boundingBoxReal _site) params ["_mn", "_mx"];
+                private _spots = [_site buildingPos -1, [], { _x select 2 }, "ASCEND"] call BIS_fnc_sortBy;
+                _spots = _spots select [0, 4];
+                for "_i" from 0 to 5 do { private _e = _site buildingExit _i; if (_e isNotEqualTo [0, 0, 0]) then { _spots pushBack _e } };
+                { _spots pushBack (_site modelToWorld _x) } forEach [[0, (_mx select 1) + 2, 0], [0, (_mn select 1) - 2, 0], [(_mx select 0) + 2, 0, 0], [(_mn select 0) - 2, 0, 0]];
+                private _away = (getPosATL _site) getPos [60, getDir _site];
+                private _road = (_away nearRoads 25) param [0, objNull];
+                if (!isNull _road) then { _away = getPosATL _road };
+                {
+                    if ((_x select 2) < 0.5) then { _x set [2, 0] };
+                    private _p = [_x, _away] call _route;
+                    if (_p isNotEqualTo [] && { ((_p select -1) distance2D _away) < 4 }) exitWith { _start = _x };
+                } forEach _spots;
+            };
+            diag_log format ["OTPATHSTART|%1|%2", _town, if (_start isEqualTo [] || { isNull _site }) then { "none" } else { ((_site worldToModel _start) select [0, 2]) apply { _x call _r1 } }];
+
             // Every tier the layout has (a town's highest tier in play follows its population, which a new game changes)
             private _b = objNull;
             for "_tier" from 1 to 5 do {
@@ -178,21 +211,27 @@
                 // Closure: can a man walk out? The engine's own route from the office's door to 8 points 60 m out
                 // (on a road where there's one). A route that gets there is a way out; where it passes closest to the
                 // layout's fortifications is the gap
-                private _exit = _b buildingExit 0;
-                if (_exit isEqualTo [0, 0, 0]) then { _exit = getPosATL _b };
+                // From the spot found on the bare site (none: the closure can't be checked here)
+                private _exit = +_start;
+                private _none = 0; // Routes the engine didn't compute at all (a bad start), not "closed"
                 private _ways = [];
                 {
                     private _to = (getPosATL _b) getPos [60, (getDir _b) + _x];
                     private _road = (_to nearRoads 25) param [0, objNull];
                     if (!isNull _road) then { _to = getPosATL _road };
-                    OTQA_pathDone = nil;
-                    private _agent = calculatePath ["man", "safe", _exit, _to];
-                    _agent addEventHandler ["PathCalculated", { OTQA_pathDone = _this select 1 }];
-                    private _t = time + 10;
-                    waitUntil { sleep 0.2; !isNil "OTQA_pathDone" || { time > _t } };
-                    private _path = missionNamespace getVariable ["OTQA_pathDone", []];
+                    private _path = if (_exit isEqualTo []) then { [] } else { [_exit, _to] call _route };
+                    if (_path isEqualTo []) then { _none = _none + 1 };
                     private _out = _path isNotEqualTo [] && { ((_path select -1) distance2D _to) < 4 };
                     if (_out) then {
+                        // The route as waypoints far apart: filled in every metre, so a leg crossing a line is seen
+                        private _dense = [_path select 0];
+                        for "_i" from 1 to (count _path) - 1 do {
+                            private _a = _path select (_i - 1);
+                            private _c = _path select _i;
+                            private _n = ceil (_a distance2D _c);
+                            for "_k" from 1 to _n do { _dense pushBack (_a vectorAdd ((_c vectorDiff _a) vectorMultiply (_k / _n))) };
+                        };
+                        _path = _dense;
                         // The gap: the last point of the route that passes within 3 m of a fortification (where it
                         // leaves the outermost line); the route itself every ~5 m out to 45 m, to follow it
                         private _gap = [];
@@ -208,7 +247,9 @@
                         _ways pushBack [_x, if (_gap isEqualTo []) then { [] } else { _gap call _model }, _trace apply { _x call _model }];
                     };
                 } forEach [0, 45, 90, 135, 180, 225, 270, 315];
-                diag_log format ["OTPATH|%1|%2|%3", _town, _tier, _ways];
+                // One line per way out (an RPT line is cut at about 1 KB)
+                { diag_log format ["OTPATH|%1|%2|%3|%4|%5", _town, _tier, _x select 0, _x select 1, _x select 2] } forEach _ways;
+                if (_ways isEqualTo []) then { diag_log format ["OTPATH|%1|%2|%3", _town, _tier, ["closed", format ["unknown (%1 of 8 routes not computed)", _none]] select (_none > 0)] };
 
                 // The pictures: from above, and from out along the way to the street
                 if (_shots) then {

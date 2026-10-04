@@ -73,14 +73,20 @@ def main(argv):
     rnd = int(args[0])
     rpt = args[1] if len(args) > 1 else max(glob.glob(os.path.join(os.environ["LOCALAPPDATA"], "Arma 3", "*.rpt")), key=os.path.getmtime)
     groups = json.load(open(os.path.join(REVIEW, "groups.json"), encoding="utf-8"))
-    checks, classes, bpos, paths = {}, {}, {}, {}
+    checks, classes, bpos, paths, starts = {}, {}, {}, {}, {}
     for line in open(rpt, encoding="utf-8", errors="replace"):
-        m = re.search(r'"(OT(CHECK|CLASS|BPOS|PATH)\|.*)"\s*$', line)
+        m = re.search(r'"(OT(CHECK|CLASS|BPOS|PATH|PATHSTART)\|.*)"\s*$', line)
         if not m:
             continue
         f = m.group(1).replace('""', '"').split("|")
-        if f[0] == "OTPATH":
-            paths.setdefault(f[1], {})[int(f[2])] = f[3]
+        if f[0] == "OTPATHSTART":
+            starts[f[1]] = f[2]
+        elif f[0] == "OTPATH" and (len(f) == 6 or f[3] == "closed" or f[3].startswith("unknown")):
+            ways = paths.setdefault(f[1], {}).setdefault(int(f[2]), [])
+            if f[3].startswith("unknown"):
+                ways.append(f"closure {f[3]}: the check couldn't start, not a pass")
+            elif f[3] != "closed":
+                ways.append(f"bearing {f[3]}: gap {f[4]}, route {f[5]}")
         elif f[0] == "OTBPOS":
             bpos[f[1]] = f[2]
         elif f[0] == "OTCHECK":
@@ -105,12 +111,15 @@ def main(argv):
               "<town>_T<tier>_top.jpg (from 55 m above the ground or the roof, north up) and <town>_T<tier>_street.jpg (from 35 m out on the street side, 20 m up).", ""]
         for town in mine:
             md.append(f"## {town}")
+            if town in starts:
+                md.append(f"Closure routes start at {starts[town]} (office model; found on the bare site, 'none': not checked)")
             for tier in sorted(checks[town]):
                 items, guards, props, statics, missing, clips, floating, moved, blind, blocked, view = checks[town][tier]
                 md.append(f"- **Tier {tier}**: {items} items / {guards} guards / {props} props / {statics} statics / {missing} missing; median view {view} m")
                 way = paths.get(town, {}).get(tier)
                 if way is not None:
-                    md.append("  - closed: no way out" if way == "[]" else f"  - ways out (bearing from the office's front, [x, y] the gap): {way}")
+                    md.append("  - closed: no way out" if not way else "  - ways out (bearing from the office's front; the gap: where the route last passes within 3 m of a fortification):")
+                    md += [f"    - {w}" for w in way]
                 for name, val in (("clips", clips), ("floating", floating), ("moved", moved), ("blind", blind), ("blocked", blocked)):
                     if val not in ("[]", ""):
                         md.append(f"  - {name}: {val}")
