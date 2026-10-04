@@ -348,7 +348,8 @@ def check(town, tiers):
             dist = math.hypot(m[0], m[1])
             if dist > 46:
                 problems.append(f"tier {n}: {what} {dist:.0f} m out (the probe reaches 45 m)")
-            if kind == "guard" and "ground" not in extra and not town.inside_office(m[0], m[1], 1.0):
+            on_tower = kind == "guard" and any(t[0] == "object" and ("Tower" in t[1] or "Cargo" in t[1]) and math.hypot(t[2][0] - p[0], t[2][1] - p[1]) < 2.5 for t in items)
+            if kind == "guard" and "ground" not in extra and not on_tower and not town.inside_office(m[0], m[1], 1.0):
                 problems.append(f"tier {n}: guard {what} off the ground outside the office at {[round(v, 1) for v in m]}")
             if "ground" not in extra:
                 continue  # On a floor of the office (dropped onto it in the game)
