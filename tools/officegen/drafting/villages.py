@@ -500,10 +500,10 @@ def low_here(s, pt, centre, ln, gate):
     c = pt(centre)
     a, b = pt(centre + 1.0)
     ux, uy = a - c[0], b - c[1]
-    for (qx, qy), r in s.low_spots:
+    for (qx, qy), r, reach in s.low_spots:
         along = abs((qx - c[0]) * ux + (qy - c[1]) * uy)
         across = abs((qx - c[0]) * uy - (qy - c[1]) * ux)
-        if along < ln / 2 + r and across < 7.0:
+        if along < ln / 2 + r and across < reach:
             return True
     return False
 
@@ -563,7 +563,7 @@ def static_post(s, role, prefs, gate_side, gate_at):
         s.skipped.append(f"static {role}")
         return None
     s.cur += [best[1], best[2]]
-    s.low_spots.append((tuple(s.t.to_model(best[1][2])[:2]), 1.8))
+    s.low_spots.append((tuple(s.t.to_model(best[1][2])[:2]), 1.8, 3.0))
     s.guns.append(tuple(s.t.to_model(best[1][2])[:2]))
     if best[0] < 30:
         s.skipped.append(f"static {role}: field of fire only {best[0]} m")
@@ -642,7 +642,7 @@ def tier3(s):
     else:
         s.skipped.append("tower")
     # The statics, each where its field of fire is longest; the lines stay 1-high round them and the second door
-    s.low_spots = [(s.D2, 1.8)]
+    s.low_spots = [(s.D2, 1.8, 7.0)]  # The second door's man looks out over the line in front of him
     s.guns = []
     s.fire = {}
     for role, prefs in s.cfg.get("statics", []):

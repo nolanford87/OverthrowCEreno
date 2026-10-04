@@ -67,9 +67,9 @@ OTLAYOUT|Altis|Dorida|ITEM|3|object|Land_HBarrier_3_F|[19359.661,13230.816,38.77
 OTLAYOUT|Altis|Dorida|ITEM|3|object|Land_HBarrier_1_F|[19361.524,13228.490,38.838]|[[0.7805,0.6251,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Dorida|ITEM|3|object|Land_HBarrier_1_F|[19324.259,13244.434,37.479]|[[0.6251,-0.7805,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Dorida|ITEM|3|object|Land_HBarrier_1_F|[19325.008,13245.034,37.515]|[[0.6251,-0.7805,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Dorida|ITEM|3|object|Land_HBarrier_5_F|[19347.715,13217.097,38.961]|[[0.6251,-0.7805,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Dorida|ITEM|3|object|Land_HBarrier_Big_F|[19352.867,13221.223,38.865]|[[0.6251,-0.7805,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Dorida|ITEM|3|object|Land_HBarrier_5_F|[19358.018,13225.349,38.813]|[[0.6251,-0.7805,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Dorida|ITEM|3|object|Land_HBarrier_Big_F|[19348.652,13217.848,38.946]|[[0.6251,-0.7805,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Dorida|ITEM|3|object|Land_HBarrier_Big_F|[19354.740,13222.723,38.826]|[[0.6251,-0.7805,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Dorida|ITEM|3|object|Land_HBarrier_3_F|[19358.955,13226.099,38.814]|[[0.6251,-0.7805,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Dorida|ITEM|3|object|Land_CncBarrier_F|[19361.297,13227.974,38.833]|[[0.6251,-0.7805,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Dorida|ITEM|3|guard|rifleman|[19354.640,13234.046,38.572]|51.3|ground
 OTLAYOUT|Altis|Dorida|ITEM|3|guard|at|[19347.389,13243.100,38.330]|51.3|ground
