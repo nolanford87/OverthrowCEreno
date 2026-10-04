@@ -9,31 +9,25 @@ out to x -4.7 (y 0.5..7.8); a covered veranda fills the south-west corner (x -4.
 0.6 m, open to the west between pillars and to the south. The main door opens west onto the veranda, the side door
 (5.1, 5.6) east. The only real windows are in the east wall (t.plan().windows).
 
-The tier ladder (the same steps in every town; the outside parts are fitted to each site):
-  T1  police presence: the office furniture in the front room, the flag, a gendarme at the desk and one on the
-      veranda by the main door.
-  T2  the doors held: the veranda sandbagged into a porch position (its north bay and south end bagged, the bay in
-      front of the door left as the way in), a C-shaped sandbag nest on the ground covering the approach to the
-      veranda, the side door barricaded with a sandbag wall outside it, riflemen at the windows / veranda. 6 guards.
-  T3  a defended compound: H-barrier runs close every side of the yard, tied into the neighbouring buildings and
-      walls (the compound is checked closed: a walk from the house can't get out except through the gate). The way
-      in is one bar gate on the entry side; riflemen behind firing steps in the runs, an HMG in a low bagged slot
-      down the main approach, a marksman and riflemen at the windows. ~12 guards, 1 static.
-  T4  a fort: the same ring hardened. The faces towards the main approaches stacked 2-high (not where a guard
-      fires over them), sandbag towers at the ring's corners (never in the entry's face), a gated chicane on the
-      gate (a walled box in front of it with two staggered baffles, or baffles in a lane or a dogleg wall where the
-      site has no room for a box), razor wire belts in front of the runs on open ground and hedgehog belts across
-      the approach roads, all inside the statics' fields of fire; a GMG and an AT gun in their slots. ~20 guards,
-      3 statics.
+Pass 1 (DESIGN_BRIEF.md, "The work is now split into passes"): walls, H-barriers and sandbags only, every other
+thing (guards, statics, towers, wire, hedgehogs, gates, the flag, the furniture) out of every tier until its own
+pass. The helpers for those (post, nest, tower, belt, entry...) stay for the later passes. The ladder:
+  T1  empty.
+  T2  sandbags on the house: the veranda's north bay and south end, the side door and the ground floor's (east)
+      window, bagged on the ground against the wall where there's room (nothing out in the yard).
+  T3  a tight H-barrier ring round the house and its yard, tied into the neighbouring buildings and the real old
+      walls (real_wall: the city walls; the low stone and concrete garden walls, tin walls, fences and broken walls
+      are lined or crossed, never counted), with no opening.
+  T4  a high-wall outer ring (Land_Mil_WallBig_4m_F, Land_CncWall1_F where a 4 m piece can't fit exactly) round
+      the T3 ring, tied into the bigger blocks round it. Where a main road leaves no room for two lines (Neochori,
+      Sofia), the T3 face along it is the outer line too, stacked 2-high, and the outer ring ties into it.
 
 Every run is unbroken: run() finds the faces of what it ties into (a building, a wall, the house or another run) by
 scanning along its line, then fits H-barrier pieces exactly between them so each piece overlaps the next and the
 faces at its ENDS (0.3-0.6 m piece to piece, 0.3-0.4 m into a building, wall or the house; never mid-piece); -a prints each run's length against the gap it closes. The middle
 of every piece (0.6 m off each end, half its depth, as the in-game check measures it) must stand clear of the
-buildings, walls, rocks and the house. leak() walks out from the house on a 0.5 m grid: tiers 3 and 4 must not get
-out. The guards' views and the statics' fields of fire are measured against the buildings, walls, rocks, trees and
-our own tall pieces (a static also can't fire over an H-barrier, only over bags); the run prints VIEW for any man who
-would see less than 4 m and any gun less than 15 m.
+buildings, walls, rocks and the house, and of a road's paved core. leak() walks out on a 0.5 m grid: tiers 3 and 4 must not get
+out (from the doors, as the game's own check walks); T4's outer ring is walked alone too (the T3 ring left out).
 """
 import collections
 import math
@@ -177,6 +171,16 @@ class Drafter:
         if not hasattr(self, "_small"):
             self._small = {o["model"] for o in self.t.objs if o["kind"] == "building" and max(o["box"][2] - o["box"][0], o["box"][3] - o["box"][1]) < 2.5}
         return [h for h in self.probe_hits(x, y, ln, dp, mdir, pad) if (h[0] != "wall" or real_wall(h[1])) and h[1] not in self._small]
+
+    def what_at(self, x, y):
+        """What a run end met at a point: a run's name, "the house", or the probed thing's model."""
+        for name, rec in self.runs.items():
+            if any(self.boxes_overlap((x, y, 0.15, 0.15, 0), (p["x"], p["y"]) + SIZE[p["cls"]] + (rec["out"],), 0) for p in rec["pieces"]):
+                return f"run {name}"
+        if in_house(x, y, 0.1):
+            return "the house"
+        hit = self.probe_hits(x, y, 0.15, 0.15, 0.0, 0.0)
+        return (hit[0][1].replace(".p3d", "") + ("" if hit[0][0] != "wall" or real_wall(hit[0][1]) else " (low)")) if hit else "?"
 
     def solid_at(self, x, y, own=None, low=False):
         """Whether a point is in a building, real wall (any wall or fence: low), rock, the house's walls or one of our
@@ -419,7 +423,7 @@ class Drafter:
                         return s, o
                 s += step
             return None, None
-        faces, eranges, ekinds = [], [], []
+        faces, eranges, ekinds, ties = [], [], [], []
         s_ref = L / 2  # Where the run is clear (the scans for its faces start there)
         if any(self.solid_at(*at(s_ref, o)) for o in (0.0, 0.8, -0.8)):
             s_ref = next((k * 0.1 for k in range(int(L * 10) + 1) if not any(self.solid_at(*at(k * 0.1, o)) for o in (0.0, 0.8, -0.8))), L / 2)
@@ -439,21 +443,26 @@ class Drafter:
                     while abs(s2 - s) < 2.0 and self.probe_hits(*at(s2, 0.0), 0.1, 0.1, 0.0, 0.0):
                         s2 += 0.05 if k else -0.05
                     th = abs(s2 - s)
-                    eranges.append((th / 2 + 0.12, th / 2 + 0.2))
+                    eranges.append((th / 2 + 0.08, th / 2 + 0.16))  # (the two runs overlap 0.16-0.32 m in it)
                 elif in_house(*at(s + (0.05 if k else -0.05), o)):
                     eranges.append((0.2, 0.3))  # Into the house: its walls are kept 0.2 m clear of a piece's middle
                 else:
                     eranges.append(TIE_WALL if fill[0] == WALL else TIE)
                 faces.append(s)
+                if s is not None and not dry:
+                    fh = self.probe_hits(*at(s, 0.0), 0.15, 0.15, 0.0, 0.0) if end == "fence" else None
+                    ties.append(f"through {fh[0][1].replace('.p3d', '')} (low)" if fh else self.what_at(*at(s + (0.1 if k else -0.1), o)))
             elif end == "corner":
                 dep = SIZE[fill[0]][1]  # (the cross run is of the same material)
                 faces.append(-dep / 2 if k == 0 else L + dep / 2)
+                ties.append("corner (a run ties into it)")
                 eranges.append((-0.4, 0.6))  # Flush with the cross run's outer face, give or take: it ties into this one
             else:
                 faces.append(0.0 if k == 0 else L)
                 eranges.append((-0.3, 0.3))  # A free end stops at the point, give or take
+                ties.append("free")
             ekinds.append(end)
-        rec["faces"], rec["ends"], rec["eranges"] = faces, ekinds, eranges
+        rec["faces"], rec["ends"], rec["eranges"], rec["ties"] = faces, ekinds, eranges, ties
         # Fixed spans along the run; the firing steps and slots may slide up to 1 m (together) for an exact fit
         def plan(shift, gshift=0.0):
             spans = []  # (s0, s1, kind, what, extra, end-overlap range for the pieces meeting it)
@@ -947,7 +956,7 @@ def audit(t, d):
         names = " + ".join({HB5: "HB5", HB3: "HB3", HB1: "HB1", WALL: "W4", CNC1: "C1", LONG: "bags", SHORT: "bags(short)", BAR: "GATE", PIPEGATE: "GATE(4 m)", WIRE: "wire", HOG: "hog"}.get(p["cls"], p["cls"]) +
                             ("(fire)" if p["kind"] == "fire" else "(slot)" if p["kind"] == "slot" else "") for p in ps)
         ends = "/".join(rec["ends"])
-        out.append(f"| {name} | T{rec['tier']} | {rec['L']:.1f} | {f1 - f0:.2f} | {ends} | {len(ps)}: {names} | {cover:.1f} | "
+        out.append(f"| {name} | T{rec['tier']} | {f1 - f0:.2f} | {' / '.join(rec.get('ties', ()))} | {len(ps)}: {names} | {cover:.1f} | "
                    f"{e0} / {e1} | {', '.join(f'{j:.2f}' for j in joints)} |")
         is_wire = rec["note"] == "wire belt"
         for k, j in enumerate(joints):
@@ -1107,7 +1116,7 @@ def agios_dionysios(d, tier):
     # ground, the west and north faces tied into the two tin fences where they cross them. The way in: from the
     # west, square onto the veranda's door bay, the nest covering the gate from inside.
     if tier == 3:
-        d.run("west_s", (-13.0, -16.0), (-13.0, 0.0), ends=("corner", "fence"))
+        d.run("west_s", (-13.0, -16.0), (-13.0, 0.0), ends=("corner", "fence"), fill=(HB3, HB3, HB1))  # (3.6 m pieces at the fence: their middles stay clear of it)
         d.run("south", (-13.0, -16.0), (14.0, -16.0), ends=("tie", "corner"))
         d.run("east", (14.0, -16.0), (14.0, 12.0), ends=("tie", "corner"))
         d.run("north_e", (14.0, 12.0), (4.0, 12.0), ends=("tie", "fence"))
@@ -1143,15 +1152,16 @@ def chalkeia(d, tier):
         d.run("e2", (9.0, 9.5), (5.5, 9.5), ends=("tie", "tie"))
     if tier == 4:  # The outer ring: the shops and garage west and south-west, the big house north-west, the shop, the
         # ruin and the two big rocks north-east and east; runs close the gaps between them (each tie met at 55 degrees
-        # or more), the south face through the low stone wall
+        # or more); the south face steps round the low stone wall's end onto the south annexe
         W = WALL_FILL
         d.run("o_w", (-24.0, -5.0), (-24.0, 15.5), ends=("tie", "tie"), fill=W, out=270)
         d.run("o_n", (-24.0, 24.0), (-5.0, 24.0), ends=("tie", "corner"), fill=W, out=0)
         d.run("o_ne", (-5.0, 24.0), (-5.0, 29.5), ends=("tie", "tie"), fill=W, out=270)
         d.run("o_e", (18.0, 10.0), (18.0, -3.5), ends=("tie", "tie"), fill=W, out=90)
-        d.run("o_s_w", (-18.4, -28.0), (4.8, -28.0), ends=("tie", "fence"), fill=W, out=180)
-        d.run("o_s_e", (4.8, -28.0), (18.5, -28.0), ends=("fence", "corner"), fill=W, out=180)
-        d.run("o_se", (18.5, -28.0), (18.5, -20.5), ends=("tie", "tie"), fill=W, out=90)
+        d.run("o_s_w", (-18.4, -28.0), (3.5, -28.0), ends=("tie", "corner"), fill=W, out=180)
+        d.run("o_s_m", (3.5, -28.0), (3.5, -30.4), ends=("tie", "tie"), fill=W, out=90)
+        d.run("o_s_e", (6.1, -32.0), (18.5, -32.0), ends=("tie", "corner"), fill=W, out=180)
+        d.run("o_se", (18.5, -32.0), (18.5, -20.5), ends=("tie", "tie"), fill=W, out=90)
 
 
 @site("Charkia", entry="W", nest=(-9.0, -4.4, 270), flag=(-6.5, 1.5), spare=[], window_bags=False, side_bags=SHORT)
@@ -1356,14 +1366,24 @@ def therisa(d, tier):
     # 30 m beyond it. The ring: the south face across the plaza from the south-west annexe to a short run into the
     # city wall, and a run closing the north yard's east side. Towers at the south face's corners; the gate on the
     # veranda's south end, its chicane out on the plaza.
-    if tier == 3:
-        d.run("south", (-17.0, -16.0), (21.0, -16.0), ends=("tie", "corner"))
-        d.run("se", (21.0, -16.0), (21.0, -9.0), ends=("tie", "tie"))
+    if tier == 3:  # (pass 1: the old city wall south-east of the house is broken in its middle (a low ruin): the south
+        # face turns up into its whole first stretch instead)
+        d.run("south", (-17.0, -16.0), (15.6, -16.0), ends=("tie", "corner"))
+        d.run("se", (15.6, -16.0), (15.6, -6.0), ends=("tie", "tie"))
         d.run("sw", (-14.6, -11.5), (-14.6, -17.5), ends=("tie", "tie"), out=270)
         d.run("nw_gap", (-19.0, 19.3), (-11.0, 19.3), ends=("tie", "tie"), out=0)
         d.run("n_e", (15.5, 0.0), (15.5, 13.0), ends=("tie", "tie"), out=90)
-    if tier == 4:
-        pass  # pass 1: the outer ring (to come)
+    if tier == 4:  # The outer ring: south across the plaza (between the south-west annexe and the big south-east house,
+        # clear of the road), up the east between the annexe and the big north-east house, along the north track's
+        # verge to the old north-west city walls (a wall across their one gap), and on the west the shops and the
+        # kiosk (a wall between them)
+        W = WALL_FILL
+        d.run("o_s", (-15.4, -24.0), (18.6, -24.0), ends=("tie", "tie"), fill=W, out=180)
+        d.run("o_e", (30.0, -11.0), (30.0, 10.4), ends=("tie", "tie"), fill=W, out=90)
+        d.run("o_n", (23.05, 23.5), (-22.0, 23.5), ends=("tie", "corner"), fill=W, out=0)
+        d.run("o_nw", (-22.0, 23.5), (-22.0, 18.7), ends=("tie", "tie"), fill=W, out=270)
+        d.run("o_n1", (-28.2, 18.35), (-24.6, 18.45), ends=("tie", "tie"), fill=W, out=0)
+        d.run("o_w", (-27.0, -16.4), (-27.0, -9.95), ends=("tie", "tie"), fill=W, out=270)
 
 
 def counts(tiers):
@@ -1392,8 +1412,8 @@ def main(args):
         for f in fields(t, d, tiers[-1]):
             print(f"    field of fire: {f[0]} at {f[1]},{f[2]} facing {f[3]}: {f[4]} m")
         if show_audit:
-            print("| run | tier | length | gap (face to face) | ends | pieces | pieces' length | end overlaps | joints |")
-            print("|---|---|---|---|---|---|---|---|---|")
+            print("| run | tier | gap (face to face) | ends tie into | pieces | pieces' length | end overlaps | joints |")
+            print("|---|---|---|---|---|---|---|---|")
             for ln in lines:
                 print(ln)
         if maps:
