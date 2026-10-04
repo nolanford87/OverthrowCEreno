@@ -5,6 +5,9 @@
     fight). After 10 minutes for the forces to get there, the occupier's soldiers within 200 m count
     against the resistance's (players twice) every 5 seconds until one side reaches 1500 points, or the
     occupier wins after 30 minutes if it's ahead. The occupier winning calls _success, losing _fail.
+    For a mayor's office (_hold, OT_fnc_officeCapture) instead: the occupier wins by holding the office
+    (nobody of the resistance's within _hold m, some of its own) for 2 minutes; the resistance wins once the
+    attack is spent (none of the occupier's left within 200 m after 13 minutes) or after 30 minutes.
 
     Parameters:
         _this # 0: ARRAY - Position fought over
@@ -14,13 +17,15 @@
         _this # 3: CODE - Called with _params when the resistance wins
         _this # 4: ARRAY - Parameters for _success / _fail
         _this # 5: STRING - Garrison the occupier's surviving attackers join if it wins
+        _this # 6: NUMBER - (Optional) The mayor's office's radius, the fight is for the office (0: the
+            head count, default)
 
     Usage: [_pos, _strength, _success, _fail, _params, _town] call OT_fnc_NATOQRFfight; (scheduled)
 
     Returns: BOOL - Did the occupier win
 */
 
-params ["_pos", "_strength", "_success", "_fail", "_params", "_garrison"];
+params ["_pos", "_strength", "_success", "_fail", "_params", "_garrison", ["_hold", 0]];
 
 private _start = round (time);
 server setVariable ["QRFpos", _pos, true];
@@ -35,6 +40,7 @@ private _maxTime = time + 1800; // 30 minutes
 
 private _over = false;
 private _progress = 0;
+private _holding = 0; // The occupier's time holding the office
 
 while {
     sleep 5;
@@ -56,7 +62,19 @@ while {
 
     if (time > _timeout && { _alive isEqualTo 0 && _enemy isEqualTo 0 }) then { _enemy = 1 };
 
-    _progress = _progress + ((-20 max (_alive - _enemy)) min 10);
+    if (_hold > 0) then {
+        private _office = _unitsAO select { (_x distance2D _pos) <= _hold };
+        private _ours = { side _x isEqualTo independent || { captive _x } } count _office;
+        _holding = [0, _holding + 5] select (_ours isEqualTo 0 && { (blufor countSide _office) > 0 });
+        private _holdTime = missionNamespace getVariable ["OT_officeHoldTime", 120]; // Shorter only in the QA tests
+        _progress = call {
+            if (_holding >= _holdTime) exitWith { 1500 };
+            if (time > _maxTime || { _alive isEqualTo 0 && { time > _timeout } }) exitWith { -1500 };
+            (1500 * _holding / _holdTime) min 1499
+        };
+    } else {
+        _progress = _progress + ((-20 max (_alive - _enemy)) min 10);
+    };
 
     // Set only by the QA tests: 1 ends the fight as an occupier win, -1 as a resistance win
     private _forced = missionNamespace getVariable ["OT_QRFforceResult", 0];

@@ -45,7 +45,8 @@ OT_townSpawners = [
     OT_fnc_spawnGunDealer,
     OT_fnc_spawnAmbientVehicles,
     OT_fnc_spawnBoatDealers,
-    OT_fnc_spawnStabilityObjects
+    OT_fnc_spawnStabilityObjects,
+    OT_fnc_spawnOffice
 ];
 
 {
@@ -64,6 +65,15 @@ OT_townSpawners = [
 } forEach (OT_allTowns);
 
 diag_log format ["Overthrow: %1 towns virtualized", count OT_allTowns];
+
+// Each town's mayor's office on the map (OT_fnc_officeCapture)
+{
+    private _layout = [_x] call OT_fnc_officeLayout;
+    if (_layout isEqualTo []) then { continue };
+    private _marker = createMarker [format ["%1-office", _x], ASLToAGL ((_layout select 0) select 1)];
+    _marker setMarkerTypeLocal "loc_Bunker";
+    _marker setMarkerColor "ColorBlack";
+} forEach (OT_allTowns);
 
 //Start Virtualization Loop
 [

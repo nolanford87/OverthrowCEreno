@@ -542,6 +542,7 @@ class CfgFunctions {
             class spawnPolice {};
             class spawnShops {};
             class spawnStabilityObjects {};
+            class spawnOffice {};
         };
 
         /*
@@ -875,6 +876,8 @@ class CfgFunctions {
             class officeStatic {};
             class officeSpawnItems {};
             class officeApplyLayout {};
+            class officeTier {};
+            class officeCapture {};
         };
         // Mayor's office layouts authored in each town (tools/officegen/merge_layouts.py), one per map
         class OfficeLayouts {

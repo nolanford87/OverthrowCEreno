@@ -40,6 +40,7 @@ private _tests = [];
     OTQA_fnc_testsDLCVehicles,
     OTQA_fnc_testsFollowups,
     OTQA_fnc_testsOccupiers,
-    OTQA_fnc_testsBugFixes
+    OTQA_fnc_testsBugFixes,
+    OTQA_fnc_testsTownLayout
 ];
 _tests;
