@@ -70,7 +70,7 @@ SIZE = {HB5: (5.4, 1.76), HB3: (3.2, 1.76), HB1: (1.1, 1.7), LONG: (3.0, 0.5), S
 MEAS = {CNC1: (1.4, 1.0)}  # Measured in the game since townlib.MEASURED was written (pass 1, round 1)
 FILL = (HB5, HB3, HB1)  # The run pieces, longest first
 WALL_FILL = (WALL, CNC1, CNC1)  # A high-wall run: 4 m walls, 1 m concrete sections where the 4 m ones can't fit exactly
-JOINT = (0.35, 0.6)     # How far a piece overlaps the next one at its end (solid lengths)
+JOINT = (0.45, 0.7)     # How far a piece overlaps the next one at its end (solid lengths; round 1b's routes went through joints)
 TIE = (0.12, 0.2)       # ... and a building or real wall it ties into (its middle, 0.6 m off townlib's box's end, stays clear)
 TIE_WALL = TIE          # ... the same for the high walls
 TIE_OWN = (0.5, 0.8)    # ... and another run's piece: well into it (pass 1 found ways out where runs met)
@@ -82,6 +82,9 @@ FITS = {"box": dict(lens={HB5: 5.8, HB3: 3.6, HB1: 1.4, WALL: 4.0}, JOINT=(0.3, 
                     TIE_OWN=(0.3, 0.4), TIE_OWN_WALL=(0.3, 0.5), CORNER=(-0.4, 0.6), house=(0.2, 0.3)),
         "solid": dict(lens={HB5: 5.4, HB3: 3.2, HB1: 1.1, WALL: 3.7}, JOINT=JOINT, TIE=TIE, TIE_WALL=TIE_WALL,
                       TIE_OWN=TIE_OWN, TIE_OWN_WALL=TIE_OWN_WALL, CORNER=CORNER, house=(0.1, 0.2))}
+# Round 2's solid fitting before round 1b widened the joints: Charkia's (closed in round 1 under the box fitting;
+# the solid one overlaps more; the wider joints would push its north-east wall into the garden's wire fence)
+FITS["solid0"] = dict(FITS["solid"], JOINT=(0.35, 0.6))
 HOUSE_TIE = (0.1, 0.2)
 
 
@@ -122,7 +125,7 @@ def middle_of(what):
     its depth."""
     ln, dp = SIZE.get(what) or tl.CLASSES[what]
     meas = MEAS.get(what) or tl.MEASURED.get(what)
-    if meas and what != WIRE and JOINT == FITS["solid"]["JOINT"]:
+    if meas and what != WIRE and JOINT in (FITS["solid"]["JOINT"], FITS["solid0"]["JOINT"]):
         ln = meas[0]  # The game's box: the middle the in-game check measures
     elif what not in (BAR,):
         ln = max(ln, tl.CLASSES.get(what, (0, 0))[0], tl.MEASURED.get(what, (0, 0))[0] if what != WIRE else 0)
@@ -1178,17 +1181,19 @@ def chalkeia(d, tier):
     # west; an annexe abuts the house's north side and a ruin closes the north-east; a house abuts the east side's
     # southern half, an old stone wall runs on north of it; open ground lies south and west. The ring takes in the
     # dead end of the track: the north face across the track from the annexe, the west face down the open ground
-    # to the shop, the south face from the shop across the open ground to the old wall south of the east house (a
-    # short run closing the gap between them), and a run across the east yard from the ruin to the stone wall. The
+    # to the shop, the south face from the shop across the open ground past the east house to the big rock, and
+    # the east side from the annexe round the east house's yard to the rock. The
     # guns look up the track (the long field). The way in: from the open ground west, through the west gate.
     if tier == 3:  # (pass 1: off the low stone walls; the east yard closed against the annexe, not the ruin)
-        d.run("west", (-17.0, -19.3), (-17.0, 12.0), ends=("corner", "corner"))  # (round 2: down to its own corner with the south face: the shop's box there is open yard)
+        d.run("west", (-17.0, -17.3), (-17.0, 12.0), ends=("corner", "corner"))  # (round 2: down to its own corner with the south face: the shop's box there is open yard)
         d.run("north", (-17.0, 12.0), (-2.0, 12.0), ends=("tie", "tie"))
-        d.run("south", (-17.0, -19.3), (3.2, -19.3), ends=("tie", "corner"))
-        d.run("se", (3.2, -19.3), (3.2, -7.8), ends=("tie", "tie"))
-        d.run("e_s", (9.0, 1.2), (5.6, 1.2), ends=("corner", "tie"))  # (round 2: the side door's yard closed against the house, not the east house: pass 1's route went through it)
-        d.run("e1", (9.0, 1.2), (9.0, 9.5), ends=("tie", "corner"))
-        d.run("e2", (9.0, 9.5), (5.5, 9.5), ends=("tie", "tie"))
+        # (round 2: no line ends on the office, whose south and east walls have its doors: the ring goes round the
+        # east house (its doors pass 1's route used are all inside now): from the annexe east past the ruin's south
+        # side (the ruin is open, round 1b's tier 2 route crossed it), down to the big rock, and the south face on
+        # east, just north of the old stone wall's end, into the rock)
+        d.run("south", (-17.0, -17.3), (16.0, -17.3), ends=("tie", "tie"))
+        d.run("e_n", (5.5, 9.0), (17.2, 9.0), ends=("tie", "corner"), out=0)
+        d.run("east", (17.2, 9.0), (17.2, -4.5), ends=("tie", "tie"), out=90)
     if tier == 4:  # The outer ring: the shops and garage west and south-west, the big house north-west, the shop, the
         # ruin and the two big rocks north-east and east; runs close the gaps between them (each tie met at 55 degrees
         # or more); the south face steps round the low stone wall's end onto the south annexe
@@ -1196,14 +1201,14 @@ def chalkeia(d, tier):
         d.run("o_w", (-24.0, -5.0), (-24.0, 15.5), ends=("tie", "tie"), fill=W, out=270)
         d.run("o_n", (-24.0, 24.0), (-5.0, 24.0), ends=("tie", "corner"), fill=W, out=0)
         d.run("o_ne", (-5.0, 24.0), (-5.0, 29.5), ends=("tie", "tie"), fill=W, out=270)
-        d.run("o_e", (18.0, 10.0), (18.0, -3.5), ends=("tie", "tie"), fill=W, out=90)
+        d.run("o_e", (19.0, 10.0), (19.0, -3.5), ends=("tie", "tie"), fill=W, out=90)  # (round 2: 1 m out, clear of T3's new east face)
         d.run("o_s_w", (-18.4, -28.0), (3.5, -28.0), ends=("tie", "corner"), fill=W, out=180)
         d.run("o_s_m", (3.5, -28.0), (3.5, -30.4), ends=("tie", "tie"), fill=W, out=90)
         d.run("o_s_e", (6.1, -32.0), (18.5, -32.0), ends=("tie", "corner"), fill=W, out=180)
         d.run("o_se", (18.5, -32.0), (18.5, -20.5), ends=("tie", "tie"), fill=W, out=90)
 
 
-@site("Charkia", entry="W", nest=(-9.0, -4.4, 270), flag=(-6.5, 1.5), spare=[], window_bags=False, side_bags=SHORT)
+@site("Charkia", entry="W", nest=(-9.0, -4.4, 270), flag=(-6.5, 1.5), spare=[], window_bags=False, side_bags=SHORT, fit="solid0")
 def charkia(d, tier):
     # Between tracks (north-west, west and south-east); a long garage close north-west, its corner at the house's
     # north-west corner; an old walled garden north-east of the house (stone walls from the house's south-east
@@ -1290,7 +1295,10 @@ def neochori(d, tier):
         # city wall, so the garage and the big house (whose doors pass 1's routes used) are inside
         W = WALL_FILL
         d.stack("west")
-        d.run("o_w2", (-6.2, -11.9), (-6.2, -22.6), ends=("tie", "tie"), fill=W, out=270)
+        # (round 2: round 1b's route went past o_w2's end into the south-west house's box, which runs 3 m past the
+        # house's west wall: o_w2 now turns short into the old city wall, which runs on into the house)
+        d.run("o_w2", (-6.2, -11.9), (-6.2, -14.5), ends=("tie", "corner"), fill=W, out=270)
+        d.run("o_w3", (-6.2, -14.5), (-4.3, -14.5), ends=("tie", "tie"), fill=W, out=180)
         d.run("o_wn", (-6.2, 14.9), (-6.2, 29.0), ends=("tie", "corner"), fill=W, out=270)
         d.run("o_n", (-6.2, 29.0), (12.5, 29.0), ends=("tie", "tie"), fill=W, out=0)
         d.run("o_ne", (23.8, 21.0), (36.5, 21.0), ends=("tie", "corner"), fill=W, out=0)
@@ -1298,7 +1306,7 @@ def neochori(d, tier):
         d.run("o_s", (36.5, -13.5), (-3.8, -13.5), ends=("tie", "tie"), fill=W, out=180)
 
 
-@site("Panochori", entry="W", nest=(6.5, -11.2, 90), flag=(8.5, -4.0), spare=[], fit="box")
+@site("Panochori", entry="W", nest=(6.5, -11.2, 90), flag=(8.5, -4.0), spare=[])  # (round 2: the solid fitting; round 1b's routes went through its joints)
 def panochori(d, tier):
     # A track runs north-south right along the veranda; a house abuts the north side, a big house stands south-
     # west; old stone walls close a yard east of the house and south of it, open only at its south-east corner
@@ -1383,7 +1391,8 @@ def rodopoli(d, tier):
         d.run("o_sw", (-20.2, -22.0), (-10.5, -22.0), ends=("tie", "tie"), fill=W, out=180)
 
 
-@site("Sofia", entry="S", nest=(-6.2, 3.0, 270), flag=(9.0, 6.8), spare=[], shared=("west",))
+@site("Sofia", entry="S", nest=(-6.2, 3.0, 270), flag=(9.0, 6.8), spare=[], shared=("west",),
+      trims=[("Land_i_House_Big_02_V2_F", (-12.0, 13.0), 4.4)])  # Round 1b: the north house's box runs 4 m past its west wall (its door onto the road)
 def sofia(d, tier):
     # On a corner: the main road runs north-south 9 m west of the house and a track east-west 11 m south of it; a
     # big house abuts the north side, another the east side's southern half; a yard east of the house is closed
@@ -1392,7 +1401,10 @@ def sofia(d, tier):
     # along the track (the gate in it, its chicane on the track), a short run into the east house and one closing
     # the east yard's gap. One tower, in the east yard (no room for a second without closing the road or track).
     if tier == 3:
+        # (round 2: round 1b's route went into the north house from the side door's yard and out of its door onto the
+        # road: a run on the verge closes that door, standing just off the house's road face, past it)
         d.run("west", (-8.6, 9.0), (-8.6, -11.5), ends=("tie", "corner"))
+        d.run("door", (-9.0, 8.0), (-9.0, 17.5), ends=("tie", "free"), out=270)
         d.run("south", (-8.6, -11.5), (5.5, -11.5), ends=("tie", "corner"))
         d.run("se", (5.5, -11.5), (5.5, -7.5), ends=("tie", "tie"))
         d.run("e1", (8.5, 7.6), (8.5, 0.4), ends=("tie", "tie"), out=90)  # (round 2: the side door's yard closed short; pass 1's east gap stood in open yard, the boxes either side run past their buildings)
@@ -1424,7 +1436,10 @@ def therisa(d, tier):
         d.run("w", (-13.5, -16.0), (-13.5, -5.4), ends=("tie", "tie"))
         d.run("pass", (-7.4, 3.0), (-4.7, 3.0), ends=("tie", "tie"), out=0)
         d.run("se", (15.6, -16.0), (15.6, -6.0), ends=("tie", "tie"))
-        d.run("n_e", (15.5, 0.0), (15.5, 13.0), ends=("tie", "tie"), out=90)
+        # (round 2: the side door's yard closed by its own L: round 1b's route went north between the north annexe and
+        # the north-east house, which stand apart; both are now outside T3)
+        d.run("n_n", (-5.2, 9.5), (13.0, 9.5), ends=("tie", "corner"), out=0)
+        d.run("n_e", (13.0, 9.5), (13.0, 4.7), ends=("tie", "tie"), out=90)
     if tier == 4:  # The outer ring: south across the plaza (between the south-west annexe and the big south-east house,
         # clear of the road), up the east between the annexe and the big north-east house, along the north track's
         # verge to the old north-west city walls (a wall across their one gap), and on the west the shops and the
