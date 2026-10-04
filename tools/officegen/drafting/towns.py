@@ -83,6 +83,7 @@ class Drafter:
         self.items = []   # The current tier's full snapshot
         self.lines = []   # The perimeter lines drawn (for the gap report)
         self.towers = []  # [x, y, deck z, facing, men] of the towers placed
+        self.stacked = [] # (x, y, length, depth, mdir, True) of the second blocks dropped on top (2-high for sight)
 
     # ---- room
     def free(self, kind, what, x, y, mdir, road_ok=False, pad=0.15, gap=0.05):
@@ -214,8 +215,18 @@ class Drafter:
     def post(self, role, x, y, face, cover=None, back=None, search=1.0, road_ok=False, note=None, kind=None):
         """A guard (or a static: kind "static") at (x, y) facing `face`, with cover `back` m in front (towards face)."""
         kind = kind or "guard"
-        if kind == "static":
-            face = self.aim(x, y, face)
+        if kind == "static":  # The spot within `search` m (and the facing within 40 degrees) that sees furthest
+            best = None
+            for r in [0.0] + [k * 0.5 for k in range(1, int(search * 2) + 1)]:
+                for k in range(max(1, int(r * 8))):
+                    a = 2 * math.pi * k / max(1, int(r * 8))
+                    px, py = x + r * math.cos(a), y + r * math.sin(a)
+                    fc = self.aim(px, py, face)
+                    v = self.sight(px, py, fc, start=1.2)
+                    if (best is None or v > best[0] + 1) and self.free("static", role, px, py, fc, road_ok):
+                        best = (v, px, py, fc)
+            if best:
+                x, y, face = best[1], best[2], best[3]
         cover = cover or (ROUND if kind == "static" else SHORT)
         if back is None:
             back = {ROUND: 1.3, SHORT: 0.9, LONG: 0.9, HB3: 1.3, HB1: 1.2}.get(cover, 1.1) + (0.3 if kind == "static" else 0)
@@ -282,15 +293,24 @@ class Drafter:
                     half, back = 1.5, 1.6
                     mk = lambda x, y, gx, gy: [("object", LONG, 0, 0, wdir), ("static", role, gx - x, gy - y, self.aim(gx, gy, face, out))]
                 got = []
+                fits = []
                 for ds in (0, 0.5, -0.5, 1.0, -1.0, 1.5, -1.5, 2.0, -2.0, 2.5, -2.5, 3.0, -3.0, 3.5, -3.5):
                     if any(b0 < s + ds + half - 0.05 and s + ds - half + 0.05 < b1 for b0, b1 in busy):
                         continue
                     x, y = at(s + ds)
                     gx, gy = at(s + ds, -back)
+                    parts = mk(x, y, gx, gy)
+                    if all(self.free(k, w, x + dx, y + dy, dd, road_ok) for k, w, dx, dy, dd in parts):
+                        if kind == "fire":
+                            fits.append((0, ds))
+                            break
+                        fits.append((-min(self.sight(gx, gy, parts[1][4], start=1.2), 30.0), abs(ds), ds))  # The longest field of fire
+                if fits:
+                    ds = min(fits)[-1]
+                    x, y = at(s + ds)
+                    gx, gy = at(s + ds, -back)
                     got = self.group(mk(x, y, gx, gy), x, y, 0.0, road_ok, note="-")
-                    if got:
-                        busy.append((s + ds - half, s + ds + half))
-                        break
+                    busy.append((s + ds - half, s + ds + half))
                 if self.notes and self.notes[-1].startswith("no room for -"):
                     self.notes = [n for n in self.notes if not n.startswith("no room for -")]
                 if not got:
@@ -338,6 +358,7 @@ class Drafter:
                         if cls in (HB3, HB1) and WALL6 in fill and not self.watched(x, y, ln, wdir):
                             # A 2-high stretch where no 2-high wall piece fits: a second block dropped on top
                             res.append(self.add("object", cls, x, y, wdir, z=self.t.ground_model(x, y) + STACK[cls]))
+                            self.stacked.append((x, y) + size_of("object", cls) + (wdir, True))
                         cur = c + ln / 2 - ov
                         done = True
                         break
@@ -421,7 +442,7 @@ class Drafter:
         best = (self.sight(x, y, face, start=1.2), face)
         for dd in (10, -10, 20, -20, 30, -30, 40, -40):
             f = (face + dd) % 360
-            if out is not None and abs((f - out + 180) % 360 - 180) > 50:
+            if out is not None and abs((f - out + 180) % 360 - 180) > 25:
                 continue
             v = self.sight(x, y, f, start=1.2)
             if v > best[0] + 2:
@@ -431,8 +452,8 @@ class Drafter:
     def watched(self, x, y, ln, wdir):
         """Whether a guard on the ground faces this stretch of wall from within 4.5 m."""
         for gx, gy, gl, gd, gm, gb in self.placed:
-            if gb or gl != 0.6:
-                continue
+            if gb or gl not in (0.6, 2.0):
+                continue  # Guards and statics
             f = vec(gm)
             for k in range(1, 10):
                 if self.boxes_overlap((gx + f[0] * k * 0.5, gy + f[1] * k * 0.5, 0.1, 0.1, 0), (x, y, ln, 2.0, wdir), 0):
@@ -444,12 +465,13 @@ class Drafter:
         pieces (the 1-high blocks and the bags are fired over)."""
         t = self.t
         f = vec(face)
-        tall = [p for p in self.placed if (p[2], p[3]) in (SIZE[WALL6], SIZE[WALL4])] if tall_only else []
+        tall = [p for p in self.placed if (p[2], p[3]) in (SIZE[WALL6], SIZE[WALL4], SIZE[TOWER], tl.CLASSES[BUNKER])] + self.stacked if tall_only else []
+        tall = [q for q in tall if not self.boxes_overlap((x, y, 0.1, 0.1, 0), q[:5], 0)]  # Not what he stands in
         dd = start
         while dd < maxd:
             px, py = x + f[0] * dd, y + f[1] * dd
             w = t.to_world(px, py, 0)
-            if any(h[0] in ("building", "part", "rock") for h in t.hits(w[0], w[1], 0.2, 0.2, 0, 0)):
+            if any(h[0] in ("building", "part", "rock", "tree") for h in t.hits(w[0], w[1], 0.2, 0.2, 0, 0)):
                 return dd
             if EXTENT[0] <= px <= EXTENT[2] and EXTENT[1] <= py <= EXTENT[3]:
                 return dd
@@ -497,7 +519,7 @@ def tier1(t, d, cfg):
 # the balcony over the veranda open to the west. A post is used only where its view runs 4 m or more.
 HOUSE_POSTS = {
     "win_g_s": (4.4, -5.25, 0, 90), "win_u_s": (4.4, -5.25, 1, 90), "win_u_m": (4.4, -2.12, 1, 90),
-    "win_u_n": (4.4, 5.5, 1, 90), "balc_n": (-3.6, -3.4, 1, 270), "balc_s": (-3.6, -5.6, 1, 270),
+    "win_u_n": (4.4, 5.5, 1, 90),  # (The balcony was given up: its awning posts blind a man there, round 2)
     "ver_n": (-2.8, -1.6, 0, 270), "ver_s": (-3.2, -6.8, 0, 270),  # Behind the veranda's bags (ver_s: entry W)
 }
 
@@ -526,14 +548,17 @@ def house_guard(t, d, cfg, role, prefer):
     spares = cfg.setdefault("spare", [])
     while spares:
         x, y, face = spares.pop(0)
-        got = d.post(role, x, y, d.aim(x, y, face, face), search=1.5)
+        face = d.aim(x, y, face, face)
+        if d.sight(x, y, face, start=0.6) < 4.0:
+            continue  # (Blind once the walls stand)
+        got = d.post(role, x, y, face, search=1.0)
         if got:
             return got[0]
     for tw in d.towers:  # A second man on a tower's platform
         if tw[4] < 3:
             tw[4] += 1
             f = vec(tw[3])
-            return d.add("guard", role, tw[0] + f[0] * 0.8, tw[1] + f[1] * 0.8, (tw[3] - 30) % 360, z=tw[2])
+            return d.add("guard", role, tw[0] + f[0] * 0.8, tw[1] + f[1] * 0.8, tw[3], z=tw[2])
     d.notes.append(f"no house post nor spare for a {role}")
     return None
 
@@ -553,21 +578,21 @@ def tier2(t, d, cfg):
     d.nest(nx, ny, nf, search=2.0, road_ok=cfg.get("nest_road", False))
     # The side door gated; riflemen at the balcony rail and at a window
     d.add("object", "Land_PipeFence_03_m_gate_r_F", 5.0, 5.2, 90, z=f0)
-    house_guard(t, d, cfg, "rifleman", ["balc_n", "win_g_s", "win_u_n", "win_u_m", "win_u_s"])
-    house_guard(t, d, cfg, "rifleman", ["win_g_s", "win_u_n", "win_u_m", "win_u_s", "balc_s"])
+    house_guard(t, d, cfg, "rifleman", ["win_g_s", "win_u_n", "win_u_m", "win_u_s", "ver_n"])
+    house_guard(t, d, cfg, "rifleman", ["ver_n", "win_u_n", "win_u_m", "win_u_s", "win_g_s"])
 
 
 def tier3_house(t, d, cfg):
-    house_guard(t, d, cfg, "marksman", ["win_u_m", "win_u_s", "win_u_n", "balc_s", "balc_n"])
-    house_guard(t, d, cfg, "rifleman", ["win_u_s", "win_u_n", "win_u_m", "balc_s", "win_g_s", "ver_s"])
-    house_guard(t, d, cfg, "rifleman", ["win_u_n", "win_u_m", "win_u_s", "balc_s", "win_g_s", "ver_n"])
+    house_guard(t, d, cfg, "marksman", ["win_u_m", "win_u_s", "win_u_n"])
+    house_guard(t, d, cfg, "rifleman", ["win_u_s", "win_u_n", "win_u_m", "win_g_s", "ver_s"])
+    house_guard(t, d, cfg, "rifleman", ["win_u_n", "win_u_m", "win_u_s", "win_g_s", "ver_s", "ver_n"])
     for role in cfg.get("t3_extra", ()):
         house_guard(t, d, cfg, role, ["ver_s", "ver_n", "win_u_n", "win_u_m", "win_u_s", "win_g_s"])
 
 
 def tier4_house(t, d, cfg):
-    house_guard(t, d, cfg, "mg_gunner", ["balc_s", "win_u_n", "win_u_m", "win_u_s", "win_g_s"])
-    house_guard(t, d, cfg, "rifleman", ["balc_s", "win_u_n", "win_u_m", "win_u_s", "win_g_s", "ver_s", "ver_n"])
+    house_guard(t, d, cfg, "mg_gunner", ["ver_s", "win_u_n", "win_u_m", "win_u_s", "win_g_s", "ver_n"])
+    house_guard(t, d, cfg, "rifleman", ["win_u_n", "win_u_m", "win_u_s", "win_g_s", "ver_s", "ver_n"])
     for role in cfg.get("t4_extra", ()):
         house_guard(t, d, cfg, role, ["ver_s", "ver_n", "win_u_n", "win_u_m", "win_u_s", "win_g_s"])
 
@@ -743,7 +768,7 @@ def agios_dionysios(d, tier):
         d.hogs(19.0, -6.0, 0, n=3)
 
 
-@site("Chalkeia", t3_extra=('autorifleman',), t4_extra=('autorifleman', 'rifleman'), entry="W", nest=(1.8, -10.4, 225), flag=(4.5, -9.5),
+@site("Chalkeia", t3_extra=('autorifleman',), t4_extra=('autorifleman', 'rifleman'), entry="W", nest=(2.6, -10.0, 190), flag=(4.5, -9.5),
       spare=[(-5.4, 3.5, 270), (12.5, 8.0, 90), (9.0, 5.0, 45), (10.0, 2.5, 90), (-1.0, -12.0, 200)])
 def chalkeia(d, tier):
     # A track runs north-south just west of the veranda (the main street); a house abuts the north side, another the
@@ -753,28 +778,28 @@ def chalkeia(d, tier):
         d.line((-7.2, -14.5), (-7.2, 8.0), [("gate", 8.4, None), ("fire", 1.8, "rifleman"), ("fire", 15.0, "autorifleman")], road_ok=True)
         d.line((-7.2, -14.5), (6.2, -14.5), [("static", 3.0, ("hmg", 200))])
     if tier == 4:
-        d.post("gmg", -9.4, -11.0, 200, kind="static", search=1.5, road_ok=True)          # On the track's verge, down it
+        d.post("at", -9.4, -11.0, 200, kind="static", search=1.5, road_ok=True)           # On the track's verge, down it
+        d.post("gmg", -9.6, -17.0, 200, kind="static", search=1.5, road_ok=True)
         d.line((15.2, -1.0), (15.2, 10.6), [("fire", 3.0, "rifleman"), ("fire", 7.5, "autorifleman")])
         d.line((5.6, 0.2), (15.2, 0.2))
-        d.tower(-9.6, -17.0, 225)                                    # Over the track both ways
-        d.post("at", -9.4, 9.6, 0, kind="static", search=1.5, road_ok=True)          # The AT gun up the track
+        d.tower(-9.6, 11.8, 330, search=2.0)                         # Over the track north
         d.chicane(-7.2, -6.1, 270, step=5.0)
         d.road_block(-12.0, 22.0)
         d.road_block(-10.0, -24.0)
         d.wire((-5.0, -18.5), (6.0, -18.5))
 
 
-@site("Charkia", t3_extra=('autorifleman', 'rifleman'), t4_extra=('autorifleman',), entry="W", nest=(-9.0, -2.4, 270), flag=(-7.0, -10.5),
+@site("Charkia", t3_extra=('autorifleman', 'rifleman'), t4_extra=('autorifleman',), entry="W", nest=(-9.0, -4.4, 270), flag=(-7.0, -10.5),
       spare=[])
 def charkia(d, tier):
     # Between two tracks (north-west and south-east); a house close north-west, an old wall running north-east from
     # the house's south-east corner; open ground west and south towards the tracks. The way in: from the west.
     if tier == 3:
-        d.line((-12.5, -12.5), (-12.5, 2.0), [("gate", 6.4, None), ("slot", 12.6, None)])
-        d.line((-12.5, -12.5), (6.4, -12.5), [("fire", 5.0, "autorifleman"), ("static", 12.0, ("hmg", 160))])
+        d.line((-12.5, -12.5), (-12.5, 2.0), [("gate", 6.4, None), ("slot", 11.0, None), ("fire", 1.6, "rifleman")])
+        d.line((-12.5, -12.5), (6.4, -12.5), [("fire", 7.2, "autorifleman"), ("static", 12.0, ("hmg", 160))])
         d.line((6.4, -12.5), (6.4, -7.6))
     if tier == 4:
-        d.static_at((-12.5, -12.5), (-12.5, 2.0), 12.6, "gmg")
+        d.static_at((-12.5, -12.5), (-12.5, 2.0), 11.0, "gmg")
         d.line((-5.4, 10.4), (12.4, 10.4), [("fire", 6.0, "rifleman"), ("static", 12.0, ("at", 10))])
         d.line((12.4, 10.4), (12.4, -3.0), [("fire", 6.0, "rifleman")])
         d.tower(-15.0, -15.0, 225)                                   # Over the west track and the gate
@@ -867,7 +892,7 @@ def panochori(d, tier):
         d.post("hmg", -8.0, 8.4, 0, kind="static", search=1.5, road_ok=True)              # Up the road north
     if tier == 4:
         d.line((6.6, 8.4), (12.2, 8.4), [("static", 1.7, ("at", 0)), ("fire", 3.8, "rifleman")])
-        d.tower(-8.6, 11.6, 0, search=2.5)                                                 # Over the road north
+        d.tower(-9.2, 2.4, 270, search=2.0)                                                # Over the road, beside the gate
         d.post("gmg", -8.6, -4.0, 200, kind="static", search=1.5, road_ok=True)          # Down the road south-west
         d.post("autorifleman", 9.0, 2.0, 45)
         d.road_block(-10.0, 18.0)
@@ -905,20 +930,19 @@ def rodopoli(d, tier):
         d.post("autorifleman", 9.5, 6.0, 0)
         d.line((-12.5, -12.8), (-12.5, 9.2), [("gate", 6.7, None), ("fire", 0.4 + 1.8, "rifleman"), ("fire", 15.2, "rifleman")])
         d.line((-12.5, 9.2), (-5.0, 9.2), [("static", 4.0, ("hmg", 0))])
-        d.line((-12.5, -12.8), (-3.6, -12.8), [("static", 5.0, ("gmg", 200))])
+        d.line((-12.5, -12.8), (-3.6, -12.8))
     if tier == 4:
         d.line((6.4, 8.6), (14.6, 8.6), [("static", 4.0, ("at", 0))])
         d.line((7.6, -8.6), (10.8, -8.6), [("fire", 1.6, "rifleman")])
         d.tower(-15.0, 11.8, 315, search=2.5)                                              # Over the yard to the north gap
-        d.bunker(-14.6, -15.4, 225, role="at")
-        d.post("rifleman", -8.5, 6.5, 0)
+        d.post("gmg", -15.0, -13.0, 180, kind="static", search=2.0)                       # Over the yard's south gap
         d.chicane(-12.5, -6.1, 270, step=3.5)
         d.hogs(-11.0, 25.5, 90, n=2)
         d.hogs(-12.0, -19.0, 90, n=2)
         d.wire((-16.5, -13.0), (-16.5, 8.0), gap=(1.5, 12.5))
 
 
-@site("Sofia", t3_extra=('autorifleman', 'rifleman'), t4_extra=('autorifleman', 'rifleman', 'rifleman'), entry="W", nest=(-10.0, -13.0, 225), flag=(8.0, 4.0), nest_road=True,
+@site("Sofia", t3_extra=('autorifleman', 'rifleman'), t4_extra=('autorifleman', 'rifleman', 'rifleman'), entry="W", nest=(-9.6, -9.0, 250), flag=(8.0, 4.0), nest_road=True,
       spare=[(9.0, 2.0, 90), (12.0, 2.0, 90), (9.0, 5.0, 45), (-9.0, 4.0, 300), (13.0, 5.5, 45)])
 def sofia(d, tier):
     # On a corner: a road runs north-south west of the veranda and a big road east-west just south of the house;
@@ -940,19 +964,19 @@ def sofia(d, tier):
 
 
 @site("Therisa", t3_extra=('autorifleman',), t4_extra=('autorifleman',), entry="S", nest=(1.6, -10.0, 200), flag=(-8.0, -9.5),
-      spare=[(-11.0, -9.5, 200), (-7.0, -10.0, 180), (11.0, -10.0, 180), (14.0, -9.5, 160), (-9.0, 4.0, 0)])
+      spare=[(-11.0, -9.5, 200), (-7.0, -10.0, 180), (11.0, -10.0, 180), (-9.0, 4.0, 0)])
 def therisa(d, tier):
     # No road within 25 m: a house right against the veranda's west side and another on the east, old walls north-
     # east and south-east, open ground to the south (the road 35 m beyond it) and a passage from the north-west.
     # The way in: from the south, square onto the veranda's south end.
     if tier == 3:
-        d.line((-15.2, -12.4), (17.6, -12.4), [("gate", 12.1, None), ("fire", 5.5, "rifleman"), ("fire", 18.7, "rifleman"), ("static", 24.0, ("hmg", 180)), ("slot", 29.0, None)])
+        d.line((-15.2, -12.4), (17.6, -12.4), [("gate", 12.1, None), ("fire", 1.9, "autorifleman"), ("fire", 5.5, "rifleman"), ("fire", 18.7, "rifleman"), ("static", 24.0, ("hmg", 180)), ("slot", 29.0, None)])
     if tier == 4:
         d.static_at((-15.2, -12.4), (17.6, -12.4), 29.0, "gmg")
         d.line((17.6, -12.4), (17.6, 4.0), [("static", 3.0, ("at", 90)), ("fire", 8.0, "rifleman")])
         d.line((-15.2, 8.6), (-4.8, 8.6), [("fire", 5.0, "rifleman")])
         d.tower(19.8, -14.8, 135, search=2.5)
-        d.bunker(-10.0, -15.2, 180, search=2.0, role="at")
+        d.bunker(-14.0, -15.4, 180, search=2.0, role="at")
         d.chicane(-3.1, -12.4, 180, step=5.5)
         d.wire((-15.0, -17.0), (17.0, -17.0), gap=(7.0, 17.0))
         d.hogs(-3.0, -24.0, 90, n=4)
