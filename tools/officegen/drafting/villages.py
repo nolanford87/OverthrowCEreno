@@ -37,10 +37,14 @@ import townlib as tl  # noqa: E402
 TALL = ("Land_HBarrier_Big_F",)  # 2-high
 HBARRIERS = ("Land_HBarrier_5_F", "Land_HBarrier_3_F", "Land_HBarrier_1_F")  # 1-high, longest first
 OVERLAP = 0.45  # How far a piece runs into the one before it (or a wall, a building): the brief's 0.3-0.6 m
+LENGTH_DEPTH = tl.CLASSES["Land_HBarrier_5_F"][1] / 2  # A 1-high line's half depth
 CORNER = 0.9  # How far the back and front lines run past the corners: to the side lines' outer faces
 # Real boxes the round 4 test measured that townlib's MEASURED lacks ([length, depth] m, boundingBoxReal)
 MEASURED_MORE = {"Land_BagBunker_Tower_F": (6.4, 9.8), "Land_BagBunker_Small_F": (5.0, 5.7), "Land_HBarrier_Big_F": (9.0, 2.6),
                  "Land_HBarrierWall4_F": (5.7, 4.8), "Land_CncBarrier_stripes_F": (2.6, 0.4), "Land_CncBarrierMedium_F": (1.8, 1.8)}
+# The pieces' lengths for spacing them: the shorter of townlib's size and the game's measured box (an upper bound), so a
+# planned overlap is at least that in the game (HBarrier_1 measured 1.4 m, HBarrier_5 5.8 m)
+LENGTH = {c: min(tl.CLASSES[c][0], tl.MEASURED.get(c, MEASURED_MORE.get(c, (99,)))[0]) for c in HBARRIERS + TALL}
 
 # Per town: ring (the tier 3 yard: model x0, x1, y0, y1; its lines close it all round, a real barrier may close a
 # stretch); tall (the sides facing a road or open ground: 2-high first); ties (models that close a line here though
@@ -131,10 +135,14 @@ class Site:
         o = it[3]
         return (o if it[0] == "guard" else math.degrees(math.atan2(o[0][0], o[0][1]))) % 360
 
-    def corners(self, it, core=False, real=False):
+    def corners(self, it, core=False, real=False, spacing=False):
+        """An item's footprint (4 corners, model coordinates): its class size; core, a barrier's middle only; real,
+        the game's measured box; spacing, an H-barrier at the length it's spaced by (LENGTH: what surely stands)."""
         t = self.t
         m = t.to_model(it[2])
         L, D = self.size(it, core)
+        if spacing and it[1] in LENGTH:
+            L = LENGTH[it[1]]
         if real and it[0] == "object":
             L, D = (tl.MEASURED.get(it[1]) or MEASURED_MORE.get(it[1]) or (L, D))[:2]
         d = (self.yaw(it) - t.dir) % 360
@@ -334,7 +342,7 @@ def ring_side(s, side, tall=False, phase="fill"):
     def covered(u):
         """The line closed at u: a piece across it (within 1 m) or a real barrier on it."""
         p, q = cut(u, 1.0)
-        if any(seg_rect(p, q, s.corners(it)) for it in s.cur if it[0] == "object" and "ground" in it[4] and "HBarrier" in it[1]):
+        if any(seg_rect(p, q, s.corners(it, spacing=True)) for it in s.cur if it[0] == "object" and "ground" in it[4] and "HBarrier" in it[1]):
             return True
         p, q = cut(u, 0.3)
         return any(seg_rect(p, q, r) for r in old)
@@ -350,17 +358,25 @@ def ring_side(s, side, tall=False, phase="fill"):
         while u < end and covered(u + 0.05):
             u += 0.1
         u = max(a, u - OVERLAP) if u > a else a
-        while end - u > 3.0:
+        stop = end
+        if side in ("left", "right"):
+            # Where the back or front line isn't there yet (it comes 1-high in the fill), leave its half depth
+            # free at the corner: it runs on to the corner and this piece's end butts into its side
+            if u == a:
+                u = a + LENGTH_DEPTH - OVERLAP
+            if stop == c:
+                stop = c - LENGTH_DEPTH + OVERLAP
+        while stop - u > 3.0:
             got = None
-            if u + 8.4 <= end + 0.05:
+            if u + LENGTH[TALL[0]] <= stop + 0.05:
                 for inset in (0.0, 0.4, 0.8, 1.2):
-                    x, y = pt(u + 4.2)
+                    x, y = pt(u + LENGTH[TALL[0]] / 2)
                     got = s.add(s.O("Land_HBarrier_Big_F", x + inward[0] * inset, y + inward[1] * inset, mdir))
                     if got:
                         break
             if got:
                 placed.append(got)
-                u += 8.4 - OVERLAP
+                u += LENGTH[TALL[0]] - OVERLAP
             else:
                 u += 0.25
     if phase != "fill":
@@ -398,7 +414,7 @@ def ring_side(s, side, tall=False, phase="fill"):
         start = max(a, u - OVERLAP) if u > a else a
         room = end - start
         got = None
-        for cls, ln in zip(HBARRIERS, (6.0, 3.6, 1.56)):
+        for cls, ln in ((c, LENGTH[c]) for c in HBARRIERS):
             if ln > room + 0.15 and cls != "Land_HBarrier_1_F":
                 continue
             # On the line, or stepped in up to 0.8 m (off a road's edge, round a tree trunk) so a longer piece fits;
@@ -419,33 +435,31 @@ def ring_side(s, side, tall=False, phase="fill"):
 
 
 def tile(R):
-    """1-high pieces covering a run of R m exactly, end to end, each joint overlapping 0.3-0.6 m (the same for all):
-    [(class, length, overlap)], longest first; the fewest pieces, then the joints nearest OVERLAP. A run shorter than
-    the shortest piece gets that piece (it runs further into what closes the run)."""
+    """1-high pieces covering a run of R m end to end, each joint overlapping 0.3-0.6 m (the same for all), the last
+    running no more than 0.15 m past R: [(class, length, overlap)], longest first; the fewest pieces, then the joints
+    nearest OVERLAP. Where no set fits exactly, the one overrunning least (never one leaving a gap)."""
     best = None
-    lens = dict(zip(HBARRIERS, (6.0, 3.6, 1.56)))
     for n5 in range(9):
-        for n3 in range(3):
-            for n1 in range(3):
+        for n3 in range(4):
+            for n1 in range(4):
                 n = n5 + n3 + n1
                 if not n:
                     continue
-                S = 6.0 * n5 + 3.6 * n3 + 1.56 * n1
+                S = sum(LENGTH[c] * k for c, k in zip(HBARRIERS, (n5, n3, n1)))
                 if n == 1:
-                    ov = OVERLAP
-                    if not R - 0.05 <= S <= R + 0.15:
+                    if S < R - 0.05:
                         continue
+                    ov, over = OVERLAP, max(0.0, S - R - 0.15)
                 else:
-                    lo, hi = max(0.3, (S - R - 0.15) / (n - 1)), min(0.6, (S - R) / (n - 1))
-                    if lo > hi:
+                    most = (S - R) / (n - 1)  # The joints can't overlap more than this without a gap
+                    if most < 0.3 - 1e-6:
                         continue
-                    ov = min(max(OVERLAP, lo), hi)
-                key = (n, abs(ov - OVERLAP), n1)
+                    ov = min(max(OVERLAP, (S - R - 0.15) / (n - 1)), most, 0.6)
+                    over = max(0.0, S - (n - 1) * ov - R - 0.15)
+                key = (round(over, 2), n, abs(ov - OVERLAP), n1)
                 if best is None or key < best[0]:
                     best = (key, [c for c, k in zip(HBARRIERS, (n5, n3, n1)) for _ in range(k)], ov)
-    if best is None:
-        return [("Land_HBarrier_1_F", 1.56, OVERLAP)]
-    return [(c, lens[c], best[2]) for c in best[1]]
+    return [(c, LENGTH[c], best[2]) for c in best[1]]
 
 
 def fill_holes(s, tries=10):
@@ -570,7 +584,7 @@ def overlap_audit(s):
     def along(p, other):
         """Where other overlaps p along p's length: (reaches p's end, length)."""
         m = s.t.to_model(p[2])
-        L = tl.CLASSES[p[1]][0]
+        L = LENGTH[p[1]]
         ax = tl.rot(1, 0, (s.yaw(p) - s.t.dir) % 360)
         us = [(c[0] - m[0]) * ax[0] + (c[1] - m[1]) * ax[1] for c in other]
         lo, hi = max(min(us), -L / 2), min(max(us), L / 2)
@@ -578,7 +592,7 @@ def overlap_audit(s):
 
     for i, a in enumerate(items):
         for b in items[i + 1:]:
-            pa, pb = s.corners(a), s.corners(b)
+            pa, pb = s.corners(a, spacing=True), s.corners(b, spacing=True)
             if not s.sat(pa, pb, 0.02):
                 continue
             (ea, la), (eb, lb) = along(a, pb), along(b, pa)
@@ -620,7 +634,7 @@ def line_audit(s, step=0.1, band=1.2):
             if hit:
                 marks.append(("old", hit[0]))
                 continue
-            hit = [it for it in items if seg_rect(p, q, s.corners(it))]
+            hit = [it for it in items if seg_rect(p, q, s.corners(it, spacing=True))]
             marks.append(("piece", kind_of(hit[0][1])) if hit else ("open", None))
         tally = {}
         for m, kd in marks:
@@ -648,7 +662,7 @@ def line_audit(s, step=0.1, band=1.2):
                     k2 = 0
                     while True:
                         p, q = cut(u + d * (k2 + 1) * step)
-                        if not any(seg_rect(p, q, s.corners(it)) for it in items) or k2 > 40:
+                        if not any(seg_rect(p, q, s.corners(it, spacing=True)) for it in items) or k2 > 40:
                             return round(k2 * step, 1)
                         k2 += 1
                 tie0 = "corner" if start == 0 else marks[start - 1][1]
@@ -676,7 +690,7 @@ def closed_audit(s, cell=0.25, man=0.2, reach=40.0):
     shapes = [r for n, r in s.closers] + [s.OFFICE]
     for it in s.snapshots()[-1]:
         if it[0] == "object" and "ground" in it[4] and "HBarrier" in it[1]:
-            shapes.append(s.corners(it))
+            shapes.append(s.corners(it, spacing=True))
     for r in shapes:
         xs, ys = [p[0] for p in r], [p[1] for p in r]
         poly = [r[0], r[1], r[3], r[2]]
