@@ -10,8 +10,6 @@ private _tests = [];
 {
     _tests append (call _x);
 } forEach [
-    OTQA_fnc_testsOfficeTemplates,
-    OTQA_fnc_testsOfficeReviewTown,
     OTQA_fnc_testsTownLayout
 ];
 

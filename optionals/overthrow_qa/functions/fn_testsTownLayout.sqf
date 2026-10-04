@@ -62,6 +62,7 @@
         private _extraAt = getPosASL _extra;
         private _gmg = createVehicle ["B_GMG_01_high_F", _office getPos [14, 60], [], 0, "CAN_COLLIDE"];
         (OTQA_townLayout get "things") append [_extra, _gmg];
+        sleep 2; // A static weapon just made settles on the ground first (as one placed with Zeus has by the time it's saved)
         private _saved = call OTQA_townLayout_live;
         private _lines = call OTQA_townLayout_saveAndGo;
         private _items = _lines select { ((_x splitString "|") select 3) isEqualTo "ITEM" };
