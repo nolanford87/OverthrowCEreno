@@ -89,8 +89,11 @@
                     private _o = _x;
                     (boundingBoxReal _o) params ["_mn", "_mx"];
                     private _z = ((_mn select 2) + 0.35) min (((_mn select 2) + (_mx select 2)) / 2);
-                    private _ix = 0.4 * ((_mx select 0) - (_mn select 0));
-                    private _iy = 0.4 * ((_mx select 1) - (_mn select 1));
+                    // Barrier pieces (walls, fences, H-barriers, gates, wire, bags) may overlap a little to make one
+                    // unbroken line: only their middle counts (0.6 m off each end, half their depth)
+                    private _barrier = (["Wall", "Fence", "HBarrier", "Barrier", "Gate", "Razorwire", "BagFence", "Cnc", "Hedgehog"] findIf { _x in (typeOf _o) }) > -1;
+                    private _ix = [0.4 * ((_mx select 0) - (_mn select 0)), (0.5 * ((_mx select 0) - (_mn select 0)) - 0.6) max 0.1] select _barrier;
+                    private _iy = [0.4 * ((_mx select 1) - (_mn select 1)), 0.25 * ((_mx select 1) - (_mn select 1))] select _barrier;
                     private _cx = ((_mn select 0) + (_mx select 0)) / 2;
                     private _cy = ((_mn select 1) + (_mx select 1)) / 2;
                     {
