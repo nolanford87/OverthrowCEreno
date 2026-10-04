@@ -125,7 +125,7 @@ OTLAYOUT|Altis|Pyrgos|ITEM|4|object|Land_BagFence_Round_F|[16649.203,12804.738,2
 OTLAYOUT|Altis|Pyrgos|ITEM|4|guard|autorifleman|[16631.698,12793.675,11.000]|210.4|ground
 OTLAYOUT|Altis|Pyrgos|ITEM|4|guard|rifleman|[16633.768,12792.461,11.000]|210.4|ground
 OTLAYOUT|Altis|Pyrgos|ITEM|4|guard|rifleman|[16641.186,12788.109,11.000]|210.4|ground
-OTLAYOUT|Altis|Pyrgos|ITEM|4|guard|rifleman|[16621.328,12826.194,11.000]|300.4|ground
+OTLAYOUT|Altis|Pyrgos|ITEM|4|guard|rifleman|[16633.636,12819.900,11.000]|30.4|ground
 OTLAYOUT|Altis|Pyrgos|ITEM|4|object|Land_BagFence_Long_F|[16616.694,12803.869,28.580]|[[-0.9092,-0.4163,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Pyrgos|ITEM|4|guard|mg_gunner|[16617.808,12804.379,28.580]|245.4|
 OTLAYOUT|Altis|Pyrgos|ITEM|4|guard|mg_gunner|[16641.834,12793.758,23.300]|165.4|
@@ -193,7 +193,7 @@ OTLAYOUT|Altis|Pyrgos|ITEM|5|object|Land_BagFence_Round_F|[16649.203,12804.738,2
 OTLAYOUT|Altis|Pyrgos|ITEM|5|guard|autorifleman|[16631.698,12793.675,11.000]|210.4|ground
 OTLAYOUT|Altis|Pyrgos|ITEM|5|guard|rifleman|[16633.768,12792.461,11.000]|210.4|ground
 OTLAYOUT|Altis|Pyrgos|ITEM|5|guard|rifleman|[16641.186,12788.109,11.000]|210.4|ground
-OTLAYOUT|Altis|Pyrgos|ITEM|5|guard|rifleman|[16621.328,12826.194,11.000]|300.4|ground
+OTLAYOUT|Altis|Pyrgos|ITEM|5|guard|rifleman|[16633.636,12819.900,11.000]|30.4|ground
 OTLAYOUT|Altis|Pyrgos|ITEM|5|object|Land_BagFence_Long_F|[16616.694,12803.869,28.580]|[[-0.9092,-0.4163,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Pyrgos|ITEM|5|guard|mg_gunner|[16617.808,12804.379,28.580]|245.4|
 OTLAYOUT|Altis|Pyrgos|ITEM|5|guard|mg_gunner|[16641.834,12793.758,23.300]|165.4|
