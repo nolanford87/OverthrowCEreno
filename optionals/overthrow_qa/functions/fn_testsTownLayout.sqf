@@ -18,6 +18,7 @@
     ["Office layouts: the editor's loop in a real town", {
         call OTQA_fnc_officeReview;
         call OTQA_fnc_townLayout;
+        OTQA_townLayout set ["noProfile", true]; // The host's saved progress isn't touched
         private _from = getPosASL player;
         private _hadLayouts = !isNil "OT_officeLayouts";
         private _layouts = missionNamespace getVariable ["OT_officeLayouts", createHashMap];
@@ -153,6 +154,10 @@
                 private _adds = count ([_aTiers select 1, _aTiers select 0] call OTQA_townLayout_added);
                 private _now = count (call OTQA_townLayout_live);
                 ["Office layouts: its next tier adds the other town's additions for it", (OTQA_townLayout get "tier") isEqualTo 2 && { _now isEqualTo (_before + _adds) }, format ["tier %1, %2 things (%3 + %4)", OTQA_townLayout get "tier", _now, _before, _adds]] call OTQA_fnc_check;
+                // Left with tier 1 saved and shown again (the game closed and opened): it picks up at tier 2
+                [_second] call OTQA_townLayout_show;
+                private _again = count (call OTQA_townLayout_live);
+                ["Office layouts: a town part done picks up at the tier after its last save", (OTQA_townLayout get "tier") isEqualTo 2 && { !(OTQA_townLayout get "review") } && { _again isEqualTo (_before + _adds) }, format ["tier %1, %2 things (%3 + %4)", OTQA_townLayout get "tier", _again, _before, _adds]] call OTQA_fnc_check;
             };
             call OTQA_townLayout_clear;
             OTQA_townLayout deleteAt "town";

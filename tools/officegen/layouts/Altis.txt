@@ -1,4 +1,5 @@
 OTLAYOUT|Altis|Aggelochori|OFFICE|Land_u_House_Big_01_V1_F|[3655.147,13731.991,8.778]|286.52|false
+OTLAYOUT|Altis|Aggelochori|CONFIRMED
 OTLAYOUT|Altis|Aggelochori|TIER|1|6
 OTLAYOUT|Altis|Aggelochori|ITEM|1|object|Land_TableDesk_F|[3660.955,13732.301,9.277]|[[0.8965,0.4430,0.0001],[-0.0001,-0.0000,1.0000]]|
 OTLAYOUT|Altis|Aggelochori|ITEM|1|object|Land_OfficeChair_01_F|[3661.974,13733.691,9.278]|[[0.9064,-0.4008,0.1337],[-0.1567,-0.0250,0.9873]]|

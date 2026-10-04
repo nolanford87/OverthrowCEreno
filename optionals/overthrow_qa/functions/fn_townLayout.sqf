@@ -287,8 +287,15 @@ OTQA_townLayout_show = {
     private _parts = [];
     private _spawned = false;
     private _things = [];
+    // A town part done picks up at its last saved tier (the next one's additions go on top below), a done one at 1
+    private _from = 1;
+    if (_layout isNotEqualTo [] && { [_town] call OTQA_townLayout_unfinished }) then {
+        _from = 0;
+        while { _from < 5 && { ((_layout select 1) select _from) isNotEqualTo [] } } do { _from = _from + 1 };
+        _from = _from max 1;
+    };
     if (_layout isNotEqualTo []) then {
-        ([_town, 1, west, true] call OT_fnc_officeApplyLayout) params ["_office", "_objects", "_guards"];
+        ([_town, _from, west, true] call OT_fnc_officeApplyLayout) params ["_office", "_objects", "_guards"];
         _b = _office;
         _things = _objects + _guards;
         _spawned = (_layout select 0) param [3, false];
@@ -301,8 +308,9 @@ OTQA_townLayout_show = {
     };
     if (isNull _b) exitWith { hint format ["Layout: no office for %1", _town] };
     private _savedFirst = _things isNotEqualTo [];
-    // Not laid out yet: another town's layout for the same building to start from, else the template
-    private _baseline = [[], [_b, _town] call OTQA_townLayout_baseline] select (_layout isEqualTo []);
+    // Another town's layout for the same building to start from (tier 1 when nothing's saved here, and the
+    // later tiers' additions), else the template
+    private _baseline = [_b, _town] call OTQA_townLayout_baseline;
     if (!_savedFirst) then {
         if (_baseline isNotEqualTo []) then {
             ([[(_baseline select 2) select 0, _baseline select 1, _b] call OTQA_townLayout_moveItems, west, true, [_town, 1]] call OT_fnc_officeSpawnItems) params ["_objects", "_guards"];
@@ -317,7 +325,7 @@ OTQA_townLayout_show = {
     OTQA_townLayout set ["building", _b];
     OTQA_townLayout set ["parts", _parts];
     OTQA_townLayout set ["spawned", _spawned];
-    OTQA_townLayout set ["tier", 1];
+    OTQA_townLayout set ["tier", _from];
     OTQA_townLayout set ["cap", [_town] call OTQA_townLayout_cap];
     OTQA_townLayout set ["things", _things];
     OTQA_townLayout set ["review", false];
@@ -330,11 +338,58 @@ OTQA_townLayout_show = {
     call OTQA_townLayout_actionText;
     call OTQA_townLayout_marker;
     if !([_town] call OTQA_townLayout_unfinished) exitWith { call OTQA_townLayout_startReview };
+    if (_savedFirst) exitWith {
+        call OTQA_townLayout_advance; // Saved up to _from: on to the next tier
+        systemChat format ["Layout: %1 picked up where it was left, tiers 1-%2 saved", _town, _from];
+    };
     private _towns = OTQA_townLayout getOrDefault ["towns", [_town]];
     private _start = if (_savedFirst) then { "your saved tier 1" } else {
         if (_baseline isNotEqualTo []) then { format ["%1's tier 1 (the same building)", _baseline select 0] } else { "the template's tier 1" }
     };
     hint format ["Layout: %1 (%2 of %3), population %4: tier 1 of %5\nOffice: %6%7, with %8.\nMove things and place more with Zeus, then save the tier.", _town, (_towns find _town) + 1, count _towns, server getVariable [format ["population%1", _town], 0], OTQA_townLayout get "cap", typeOf _b, ["", " (spawned, no fitting building here)"] select _spawned, _start];
+};
+
+// Progress kept in the host's Arma profile (it lasts when the game is closed): every saved town's layout, and
+// the towns confirmed in the review. Read at the start over the mod's own layouts; per map. The tests keep out of it
+OTQA_townLayout_profileVar = { format ["OTQA_townLayouts_%1", worldName] };
+OTQA_townLayout_confirmedVar = { format ["OTQA_townLayoutsConfirmed_%1", worldName] };
+OTQA_townLayout_loadProfile = {
+    [""] call OT_fnc_officeLayout; // The mod's layouts read first (OT_officeLayouts)
+    { _x params ["_town", "_layout"]; OT_officeLayouts set [_town, _layout] } forEach (profileNamespace getVariable [call OTQA_townLayout_profileVar, []]);
+};
+OTQA_townLayout_storeProfile = {
+    params ["_town"];
+    if (OTQA_townLayout getOrDefault ["noProfile", false]) exitWith {};
+    private _var = call OTQA_townLayout_profileVar;
+    private _all = (profileNamespace getVariable [_var, []]) select { (_x select 0) isNotEqualTo _town };
+    _all pushBack [_town, OT_officeLayouts get _town];
+    profileNamespace setVariable [_var, _all];
+    saveProfileNamespace;
+};
+// The towns confirmed: in the profile, or confirmed in the mod's layouts (merged from an earlier run's RPT)
+OTQA_townLayout_confirmed = {
+    private _done = +(profileNamespace getVariable [call OTQA_townLayout_confirmedVar, []]);
+    { if ((_y param [2, false]) isEqualTo true) then { _done pushBackUnique _x } } forEach (missionNamespace getVariable ["OT_officeLayouts", createHashMap]);
+    _done
+};
+
+// The review's confirm: the town marked done (in the profile) and on to the next town not confirmed yet. Scheduled
+OTQA_townLayout_confirm = {
+    private _town = OTQA_townLayout get "town";
+    if (!(OTQA_townLayout getOrDefault ["noProfile", false])) then {
+        private _done = call OTQA_townLayout_confirmed;
+        _done pushBackUnique _town;
+        profileNamespace setVariable [call OTQA_townLayout_confirmedVar, _done];
+        saveProfileNamespace;
+        diag_log format ["OTLAYOUT|%1|%2|CONFIRMED", worldName, _town];
+    };
+    private _towns = OTQA_townLayout get "towns";
+    private _done = call OTQA_townLayout_confirmed;
+    private _i = OTQA_townLayout getOrDefault ["index", 0];
+    private _by = 1;
+    while { _by < count _towns && { (_towns select ((_i + _by) mod (count _towns))) in _done } } do { _by = _by + 1 };
+    if (_by >= count _towns) exitWith { hint "Layout: every town is confirmed. Pick ""Layout: finished"", or go back to any town to change it." };
+    [_by] call OTQA_townLayout_step;
 };
 
 // A number array as text with this many decimals (format would round positions to 0.1 m)
@@ -392,7 +447,8 @@ OTQA_townLayout_save = {
     private _layout = [_town] call OT_fnc_officeLayout;
     private _tiers = if (_layout isEqualTo []) then { [[], [], [], [], []] } else { +(_layout select 1) };
     _tiers set [_tier - 1, _items];
-    OT_officeLayouts set [_town, [[typeOf _b, getPosASL _b, getDir _b, _spawned], _tiers]];
+    OT_officeLayouts set [_town, [[typeOf _b, getPosASL _b, getDir _b, _spawned], _tiers, _layout param [2, false]]];
+    [_town] call OTQA_townLayout_storeProfile;
     private _recent = (OTQA_townLayout getOrDefault ["recent", []]) - [_town];
     _recent pushBack _town;
     OTQA_townLayout set ["recent", _recent];
@@ -476,7 +532,9 @@ OTQA_townLayout_run = {
         _towns = _towns select { _x in OT_allTowns };
         if (_towns isEqualTo []) exitWith { ["Layout: towns to lay out", false, "none"] call OTQA_fnc_check };
         OTQA_townLayout set ["towns", _towns];
-        OTQA_townLayout set ["index", 0 max (_towns findIf { [_x] call OTQA_townLayout_unfinished })];
+        call OTQA_townLayout_loadProfile; // Saved progress first: start at the first town not confirmed yet
+        private _confirmed = call OTQA_townLayout_confirmed;
+        OTQA_townLayout set ["index", 0 max (_towns findIf { !(_x in _confirmed) })];
         OTQA_townLayout set ["saves", 0];
         OTQA_townLayout set ["finished", false];
         OTQA_townLayout set ["home", getPosASL player];
@@ -503,7 +561,7 @@ OTQA_townLayout_run = {
         private _inTown = "!(call OTQA_townLayout_busy) && { !isNil { OTQA_townLayout get 'town' } }";
         private _actions = [
             player addAction ["<t color='#c0ffc0'>Layout: save tier</t>", { [OTQA_townLayout_saveAndGo] call OTQA_townLayout_run }, nil, 2, false, true, "", _inTown],
-            player addAction ["<t color='#80ff80'>Review: confirm this town, next town</t>", { [OTQA_townLayout_step, [1]] call OTQA_townLayout_run }, nil, 1.97, false, true, "", _inTown + " && { OTQA_townLayout get 'review' }"],
+            player addAction ["<t color='#80ff80'>Review: confirm this town, next town</t>", { [OTQA_townLayout_confirm] call OTQA_townLayout_run }, nil, 1.97, false, true, "", _inTown + " && { OTQA_townLayout get 'review' }"],
             player addAction ["<t color='#ffc080'>Layout: make the building you look at the office</t>", { call OTQA_townLayout_setOffice }, nil, 1.9, false, true, "", _inTown + " && { cursorObject isKindOf 'House' } && { cursorObject isNotEqualTo (OTQA_townLayout get 'building') } && { (player distance cursorObject) < 80 }"],
             player addAction ["<t color='#80c0ff'>Layout: skip to the next town</t>", { [OTQA_townLayout_step, [1]] call OTQA_townLayout_run }, nil, 1.8, false, true, "", "!(call OTQA_townLayout_busy)"],
             player addAction ["<t color='#80c0ff'>Layout: back to the previous town</t>", { [OTQA_townLayout_step, [-1]] call OTQA_townLayout_run }, nil, 1.79, false, true, "", "!(call OTQA_townLayout_busy)"],
