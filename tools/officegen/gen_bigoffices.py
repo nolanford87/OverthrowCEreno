@@ -505,7 +505,7 @@ def offices_01(p):
         "Guards hold the entrance hall, the north lobby, the south windows of each floor, the top-floor",
         "corner office and from tier 4 the roof parapets; a reception desk sits inside the double door and",
         "the mayor's office (desk, cabinets) and a radio room are on the top floor. Fortifications flank the",
-        "south double door and the north-west side door, and tier 5 adds a HESCO compound 5 m outside the",
+        "south double door and the north-west side door, and tier 5 adds a HESCO compound 5.5 m outside the",
         "bbox with its gate on the south, in line with the entrance.",
     ]
 
@@ -641,7 +641,7 @@ def hospital(p):
         "hold the entrance canopy, the lobby under the block, the covered bay on the south side and from tier 2",
         "the roof terraces (and side2's roof at tier 5); the canopy carries the reception and the lobby's south",
         "end a command post with radio and map. All five doors get nests then HESCO, the bay's open sides get",
-        "firing positions and wire, and tier 5 rings the whole composite with HESCO 5 m outside its bbox, gated",
+        "firing positions and wire, and tier 5 rings the whole composite with HESCO 5.5 m outside its bbox, gated",
         "on the west (forecourt) side in line with the entrance.",
     ]
 
