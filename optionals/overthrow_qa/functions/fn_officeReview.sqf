@@ -83,7 +83,7 @@ OTQA_officeReview_site = {
                 private _ok = true;
                 for "_i" from 0 to 4 do {
                     private _c = _p getPos [_i * _width, _rowDir];
-                    if (surfaceIsWater _c || { (_c isFlatEmpty [(_width / 2) min 30, -1, 0.2, (_width / 2) min 30, 0, false, objNull]) isEqualTo [] }) exitWith { _ok = false };
+                    if (surfaceIsWater _c || { (_c isFlatEmpty [-1, -1, 0.2, (_width / 2) min 30, 0, false, objNull]) isEqualTo [] }) exitWith { _ok = false };
                     if (((_c nearEntities ["CAManBase", 300]) findIf { (side group _x) isEqualTo blufor && { !(_x getVariable ["OT_placeholder", false]) } }) > -1) exitWith { _ok = false };
                 };
                 if (_ok) exitWith { _found = [_p, _rowDir] };

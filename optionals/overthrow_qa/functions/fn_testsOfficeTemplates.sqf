@@ -182,7 +182,7 @@ private _tests = [
             for "_d" from 0 to 345 step 15 do {
                 private _p = _centre getPos [_r, _d];
                 if (surfaceIsWater _p) then { continue };
-                if ((_p isFlatEmpty [40, -1, 0.2, 40, 0, false, objNull]) isEqualTo []) then { continue };
+                if ((_p isFlatEmpty [-1, -1, 0.2, 40, 0, false, objNull]) isEqualTo []) then { continue };
                 if (((_p nearEntities ["CAManBase", 300]) findIf { (side group _x) isEqualTo blufor }) > -1) then { continue };
                 _spot = _p;
                 break;
