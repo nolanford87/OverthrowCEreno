@@ -6,7 +6,7 @@ OTLAYOUT|Altis|Agios Petros|ITEM|1|object|Land_MapBoard_F|[19340.434,17641.305,3
 OTLAYOUT|Altis|Agios Petros|ITEM|1|guard|gendarme|[19338.382,17644.522,37.420]|129.0|
 OTLAYOUT|Altis|Agios Petros|ITEM|1|object|Flag_NATO_F|[19346.047,17640.205,37.551]|[[0.1908,-0.9816,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
 OTLAYOUT|Altis|Agios Petros|ITEM|1|guard|gendarme|[19344.134,17640.088,37.493]|169.0|ground
-OTLAYOUT|Altis|Agios Petros|TIER|2|18
+OTLAYOUT|Altis|Agios Petros|TIER|2|20
 OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Land_TableDesk_F|[19340.109,17642.973,37.420]|[[-0.1908,0.9816,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Land_OfficeChair_01_F|[19339.899,17644.053,37.420]|[[-0.1908,0.9816,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Land_MapBoard_F|[19340.434,17641.305,37.420]|[[-0.1908,0.9816,0.0000],[0.0000,0.0000,1.0000]]|drop
@@ -19,9 +19,11 @@ OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Land_BagFence_Short_F|[19346.741,17638
 OTLAYOUT|Altis|Agios Petros|ITEM|2|guard|rifleman|[19346.108,17638.842,37.614]|169.0|ground
 OTLAYOUT|Altis|Agios Petros|ITEM|2|guard|autorifleman|[19344.930,17638.613,37.579]|169.0|ground
 OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Land_HBarrier_3_F|[19341.555,17636.582,37.352]|[[0.1908,-0.9816,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Land_BagFence_Long_F|[19351.634,17651.673,37.828]|[[0.8490,-0.5284,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Agios Petros|ITEM|2|guard|rifleman|[19352.526,17651.119,37.892]|301.9|ground
-OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Land_CncBarrier_stripes_F|[19348.153,17648.540,37.749]|[[0.8490,-0.5284,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Land_CncBarrier_stripes_F|[19352.908,17656.181,38.051]|[[0.8490,-0.5284,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Land_HBarrier_3_F|[19341.555,17636.582,39.102]|[[0.1908,-0.9816,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Land_BagBunker_Tower_F|[19349.822,17645.734,37.770]|[[-0.8490,0.5284,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Flag_NATO_F|[19350.008,17648.681,37.794]|[[-0.8490,0.5284,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
+OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Land_CncBarrier_stripes_F|[19348.276,17650.819,37.748]|[[0.5284,0.8490,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Land_CncBarrier_stripes_F|[19346.068,17652.193,37.741]|[[0.5284,0.8490,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Agios Petros|ITEM|2|guard|rifleman|[19349.822,17645.734,40.570]|301.9|
 OTLAYOUT|Altis|Agios Petros|ITEM|2|guard|marksman|[19342.514,17641.607,40.240]|169.0|
 OTLAYOUT|Altis|Agios Petros|ITEM|2|guard|rifleman|[19344.626,17645.940,40.240]|9.0|

@@ -15,10 +15,11 @@ The ladder (designed once for this house, fitted per site):
       - an H-barrier blast wall across the door's axis 3-4 m out, so the doorway sits in a fortified pocket: the
         way in is a 1 m gap between the blast wall and the nest (every visitor passes the nest at arm's length),
         the east side shut by a bag in front of the gendarme sentry, the flag and the stair;
-      - a post on the main approach: where a road passes within 24 m, a roadside check on the house's side of it
-        (a long bag with a rifleman behind it, striped concrete barriers on the road's edge 4.5 m either side,
-        narrowing the lane past the post); otherwise a small sandbag bunker off the front-east corner whose field
-        crosses the nest's in front of the blast wall;
+        The blast wall is two H-barriers high (3.2 m): the tall mark of the held door (round 2: height).
+      - a post on the main approach, on a sandbag tower (its rifleman on the platform): where a road passes within
+        24 m, a checkpoint on it (a concrete chicane across the road, two-barrier blocks from each edge 7 m apart,
+        the tower beside it on the house's side, the occupier's flag); otherwise the tower off the front-east
+        corner, its field crossing the nest's in front of the blast wall;
       - a short razor-wire run on the most open flank (west or back), so attackers are channelled to the front;
       - a marksman at the upstairs window over the door; a rifleman on the stair's landing over the east side.
       7 guards; the fortification footprint about triples.
@@ -67,7 +68,10 @@ class Site:
             return "far"
         ln, dp = size_of(kind, what)
         w = t.to_world(x, y, 0)
-        for h in t.hits(w[0], w[1], ln, dp, (t.dir + mdir) % 360, 0.25):
+        hl, hd = ln, dp
+        if kind == "object" and tl.is_barrier(what):  # The check's rule: a barrier may overlap the neighbours a little
+            hl, hd = max(ln - 2 * tl.BARRIER_OVERLAP, 0.2), max(dp * 0.5, 0.2)
+        for h in t.hits(w[0], w[1], hl, hd, (t.dir + mdir) % 360, 0.1 if hl < ln else 0.25):
             if h[0] in ("building", "part", "rock", "wall") or (h[0] == "tree" and (kind != "object" or "Razorwire" in what)):
                 return h[0]
         if t.on_office(x, y, ln, dp, mdir):
@@ -250,12 +254,25 @@ def blast_wall(site):
     return None, "NO blast wall (no room in front of the door)"
 
 
+TOWER = "Land_BagBunker_Tower_F"
+TOWER_DECK = 2.8  # The tower's platform above the ground (a guess: the in-game test reports where the man ends up)
+
+
+def tower_parts(site, x, y, face):
+    """A sandbag tower and its rifleman on the platform."""
+    z = site.t.ground_model(x, y) + TOWER_DECK
+    return [("object", TOWER, (x, y), face, None), ("guard", "rifleman", (x, y), face, z)]
+
+
 def road_check(site):
-    """A roadside check on the house's side of the nearest road within 24 m: a long bag and a rifleman behind it
-    facing the road, striped concrete barriers on the road's edge 4.5 m either side."""
+    """A checkpoint on the nearest road within 24 m: a concrete chicane across the road (a two-barrier block from
+    each edge, 7 m apart, so traffic slaloms through at a crawl), the sandbag tower on the house's side between the
+    blocks with a rifleman on its platform over the road, the flag beside it."""
     t = site.t
     c = (1.5, 2.0)
     cw = t.to_world(c[0], c[1], 0)
+    cls = "Land_CncBarrier_stripes_F"
+    pl = tl.CLASSES[cls][0]
     for d0, seg in t.roads_near(cw[0], cw[1], 24)[:4]:
         a, b = t.to_model(seg["beg"]), t.to_model(seg["end"])
         vx, vy = b[0] - a[0], b[1] - a[1]
@@ -267,31 +284,38 @@ def road_check(site):
         if (c[0] - P[0]) * n[0] + (c[1] - P[1]) * n[1] < 0:
             n = (-n[0], -n[1])
         half = min(seg["width"], 10) / 2
-        along = mdir_along(u)
+        across = mdir_along(n)
         face = math.degrees(math.atan2(-n[0], -n[1])) % 360  # Towards the road
         for sh in (0, 3, -3, 6, -6, 9, -9, 12, -12, 15, -15):
             Q = (P[0] + u[0] * sh, P[1] + u[1] * sh)
 
             def at(off, sl=0.0):
                 return (Q[0] + n[0] * off + u[0] * sl, Q[1] + n[1] * off + u[1] * sl)
-            parts = [("object", "Land_BagFence_Long_F", at(half + 1.0), along, "edge"),
-                     ("guard", "rifleman", at(half + 2.05), face, False),
-                     ("object", "Land_CncBarrier_stripes_F", at(half - 0.3, 4.5), along, "edge"),
-                     ("object", "Land_CncBarrier_stripes_F", at(half - 0.3, -4.5), along, "edge")]
-            if all(not site.blocked(kd, w, p[0], p[1], d, road_ok=r) and not lane_hit(kd, w, p, d) for kd, w, p, d, r in parts):
-                return [site.put(kd, w, p[0], p[1], d) for kd, w, p, d, r in parts], f"roadside check {math.hypot(*at(half + 1.0)):.0f} m out ({seg['type']}, {seg['width']:.0f} m)"
+            tower = at(half + 2.6)
+            parts = [(k_, w, p, d, False) for k_, w, p, d, z in tower_parts(site, tower[0], tower[1], face)[:1]]
+            parts += [("object", "Flag_NATO_F", at(half + 1.2, -2.6), face, False)]
+            near = [("object", cls, at(half - pl / 2 - 0.1, -3.5), across, True), ("object", cls, at(half - 1.5 * pl - 0.1, -3.5), across, True)]
+            far = [("object", cls, at(-half + pl / 2 + 0.1, 3.5), across, True), ("object", cls, at(-half + 1.5 * pl + 0.1, 3.5), across, True)]
+            ok = lambda ps: all(not site.blocked(kd, w, p[0], p[1], d, road_ok=r) and not lane_hit(kd, w, p, d) for kd, w, p, d, r in ps)
+            if not ok(parts) or not ok(near):
+                continue
+            chicane = far if ok(far) else []
+            out = [site.put(kd, w, p[0], p[1], d) for kd, w, p, d, r in parts + near + chicane]
+            out.append(tl.guard(t, "rifleman", tower[0], tower[1], tower_parts(site, *tower, face)[1][4], face))
+            return out, f"checkpoint {math.hypot(*tower):.0f} m out ({seg['type']}, {seg['width']:.0f} m): tower, flag, {'chicane' if chicane else 'one barrier block (no room across)'}"
     return None, ""
 
 
 def bunker(site):
-    """A small sandbag bunker off the front-east corner (else the front-west), manned, facing the front approach:
-    its field crosses the nest's in front of the blast wall."""
-    cls = "Land_BagBunker_Small_F"
-    for x, y in ((9.5, -6.5), (10.0, -8.5), (8.5, -9.0), (11.0, -5.0), (7.0, -10.5), (-6.5, -9.5), (-8.0, -8.0), (-7.0, -11.5), (3.0, -12.5),
-                 (-11.0, -9.5), (-12.0, -11.0), (-12.5, -1.0)):
-        if not site.blocked("object", cls, x, y, 180) and not site.blocked("guard", "rifleman", x, y + 0.3, 180):
-            return [site.put("object", cls, x, y, 180), tl.guard(site.t, "rifleman", x, y + 0.3, None, 180)], f"bunker at ({x:.1f}, {y:.1f})"
-    return None, "NO bunker"
+    """No road close: a sandbag tower off the front-east corner (else the front-west), its rifleman on the platform
+    over the front approach: his field crosses the nest's in front of the blast wall, and it's the tall mark of the
+    post seen from afar."""
+    for x, y in ((9.5, -6.5), (10.0, -8.5), (8.5, -9.0), (11.0, -5.0), (7.0, -10.5), (10.5, -10.5), (-6.5, -9.5), (-8.0, -8.0),
+                 (-7.0, -11.5), (3.0, -12.5), (-11.0, -9.5), (-12.0, -11.0), (-12.5, -1.0)):
+        if not site.blocked("object", TOWER, x, y, 180):
+            (k1, w1, p1, d1, _), (k2, w2, p2, d2, z2) = tower_parts(site, x, y, 180)
+            return [site.put(k1, w1, x, y, 180), tl.guard(site.t, "rifleman", x, y, z2, 180)], f"tower at ({x:.1f}, {y:.1f})"
+    return None, "NO tower"
 
 
 def wire(site):
@@ -323,6 +347,8 @@ def tier2(site):
     notes.append(note)
     if bw:
         out.append(bw)
+        m = t.to_model(bw[2])
+        out.append(tl.obj(t, "Land_HBarrier_3_F", m[0], m[1], t.ground_model(m[0], m[1]) + 1.75, 180))  # Stacked: 3.2 m high
     # A bag in front of the sentry: the doorway's other flank
     if site.sentry:
         sx, sy = site.sentry

@@ -6,7 +6,7 @@ OTLAYOUT|Altis|Ioannina|ITEM|1|object|Land_MapBoard_F|[23195.440,19993.469,14.35
 OTLAYOUT|Altis|Ioannina|ITEM|1|guard|gendarme|[23199.166,19992.644,14.350]|264.0|
 OTLAYOUT|Altis|Ioannina|ITEM|1|object|Flag_NATO_F|[23190.694,19990.277,14.300]|[[-0.8290,0.5592,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
 OTLAYOUT|Altis|Ioannina|ITEM|1|guard|gendarme|[23191.964,19991.712,14.322]|304.0|ground
-OTLAYOUT|Altis|Ioannina|TIER|2|18
+OTLAYOUT|Altis|Ioannina|TIER|2|19
 OTLAYOUT|Altis|Ioannina|ITEM|2|object|Land_TableDesk_F|[23196.850,19992.518,14.350]|[[0.8290,-0.5592,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Ioannina|ITEM|2|object|Land_OfficeChair_01_F|[23197.761,19991.903,14.350]|[[0.8290,-0.5592,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Ioannina|ITEM|2|object|Land_MapBoard_F|[23195.440,19993.469,14.350]|[[0.8290,-0.5592,0.0000],[0.0000,0.0000,1.0000]]|drop
@@ -19,9 +19,10 @@ OTLAYOUT|Altis|Ioannina|ITEM|2|object|Land_BagFence_Short_F|[23193.292,19996.329
 OTLAYOUT|Altis|Ioannina|ITEM|2|guard|rifleman|[23193.711,19996.806,14.397]|304.0|ground
 OTLAYOUT|Altis|Ioannina|ITEM|2|guard|autorifleman|[23194.382,19997.801,14.413]|304.0|ground
 OTLAYOUT|Altis|Ioannina|ITEM|2|object|Land_HBarrier_3_F|[23190.133,19994.274,14.360]|[[-0.8290,0.5592,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Ioannina|ITEM|2|object|Land_HBarrier_3_F|[23190.133,19994.274,16.110]|[[-0.8290,0.5592,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Ioannina|ITEM|2|object|Land_BagFence_Short_F|[23191.052,19992.328,14.331]|[[-0.8290,0.5592,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ioannina|ITEM|2|object|Land_BagBunker_Small_F|[23186.335,19989.358,14.282]|[[-0.8290,0.5592,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ioannina|ITEM|2|guard|rifleman|[23186.583,19989.190,14.280]|304.0|ground
+OTLAYOUT|Altis|Ioannina|ITEM|2|object|Land_BagBunker_Tower_F|[23186.335,19989.358,14.282]|[[-0.8290,0.5592,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Ioannina|ITEM|2|guard|rifleman|[23186.335,19989.358,17.082]|304.0|
 OTLAYOUT|Altis|Ioannina|ITEM|2|object|Land_Razorwire_F|[23201.602,19996.791,14.365]|[[-0.5592,-0.8290,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Ioannina|ITEM|2|guard|marksman|[23194.183,19991.784,17.170]|304.0|
 OTLAYOUT|Altis|Ioannina|ITEM|2|guard|rifleman|[23195.753,19987.227,17.170]|205.0|

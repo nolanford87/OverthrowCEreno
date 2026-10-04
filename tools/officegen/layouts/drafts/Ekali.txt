@@ -6,7 +6,7 @@ OTLAYOUT|Altis|Ekali|ITEM|1|object|Land_MapBoard_F|[17059.321,9990.976,21.840]|[
 OTLAYOUT|Altis|Ekali|ITEM|1|guard|gendarme|[17062.178,9993.506,21.840]|210.0|
 OTLAYOUT|Altis|Ekali|ITEM|1|object|Flag_NATO_F|[17059.113,9985.260,22.378]|[[-0.9397,-0.3420,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
 OTLAYOUT|Altis|Ekali|ITEM|1|guard|gendarme|[17058.698,9987.131,22.197]|250.0|ground
-OTLAYOUT|Altis|Ekali|TIER|2|18
+OTLAYOUT|Altis|Ekali|TIER|2|19
 OTLAYOUT|Altis|Ekali|ITEM|2|object|Land_TableDesk_F|[17060.918,9991.557,21.840]|[[0.9397,0.3420,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Ekali|ITEM|2|object|Land_OfficeChair_01_F|[17061.952,9991.934,21.840]|[[0.9397,0.3420,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Ekali|ITEM|2|object|Land_MapBoard_F|[17059.321,9990.976,21.840]|[[0.9397,0.3420,0.0000],[0.0000,0.0000,1.0000]]|drop
@@ -19,9 +19,10 @@ OTLAYOUT|Altis|Ekali|ITEM|2|object|Land_BagFence_Short_F|[17055.744,9990.919,21.
 OTLAYOUT|Altis|Ekali|ITEM|2|guard|rifleman|[17055.604,9991.539,21.736]|250.0|ground
 OTLAYOUT|Altis|Ekali|ITEM|2|guard|autorifleman|[17055.194,9992.666,21.652]|250.0|ground
 OTLAYOUT|Altis|Ekali|ITEM|2|object|Land_HBarrier_3_F|[17055.550,9987.156,22.081]|[[-0.9397,-0.3420,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Ekali|ITEM|2|object|Land_HBarrier_3_F|[17055.550,9987.156,23.831]|[[-0.9397,-0.3420,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Ekali|ITEM|2|object|Land_BagFence_Short_F|[17057.665,9986.755,22.196]|[[-0.9397,-0.3420,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ekali|ITEM|2|object|Land_BagBunker_Small_F|[17057.295,9981.193,22.658]|[[-0.9397,-0.3420,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ekali|ITEM|2|guard|rifleman|[17057.576,9981.296,22.659]|250.0|ground
+OTLAYOUT|Altis|Ekali|ITEM|2|object|Land_BagBunker_Tower_F|[17057.295,9981.193,22.658]|[[-0.9397,-0.3420,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Ekali|ITEM|2|guard|rifleman|[17057.295,9981.193,25.458]|250.0|
 OTLAYOUT|Altis|Ekali|ITEM|2|object|Land_Razorwire_F|[17060.254,9997.914,21.481]|[[0.3420,-0.9397,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Ekali|ITEM|2|guard|marksman|[17059.945,9988.968,24.650]|250.0|
 OTLAYOUT|Altis|Ekali|ITEM|2|guard|rifleman|[17064.555,9987.560,24.650]|220.0|
