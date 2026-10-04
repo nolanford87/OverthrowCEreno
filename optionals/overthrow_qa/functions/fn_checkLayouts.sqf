@@ -56,13 +56,13 @@
         private _terrainTypes = ["BUILDING", "HOUSE", "CHURCH", "CHAPEL", "FUELSTATION", "HOSPITAL", "RUIN", "BUNKER", "FORTRESS", "VIEW-TOWER", "LIGHTHOUSE", "QUAY", "TRANSMITTER", "WATERTOWER", "WALL", "FENCE", "ROCK", "ROCKS"];
         private _sizes = createHashMap;
         // The furthest clear distance over a cone of rays from a point (ASL) round a direction
-        // A man's route (the engine's path finding) between two points, [] when it isn't computed in 10 s
+        // A man's route (the engine's path finding) between two points, [] when it isn't computed in 30 s
         private _route = {
             params ["_from", "_to"];
             OTQA_pathDone = nil;
             private _agent = calculatePath ["man", "safe", _from, _to];
             _agent addEventHandler ["PathCalculated", { OTQA_pathDone = _this select 1 }];
-            private _t = time + 10;
+            private _t = time + 30;
             waitUntil { sleep 0.2; !isNil "OTQA_pathDone" || { time > _t } };
             missionNamespace getVariable ["OTQA_pathDone", []]
         };
@@ -98,14 +98,27 @@
                 private _spots = [_site buildingPos -1, [], { _x select 2 }, "ASCEND"] call BIS_fnc_sortBy;
                 _spots = _spots select [0, 4];
                 for "_i" from 0 to 5 do { private _e = _site buildingExit _i; if (_e isNotEqualTo [0, 0, 0]) then { _spots pushBack _e } };
-                { _spots pushBack (_site modelToWorld _x) } forEach [[0, (_mx select 1) + 2, 0], [0, (_mn select 1) - 2, 0], [(_mx select 0) + 2, 0, 0], [(_mn select 0) - 2, 0, 0]];
-                private _away = (getPosATL _site) getPos [60, getDir _site];
-                private _road = (_away nearRoads 25) param [0, objNull];
-                if (!isNull _road) then { _away = getPosATL _road };
+                // 1.5 m out from its real walls (a ray in from each side; the box can be far bigger than the walls)
+                private _wallSpots = 0;
                 {
-                    if ((_x select 2) < 0.5) then { _x set [2, 0] };
-                    private _p = [_x, _away] call _route;
-                    if (_p isNotEqualTo [] && { ((_p select -1) distance2D _away) < 4 }) exitWith { _start = _x };
+                    private _out = _site modelToWorldWorld (_x vectorMultiply 60);
+                    private _in = _site modelToWorldWorld [0, 0, 0];
+                    _out set [2, (getTerrainHeightASL _out) + 1]; _in set [2, (getTerrainHeightASL _in) + 1];
+                    private _hit = (lineIntersectsSurfaces [_out, _in, objNull, objNull, true, 8, "GEOM", "NONE"]) select { ((_x select 2) isEqualTo _site) || { (_x select 3) isEqualTo _site } };
+                    if (_hit isNotEqualTo []) then { _wallSpots = _wallSpots + 1; _spots pushBack (ASLToATL (((_hit select 0) select 0) vectorAdd ((vectorNormalized (_out vectorDiff _in)) vectorMultiply 1.5))) };
+                } forEach [[0, 1, 0], [0, -1, 0], [1, 0, 0], [-1, 0, 0]];
+                { _spots pushBack (_site modelToWorld _x) } forEach [[0, (_mx select 1) + 2, 0], [0, (_mn select 1) - 2, 0], [(_mx select 0) + 2, 0, 0], [(_mn select 0) - 2, 0, 0]];
+                // Out to any of 8 points 60 m away (one may be unreachable: the sea, a walled lot)
+                private _aways = [0, 45, 90, 135, 180, 225, 270, 315] apply {
+                    private _a = (getPosATL _site) getPos [60, (getDir _site) + _x];
+                    private _road = (_a nearRoads 25) param [0, objNull];
+                    [_a, getPosATL _road] select (!isNull _road)
+                };
+                diag_log format ["OTPATHSPOTS|%1|%2 spots (%3 by the real walls)", _town, count _spots, _wallSpots];
+                {
+                    private _from = _x;
+                    if ((_from select 2) < 0.5) then { _from set [2, 0] };
+                    if ((_aways findIf { private _p = [_from, _x] call _route; _p isNotEqualTo [] && { ((_p select -1) distance2D _x) < 4 } }) > -1) exitWith { _start = _from };
                 } forEach _spots;
             };
             diag_log format ["OTPATHSTART|%1|%2", _town, if (_start isEqualTo [] || { isNull _site }) then { "none" } else { ((_site worldToModel _start) select [0, 2]) apply { _x call _r1 } }];
