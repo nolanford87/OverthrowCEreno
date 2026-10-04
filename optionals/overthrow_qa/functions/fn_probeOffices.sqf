@@ -10,6 +10,11 @@
         OTPROBE2|LEVELS|class|[z, ...]                      (floor heights, from the building positions)
         OTPROBE2|ROW|class|level z|y|row                    (1 m cells: '#' wall, '.' floor, ' ' nothing)
         OTPROBE2|END|class
+    Buildings made of several map objects (OTQA_probeOffices_parts: the Altis hospital's two wings)
+    are read off the real one on the map first and spawned together:
+        OTPROBE2|PARTS|class|[[part class, [x,y,z] in the main's coordinates, direction relative to it], ...]
+    Their rows count all the parts, and positions/doors are the main object's plus each part's
+    (moved into the main's coordinates).
 
     Returns: ARRAY - [[name, code, seconds]] (one test, so the QA runner can run it as a suite)
 */
@@ -29,8 +34,34 @@ OTQA_probeOffices_classes = [
     "Land_House_2B03_F", "Land_PoliceStation_01_F", "Land_HealthCenter_01_F"
 ];
 
+// Main class -> the classes of its other pieces (found within 60 m of a real one on this map)
+OTQA_probeOffices_parts = createHashMapFromArray [
+    ["Land_Hospital_main_F", ["Land_Hospital_side1_F", "Land_Hospital_side2_F"]]
+];
+
 [
     ["Probe the mayor's office candidate buildings", {
+        // Where the parts of multi-piece buildings sit, from the real ones on the map
+        private _layouts = createHashMap;
+        {
+            private _main = _x;
+            private _partClasses = _y;
+            private _real = [];
+            { _real append (nearestObjects [server getVariable [_x, [0, 0, 0]], [_main], 1000]) } forEach OT_allTowns;
+            if (_real isEqualTo []) then { diag_log format ["OTPROBE2|NOPARTS|%1", _main]; continue };
+            private _m = _real select 0;
+            private _layout = [];
+            {
+                private _cls = _x;
+                private _part = ((nearestObjects [_m, [], 80]) select { (typeOf _x) isEqualTo _cls }) param [0, objNull];
+                if (!isNull _part) then {
+                    _layout pushBack [_cls, (_m worldToModel (getPosATL _part)) apply { (round (_x * 100)) / 100 }, ((getDir _part) - (getDir _m) + 360) % 360];
+                };
+            } forEach _partClasses;
+            _layouts set [_main, _layout];
+            diag_log format ["OTPROBE2|PARTS|%1|%2", _main, _layout];
+        } forEach OTQA_probeOffices_parts;
+
         // The main airfield: the airport nearest Altis's main runway, a flat open spot 500-1500 m from
         // its centre with no occupier men within 300 m
         private _airport = OT_airportData apply { [(_x select 0) distance2D [14600, 16700, 0], _x select 0] };
@@ -65,8 +96,26 @@ OTQA_probeOffices_classes = [
             private _b = createVehicle [_cls, _spot, [], 0, "CAN_COLLIDE"];
             _b setDir 0;
             _b setPosATL [_spot select 0, _spot select 1, 0];
+            private _parts = [];
+            {
+                _x params ["_pcls", "_offset", "_pdir"];
+                private _o = createVehicle [_pcls, _spot, [], 0, "CAN_COLLIDE"];
+                _o setDir _pdir;
+                _o setPosATL (_b modelToWorld _offset);
+                _parts pushBack _o;
+            } forEach (_layouts getOrDefault [_cls, []]);
+            private _all = [_b] + _parts;
             sleep 2;
             (boundingBoxReal _b) params ["_min", "_max"];
+            {
+                private _o = _x;
+                (boundingBoxReal _o) params ["_omin", "_omax"];
+                {
+                    private _c = _b worldToModel (_o modelToWorld _x);
+                    _min = [(_min select 0) min (_c select 0), (_min select 1) min (_c select 1), (_min select 2) min (_c select 2)];
+                    _max = [(_max select 0) max (_c select 0), (_max select 1) max (_c select 1), (_max select 2) max (_c select 2)];
+                } forEach [_omin, _omax, [_omin select 0, _omax select 1, _omin select 2], [_omax select 0, _omin select 1, _omin select 2]];
+            } forEach _parts;
             diag_log format ["OTPROBE2|START|%1|%2|%3", _cls, _min apply { (round (_x * 10)) / 10 }, _max apply { (round (_x * 10)) / 10 }];
             private _doors = [];
             for "_i" from 1 to (getNumber ((configOf _b) >> "numberOfDoors")) do {
@@ -74,7 +123,8 @@ OTQA_probeOffices_classes = [
                 if (_p isNotEqualTo [0, 0, 0]) then { _doors pushBack (_p apply { (round (_x * 10)) / 10 }) };
             };
             diag_log format ["OTPROBE2|DOORS|%1|%2|%3", _cls, count _doors, _doors];
-            private _positions = (_b buildingPos -1) apply { (_b worldToModel _x) apply { (round (_x * 10)) / 10 } };
+            private _positions = [];
+            { private _o = _x; _positions append ((_o buildingPos -1) apply { (_b worldToModel _x) apply { (round (_x * 10)) / 10 } }) } forEach _all;
             diag_log format ["OTPROBE2|POS|%1|%2|%3", _cls, count _positions, _positions];
             // Floor heights: the building positions' heights, within 1 m counted as one
             private _zs = _positions apply { _x select 2 };
@@ -91,8 +141,8 @@ OTQA_probeOffices_classes = [
                         private _wall = lineIntersectsSurfaces [_w vectorAdd [0, 0, 0.4], _w vectorAdd [0, 0, 1.7], objNull, objNull, true, 1, "GEOM", "NONE"];
                         private _floor = lineIntersectsSurfaces [_w vectorAdd [0, 0, 0.4], _w vectorAdd [0, 0, -0.6], objNull, objNull, true, 1, "GEOM", "NONE"];
                         _row = _row + (call {
-                            if ((_wall findIf { (_x select 2) isEqualTo _b }) > -1) exitWith { "#" };
-                            if ((_floor findIf { (_x select 2) isEqualTo _b }) > -1) exitWith { "." };
+                            if ((_wall findIf { (_x select 2) in _all }) > -1) exitWith { "#" };
+                            if ((_floor findIf { (_x select 2) in _all }) > -1) exitWith { "." };
                             " "
                         });
                     };
@@ -100,7 +150,7 @@ OTQA_probeOffices_classes = [
                 };
             } forEach _levels;
             diag_log format ["OTPROBE2|END|%1", _cls];
-            deleteVehicle _b;
+            { deleteVehicle _x } forEach _all;
             _done = _done + 1;
             sleep 1;
         } forEach OTQA_probeOffices_classes;
