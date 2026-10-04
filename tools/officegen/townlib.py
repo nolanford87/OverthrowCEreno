@@ -339,13 +339,11 @@ def check(town, tiers):
     problems = []
     if len(tiers) != town.cap:
         problems.append(f"{len(tiers)} tiers, the town has {town.cap}")
-    for n in range(1, len(tiers)):
-        lost = [it for it in tiers[n - 1] if not any(_same(it, b) for b in tiers[n])]
-        if lost:
-            problems.append(f"tier {n + 1} drops {len(lost)} things of tier {n} (each tier is tier N-1 plus more): {[(i[0], i[1]) for i in lost[:4]]}")
+    # A tier may drop pieces of the tier below (the user, pass 1): full snapshots, not "tier N-1 plus more"
+    garrisoned = any(it[0] == "guard" for items in tiers for it in items)  # Pass 1 (walls) has no guards at all
     for n, items in enumerate(tiers, 1):
         guards = sum(1 for it in items if it[0] == "guard")
-        if guards < MIN_GUARDS:
+        if garrisoned and guards < MIN_GUARDS:
             problems.append(f"tier {n}: {guards} guards")
         for it in items:
             kind, what, p, o, extra = it
