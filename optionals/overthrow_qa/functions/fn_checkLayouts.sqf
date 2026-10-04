@@ -72,6 +72,7 @@
             (_layout select 0) params ["_class", "_pos", "_dir", ["_spawned", false]];
             player setPosASL ((_pos vectorAdd [0, 0, 0]) getPos [60, 0]);
             sleep 2; // The area streamed in
+            skipTime ((12.5 - daytime + 24) % 24); // Still midday (a long run reaches dusk)
             // Every tier the layout has (a town's highest tier in play follows its population, which a new game changes)
             private _b = objNull;
             for "_tier" from 1 to 5 do {
