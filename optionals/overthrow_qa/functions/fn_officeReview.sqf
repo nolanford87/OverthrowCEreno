@@ -95,24 +95,28 @@ OTQA_officeReview_site = {
     _found
 };
 
-// The copies shown taken away (and the terrain objects hidden for them shown again)
+// The copies shown taken away (and the terrain objects hidden for them shown again): the guards first and,
+// when it can wait, the buildings a frame later (a building with men still in it may not go)
 OTQA_officeReview_clear = {
+    private _copies = OTQA_officeReview getOrDefault ["copies", []];
+    OTQA_officeReview set ["copies", []];
+    { [_x select 0] call OT_fnc_officeClearTemplate } forEach _copies;
+    if (canSuspend) then { sleep 1 };
     {
-        _x params ["_b", "_parts", "_objects", "_guards"];
-        { deleteVehicle _x } forEach _objects;
-        { private _g = group _x; deleteVehicle _x; if ((units _g) isEqualTo []) then { deleteGroup _g } } forEach _guards;
+        _x params ["_b", "_parts"];
         { deleteVehicle _x } forEach _parts;
         deleteVehicle _b;
-    } forEach (OTQA_officeReview getOrDefault ["copies", []]);
-    OTQA_officeReview set ["copies", []];
+    } forEach _copies;
     { _x hideObjectGlobal false } forEach (OTQA_officeReview getOrDefault ["hidden", []]);
     OTQA_officeReview set ["hidden", []];
 };
 
-// A building's five copies, tier 1 to 5 along the row, the host at the first
+// A building's five copies, tier 1 to 5 along the row, the host at the first (scheduled: it waits for
+// the last copies to go)
 OTQA_officeReview_show = {
     params ["_key"];
     call OTQA_officeReview_clear;
+    sleep 1;
     private _tiers = [_key] call OT_fnc_officeTemplate;
     // How wide the copies stand: the template's extent (the tier 5 perimeter) plus a gap
     private _xs = [];
@@ -158,7 +162,8 @@ OTQA_officeReview_step = {
     params ["_by"];
     private _keys = OTQA_officeReview get "keys";
     private _i = ((_keys find (OTQA_officeReview get "key")) + _by + (count _keys)) mod (count _keys);
-    [_keys select _i] call OTQA_officeReview_show;
+    if (!isNil { OTQA_officeReview get "showing" } && { !scriptDone (OTQA_officeReview get "showing") }) exitWith { hint "Office review: the next building is still being set up" };
+    OTQA_officeReview set ["showing", [_keys select _i] spawn OTQA_officeReview_show];
 };
 
 OTQA_officeReview_list = {
@@ -207,6 +212,8 @@ OTQA_officeReview_list = {
 
         waitUntil { sleep 1; OTQA_officeReview get "finished" };
 
+        private _showing = OTQA_officeReview getOrDefault ["showing", scriptNull];
+        if (!isNull _showing) then { waitUntil { sleep 0.5; scriptDone _showing } };
         call OTQA_officeReview_clear;
         { player removeAction _x } forEach _actions;
         removeMissionEventHandler ["Draw3D", _draw];

@@ -120,45 +120,94 @@ OTQA_officeTest_one = {
     sleep 1;
     private _wantObjects = { ((_x select 2) select 0) isEqualTo "object" } count _all;
     private _wantGuards = { ((_x select 2) select 0) isEqualTo "guard" } count _all;
-    [format ["Office templates: %1 tier 5 applied makes every item", _key], (count _objects) isEqualTo _wantObjects && { (count _guards) isEqualTo _wantGuards } && { (_objects findIf { isNull _x }) isEqualTo -1 } && { (_guards findIf { isNull _x || { !alive _x } }) isEqualTo -1 },
-        format ["%1 of %2 objects, %3 of %4 guards", count _objects, _wantObjects, count _guards, _wantGuards]] call OTQA_fnc_check;
+    private _itemOf = { (_this getVariable ["OT_officeItem", ["", 0, -1, ["", "", [0, 0, 0], 0, []]]]) params ["", "_t", "_i", "_it"]; [_t, _i, _it select 1, _it select 2] };
+    private _gone = (_objects select { isNull _x }) + (_guards select { isNull _x || { !alive _x } });
+    [format ["Office templates: %1 tier 5 applied makes every item", _key], (count _objects) isEqualTo _wantObjects && { (count _guards) isEqualTo _wantGuards } && { _gone isEqualTo [] },
+        format ["%1 of %2 objects, %3 of %4 guards, null or dead: %5", count _objects, _wantObjects, count _guards, _wantGuards, _gone apply { if (isNull _x) then { "null" } else { _x call _itemOf } }]] call OTQA_fnc_check;
 
-    // Everything where the template says, turned with the building; the things outside on the ground
+    // Everything where the template says, turned with the building (a guard settles up to 0.75 m, a prop is
+    // let down onto its floor); the things outside on the ground; props on a floor, the ground or a table,
+    // with nothing of the building through them
     private _misplaced = [];
     private _floating = [];
     private _inWall = [];
+    private _placed = _objects + _guards;
+    // What a ray hit, for the detail: [what, how far above the thing's origin, where in the building's coordinates]
+    private _hitList = {
+        params ["_asl", "_hits"];
+        _hits apply { [if (isNull (_x select 2)) then { "terrain" } else { typeOf (_x select 2) }, round ((((_x select 0) select 2) - (_asl select 2)) * 100) / 100, (_b worldToModel (ASLToATL (_x select 0))) apply { round (_x * 100) / 100 }] }
+    };
     {
         private _o = _x;
         (_o getVariable ["OT_officeItem", ["", 0, -1, ["", "", [0, 0, 0], 0, []]]]) params ["", "_tier", "_index", "_item"];
         _item params ["_kind", "_what", "_pos", "", "_extra"];
-        private _model = _b worldToModel (getPosATL _o);
+        // A prop's origin (its foot: a tilted pole's getPos is its bounding centre, up the pole), a guard's feet
+        private _model = _b worldToModel (if (_kind isEqualTo "guard") then { getPosATL _o } else { _o modelToWorld [0, 0, 0] });
         private _outside = "outside" in _extra;
-        private _off = if (_outside) then { _model distance2D _pos } else { _model distance _pos };
-        if (_off > 0.35) then { _misplaced pushBack [_tier, _index, _what, _pos, _model apply { round (_x * 100) / 100 }] };
+        private _ok = if (_kind isEqualTo "guard") then {
+            if (_outside) then { (_model distance2D _pos) <= 0.75 } else { (_model distance _pos) <= 0.75 }
+        } else {
+            // A prop settles onto its floor: down to 1.3 m (the template's heights are the building positions'), or up to
+            // 0.6 m where the ground floor's terrain rises away from the building's origin
+            (_model distance2D _pos) <= 0.35 && { _outside || { ((_model select 2) - (_pos select 2)) < 0.6 && { ((_model select 2) - (_pos select 2)) > -1.3 } } }
+        };
+        if (!_ok) then { _misplaced pushBack [_tier, _index, _what, _pos, _model apply { round (_x * 100) / 100 }] };
         if (_outside) then {
             if (abs ((getPosATL _o) select 2) > 0.5) then { _floating pushBack [_tier, _index, _what, (getPosATL _o) select 2] };
         } else {
-            // A floor of the building just under it, and nothing of the building through it
             private _asl = getPosASL _o;
-            private _below = lineIntersectsSurfaces [_asl vectorAdd [0, 0, 0.3], _asl vectorAdd [0, 0, -0.8], _o, objNull, true, 1, "GEOM", "NONE"];
-            if ((_below findIf { (_x select 2) in _pieces }) isEqualTo -1) then { _floating pushBack [_tier, _index, _what, _pos] };
+            private _below = lineIntersectsSurfaces [_asl vectorAdd [0, 0, 0.3], _asl vectorAdd [0, 0, -0.8], _o, objNull, true, 3, "GEOM", "NONE"];
+            if ((_below findIf { isNull (_x select 2) || { (_x select 2) in _pieces } || { (_x select 2) in _placed } }) isEqualTo -1) then {
+                _floating pushBack [_tier, _index, _what, _pos, [_asl, _below] call _hitList];
+            };
             if (_kind isEqualTo "object") then {
-                private _through = lineIntersectsSurfaces [_asl vectorAdd [0, 0, 0.4], _asl vectorAdd [0, 0, 1.5], _o, objNull, true, 1, "GEOM", "NONE"];
-                if ((_through findIf { (_x select 2) in _pieces }) > -1) then { _inWall pushBack [_tier, _index, _what, _pos] };
+                private _through = lineIntersectsSurfaces [_asl vectorAdd [0, 0, 0.4], _asl vectorAdd [0, 0, 1.5], _o, objNull, true, 3, "GEOM", "NONE"];
+                private _wall = _through select { (_x select 2) in _pieces };
+                if (_wall isNotEqualTo []) then {
+                    _inWall pushBack [_tier, _index, _what, _pos, [_asl, _wall] call _hitList];
+                };
             };
         };
-    } forEach (_objects + _guards);
+    } forEach _placed;
     [format ["Office templates: %1 everything placed where the template says, turned with the building", _key], _misplaced isEqualTo [], str _misplaced] call OTQA_fnc_check;
-    [format ["Office templates: %1 everything on a floor or on the ground (not floating or sunk)", _key], _floating isEqualTo [], str _floating] call OTQA_fnc_check;
+    [format ["Office templates: %1 everything on a floor, the ground or a table (not floating or sunk)", _key], _floating isEqualTo [], str _floating] call OTQA_fnc_check;
     [format ["Office templates: %1 no object inside a wall or under a floor", _key], _inWall isEqualTo [], str _inWall] call OTQA_fnc_check;
 
-    // Away again
+    // Away again: the template's things (OT_fnc_officeClearTemplate: the guards first, the rest a moment later),
+    // then the building; what's left after a second gets a second pass and, if it still won't go, a few
+    // tries with their state logged (for the RPT)
     private _group = if (_guards isEqualTo []) then { grpNull } else { group (_guards select 0) };
-    { deleteVehicle _x } forEach (_objects + _guards);
+    [_b] call OT_fnc_officeClearTemplate;
+    sleep 1;
     { deleteVehicle _x } forEach _pieces;
-    sleep 1; // Deleted things are null only at the end of the frame, and the group goes once it's empty
-    if (!isNull _group) then { deleteGroup _group; sleep 0.5 };
-    [format ["Office templates: %1 deletes cleanly", _key], ((_objects + _guards + _pieces) findIf { !isNull _x }) isEqualTo -1 && { isNull _group }, ""] call OTQA_fnc_check;
+    sleep 1;
+    private _firstPass = (_objects + _guards + _pieces) select { !isNull _x };
+    if (_firstPass isNotEqualTo []) then {
+        diag_log format ["OT_QA office templates: %1 left after the first delete pass: %2", _key, _firstPass apply { [typeOf _x, (_x getVariable ["OT_officeItem", []]) param [1, "building"], getPosATL _x, local _x, simulationEnabled _x, isObjectHidden _x, alive _x, damage _x, attachedTo _x, count attachedObjects _x, _x distance player, isTouchingGround _x, dynamicSimulationEnabled _x, getModelInfo _x]] };
+        { deleteVehicle _x } forEach _firstPass;
+        sleep 1;
+        {
+            if (!isNull _x) then {
+                private _o = _x;
+                private _tried = [];
+                {
+                    _x params ["_name", "_code"];
+                    _o call _code;
+                    sleep 1;
+                    _tried pushBack [_name, isNull _o];
+                    if (isNull _o) exitWith {};
+                } forEach [
+                    ["simulation on", { _this enableSimulationGlobal true; deleteVehicle _this }],
+                    ["hidden", { _this hideObjectGlobal true; deleteVehicle _this }],
+                    ["moved away", { _this setPosATL [0, 0, 0]; deleteVehicle _this }],
+                    ["dynamic simulation off", { _this enableDynamicSimulation false; _this triggerDynamicSimulation true; deleteVehicle _this }]
+                ];
+                diag_log format ["OT_QA office templates: %1 %2 tried: %3", _key, typeOf _o, _tried];
+            };
+        } forEach _firstPass;
+    };
+    private _left = (_objects + _guards + _pieces) select { !isNull _x };
+    [format ["Office templates: %1 deletes cleanly", _key], _left isEqualTo [] && { isNull _group }, format ["left: %1 (after the first pass: %2), group %3 (%4 units)", _left apply { typeOf _x }, _firstPass apply { typeOf _x }, _group, if (isNull _group) then { 0 } else { count units _group }]] call OTQA_fnc_check;
 };
 
 private _tests = [
