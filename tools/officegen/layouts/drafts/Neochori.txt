@@ -24,7 +24,7 @@ OTLAYOUT|Altis|Neochori|ITEM|2|guard|autorifleman|[12525.270,14325.583,11.962]|2
 OTLAYOUT|Altis|Neochori|ITEM|2|object|Land_PipeFence_03_m_gate_r_F|[12543.948,14325.702,13.130]|[[0.3882,-0.9216,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Neochori|ITEM|2|guard|rifleman|[12543.695,14327.332,13.130]|157.2|
 OTLAYOUT|Altis|Neochori|ITEM|2|guard|rifleman|[12533.683,14330.494,16.550]|337.2|
-OTLAYOUT|Altis|Neochori|TIER|3|39
+OTLAYOUT|Altis|Neochori|TIER|3|41
 OTLAYOUT|Altis|Neochori|ITEM|3|object|Land_TableDesk_F|[12532.883,14324.406,13.130]|[[-0.4093,-0.9124,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Neochori|ITEM|3|object|Land_OfficeChair_01_F|[12532.990,14322.606,13.130]|[[-0.9620,-0.2730,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Neochori|ITEM|3|object|Land_MapBoard_F|[12537.899,14326.410,13.130]|[[0.8733,-0.4873,0.0000],[0.0000,0.0000,1.0000]]|drop
@@ -64,7 +64,9 @@ OTLAYOUT|Altis|Neochori|ITEM|3|object|Land_HBarrier_1_F|[12523.902,14322.544,11.
 OTLAYOUT|Altis|Neochori|ITEM|3|object|Land_HBarrier_1_F|[12525.435,14318.903,11.329]|[[-0.9216,-0.3882,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Neochori|ITEM|3|object|Land_HBarrier_1_F|[12527.492,14314.019,11.034]|[[-0.9216,-0.3882,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Neochori|ITEM|3|object|Land_HBarrier_1_F|[12528.036,14312.729,10.976]|[[-0.9216,-0.3882,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Neochori|TIER|4|71
+OTLAYOUT|Altis|Neochori|ITEM|3|guard|autorifleman|[12530.803,14315.175,11.481]|247.2|ground
+OTLAYOUT|Altis|Neochori|ITEM|3|object|Land_BagFence_Short_F|[12529.974,14314.825,11.339]|[[-0.9216,-0.3882,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Neochori|TIER|4|74
 OTLAYOUT|Altis|Neochori|ITEM|4|object|Land_TableDesk_F|[12532.883,14324.406,13.130]|[[-0.4093,-0.9124,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Neochori|ITEM|4|object|Land_OfficeChair_01_F|[12532.990,14322.606,13.130]|[[-0.9620,-0.2730,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Neochori|ITEM|4|object|Land_MapBoard_F|[12537.899,14326.410,13.130]|[[0.8733,-0.4873,0.0000],[0.0000,0.0000,1.0000]]|drop
@@ -104,6 +106,8 @@ OTLAYOUT|Altis|Neochori|ITEM|4|object|Land_HBarrier_1_F|[12523.902,14322.544,11.
 OTLAYOUT|Altis|Neochori|ITEM|4|object|Land_HBarrier_1_F|[12525.435,14318.903,11.329]|[[-0.9216,-0.3882,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Neochori|ITEM|4|object|Land_HBarrier_1_F|[12527.492,14314.019,11.034]|[[-0.9216,-0.3882,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Neochori|ITEM|4|object|Land_HBarrier_1_F|[12528.036,14312.729,10.976]|[[-0.9216,-0.3882,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Neochori|ITEM|4|guard|autorifleman|[12530.803,14315.175,11.481]|247.2|ground
+OTLAYOUT|Altis|Neochori|ITEM|4|object|Land_BagFence_Short_F|[12529.974,14314.825,11.339]|[[-0.9216,-0.3882,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Neochori|ITEM|4|guard|mg_gunner|[12529.720,14328.824,16.550]|292.2|
 OTLAYOUT|Altis|Neochori|ITEM|4|static|gmg|[12531.772,14329.363,16.550]|[[-0.3882,0.9216,0.0000],[0.0000,0.0000,1.0000]]|
 OTLAYOUT|Altis|Neochori|ITEM|4|guard|rifleman|[12544.142,14327.303,16.550]|67.2|
@@ -128,6 +132,7 @@ OTLAYOUT|Altis|Neochori|ITEM|4|guard|rifleman|[12542.163,14321.695,12.236]|157.2
 OTLAYOUT|Altis|Neochori|ITEM|4|object|Land_BagFence_Short_F|[12542.512,14320.866,12.095]|[[0.3882,-0.9216,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Neochori|ITEM|4|object|Land_CncBarrierMedium_F|[12529.681,14335.101,12.557]|[[-0.3882,0.9216,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Neochori|ITEM|4|object|Land_CncBarrierMedium_F|[12525.199,14336.469,12.516]|[[-0.3882,0.9216,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Neochori|ITEM|4|guard|rifleman|[12531.671,14325.740,16.550]|247.2|
 OTLAYOUT|Altis|Neochori|ITEM|4|object|Land_CzechHedgehog_01_F|[12553.945,14343.631,13.507]|[[0.3484,0.9373,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Neochori|ITEM|4|object|Land_CzechHedgehog_01_F|[12554.052,14346.760,13.714]|[[0.3484,0.9373,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Neochori|ITEM|4|object|Land_CzechHedgehog_01_F|[12551.613,14348.722,13.743]|[[0.3484,0.9373,0.0000],[0.0000,0.0000,1.0000]]|ground

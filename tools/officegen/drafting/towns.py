@@ -228,6 +228,10 @@ class Drafter:
                 res += [it] if it else []
             elif kind == "open":
                 busy.append((s - arg / 2, s + arg / 2))
+            elif kind == "slot":  # A low bagged slot in the wall for a static added at a later tier (static_at)
+                busy.append((s - 1.5, s + 1.5))
+                x, y = at(s)
+                res += self.group([("object", LONG, 0, 0, wdir)], x, y, 0.0, road_ok, note="slot")
             elif kind == "low":  # (s0, s1): 1-high H-barriers only (the veranda's guards fire over them)
                 lows.append(arg)
                 busy.append(arg)
@@ -295,6 +299,18 @@ class Drafter:
             elif not placed:
                 s += 0.5
         return res
+
+    def static_at(self, p0, p1, s, role, face=None):
+        """A static behind a line's slot (line(p0, p1) with ("slot", s, None))."""
+        dx, dy = p1[0] - p0[0], p1[1] - p0[1]
+        L = math.hypot(dx, dy)
+        u = (dx / L, dy / L)
+        nx, ny = -u[1], u[0]
+        mx, my = (p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2
+        if nx * (0 - mx) + ny * (0 - my) > 0:
+            nx, ny = -nx, -ny
+        x, y = p0[0] + u[0] * s - nx * 1.6, p0[1] + u[1] * s - ny * 1.6
+        return self.put("static", role, x, y, heading(nx, ny) if face is None else face, search=0.5, note=f"{role} behind its slot")
 
     def wire(self, p0, p1, road_ok=True, gap=None):
         """Razor wire along a line (pieces left out where they don't fit); gap: (s0, s1) along it left open (the
@@ -393,13 +409,18 @@ def tier3_house(t, d, cfg):
     d.add("guard", "marksman", 4.3, -2.1, cfg.get("marksman_face", 90), z=f1)   # The upper east window
     d.add("guard", "rifleman", 4.3, -5.25, 90, z=f0)                          # The ground floor east window
     d.add("guard", "rifleman", -3.0, -0.8, 270, z=f0)                         # The veranda's north end
+    if cfg.get("balcony_t3"):  # Where the walls leave no slot with a field of fire: the HMG on the balcony
+        d.add("static", cfg["balcony_t3"], -3.1, -4.6, cfg.get("gmg_face", 260), z=f1)
 
 
 def tier4_house(t, d, cfg):
     f0, f1 = t.floors[0], t.floors[1]
     d.add("guard", "mg_gunner", -3.4, -6.7, cfg.get("mg_face", 225), z=f1)   # The balcony's south-west corner
-    d.add("static", cfg.get("balcony", "gmg"), -3.1, -4.6, cfg.get("gmg_face", 260), z=f1)  # A GMG on the balcony over the approach
+    if cfg.get("balcony", "gmg"):
+        d.add("static", cfg.get("balcony", "gmg"), -3.1, -4.6, cfg.get("gmg_face", 260), z=f1)  # A GMG on the balcony over the approach
     d.add("guard", "rifleman", 3.6, 6.0, 0, z=f1)                           # Upstairs, the north room
+    if cfg.get("upstairs"):  # A second heavy weapon upstairs in the north-west room, over the street
+        d.add("static", cfg["upstairs"], -3.0, 5.0, cfg.get("upstairs_face", 290), z=f1)
 
 
 def draft(t, cfg):
@@ -576,8 +597,8 @@ def molos(d, tier):
     # A road runs north-south just west of the veranda and a big road east-west 14 m north; a house abuts the
     # south side; a yard opens east. The way in: off the west road onto the veranda.
     if tier == 3:
-        d.line((-7.0, -7.2), (-7.0, 12.4), [("gate", 3.2, 6.0), ("low", 0, (6.2, 7.8)), ("fire", 17.5, "rifleman")], road_ok=True)
-        d.line((-7.0, 12.4), (16.4, 12.4), [("static", 6.0, ("hmg", 0)), ("fire", 12.0, "autorifleman")], road_ok=True)
+        d.line((-7.0, -7.2), (-7.0, 12.4), [("gate", 3.2, 6.0), ("low", 0, (6.2, 7.8))], road_ok=True)
+        d.line((-7.0, 12.4), (16.4, 12.4), [("static", 6.0, ("hmg", 0)), ("fire", 12.0, "autorifleman"), ("fire", 18.5, "rifleman")], road_ok=True)
         d.post("autorifleman", -3.4, 9.2, 300)
     if tier == 4:
         d.line((16.4, 12.4), (16.4, -7.2), [("fire", 5.0, "rifleman"), ("static", 12.0, ("at", 90))])
@@ -585,6 +606,7 @@ def molos(d, tier):
         d.bunker(18.4, 14.4, 45, search=1.5)
         d.post("at", 8.0, 8.5, 0, cover=SHORT)
         d.post("rifleman", 10.0, -4.0, 90)
+        d.post("autorifleman", 12.0, 4.0, 90)
         d.chicane(-7.0, -3.8, 270, step=3.0)
         d.road_block(-13.0, 4.0)
         d.road_block(-13.0, -18.0)
@@ -599,6 +621,7 @@ def neochori(d, tier):
     if tier == 3:
         d.line((-6.2, -14.5), (-6.2, 10.5), [("fire", 3.6, "rifleman"), ("gate", 8.4, 6.0), ("low", 0, (11.4, 15.2))], road_ok=True)
         d.line((-6.2, -14.5), (11.4, -14.5), [("static", 8.0, ("hmg", 200)), ("fire", 13.0, "autorifleman")])
+        d.post("autorifleman", 9.6, -11.0, 180)
     if tier == 4:
         d.line((-6.2, 10.5), (11.4, 10.5), [("fire", 7.0, "rifleman"), ("static", 12.5, ("at", 10))])
         d.line((11.4, -14.5), (11.4, -9.0))
@@ -607,49 +630,47 @@ def neochori(d, tier):
         d.post("at", -3.8, -9.6, 250, cover=SHORT)
         d.post("rifleman", 8.0, 2.0, 90)
         d.chicane(-6.2, -6.1, 270, step=3.0)
+        d.add("guard", "rifleman", 0.2, -6.1, 180, z=d.t.floors[1])
         d.road_block(-10.0, 22.0)
         d.road_block(-10.0, -22.0)
         d.wire((-4.0, -18.0), (11.0, -18.0))
 
 
-@site("Panochori", entry="W", nest=(1.6, -10.6, 250), flag=(3.0, -10.5), gmg_face=280)
+@site("Panochori", entry="W", nest=(1.6, -10.6, 250), flag=(3.0, -10.5), gmg_face=280, balcony_t3="hmg", balcony=None, upstairs="gmg")
 def panochori(d, tier):
     # A road runs north-south right along the veranda and bends away south-west; a house abuts the north; old
     # walls and houses close a yard south and east. The way in: off the road through a blast wall in front of the
     # veranda, the gate square on the door.
     if tier == 3:
         d.line((-6.1, -9.5), (-6.1, 7.8), [("gate", 3.4, 6.0), ("low", 0, (6.4, 10.2))], road_ok=True)
-        d.post("hmg", -3.4, -11.2, 235, kind="static", search=1.0)                       # Out the yard's gap, down the road
         d.post("autorifleman", 6.0, -11.0, 200)
         d.post("rifleman", 9.0, 0.0, 0)
         d.add("guard", "rifleman", 0.2, -6.1, 180, z=d.t.floors[1])                       # Upstairs, the front room
     if tier == 4:
-        d.line((7.0, 8.4), (12.0, 8.4), [("fire", 2.5, "rifleman")])
-        d.bunker(-8.0, -9.0, 225, search=1.5)
+        d.line((6.6, 8.4), (12.2, 8.4), [("static", 1.7, ("at", 0)), ("fire", 3.8, "rifleman")])
         d.bunker(-8.0, 9.0, 315, search=1.5)
         d.post("at", -1.0, -9.0, 250, cover=SHORT)
-        d.post("at", 1.5, -12.0, 235, search=1.5, kind="static")
         d.post("autorifleman", 9.0, 2.0, 45)
         d.post("rifleman", 4.0, -12.0, 270)
         d.chicane(-6.1, -6.1, 270, step=3.0)
         d.road_block(-10.0, 18.0)
-        d.road_block(-14.0, -14.0)
+        d.road_block(-18.0, -10.0)
 
 
-@site("Paros", entry="W", nest=(0.5, -10.0, 200), flag=(4.0, 10.0), gmg_face=270)
+@site("Paros", entry="W", nest=(0.5, -10.0, 200), flag=(4.0, 10.0), gmg_face=280, balcony_t3="hmg", balcony=None, upstairs="gmg")
 def paros(d, tier):
     # A road runs north-south just west of the veranda; houses abut the east side and close the south; a yard
     # opens north between the house and the next block, open to the east. The way in: off the road.
     if tier == 3:
-        d.line((-7.2, -11.2), (-7.2, 15.4), [("static", 1.6, ("hmg", 225)), ("gate", 5.1 + 3.0, 6.0), ("fire", 12.9, "rifleman"), ("fire", 20.0, "rifleman")], road_ok=True)
-        d.line((17.2, 5.6), (17.2, 15.4), [("fire", 5.0, "autorifleman")])
+        d.line((-7.2, -11.2), (-7.2, 15.4), [("gate", 5.1, 6.0), ("fire", 9.9, "rifleman"), ("fire", 20.0, "rifleman")], road_ok=True)
+        d.line((17.2, 5.6), (17.2, 15.4), [("slot", 3.0, None), ("fire", 7.5, "autorifleman")])
         d.post("autorifleman", 5.0, 12.5, 90)
     if tier == 4:
         d.line((-7.2, 15.4), (17.2, 15.4), [("fire", 9.0, "rifleman")])
         d.bunker(-9.2, 17.2, 315, search=3.0)
         d.bunker(19.2, 17.2, 45, search=3.0)
         d.post("at", 2.0, 11.0, 0, cover=SHORT)
-        d.post("at", 8.0, 9.0, 90, search=1.5, kind="static")
+        d.static_at((17.2, 5.6), (17.2, 15.4), 3.0, "at")
         d.post("rifleman", -1.0, 12.5, 0)
         d.post("autorifleman", 3.5, -10.2, 180)
         d.chicane(-7.2, -6.1, 270, step=3.0)
@@ -679,7 +700,7 @@ def rodopoli(d, tier):
         d.chicane(-12.5, -6.1, 270, step=3.5)
         d.hogs(-11.0, 25.5, 90, n=2)
         d.hogs(-12.0, -19.0, 90, n=2)
-        d.wire((-16.5, -12.0), (-16.5, 8.0))
+        d.wire((-16.5, -13.0), (-16.5, 8.0), gap=(3.0, 11.0))
 
 
 @site("Sofia", entry="W", nest=(-10.0, -13.0, 225), flag=(8.0, 4.0), gmg_face=225, balcony="at", nest_road=True)
@@ -690,13 +711,14 @@ def sofia(d, tier):
         d.line((-6.8, -11.0), (-6.8, 8.0), [("gate", 4.9, 6.0), ("low", 0, (7.9, 11.5)), ("fire", 15.0, "autorifleman")], road_ok=True)
         d.line((-6.8, -11.0), (5.0, -11.0), [("static", 3.2, ("hmg", 200)), ("static", 8.3, ("gmg", 160))], road_ok=True)
         d.post("autorifleman", 9.0, 2.0, 90)
+        d.post("rifleman", 12.0, 2.0, 90)
     if tier == 4:
         d.line((16.0, 0.2), (16.0, 2.8))
-        d.bunker(-8.8, -12.4, 225, search=1.5)
-        d.bunker(-8.8, 9.6, 315, search=1.5)
-        d.post("at", -8.6, -9.0, 225, cover=SHORT, road_ok=True)
-        d.post("rifleman", 12.0, 2.0, 90)
+        d.bunker(-9.5, -14.5, 225, search=2.5)
+        d.bunker(6.5, -13.4, 160, search=1.5)
+        d.add("guard", "at", 4.0, -9.2, 180)
         d.post("autorifleman", 9.0, 5.0, 45)
+        d.post("rifleman", -9.0, 6.0, 300, road_ok=True)
         d.chicane(-6.8, -6.1, 270, step=3.0)
         d.road_block(-15.0, 16.0)
         d.road_block(-25.0, -15.0)

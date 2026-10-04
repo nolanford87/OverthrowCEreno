@@ -64,7 +64,7 @@ OTLAYOUT|Altis|Rodopoli|ITEM|3|object|Land_HBarrier_1_F|[18739.915,16599.053,32.
 OTLAYOUT|Altis|Rodopoli|ITEM|3|object|Land_HBarrier_1_F|[18737.044,16603.122,32.768]|[[0.8170,0.5766,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Rodopoli|ITEM|3|guard|autorifleman|[18712.792,16604.881,34.299]|234.8|ground
 OTLAYOUT|Altis|Rodopoli|ITEM|3|object|Land_BagFence_Short_F|[18712.057,16604.362,34.320]|[[-0.8170,-0.5766,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Rodopoli|TIER|4|67
+OTLAYOUT|Altis|Rodopoli|TIER|4|66
 OTLAYOUT|Altis|Rodopoli|ITEM|4|object|Land_TableDesk_F|[18726.570,16605.302,34.400]|[[0.2043,0.9789,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Rodopoli|ITEM|4|object|Land_OfficeChair_01_F|[18726.080,16607.037,34.400]|[[0.8812,0.4727,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Rodopoli|ITEM|4|object|Land_MapBoard_F|[18722.101,16602.270,34.400]|[[-0.9574,0.2889,0.0000],[0.0000,0.0000,1.0000]]|drop
@@ -130,5 +130,4 @@ OTLAYOUT|Altis|Rodopoli|ITEM|4|object|Land_CncBarrierMedium_F|[18740.870,16589.2
 OTLAYOUT|Altis|Rodopoli|ITEM|4|object|Land_CzechHedgehog_01_F|[18708.915,16575.341,33.796]|[[0.1700,0.9854,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Rodopoli|ITEM|4|object|Land_CzechHedgehog_01_F|[18708.444,16578.436,33.868]|[[0.1700,0.9854,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Rodopoli|ITEM|4|object|Land_CzechHedgehog_01_F|[18745.850,16600.181,32.566]|[[0.1700,0.9854,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Rodopoli|ITEM|4|object|Land_Razorwire_F|[18739.176,16591.371,32.188]|[[0.5766,-0.8170,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Rodopoli|ITEM|4|object|Land_Razorwire_F|[18732.966,16586.989,32.238]|[[0.5766,-0.8170,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Rodopoli|ITEM|4|object|Land_Razorwire_F|[18731.215,16586.059,32.334]|[[0.5766,-0.8170,0.0000],[0.0000,0.0000,1.0000]]|ground
