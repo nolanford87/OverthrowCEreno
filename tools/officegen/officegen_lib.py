@@ -542,6 +542,7 @@ class Plan:
         self.margin = spec.get("perimeter_margin", 5.0)
         self.log = []
         self.desk = None
+        self.office_room = None
         self.doorways = self.find_doorways()
         self.main = self.pick_main()
         self.back = self.pick_back()
@@ -1136,6 +1137,7 @@ class Plan:
                 biggest = ground[0]
         level = biggest["level"]
         cells = biggest["cells"]
+        self.office_room = biggest
         best, best_score = None, None
         for (x, y) in cells:
             for back in (0, 90, 180, 270):
@@ -1202,6 +1204,24 @@ class Plan:
         if self.floor_ok(z, wall, back, 1.45) and self.clear_of_doors((wall[0], wall[1], z), 1.6):
             return self.add_object(tier, "Land_BagFence_Long_F", wall, back + 180, z)
         return False
+
+    def reinforce_office(self, tier, cls="Land_BagFence_Short_F", reach=7.0, inside=2.0, lateral=1.2):
+        """Tier 5: the office room's doors reinforced: for each door within reach of the desk, a pair
+        of bags 2 m from it towards the desk, square with that line, either side of it."""
+        if not self.desk:
+            return 0
+        dx, dy, level, _ = self.desk
+        n = 0
+        for door in self.b.doors:
+            if abs(door[2] - 1.0 - level) > 2.5 or dist2(door, (dx, dy)) > reach:
+                continue
+            # the probe has no wall data to read a door's axis from: face the desk along the nearer axis
+            d = norm_dir(round(vec_dir(dx - door[0], dy - door[1]) / 90.0) * 90)
+            for lat in (-lateral, lateral):
+                p = offset(door, d, inside, lat)
+                if self.floor_ok(level, p, d, size_of(cls)[0] / 2.0) and self.add_object(tier, cls, p, d, level):
+                    n += 1
+        return n
 
     def airlock(self, tier, dw, cls="Land_BagFence_Short_F"):
         """Bags inside the main door, a piece each side of the way in."""
@@ -1325,11 +1345,12 @@ def build_tiers(b, spec=None):
         placed += 1
 
     # Tier 5: the perimeter with its gate and the AT man beside it, the airlock and the office's
-    # cover, the marksman at an upstairs window over the approach
+    # cover and reinforced doors, the marksman at an upstairs window over the approach
     gate = plan.perimeter(5)
     if main:
         plan.airlock(5, main)
     plan.office_cover(5)
+    plan.reinforce_office(5)
     placed = 0
     if gate and counts[4] > 0 and plan.gate_guard(5, "at", gate):
         placed += 1
