@@ -22,7 +22,7 @@ OTLAYOUT|Altis|Ekali|ITEM|2|object|Land_HBarrier_3_F|[17055.550,9987.156,22.081]
 OTLAYOUT|Altis|Ekali|ITEM|2|object|Land_HBarrier_3_F|[17055.550,9987.156,23.831]|[[-0.9397,-0.3420,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Ekali|ITEM|2|object|Land_BagFence_Short_F|[17057.665,9986.755,22.196]|[[-0.9397,-0.3420,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Ekali|ITEM|2|object|Land_BagBunker_Tower_F|[17057.295,9981.193,22.658]|[[-0.9397,-0.3420,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ekali|ITEM|2|guard|rifleman|[17057.295,9981.193,25.458]|250.0|
+OTLAYOUT|Altis|Ekali|ITEM|2|guard|rifleman|[17057.013,9981.090,26.058]|250.0|
 OTLAYOUT|Altis|Ekali|ITEM|2|object|Land_Razorwire_F|[17060.254,9997.914,21.481]|[[0.3420,-0.9397,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Ekali|ITEM|2|guard|marksman|[17059.945,9988.968,24.650]|250.0|
 OTLAYOUT|Altis|Ekali|ITEM|2|guard|rifleman|[17064.555,9987.560,24.650]|220.0|

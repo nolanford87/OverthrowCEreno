@@ -27,7 +27,7 @@ OTLAYOUT|Altis|Agia Triada|ITEM|2|object|Land_CncBarrier_stripes_F|[16523.492,20
 OTLAYOUT|Altis|Agia Triada|ITEM|2|object|Land_CncBarrier_stripes_F|[16522.214,20311.388,7.106]|[[0.8708,0.4917,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Agia Triada|ITEM|2|object|Land_CncBarrier_stripes_F|[16526.048,20318.836,6.858]|[[0.8708,0.4917,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Agia Triada|ITEM|2|object|Land_CncBarrier_stripes_F|[16527.326,20316.572,6.807]|[[0.8708,0.4917,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Agia Triada|ITEM|2|guard|rifleman|[16528.507,20307.362,9.700]|330.5|
+OTLAYOUT|Altis|Agia Triada|ITEM|2|guard|rifleman|[16528.359,20307.623,10.300]|330.5|
 OTLAYOUT|Altis|Agia Triada|ITEM|2|object|Land_Razorwire_F|[16526.635,20300.905,7.148]|[[0.9998,-0.0178,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Agia Triada|ITEM|2|guard|marksman|[16534.892,20298.408,10.260]|181.0|
 OTLAYOUT|Altis|Agia Triada|ITEM|2|guard|rifleman|[16537.860,20302.206,10.260]|21.0|

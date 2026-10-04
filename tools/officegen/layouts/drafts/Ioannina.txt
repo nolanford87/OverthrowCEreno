@@ -22,7 +22,7 @@ OTLAYOUT|Altis|Ioannina|ITEM|2|object|Land_HBarrier_3_F|[23190.133,19994.274,14.
 OTLAYOUT|Altis|Ioannina|ITEM|2|object|Land_HBarrier_3_F|[23190.133,19994.274,16.110]|[[-0.8290,0.5592,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Ioannina|ITEM|2|object|Land_BagFence_Short_F|[23191.052,19992.328,14.331]|[[-0.8290,0.5592,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Ioannina|ITEM|2|object|Land_BagBunker_Tower_F|[23186.335,19989.358,14.282]|[[-0.8290,0.5592,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ioannina|ITEM|2|guard|rifleman|[23186.335,19989.358,17.082]|304.0|
+OTLAYOUT|Altis|Ioannina|ITEM|2|guard|rifleman|[23186.086,19989.525,17.682]|304.0|
 OTLAYOUT|Altis|Ioannina|ITEM|2|object|Land_Razorwire_F|[23201.602,19996.791,14.365]|[[-0.5592,-0.8290,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Ioannina|ITEM|2|guard|marksman|[23194.183,19991.784,17.170]|304.0|
 OTLAYOUT|Altis|Ioannina|ITEM|2|guard|rifleman|[23195.753,19987.227,17.170]|205.0|

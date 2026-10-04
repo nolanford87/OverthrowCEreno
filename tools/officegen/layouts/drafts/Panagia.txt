@@ -22,7 +22,7 @@ OTLAYOUT|Altis|Panagia|ITEM|2|object|Land_HBarrier_3_F|[20588.177,9023.260,40.11
 OTLAYOUT|Altis|Panagia|ITEM|2|object|Land_HBarrier_3_F|[20588.177,9023.260,41.860]|[[-0.6743,-0.7385,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Panagia|ITEM|2|object|Land_BagFence_Short_F|[20590.237,9023.884,40.134]|[[-0.6743,-0.7385,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Panagia|ITEM|2|object|Land_BagBunker_Tower_F|[20587.942,9017.516,39.713]|[[-0.6743,-0.7385,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Panagia|ITEM|2|guard|rifleman|[20587.942,9017.516,42.513]|222.4|
+OTLAYOUT|Altis|Panagia|ITEM|2|guard|rifleman|[20587.740,9017.294,43.113]|222.4|
 OTLAYOUT|Altis|Panagia|ITEM|2|object|Land_Razorwire_F|[20587.362,9034.973,40.542]|[[0.7385,-0.6743,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Panagia|ITEM|2|guard|marksman|[20591.232,9026.903,44.050]|222.4|
 OTLAYOUT|Altis|Panagia|ITEM|2|guard|rifleman|[20595.970,9027.790,44.050]|192.4|

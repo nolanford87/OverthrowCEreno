@@ -21,8 +21,8 @@ OTLAYOUT|Altis|Negades|ITEM|2|guard|autorifleman|[4858.762,16209.096,71.136]|27.
 OTLAYOUT|Altis|Negades|ITEM|2|object|Land_HBarrier_3_F|[4854.788,16212.930,70.509]|[[0.4644,0.8856,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Negades|ITEM|2|object|Land_HBarrier_3_F|[4854.788,16212.930,72.259]|[[0.4644,0.8856,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Negades|ITEM|2|object|Land_BagFence_Short_F|[4852.955,16211.803,70.860]|[[0.4644,0.8856,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Negades|ITEM|2|object|Land_BagBunker_Tower_F|[4849.969,16218.167,69.778]|[[0.4644,0.8856,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Negades|ITEM|2|guard|rifleman|[4849.969,16218.167,72.578]|27.7|
+OTLAYOUT|Altis|Negades|ITEM|2|object|Land_BagBunker_Tower_F|[4858.026,16218.459,69.572]|[[0.4644,0.8856,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Negades|ITEM|2|guard|rifleman|[4858.165,16218.725,72.972]|27.7|
 OTLAYOUT|Altis|Negades|ITEM|2|object|Land_Razorwire_F|[4858.555,16201.810,72.480]|[[-0.8856,0.4644,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Negades|ITEM|2|guard|marksman|[4852.760,16208.631,76.240]|27.7|
 OTLAYOUT|Altis|Negades|ITEM|2|guard|rifleman|[4848.403,16206.568,76.240]|357.7|

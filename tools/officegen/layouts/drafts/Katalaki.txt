@@ -22,7 +22,7 @@ OTLAYOUT|Altis|Katalaki|ITEM|2|object|Land_HBarrier_3_F|[11665.322,13871.230,12.
 OTLAYOUT|Altis|Katalaki|ITEM|2|object|Land_HBarrier_3_F|[11665.322,13871.230,14.391]|[[-0.3983,-0.9173,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Katalaki|ITEM|2|object|Land_BagFence_Short_F|[11667.068,13872.489,12.633]|[[-0.3983,-0.9173,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Katalaki|ITEM|2|object|Land_BagBunker_Tower_F|[11670.850,13868.394,12.755]|[[-0.3983,-0.9173,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Katalaki|ITEM|2|guard|rifleman|[11670.850,13868.394,15.555]|203.5|
+OTLAYOUT|Altis|Katalaki|ITEM|2|guard|rifleman|[11670.731,13868.118,16.155]|203.5|
 OTLAYOUT|Altis|Katalaki|ITEM|2|object|Land_Razorwire_F|[11660.751,13882.045,12.965]|[[0.9173,-0.3983,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Katalaki|ITEM|2|guard|marksman|[11667.031,13875.666,16.130]|203.5|
 OTLAYOUT|Altis|Katalaki|ITEM|2|guard|rifleman|[11671.224,13878.043,16.130]|173.5|

@@ -27,7 +27,7 @@ OTLAYOUT|Altis|Frini|ITEM|2|object|Land_CncBarrier_stripes_F|[14529.068,20703.62
 OTLAYOUT|Altis|Frini|ITEM|2|object|Land_CncBarrier_stripes_F|[14531.319,20702.321,41.950]|[[-0.5004,-0.8658,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Frini|ITEM|2|object|Land_CncBarrier_stripes_F|[14538.804,20706.079,42.168]|[[-0.5004,-0.8658,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Frini|ITEM|2|object|Land_CncBarrier_stripes_F|[14536.553,20707.380,42.173]|[[-0.5004,-0.8658,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Frini|ITEM|2|guard|rifleman|[14527.356,20708.653,44.836]|120.0|
+OTLAYOUT|Altis|Frini|ITEM|2|guard|rifleman|[14527.616,20708.503,45.436]|120.0|
 OTLAYOUT|Altis|Frini|ITEM|2|object|Land_Razorwire_F|[14508.287,20716.999,42.168]|[[0.9996,-0.0269,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Frini|ITEM|2|guard|marksman|[14516.467,20712.427,45.530]|181.5|
 OTLAYOUT|Altis|Frini|ITEM|2|guard|rifleman|[14519.470,20716.198,45.530]|123.5|

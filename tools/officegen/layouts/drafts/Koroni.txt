@@ -25,6 +25,6 @@ OTLAYOUT|Altis|Koroni|ITEM|2|object|Land_BagBunker_Tower_F|[11794.458,18358.680,
 OTLAYOUT|Altis|Koroni|ITEM|2|object|Flag_NATO_F|[11791.646,18357.778,51.924]|[[-0.7202,0.6937,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
 OTLAYOUT|Altis|Koroni|ITEM|2|object|Land_CncBarrier_stripes_F|[11789.149,18358.934,51.944]|[[0.6937,0.7202,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Koroni|ITEM|2|object|Land_CncBarrier_stripes_F|[11787.276,18360.738,51.950]|[[0.6937,0.7202,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Koroni|ITEM|2|guard|rifleman|[11794.458,18358.680,54.633]|313.9|
+OTLAYOUT|Altis|Koroni|ITEM|2|guard|rifleman|[11794.242,18358.888,55.233]|313.9|
 OTLAYOUT|Altis|Koroni|ITEM|2|guard|marksman|[11788.240,18366.783,54.550]|316.0|
 OTLAYOUT|Altis|Koroni|ITEM|2|guard|rifleman|[11788.828,18361.999,54.550]|306.0|

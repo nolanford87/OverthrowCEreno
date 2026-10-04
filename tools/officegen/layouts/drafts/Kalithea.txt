@@ -27,7 +27,7 @@ OTLAYOUT|Altis|Kalithea|ITEM|2|object|Land_CncBarrier_stripes_F|[17853.337,18169
 OTLAYOUT|Altis|Kalithea|ITEM|2|object|Land_CncBarrier_stripes_F|[17851.179,18171.127,1.980]|[[0.5575,0.8302,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Kalithea|ITEM|2|object|Land_CncBarrier_stripes_F|[17851.263,18179.503,1.970]|[[0.5575,0.8302,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Kalithea|ITEM|2|object|Land_CncBarrier_stripes_F|[17853.421,18178.053,1.970]|[[0.5575,0.8302,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Kalithea|ITEM|2|guard|rifleman|[17858.609,18170.353,4.796]|303.9|
+OTLAYOUT|Altis|Kalithea|ITEM|2|guard|rifleman|[17858.360,18170.520,5.396]|303.9|
 OTLAYOUT|Altis|Kalithea|ITEM|2|object|Land_Razorwire_F|[17855.798,18158.083,1.990]|[[-0.6152,-0.7883,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Kalithea|ITEM|2|guard|marksman|[17848.051,18153.601,5.390]|308.0|
 OTLAYOUT|Altis|Kalithea|ITEM|2|guard|rifleman|[17849.302,18148.946,5.390]|298.0|

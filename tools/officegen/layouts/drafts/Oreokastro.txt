@@ -19,6 +19,6 @@ OTLAYOUT|Altis|Oreokastro|ITEM|2|object|Land_BagFence_Short_F|[4585.739,21441.95
 OTLAYOUT|Altis|Oreokastro|ITEM|2|guard|rifleman|[4585.105,21441.990,300.837]|175.8|ground
 OTLAYOUT|Altis|Oreokastro|ITEM|2|guard|autorifleman|[4583.908,21441.901,300.880]|175.8|ground
 OTLAYOUT|Altis|Oreokastro|ITEM|2|object|Land_BagBunker_Tower_F|[4583.491,21435.303,300.163]|[[0.0734,-0.9973,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Oreokastro|ITEM|2|guard|rifleman|[4583.491,21435.303,302.963]|175.8|
+OTLAYOUT|Altis|Oreokastro|ITEM|2|guard|rifleman|[4583.513,21435.004,303.563]|175.8|
 OTLAYOUT|Altis|Oreokastro|ITEM|2|guard|marksman|[4597.842,21446.036,304.690]|175.8|
 OTLAYOUT|Altis|Oreokastro|ITEM|2|guard|rifleman|[4600.452,21450.088,304.690]|145.8|

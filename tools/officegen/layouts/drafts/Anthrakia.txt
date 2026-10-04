@@ -27,7 +27,7 @@ OTLAYOUT|Altis|Anthrakia|ITEM|2|object|Land_CncBarrier_stripes_F|[16548.510,1614
 OTLAYOUT|Altis|Anthrakia|ITEM|2|object|Land_CncBarrier_stripes_F|[16549.609,16144.813,14.443]|[[0.9062,-0.4229,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Anthrakia|ITEM|2|object|Land_CncBarrier_stripes_F|[16545.211,16151.941,14.321]|[[0.9062,-0.4229,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Anthrakia|ITEM|2|object|Land_CncBarrier_stripes_F|[16544.112,16149.585,14.317]|[[0.9062,-0.4229,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Anthrakia|ITEM|2|guard|rifleman|[16543.647,16140.312,17.156]|25.0|
+OTLAYOUT|Altis|Anthrakia|ITEM|2|guard|rifleman|[16543.774,16140.584,17.756]|25.0|
 OTLAYOUT|Altis|Anthrakia|ITEM|2|object|Land_Razorwire_F|[16547.537,16127.704,14.497]|[[0.4421,0.8969,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Anthrakia|ITEM|2|guard|marksman|[16554.211,16133.667,17.870]|116.2|
 OTLAYOUT|Altis|Anthrakia|ITEM|2|guard|rifleman|[16552.040,16137.970,17.870]|30.2|

@@ -72,8 +72,15 @@ class Site:
         if kind == "object" and tl.is_barrier(what):  # The check's rule: a barrier may overlap the neighbours a little
             hl, hd = max(ln - 2 * tl.BARRIER_OVERLAP, 0.2), max(dp * 0.5, 0.2)
         for h in t.hits(w[0], w[1], hl, hd, (t.dir + mdir) % 360, 0.1 if hl < ln else 0.25):
-            if h[0] in ("building", "part", "rock", "wall") or (h[0] == "tree" and (kind != "object" or "Razorwire" in what)):
+            if h[0] in ("building", "part", "rock", "wall") or (h[0] == "tree" and (kind != "object" or "Razorwire" in what or "Bunker" in what)):
                 return h[0]
+        if kind != "object" or "Razorwire" in what or "Bunker" in what:
+            # A trunk standing inside a wide footprint (hits() tests the footprint's corners against the trunk only)
+            for o in t.objs:
+                if o["kind"] == "tree":
+                    m = t.to_model(o["pos"])
+                    if in_rect(m[0], m[1], x, y, ln + 1.2, dp + 1.2, mdir):
+                        return "tree"
         if t.on_office(x, y, ln, dp, mdir):
             return "office"
         pts = samples(x, y, ln, dp, mdir, 0.05)
@@ -255,13 +262,15 @@ def blast_wall(site):
 
 
 TOWER = "Land_BagBunker_Tower_F"
-TOWER_DECK = 2.8  # The tower's platform above the ground (a guess: the in-game test reports where the man ends up)
+TOWER_DECK = 3.4  # The tower's platform above the ground at its centre (measured in game, round 3)
+TOWER_STEP = 0.3  # The platform man stands this far toward the tower's +y (its open side; the tall back is at -y)
 
 
 def tower_parts(site, x, y, face):
     """A sandbag tower and its rifleman on the platform."""
-    z = site.t.ground_model(x, y) + TOWER_DECK
-    return [("object", TOWER, (x, y), face, None), ("guard", "rifleman", (x, y), face, z)]
+    z = site.t.ground_model(x, y) + TOWER_DECK  # The game sets the tower's base on the ground at its centre
+    gx, gy = x + TOWER_STEP * math.sin(math.radians(face)), y + TOWER_STEP * math.cos(math.radians(face))
+    return [("object", TOWER, (x, y), face, None), ("guard", "rifleman", (gx, gy), face, z)]
 
 
 def road_check(site):
@@ -301,7 +310,8 @@ def road_check(site):
                 continue
             chicane = far if ok(far) else []
             out = [site.put(kd, w, p[0], p[1], d) for kd, w, p, d, r in parts + near + chicane]
-            out.append(tl.guard(t, "rifleman", tower[0], tower[1], tower_parts(site, *tower, face)[1][4], face))
+            g = tower_parts(site, tower[0], tower[1], face)[1]
+            out.append(tl.guard(t, "rifleman", g[2][0], g[2][1], g[4], face))
             return out, f"checkpoint {math.hypot(*tower):.0f} m out ({seg['type']}, {seg['width']:.0f} m): tower, flag, {'chicane' if chicane else 'one barrier block (no room across)'}"
     return None, ""
 
@@ -314,7 +324,7 @@ def bunker(site):
                  (-7.0, -11.5), (3.0, -12.5), (-11.0, -9.5), (-12.0, -11.0), (-12.5, -1.0)):
         if not site.blocked("object", TOWER, x, y, 180):
             (k1, w1, p1, d1, _), (k2, w2, p2, d2, z2) = tower_parts(site, x, y, 180)
-            return [site.put(k1, w1, x, y, 180), tl.guard(site.t, "rifleman", x, y, z2, 180)], f"tower at ({x:.1f}, {y:.1f})"
+            return [site.put(k1, w1, x, y, 180), tl.guard(site.t, "rifleman", p2[0], p2[1], z2, 180)], f"tower at ({x:.1f}, {y:.1f})"
     return None, "NO tower"
 
 

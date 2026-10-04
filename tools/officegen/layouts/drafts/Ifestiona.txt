@@ -27,7 +27,7 @@ OTLAYOUT|Altis|Ifestiona|ITEM|2|object|Land_CncBarrier_stripes_F|[12777.454,1970
 OTLAYOUT|Altis|Ifestiona|ITEM|2|object|Land_CncBarrier_stripes_F|[12776.932,19707.908,47.823]|[[0.9797,0.2007,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Ifestiona|ITEM|2|object|Land_CncBarrier_stripes_F|[12782.866,19713.819,48.288]|[[0.9797,0.2007,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Ifestiona|ITEM|2|object|Land_CncBarrier_stripes_F|[12783.388,19711.272,48.239]|[[0.9797,0.2007,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ifestiona|ITEM|2|guard|rifleman|[12781.685,19702.145,50.484]|348.4|
-OTLAYOUT|Altis|Ifestiona|ITEM|2|object|Land_Razorwire_F|[12780.982,19690.747,46.541]|[[0.7510,-0.6603,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Ifestiona|ITEM|2|guard|rifleman|[12781.625,19702.438,51.084]|348.4|
+OTLAYOUT|Altis|Ifestiona|ITEM|2|object|Land_Razorwire_F|[12791.560,19692.632,46.601]|[[0.6603,0.7510,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Ifestiona|ITEM|2|guard|marksman|[12785.664,19683.502,49.990]|221.3|
 OTLAYOUT|Altis|Ifestiona|ITEM|2|guard|rifleman|[12790.384,19684.479,49.990]|61.3|
