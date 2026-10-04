@@ -1317,8 +1317,8 @@ def build_tiers(b, spec=None):
     if gate and counts[4] > 0 and plan.gate_guard(5, "at", gate):
         placed += 1
     roles = ["marksman", "at", "rifleman"]
-    while placed < counts[4]:
-        role = roles[placed % 3]
+    for i in range(counts[4] - placed):
+        role = roles[i % 3]  # the marksman first, whether or not the gate took the AT man
         if not plan.window_post(5, role, b.top_z if b.top_z > ground + 0.5 else None, main_d) \
                 and not plan.window_post(5, role, None, main_d) and not plan.guard_in_building(5, role):
             plan.log.append("T5: no post for a %s" % role)

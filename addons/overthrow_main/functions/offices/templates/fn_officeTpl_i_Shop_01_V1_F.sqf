@@ -75,6 +75,6 @@
         ["object", "Land_BagFence_Short_F", [1.57, -0.4, -2.7], 0, []],
         ["object", "Land_BagFence_Long_F", [0.8, 2, -2.7], 90, []],
         ["guard", "at", [-1.23, -20.1, -2.7], 180, ["outside"]],
-        ["guard", "at", [1.6, 2.1, 1.1], 90, []]
+        ["guard", "marksman", [1.6, 2.1, 1.1], 90, []]
     ]
 ]

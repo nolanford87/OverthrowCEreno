@@ -68,6 +68,6 @@
         ["object", "Land_BarGate_F", [3, -21, -1.4], 180, ["outside", "axis", "gate"]],
         ["object", "Land_BagFence_Short_F", [4.4, 0.2, -1.4], 0, []],
         ["guard", "at", [-1.2, -19.5, -1.4], 180, ["outside"]],
-        ["guard", "at", [-0.9, 3.2, 1.5], 0, []]
+        ["guard", "marksman", [-0.9, 3.2, 1.5], 0, []]
     ]
 ]

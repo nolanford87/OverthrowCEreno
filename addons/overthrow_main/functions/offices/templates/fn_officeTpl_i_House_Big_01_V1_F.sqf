@@ -72,6 +72,6 @@
         ["object", "Land_HBarrier_5_F", [-9, 7.8, -2.5], 270, ["outside"]],
         ["object", "Land_BarGate_F", [-3.3, -26.35, -2.5], 180, ["outside", "axis", "gate"]],
         ["guard", "at", [0.9, -24.85, -2.5], 180, ["outside"]],
-        ["guard", "at", [4.1, -2.12, 0.9], 90, ["free"]]
+        ["guard", "marksman", [4.1, -2.12, 0.9], 90, ["free"]]
     ]
 ]
