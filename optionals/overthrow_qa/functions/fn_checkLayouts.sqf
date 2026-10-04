@@ -19,7 +19,8 @@
             when every route was computed and none gets out, "unknown (...)" when some weren't computed
         OTCLASS|class|[length, depth, height] the real size of every class the layouts use (once)
     and two screenshots per tier (the profile's Screenshots folder): OTL_<town>_T<tier>_top.png from 60 m
-    above, OTL_<town>_T<tier>_street.png from 35 m out on the street side, 20 m up (the first bearing with a clear view).
+    above, OTL_<town>_T<tier>_street.png from 35 m out on the street side, 20 m up (the first bearing with a clear view); both farther out for a big
+    office, by OT_fnc_officeRadius against 30 m.
     run-qa.ps1 -Suite layoutcheck -Only "town,..." checks those towns (else every town with a layout);
     OTQA_layoutShots = false skips the screenshots.
 
@@ -266,12 +267,14 @@
 
                 // The pictures: from above, and from out along the way to the street
                 if (_shots) then {
+                    // Farther out for a big office (Kavala's hospital): by its radius against a house's 30 m
+                    private _scale = (([_town] call OT_fnc_officeRadius) / 30) ^ 1.5; // About twice as far for the hospital
                     private _name = (_town splitString " ") joinString "_";
                     private _c = getPosASL _b;
                     _cam camPrepareTarget (ASLToAGL (_c vectorAdd [0, 0.5, 0]));
                     // 55 m above the ground, or 55 m above the roof of a tall office (the Offices_01 tower)
                     (boundingBoxReal _b) params ["", "_top"];
-                    _cam camPreparePos (ASLToAGL (_c vectorAdd [0, 0, 55 max ((_top select 2) + 55)]));
+                    _cam camPreparePos (ASLToAGL (_c vectorAdd [0, 0, (55 max ((_top select 2) + 55)) * _scale]));
                     _cam camPrepareFOV 0.75;
                     _cam camCommitPrepared 0;
                     sleep 1.5;
@@ -284,12 +287,12 @@
                     private _aim = _c vectorAdd [0, 0, 3];
                     private _eye = [];
                     {
-                        private _p = _c getPos [35, _front + _x];
-                        private _e = [_p select 0, _p select 1, ((getTerrainHeightASL _p) max (_c select 2)) + 20];
+                        private _p = _c getPos [35 * _scale, _front + _x];
+                        private _e = [_p select 0, _p select 1, ((getTerrainHeightASL _p) max (_c select 2)) + 20 * _scale];
                         private _hits = lineIntersectsSurfaces [_e, _aim, objNull, objNull, true, 1, "VIEW", "FIRE"];
                         if (_hits isEqualTo [] || { (((_hits select 0) select 2) isEqualTo _b) || { ((_hits select 0) select 3) isEqualTo _b } }) exitWith { _eye = _e };
                     } forEach [0, 30, -30, 60, -60, 90, -90, 135, -135, 180];
-                    if (_eye isEqualTo []) then { private _p = _c getPos [35, _front]; _eye = [_p select 0, _p select 1, ((getTerrainHeightASL _p) max (_c select 2)) + 26] };
+                    if (_eye isEqualTo []) then { private _p = _c getPos [35 * _scale, _front]; _eye = [_p select 0, _p select 1, ((getTerrainHeightASL _p) max (_c select 2)) + 26 * _scale] };
                     _cam camPrepareTarget (ASLToAGL _c);
                     _cam camPreparePos (ASLToAGL _eye);
                     _cam camPrepareFOV 0.7;
