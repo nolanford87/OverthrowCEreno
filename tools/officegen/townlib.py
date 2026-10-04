@@ -52,6 +52,14 @@ CLASSES = {
     "Flag_NATO_F": (0.3, 0.3),
 }
 STATIC_ROLES = ("hmg", "gmg", "at", "aa", "mortar")
+# Barrier pieces may overlap each other, the neighbours and their walls a little, so a line is one unbroken wall:
+# the checks only look at their middle (BARRIER_OVERLAP m off each end, half their depth)
+BARRIERS = ("Wall", "Fence", "HBarrier", "Barrier", "Gate", "Razorwire", "BagFence", "Cnc", "Hedgehog")
+BARRIER_OVERLAP = 0.6
+
+
+def is_barrier(cls):
+    return any(b in cls for b in BARRIERS)
 GUARD_ROLES = ("gendarme", "rifleman", "autorifleman", "marksman", "at", "mg_gunner", "officer")
 
 
@@ -333,6 +341,8 @@ def check(town, tiers):
             if "ground" not in extra:
                 continue  # On a floor of the office (dropped onto it in the game)
             size = CLASSES.get(what, (0.6, 0.6)) if kind == "object" else ((2.0, 2.0) if kind == "static" else (0.5, 0.5))
+            if kind == "object" and is_barrier(what):
+                size = (max(size[0] - 2 * BARRIER_OVERLAP, 0.2), max(size[1] * 0.5, 0.2))
             yaw = (o if kind == "guard" else math.degrees(math.atan2(o[0][0], o[0][1]))) % 360
             hit = [h for h in town.hits(p[0], p[1], size[0], size[1], yaw) if h[0] in ("building", "part", "rock") or (h[0] == "wall" and kind != "object")]
             if town.on_office(m[0], m[1], size[0], size[1], (yaw - town.dir) % 360):
