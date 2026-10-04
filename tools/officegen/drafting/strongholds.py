@@ -619,7 +619,7 @@ def kavala(d):
     # yard; AT on the roof over the street, an AT man at the gate; the kill zone inside
     d.checkpoint(27.4, 17.0, 10, out=6.0, side=1, roles=("autorifleman", "rifleman"))
     d.checkpoint(26.8, -31.5, 182, out=-5.5, side=1, roles=("autorifleman", "rifleman"))
-    d.checkpoint(35.5, -13.0, 92, out=6.0, side=-1, roles=("autorifleman",), post=(1.0, 6.5))
+    d.checkpoint(34.5, -13.0, 92, out=5.0, side=-1, roles=("autorifleman",), post=(1.0, 6.5))
     d.checkpoint(-31.0, -18.5, 240, width=6.0, out=-4.5, roles=("rifleman", "autorifleman"), bag_at=-8.0)
     d.checkpoint(-35.0, 4.2, 34, out=-6.0, roles=("autorifleman",))
     d.fill(-10.6, -30.5, 0.2, -30.5, 180, "B")
@@ -787,7 +787,7 @@ def athira(d):
     d.fill(-13.2, -5.5, -13.2, -9.2, 270)
     d.fill(-13.2, -9.2, -4.3, -9.2, 180)
     d.fill(-12.4, 8.6, -5.5, 8.6, 0, "M")
-    d.fill(12.0, 7.0, 17.5, 5.8, 15, "W")
+    d.fill(11.9, 5.3, 20.8, 2.2, 19, "B")                    # The courtyard's low north walls lined 2-high
     d.o(BARGATE, -1.75, -12.6, 180)
     d.fill(0.5, -12.6, 1.8, -12.6, 180)
     d.embrasure(3.2, -12.6, 195, role="gmg", line_face=180)
@@ -806,12 +806,11 @@ def athira(d):
     # mouth; hedgehogs in the south-east gap, the strip's mouth on the east road and the west lane; the balcony MG
     d.o(ROUND, 10.6, -12.6, 0)
     d.s("hmg", *off(10.6, -12.6, 210, -2.6), 210)
-    d.tower(-10.8, -7.2, 235, "marksman", "autorifleman", 270)
-    d.tower(16.0, 3.0, 110, "marksman")
+    d.tower(12.5, -3.5, 180, "marksman", "autorifleman")
     for x in (-3.2, -0.6, 2.0):
         d.o(JERSEY, x, -16.6, 180)
-    for x in (0.6, 3.2, 5.8):
-        d.o(JERSEY, x, -20.6, 180)
+    for x in (-0.2, 2.4, 5.0):
+        d.o(JERSEY, x, -20.6, 180, nudge=0.5)
     d.fill(-18.4, -1.0, -18.4, -2.6, 270, "B")              # The lane to the west road walled 2-high, the
     d.embrasure(-18.4, -4.0, 270, role=None)                 # HMG's line kept open through it
     d.fill(-18.4, -5.4, -18.4, -7.6, 270, "B")
@@ -833,7 +832,7 @@ def athira(d):
     d.o(HB3, 26.8, 9.9, 90)
     d.g("rifleman", 25.4, 9.2, 90)
     d.g("autorifleman", 25.4, 10.6, 90)
-    d.s("mortar", 11.0, 2.0, 210)
+    d.s("mortar", 7.4, -6.0, 210)
     d.g("at", 0.6, -11.0, 180)
     house_t5_inside(d)
 
