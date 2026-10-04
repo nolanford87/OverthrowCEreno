@@ -1253,13 +1253,24 @@ def panochori(d, tier):
     # gate on the door bay, its chicane on the track), a short run into the north house, and runs closing the
     # east yard's north end and the south-east corner. The guns fire east out of the south-east corner and north
     # out of the east yard's north end.
-    if tier == 3:
-        d.run("west", (-6.2, -10.5), (-6.2, 9.0), ends=("tie", "corner"))
+    if tier == 3:  # (pass 1: the east yard's walls are low stone walls: the yard is lined inside them; the south face
+        # runs into the big south-west house's north-east face)
+        d.run("south", (10.6, -12.5), (-7.0, -12.5), ends=("corner", "tie"))
+        d.run("west", (-6.2, -12.5), (-6.2, 9.0), ends=("tie", "corner"))
         d.run("nw", (-6.2, 9.0), (-1.0, 9.0), ends=("tie", "tie"))
-        d.run("north", (5.5, 17.0), (13.5, 17.0), ends=("tie", "tie"))
-        d.run("se", (14.0, -6.5), (14.0, -17.0), ends=("tie", "tie"))
-    if tier == 4:
-        pass  # pass 1: the outer ring (to come)
+        d.run("ne", (6.7, 10.5), (10.6, 10.5), ends=("tie", "corner"))
+        d.run("east", (10.6, 10.5), (10.6, -12.5), ends=("tie", "tie"))
+    if tier == 4:  # The outer ring: west across the track (into the big south-west house's north face), north along
+        # the north house, east from it through the gap in the yard's low wall (between its two stone walls) to the
+        # big north-east house; the annexe and the big east house, then south from its corner (between the ends of
+        # two low stone walls) to the big south houses, and a run between the south annexe and the big south-west
+        # house
+        W = WALL_FILL
+        d.run("o_w", (-14.0, -11.1), (-14.0, 20.0), ends=("tie", "corner"), fill=W, out=270)
+        d.run("o_n", (-14.0, 20.0), (-2.6, 20.0), ends=("tie", "tie"), fill=W, out=0)
+        d.run("o_ne", (6.7, 17.1), (21.8, 17.1), ends=("tie", "tie"), fill=W, out=0)
+        d.run("o_e", (21.8, -4.6), (19.95, -25.75), ends=("tie", "tie"), fill=W, out=90)  # (slanted 5 degrees: between the two pillars)
+        d.run("o_s", (-4.3, -18.0), (3.2, -18.0), ends=("tie", "tie"), fill=W, out=180)
 
 
 @site("Paros", entry="W", nest=(0.5, -10.0, 260), flag=(-7.0, 11.0), spare=[])
