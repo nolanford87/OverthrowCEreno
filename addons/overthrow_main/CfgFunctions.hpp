@@ -811,6 +811,13 @@ class CfgFunctions {
             class initRadar {};
         };
 
+        // Mayor's office defence templates (tools/officegen), one per building class
+        class OfficeTemplates {
+            file = "\overthrow_main\functions\offices\templates";
+            class officeTpl_Offices_01_V1_F {};
+            class officeTpl_Hospital_main_F {};
+        };
+
         class Util {
             file = "\overthrow_main\functions\util";
             class idleAnim {};
