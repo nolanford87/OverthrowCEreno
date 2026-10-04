@@ -5,7 +5,7 @@ OTLAYOUT|Altis|Poliakko|ITEM|1|object|Land_OfficeChair_01_F|[10954.558,13424.393
 OTLAYOUT|Altis|Poliakko|ITEM|1|object|Land_MapBoard_F|[10952.642,13425.020,33.340]|[[0.4266,0.9045,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Poliakko|ITEM|1|object|Flag_NATO_F|[10965.101,13423.069,28.327]|[[-0.9045,0.4266,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
 OTLAYOUT|Altis|Poliakko|ITEM|1|guard|gendarme|[10962.508,13422.965,29.890]|115.2|
-OTLAYOUT|Altis|Poliakko|ITEM|1|guard|gendarme|[10951.363,13429.106,29.633]|295.2|ground
+OTLAYOUT|Altis|Poliakko|ITEM|1|guard|gendarme|[10950.994,13433.481,29.765]|295.2|ground
 OTLAYOUT|Altis|Poliakko|ITEM|1|guard|gendarme|[10957.284,13432.284,33.340]|25.2|
 OTLAYOUT|Altis|Poliakko|TIER|2|16
 OTLAYOUT|Altis|Poliakko|ITEM|2|object|Land_TableDesk_F|[10955.240,13425.840,33.340]|[[-0.4266,-0.9045,0.0000],[0.0000,0.0000,1.0000]]|drop
@@ -13,7 +13,7 @@ OTLAYOUT|Altis|Poliakko|ITEM|2|object|Land_OfficeChair_01_F|[10954.558,13424.393
 OTLAYOUT|Altis|Poliakko|ITEM|2|object|Land_MapBoard_F|[10952.642,13425.020,33.340]|[[0.4266,0.9045,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Poliakko|ITEM|2|object|Flag_NATO_F|[10965.101,13423.069,28.327]|[[-0.9045,0.4266,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
 OTLAYOUT|Altis|Poliakko|ITEM|2|guard|gendarme|[10962.508,13422.965,29.890]|115.2|
-OTLAYOUT|Altis|Poliakko|ITEM|2|guard|gendarme|[10951.363,13429.106,29.633]|295.2|ground
+OTLAYOUT|Altis|Poliakko|ITEM|2|guard|gendarme|[10950.994,13433.481,29.765]|295.2|ground
 OTLAYOUT|Altis|Poliakko|ITEM|2|guard|gendarme|[10957.284,13432.284,33.340]|25.2|
 OTLAYOUT|Altis|Poliakko|ITEM|2|object|Land_BagFence_Long_F|[10966.884,13423.334,28.205]|[[0.9045,-0.4266,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Poliakko|ITEM|2|object|Land_BagFence_Short_F|[10966.840,13425.234,28.228]|[[-0.4266,-0.9045,0.0000],[0.0000,0.0000,1.0000]]|ground
@@ -30,7 +30,7 @@ OTLAYOUT|Altis|Poliakko|ITEM|3|object|Land_OfficeChair_01_F|[10954.558,13424.393
 OTLAYOUT|Altis|Poliakko|ITEM|3|object|Land_MapBoard_F|[10952.642,13425.020,33.340]|[[0.4266,0.9045,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Poliakko|ITEM|3|object|Flag_NATO_F|[10965.101,13423.069,28.327]|[[-0.9045,0.4266,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
 OTLAYOUT|Altis|Poliakko|ITEM|3|guard|gendarme|[10962.508,13422.965,29.890]|115.2|
-OTLAYOUT|Altis|Poliakko|ITEM|3|guard|gendarme|[10951.363,13429.106,29.633]|295.2|ground
+OTLAYOUT|Altis|Poliakko|ITEM|3|guard|gendarme|[10950.994,13433.481,29.765]|295.2|ground
 OTLAYOUT|Altis|Poliakko|ITEM|3|guard|gendarme|[10957.284,13432.284,33.340]|25.2|
 OTLAYOUT|Altis|Poliakko|ITEM|3|object|Land_BagFence_Long_F|[10966.884,13423.334,28.205]|[[0.9045,-0.4266,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Poliakko|ITEM|3|object|Land_BagFence_Short_F|[10966.840,13425.234,28.228]|[[-0.4266,-0.9045,0.0000],[0.0000,0.0000,1.0000]]|ground
@@ -43,7 +43,7 @@ OTLAYOUT|Altis|Poliakko|ITEM|3|object|Land_BagFence_Long_F|[10950.699,13430.746,
 OTLAYOUT|Altis|Poliakko|ITEM|3|guard|marksman|[10963.123,13425.440,33.340]|85.2|
 OTLAYOUT|Altis|Poliakko|ITEM|3|object|Land_BarGate_F|[10968.594,13418.989,28.044]|[[-0.9045,0.4266,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Poliakko|ITEM|3|object|Land_BagBunker_Tower_F|[10961.675,13406.663,28.249]|[[0.3379,-0.9412,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Poliakko|ITEM|3|guard|marksman|[10961.675,13406.663,30.999]|175.2|
+OTLAYOUT|Altis|Poliakko|ITEM|3|guard|marksman|[10961.810,13406.287,31.649]|160.3|
 OTLAYOUT|Altis|Poliakko|ITEM|3|object|Land_BagFence_Round_F|[10968.508,13430.529,28.211]|[[-0.1779,-0.9840,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Poliakko|ITEM|3|static|hmg|[10968.330,13429.544,28.202]|[[0.1779,0.9840,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Poliakko|ITEM|3|object|Land_BagFence_Round_F|[10954.037,13437.354,29.477]|[[-0.4266,-0.9045,0.0000],[0.0000,0.0000,1.0000]]|ground

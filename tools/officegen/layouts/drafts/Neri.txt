@@ -43,7 +43,7 @@ OTLAYOUT|Altis|Neri|ITEM|3|object|Land_BagFence_Short_F|[4118.054,11771.798,52.8
 OTLAYOUT|Altis|Neri|ITEM|3|guard|marksman|[4121.764,11762.176,56.260]|184.1|
 OTLAYOUT|Altis|Neri|ITEM|3|object|Land_BarGate_F|[4126.633,11756.868,51.648]|[[-0.6551,0.7555,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Neri|ITEM|3|object|Land_BagBunker_Tower_F|[4135.195,11765.616,51.915]|[[0.9975,-0.0710,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Neri|ITEM|3|guard|marksman|[4135.195,11765.616,54.665]|109.1|
+OTLAYOUT|Altis|Neri|ITEM|3|guard|marksman|[4135.594,11765.587,55.315]|94.1|
 OTLAYOUT|Altis|Neri|ITEM|3|object|Land_BagFence_Round_F|[4117.086,11757.192,51.225]|[[0.8993,0.4373,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Neri|ITEM|3|static|hmg|[4117.985,11757.630,51.272]|[[-0.8993,-0.4373,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Neri|ITEM|3|object|Land_BagFence_Round_F|[4109.879,11765.503,50.801]|[[0.5602,0.8284,0.0000],[0.0000,0.0000,1.0000]]|ground
