@@ -1266,8 +1266,8 @@ def panochori(d, tier):
     if tier == 3:  # (pass 1: the east yard's walls are low stone walls: the yard is lined inside them; the south face
         # runs into the big south-west house's north-east face)
         d.run("south", (10.6, -12.5), (-7.0, -12.5), ends=("corner", "tie"))
-        d.run("west", (-6.2, -12.5), (-6.2, 9.0), ends=("tie", "corner"))
-        d.run("nw", (-6.2, 9.0), (-1.0, 9.0), ends=("tie", "tie"))
+        d.run("west", (-6.2, -12.5), (-6.2, 10.0), ends=("tie", "corner"))
+        d.run("nw", (-6.2, 10.0), (-1.0, 10.0), ends=("tie", "tie"))  # (1.3 m off the house: round 4 measured 1-high pieces 0.35 m off it cutting in)
         d.run("ne", (6.7, 10.5), (10.6, 10.5), ends=("tie", "corner"))
         d.run("east", (10.6, 10.5), (10.6, -12.5), ends=("tie", "tie"))
     if tier == 4:  # The outer ring: west across the track (into the big south-west house's north face), north along
