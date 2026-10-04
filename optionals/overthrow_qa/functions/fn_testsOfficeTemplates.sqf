@@ -265,26 +265,29 @@ _tests pushBack ["Office review: the vote, issue and tier check paths, the actio
     if (isNull _obj || { isNull _guard }) exitWith {};
 
     (_obj getVariable ["OT_officeItem", ["", 0, -1, ["", "", [0, 0, 0]]]]) params ["", "_tier", "_index", "_item"];
-    private _line = [_obj, player, -1, ["good"]] call OTQA_officeReview_voteAction;
-    private _want = format ["OTFEEDBACK|%1|%2|%3|%4|%5|good|", _key, _tier, _index, _item select 1, _item select 2];
-    ["Office review: a Good vote logs the thing's key, tier, index, class and position", _line isEqualTo _want && { (OTQA_officeReview get "votes") isEqualTo [[_key, _tier, _index, _item select 1, "good", ""]] }, format ["%1 / wanted %2", _line, _want]] call OTQA_fnc_check;
+    ["Office review: nothing is flagged until an issue is", !([_obj] call OTQA_officeReview_isReported), ""] call OTQA_fnc_check;
+    private _line = [["the bags float"], [_obj]] call OTQA_officeReview_issueConfirm;
+    private _want = format ["OTFEEDBACK|%1|%2|%3|%4|%5|issue|the bags float", _key, _tier, _index, _item select 1, _item select 2];
+    ["Office review: an issue logs the thing's key, tier, index, class, position and note", _line isEqualTo _want && { (OTQA_officeReview get "votes") isEqualTo [[_key, _tier, _index, _item select 1, "issue", "the bags float"]] }, format ["%1 / wanted %2", _line, _want]] call OTQA_fnc_check;
+    // The same item in a higher tier's copy (tiers add up): already flagged there too
+    private _twin = createVehicle ["Land_CanisterFuel_F", _site getPos [25, 90], [], 0, "CAN_COLLIDE"];
+    _twin setVariable ["OT_officeItem", _obj getVariable "OT_officeItem"];
+    ["Office review: an issue flagged on one copy covers the same item in the higher tiers' copies", [_obj] call OTQA_officeReview_isReported && { [_twin] call OTQA_officeReview_isReported }, ""] call OTQA_fnc_check;
+    deleteVehicle _twin;
     (_guard getVariable ["OT_officeItem", ["", 0, -1, ["", "", [0, 0, 0]]]]) params ["", "_gTier", "_gIndex", "_gItem"];
-    _line = [_guard, player, -1, ["bad"]] call OTQA_officeReview_voteAction;
-    _want = format ["OTFEEDBACK|%1|%2|%3|%4|%5|bad|", _key, _gTier, _gIndex, _gItem select 1, _gItem select 2];
-    ["Office review: a Bad vote on a guard placeholder logs his role and position", _line isEqualTo _want && { (_gItem select 1) in OTQA_officeTest_roles }, format ["%1 / wanted %2", _line, _want]] call OTQA_fnc_check;
-    _line = [["the bags float"], [_obj]] call OTQA_officeReview_issueConfirm;
-    _want = format ["OTFEEDBACK|%1|%2|%3|%4|%5|issue|the bags float", _key, _tier, _index, _item select 1, _item select 2];
-    ["Office review: the issue box's note is logged with the thing", _line isEqualTo _want && { (count (OTQA_officeReview get "votes")) isEqualTo 3 }, format ["%1 / wanted %2", _line, _want]] call OTQA_fnc_check;
-    ["Office review: a vote on something that isn't the template's logs nothing", ([player, "good"] call OTQA_officeReview_vote) isEqualTo "" && { (count (OTQA_officeReview get "votes")) isEqualTo 3 }, ""] call OTQA_fnc_check;
+    _line = [[""], [_guard]] call OTQA_officeReview_issueConfirm;
+    _want = format ["OTFEEDBACK|%1|%2|%3|%4|%5|issue|", _key, _gTier, _gIndex, _gItem select 1, _gItem select 2];
+    ["Office review: an issue on a guard placeholder logs his role and position", _line isEqualTo _want && { (_gItem select 1) in OTQA_officeTest_roles }, format ["%1 / wanted %2", _line, _want]] call OTQA_fnc_check;
+    ["Office review: an issue on something that isn't the template's logs nothing", ([player, "issue"] call OTQA_officeReview_vote) isEqualTo "" && { (count (OTQA_officeReview get "votes")) isEqualTo 2 }, ""] call OTQA_fnc_check;
 
-    // The actions: three on each thing (a unit carries the mod's own as well), named after it, only while the
-    // player looks at it
+    // The actions: the issue action on each thing (before and after it's flagged; a unit carries the mod's
+    // own as well), named after it, only while the player looks at it
     private _label = format ["%1 (Tier %2, #%3)", _item select 1, _tier, _index];
     private _gLabel = format ["%1 (Tier %2, #%3)", _gItem select 1, _gTier, _gIndex];
     private _params = ((actionIDs _obj) apply { _obj actionParams _x }) select { _label in (_x select 0) };
     private _gParams = ((actionIDs _guard) apply { _guard actionParams _x }) select { _gLabel in (_x select 0) };
     private _mine = _params + _gParams;
-    ["Office review: each thing has its Good, Bad and Issue actions, named after it, for the thing under the cursor only", (count _params) isEqualTo 3 && { (count _gParams) isEqualTo 3 } && { (_mine findIf { (_x select 7) isNotEqualTo "cursorObject isEqualTo _target" }) isEqualTo -1 } && { (_mine findIf { (_x select 8) isNotEqualTo 6 }) isEqualTo -1 },
+    ["Office review: each thing has only its issue action (and its already-reported form), named after it, for the thing under the cursor only", (count _params) isEqualTo 2 && { (count _gParams) isEqualTo 2 } && { (_mine findIf { !("cursorObject isEqualTo _target" in (_x select 7)) }) isEqualTo -1 } && { (_mine findIf { (_x select 8) isNotEqualTo 6 }) isEqualTo -1 } && { (_mine findIf { ("Good" in (_x select 0)) || { "Bad" in (_x select 0) } }) isEqualTo -1 },
         format ["%1 on the thing, %2 on the guard: %3", count _params, count _gParams, _mine apply { [_x select 0, _x select 7, _x select 8] }]] call OTQA_fnc_check;
 
     // The tier check: at the copy (the host is 80 m off, so by the copy's position) it's offered, once marked it isn't, logged, in the list's data

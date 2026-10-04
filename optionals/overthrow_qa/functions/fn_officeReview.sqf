@@ -45,6 +45,20 @@ OTQA_officeReview_itemOf = {
     [_key, _tier, _index, _it select 1, _it select 2]
 };
 
+// A template item's id (key|tier|index): the same in every copy that has it (tiers add up, so an item
+// of tier 2 is in the tier 2-5 copies), so an issue flagged on one copy covers them all
+OTQA_officeReview_itemId = {
+    params [["_obj", objNull, [objNull]]];
+    private _item = [_obj] call OTQA_officeReview_itemOf;
+    if (_item isEqualTo []) exitWith { "" };
+    format ["%1|%2|%3", _item select 0, _item select 1, _item select 2]
+};
+OTQA_officeReview_isReported = {
+    params [["_obj", objNull, [objNull]]];
+    private _id = [_obj] call OTQA_officeReview_itemId;
+    _id isNotEqualTo "" && { _id in (OTQA_officeReview getOrDefault ["reported", createHashMap]) }
+};
+
 // A vote on a thing: logged for the author (the line logged is returned), counted, confirmed
 OTQA_officeReview_vote = {
     params ["_obj", "_vote", ["_note", ""]];
@@ -56,7 +70,12 @@ OTQA_officeReview_vote = {
     private _votes = OTQA_officeReview getOrDefault ["votes", []];
     _votes pushBack [_key, _tier, _index, _what, _vote, _note];
     OTQA_officeReview set ["votes", _votes];
-    hint format ["%1: %2\ntier %3, item %4 at %5%6\n\n%7 votes so far on %8", toUpper _vote, _what, _tier, _index, _pos, ["", format ["\n%1", _note]] select (_note isNotEqualTo ""), count _votes, _key];
+    if (_vote isEqualTo "issue") then {
+        private _reported = OTQA_officeReview getOrDefault ["reported", createHashMap];
+        _reported set [format ["%1|%2|%3", _key, _tier, _index], _note];
+        OTQA_officeReview set ["reported", _reported];
+    };
+    hint format ["ISSUE: %1\ntier %2, item %3 at %4%5\n\nCounts for tiers %2-5 (every copy that has it).\n%6 issues so far on %7", _what, _tier, _index, _pos, ["", format ["\n%1", _note]] select (_note isNotEqualTo ""), { (_x select 0) isEqualTo _key } count _votes, _key];
     _line
 };
 
@@ -92,7 +111,9 @@ OTQA_officeReview_voteAction = {
     [_target, _vote] call OTQA_officeReview_vote
 };
 
-// The three feedback actions on a thing, offered only while the player looks at it (cursorObject) from within 6 m, the item in their names
+// The issue action on a thing, offered only while the player looks at it (cursorObject) from within 6 m,
+// the item in its name; anything not flagged counts as fine. Once an item has an issue (on any copy)
+// the action says so, and another note can still be added
 OTQA_officeReview_actions = {
     params ["_obj"];
     private _item = [_obj] call OTQA_officeReview_itemOf;
@@ -100,9 +121,8 @@ OTQA_officeReview_actions = {
     _item params ["", "_tier", "_index", "_what"];
     private _label = format ["%1 (Tier %2, #%3)", _what, _tier, _index];
     private _condition = "cursorObject isEqualTo _target";
-    _obj addAction [format ["<t color='#80ff80'>Good: %1</t>", _label], { _this call OTQA_officeReview_voteAction }, ["good"], 1.6, true, true, "", _condition, 6];
-    _obj addAction [format ["<t color='#ff8080'>Bad: %1</t>", _label], { _this call OTQA_officeReview_voteAction }, ["bad"], 1.5, true, true, "", _condition, 6];
-    _obj addAction [format ["Issue: %1...", _label], { _this call OTQA_officeReview_voteAction }, ["issue"], 1.4, true, true, "", _condition, 6];
+    _obj addAction [format ["<t color='#ff8080'>Issue: %1...</t>", _label], { _this call OTQA_officeReview_voteAction }, ["issue"], 1.5, true, true, "", _condition + " && { !([_target] call OTQA_officeReview_isReported) }", 6];
+    _obj addAction [format ["<t color='#ffc080'>Issue reported, add a note: %1...</t>", _label], { _this call OTQA_officeReview_voteAction }, ["issue"], 1.5, true, true, "", _condition + " && { [_target] call OTQA_officeReview_isReported }", 6];
 };
 
 // Tiers marked reviewed: whether one is, marking one (logged, the line returned), the player's actions' condition
@@ -260,21 +280,19 @@ OTQA_officeReview_step = {
 OTQA_officeReview_list = {
     private _votes = OTQA_officeReview getOrDefault ["votes", []];
     private _done = OTQA_officeReview getOrDefault ["done", []];
-    private _text = format ["<t size='1.2'>Office review: %1 votes, %2 tiers reviewed</t>", count _votes, count _done];
+    private _text = format ["<t size='1.2'>Office review: %1 issues, %2 tiers reviewed</t>", count _votes, count _done];
     {
         private _key = _x;
         private _mine = _votes select { (_x select 0) isEqualTo _key };
         private _tiers = (_done select { (_x select 0) isEqualTo _key }) apply { _x select 1 };
         _tiers sort true;
         if (_mine isNotEqualTo [] || { _tiers isNotEqualTo [] }) then {
-            _text = _text + format ["<br/>%1: %2 good, %3 bad, %4 issues; tiers reviewed: %5", _key, { (_x select 4) isEqualTo "good" } count _mine, { (_x select 4) isEqualTo "bad" } count _mine, { (_x select 4) isEqualTo "issue" } count _mine, ["none", _tiers joinString " "] select (_tiers isNotEqualTo [])];
+            _text = _text + format ["<br/>%1: %2 issues; tiers reviewed: %3", _key, count _mine, ["none", _tiers joinString " "] select (_tiers isNotEqualTo [])];
         };
     } forEach (OTQA_officeReview getOrDefault ["keys", []]);
     hint parseText _text;
     {
-        if ((_x select 4) isNotEqualTo "good") then {
-            systemChat format ["%1 T%2 #%3 %4: %5 %6", _x select 0, _x select 1, _x select 2, _x select 3, _x select 4, _x select 5];
-        };
+        systemChat format ["%1 T%2 #%3 %4: %5", _x select 0, _x select 1, _x select 2, _x select 3, _x select 5];
     } forEach _votes;
 };
 
