@@ -7,11 +7,11 @@
             items: in the layout; missing: items not made (a class that doesn't exist)
             clips: [[class, what it cuts into], ...] a prop or fortification with a building, wall, rock or the
                 office's own walls running through it (two rays across its footprint)
-            floating: [[class, gap m], ...] standing more than 0.3 m above whatever is under it
-            moved: [[role, m], ...] guards more than 1 m from their post after settling (pushed out of geometry)
-            blind: [[role, m], ...] guards whose view (a 80 degree cone round their facing, at eye height) ends
+            floating: [[class, gap m, [x, y]], ...] standing more than 0.3 m above whatever is under it
+            moved: [[role, m, [x, y]], ...] guards more than 1 m from their post after settling (pushed out of geometry)
+            blind: [[role, m, [x, y]], ...] guards whose view (a 80 degree cone round their facing, at eye height) ends
                 within 4 m: facing a wall
-            blocked: [[role, m], ...] statics whose field of fire (a 60 degree cone, 40 m) ends within 15 m
+            blocked: [[role, m, [x, y]], ...] statics whose field of fire (a 60 degree cone, 40 m) ends within 15 m
             views: the guards' median clear view in metres
         OTCLASS|class|[length, depth, height] the real size of every class the layouts use (once)
     and two screenshots per tier (the profile's Screenshots folder): OTL_<town>_T<tier>_top.png from 60 m
@@ -72,6 +72,7 @@
             (_layout select 0) params ["_class", "_pos", "_dir", ["_spawned", false]];
             player setPosASL ((_pos vectorAdd [0, 0, 0]) getPos [60, 0]);
             sleep 2; // The area streamed in
+            skipTime ((12.5 - daytime + 24) % 24); // Still midday (a long run reaches dusk)
             // Every tier the layout has (a town's highest tier in play follows its population, which a new game changes)
             private _b = objNull;
             for "_tier" from 1 to 5 do {
@@ -111,6 +112,9 @@
                     } forEach [[[-1, -1], [1, 1]], [[-1, 1], [1, -1]]];
                 } forEach (_props + _statics);
 
+                // Where a flagged thing stands: [x, y] in the office's model coordinates (the drafts' own)
+                private _at = { ((_b worldToModel (ASLToAGL (getPosASL _this))) select [0, 2]) apply { _x call _r1 } };
+
                 // Floating: the gap under a thing's base
                 private _floating = [];
                 {
@@ -119,7 +123,7 @@
                     private _base = _o modelToWorldWorld [((_mn select 0) + (_mx select 0)) / 2, ((_mn select 1) + (_mx select 1)) / 2, _mn select 2];
                     private _hit = lineIntersectsSurfaces [_base vectorAdd [0, 0, 0.05], _base vectorAdd [0, 0, -3], _o, objNull, true, 1, "GEOM", "NONE"];
                     private _gap = if (_hit isEqualTo []) then { 3 } else { (_base select 2) - (((_hit select 0) select 0) select 2) };
-                    if (_gap > 0.3) then { _floating pushBack [typeOf _o, _gap call _r1] };
+                    if (_gap > 0.3) then { _floating pushBack [typeOf _o, _gap call _r1, _o call _at] };
                     if !((typeOf _o) in _sizes) then {
                         _sizes set [typeOf _o, [((_mx select 0) - (_mn select 0)) call _r1, ((_mx select 1) - (_mn select 1)) call _r1, ((_mx select 2) - (_mn select 2)) call _r1]];
                         // Where a man stands on it (a tower's platform, a bunker's inside): its building positions, model coordinates
@@ -149,10 +153,10 @@
                     private _g = _x;
                     private _item = (_g getVariable ["OT_officeItem", []]) param [3, []];
                     private _off = (getPosASL _g) distance (_item param [2, getPosASL _g]);
-                    if (_off > 1) then { _moved pushBack [_item param [1, "?"], _off call _r1] };
+                    if (_off > 1) then { _moved pushBack [_item param [1, "?"], _off call _r1, _g call _at] };
                     private _view = [eyePos _g, getDir _g, 80, 8, 30, _g] call _cone;
                     _views pushBack _view;
-                    if (_view < 4) then { _blind pushBack [_item param [1, "?"], _view call _r1] };
+                    if (_view < 4) then { _blind pushBack [_item param [1, "?"], _view call _r1, _g call _at] };
                 } forEach _guards;
                 _views sort true;
 
@@ -161,7 +165,7 @@
                 {
                     private _s = _x;
                     private _fire = [(getPosASL _s) vectorAdd [0, 0, 1.1], getDir _s, 60, 6, 40, _s] call _cone;
-                    if (_fire < 15) then { _blocked pushBack [[_s] call OT_fnc_officeStatic, _fire call _r1] };
+                    if (_fire < 15) then { _blocked pushBack [[_s] call OT_fnc_officeStatic, _fire call _r1, _s call _at] };
                 } forEach _statics;
 
                 diag_log format ["OTCHECK|%1|%2|%3|%4|%5|%6|%7|%8|%9|%10|%11|%12|%13", _town, _tier, count _items, count _guards, count _props, count _statics,
