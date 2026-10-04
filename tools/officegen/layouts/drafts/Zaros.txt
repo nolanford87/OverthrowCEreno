@@ -21,7 +21,7 @@ OTLAYOUT|Altis|Zaros|ITEM|2|guard|autorifleman|[9089.149,11927.652,19.240]|189.4
 OTLAYOUT|Altis|Zaros|ITEM|2|object|Land_BagFence_Long_F|[9083.224,11943.936,20.036]|[[0.1630,0.9866,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Zaros|ITEM|2|guard|rifleman|[9083.012,11942.653,20.043]|9.4|ground
 OTLAYOUT|Altis|Zaros|ITEM|2|guard|rifleman|[9090.164,11930.728,24.110]|189.4|
-OTLAYOUT|Altis|Zaros|TIER|3|30
+OTLAYOUT|Altis|Zaros|TIER|3|31
 OTLAYOUT|Altis|Zaros|ITEM|3|object|Land_TableDesk_F|[9091.109,11936.450,20.690]|[[0.1630,0.9866,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Zaros|ITEM|3|object|Land_OfficeChair_01_F|[9091.370,11938.029,20.690]|[[0.1630,0.9866,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Zaros|ITEM|3|object|Land_MapBoard_F|[9090.966,11933.129,20.690]|[[-0.1630,-0.9866,0.0000],[0.0000,0.0000,1.0000]]|drop
@@ -36,6 +36,7 @@ OTLAYOUT|Altis|Zaros|ITEM|3|guard|autorifleman|[9089.149,11927.652,19.240]|189.4
 OTLAYOUT|Altis|Zaros|ITEM|3|object|Land_BagFence_Long_F|[9083.224,11943.936,20.036]|[[0.1630,0.9866,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Zaros|ITEM|3|guard|rifleman|[9083.012,11942.653,20.043]|9.4|ground
 OTLAYOUT|Altis|Zaros|ITEM|3|guard|rifleman|[9090.164,11930.728,24.110]|189.4|
+OTLAYOUT|Altis|Zaros|ITEM|3|object|Land_WallCity_01_gate_grey_F|[9078.691,11929.380,19.846]|[[-0.9866,0.1630,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Zaros|ITEM|3|object|Land_BagFence_Short_F|[9081.749,11928.874,19.711]|[[-0.9866,0.1630,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Zaros|ITEM|3|guard|rifleman|[9082.983,11928.671,19.640]|279.4|ground
 OTLAYOUT|Altis|Zaros|ITEM|3|object|Land_BagFence_Round_F|[9100.586,11919.580,18.468]|[[-0.9866,0.1630,0.0000],[0.0000,0.0000,1.0000]]|ground
@@ -52,7 +53,7 @@ OTLAYOUT|Altis|Zaros|ITEM|3|object|Land_BagFence_Round_F|[9077.338,11948.709,20.
 OTLAYOUT|Altis|Zaros|ITEM|3|guard|autorifleman|[9090.343,11943.469,19.709]|9.4|ground
 OTLAYOUT|Altis|Zaros|ITEM|3|guard|rifleman|[9093.310,11938.114,24.110]|9.4|
 OTLAYOUT|Altis|Zaros|ITEM|3|guard|marksman|[9082.654,11939.874,24.110]|9.4|
-OTLAYOUT|Altis|Zaros|TIER|4|45
+OTLAYOUT|Altis|Zaros|TIER|4|46
 OTLAYOUT|Altis|Zaros|ITEM|4|object|Land_TableDesk_F|[9091.109,11936.450,20.690]|[[0.1630,0.9866,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Zaros|ITEM|4|object|Land_OfficeChair_01_F|[9091.370,11938.029,20.690]|[[0.1630,0.9866,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Zaros|ITEM|4|object|Land_MapBoard_F|[9090.966,11933.129,20.690]|[[-0.1630,-0.9866,0.0000],[0.0000,0.0000,1.0000]]|drop
@@ -67,6 +68,7 @@ OTLAYOUT|Altis|Zaros|ITEM|4|guard|autorifleman|[9089.149,11927.652,19.240]|189.4
 OTLAYOUT|Altis|Zaros|ITEM|4|object|Land_BagFence_Long_F|[9083.224,11943.936,20.036]|[[0.1630,0.9866,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Zaros|ITEM|4|guard|rifleman|[9083.012,11942.653,20.043]|9.4|ground
 OTLAYOUT|Altis|Zaros|ITEM|4|guard|rifleman|[9090.164,11930.728,24.110]|189.4|
+OTLAYOUT|Altis|Zaros|ITEM|4|object|Land_WallCity_01_gate_grey_F|[9078.691,11929.380,19.846]|[[-0.9866,0.1630,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Zaros|ITEM|4|object|Land_BagFence_Short_F|[9081.749,11928.874,19.711]|[[-0.9866,0.1630,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Zaros|ITEM|4|guard|rifleman|[9082.983,11928.671,19.640]|279.4|ground
 OTLAYOUT|Altis|Zaros|ITEM|4|object|Land_BagFence_Round_F|[9100.586,11919.580,18.468]|[[-0.9866,0.1630,0.0000],[0.0000,0.0000,1.0000]]|ground
@@ -98,7 +100,7 @@ OTLAYOUT|Altis|Zaros|ITEM|4|guard|rifleman|[9086.890,11944.039,19.861]|54.4|grou
 OTLAYOUT|Altis|Zaros|ITEM|4|guard|rifleman|[9093.303,11942.980,19.577]|9.4|ground
 OTLAYOUT|Altis|Zaros|ITEM|4|guard|autorifleman|[9092.329,11934.019,24.110]|189.4|
 OTLAYOUT|Altis|Zaros|ITEM|4|guard|rifleman|[9076.655,11927.486,19.889]|219.4|ground
-OTLAYOUT|Altis|Zaros|TIER|5|70
+OTLAYOUT|Altis|Zaros|TIER|5|71
 OTLAYOUT|Altis|Zaros|ITEM|5|object|Land_TableDesk_F|[9091.109,11936.450,20.690]|[[0.1630,0.9866,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Zaros|ITEM|5|object|Land_OfficeChair_01_F|[9091.370,11938.029,20.690]|[[0.1630,0.9866,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Zaros|ITEM|5|object|Land_MapBoard_F|[9090.966,11933.129,20.690]|[[-0.1630,-0.9866,0.0000],[0.0000,0.0000,1.0000]]|drop
@@ -113,6 +115,7 @@ OTLAYOUT|Altis|Zaros|ITEM|5|guard|autorifleman|[9089.149,11927.652,19.240]|189.4
 OTLAYOUT|Altis|Zaros|ITEM|5|object|Land_BagFence_Long_F|[9083.224,11943.936,20.036]|[[0.1630,0.9866,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Zaros|ITEM|5|guard|rifleman|[9083.012,11942.653,20.043]|9.4|ground
 OTLAYOUT|Altis|Zaros|ITEM|5|guard|rifleman|[9090.164,11930.728,24.110]|189.4|
+OTLAYOUT|Altis|Zaros|ITEM|5|object|Land_WallCity_01_gate_grey_F|[9078.691,11929.380,19.846]|[[-0.9866,0.1630,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Zaros|ITEM|5|object|Land_BagFence_Short_F|[9081.749,11928.874,19.711]|[[-0.9866,0.1630,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Zaros|ITEM|5|guard|rifleman|[9082.983,11928.671,19.640]|279.4|ground
 OTLAYOUT|Altis|Zaros|ITEM|5|object|Land_BagFence_Round_F|[9100.586,11919.580,18.468]|[[-0.9866,0.1630,0.0000],[0.0000,0.0000,1.0000]]|ground
