@@ -2,7 +2,7 @@ OTLAYOUT|Altis|Alikampos|OFFICE|Land_i_House_Big_02_V2_F|[11117.867,14578.930,43
 OTLAYOUT|Altis|Alikampos|TIER|1|7
 OTLAYOUT|Altis|Alikampos|ITEM|1|object|Land_TableDesk_F|[11115.441,14580.899,47.560]|[[-0.9999,-0.0133,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Alikampos|ITEM|1|object|Land_OfficeChair_01_F|[11113.842,14580.878,47.560]|[[-0.9999,-0.0133,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Alikampos|ITEM|1|object|Land_MapBoard_F|[11113.915,14582.879,47.560]|[[0.9999,0.0133,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Alikampos|ITEM|1|object|Land_MapBoard_F|[11114.315,14582.884,47.560]|[[0.9999,0.0133,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Alikampos|ITEM|1|object|Flag_NATO_F|[11117.275,14570.823,42.239]|[[-0.0133,0.9999,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
 OTLAYOUT|Altis|Alikampos|ITEM|1|guard|gendarme|[11116.045,14573.106,44.120]|179.2|
 OTLAYOUT|Altis|Alikampos|ITEM|1|guard|gendarme|[11116.676,14585.816,43.928]|359.2|ground
@@ -10,7 +10,7 @@ OTLAYOUT|Altis|Alikampos|ITEM|1|guard|gendarme|[11114.538,14573.587,47.560]|179.
 OTLAYOUT|Altis|Alikampos|TIER|2|16
 OTLAYOUT|Altis|Alikampos|ITEM|2|object|Land_TableDesk_F|[11115.441,14580.899,47.560]|[[-0.9999,-0.0133,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Alikampos|ITEM|2|object|Land_OfficeChair_01_F|[11113.842,14580.878,47.560]|[[-0.9999,-0.0133,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Alikampos|ITEM|2|object|Land_MapBoard_F|[11113.915,14582.879,47.560]|[[0.9999,0.0133,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Alikampos|ITEM|2|object|Land_MapBoard_F|[11114.315,14582.884,47.560]|[[0.9999,0.0133,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Alikampos|ITEM|2|object|Flag_NATO_F|[11117.275,14570.823,42.239]|[[-0.0133,0.9999,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
 OTLAYOUT|Altis|Alikampos|ITEM|2|guard|gendarme|[11116.045,14573.106,44.120]|179.2|
 OTLAYOUT|Altis|Alikampos|ITEM|2|guard|gendarme|[11116.676,14585.816,43.928]|359.2|ground
@@ -27,7 +27,7 @@ OTLAYOUT|Altis|Alikampos|ITEM|2|guard|marksman|[11118.538,14573.640,47.560]|149.
 OTLAYOUT|Altis|Alikampos|TIER|3|51
 OTLAYOUT|Altis|Alikampos|ITEM|3|object|Land_TableDesk_F|[11115.441,14580.899,47.560]|[[-0.9999,-0.0133,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Alikampos|ITEM|3|object|Land_OfficeChair_01_F|[11113.842,14580.878,47.560]|[[-0.9999,-0.0133,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Alikampos|ITEM|3|object|Land_MapBoard_F|[11113.915,14582.879,47.560]|[[0.9999,0.0133,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Alikampos|ITEM|3|object|Land_MapBoard_F|[11114.315,14582.884,47.560]|[[0.9999,0.0133,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Alikampos|ITEM|3|object|Flag_NATO_F|[11117.275,14570.823,42.239]|[[-0.0133,0.9999,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
 OTLAYOUT|Altis|Alikampos|ITEM|3|guard|gendarme|[11116.045,14573.106,44.120]|179.2|
 OTLAYOUT|Altis|Alikampos|ITEM|3|guard|gendarme|[11116.676,14585.816,43.928]|359.2|ground

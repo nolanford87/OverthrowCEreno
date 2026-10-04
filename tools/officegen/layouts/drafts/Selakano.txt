@@ -2,7 +2,7 @@ OTLAYOUT|Altis|Selakano|OFFICE|Land_i_House_Big_02_V2_F|[20706.918,6727.035,42.0
 OTLAYOUT|Altis|Selakano|TIER|1|7
 OTLAYOUT|Altis|Selakano|ITEM|1|object|Land_TableDesk_F|[20704.659,6724.876,45.930]|[[-0.1139,-0.9935,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Selakano|ITEM|1|object|Land_OfficeChair_01_F|[20704.477,6723.286,45.930]|[[-0.1139,-0.9935,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Selakano|ITEM|1|object|Land_MapBoard_F|[20702.502,6723.613,45.930]|[[0.1139,0.9935,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Selakano|ITEM|1|object|Land_MapBoard_F|[20702.547,6724.011,45.930]|[[0.1139,0.9935,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Selakano|ITEM|1|object|Flag_NATO_F|[20714.887,6725.414,41.706]|[[-0.9935,0.1139,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
 OTLAYOUT|Altis|Selakano|ITEM|1|guard|gendarme|[20712.466,6724.484,42.490]|96.5|
 OTLAYOUT|Altis|Selakano|ITEM|1|guard|gendarme|[20699.939,6726.726,41.659]|276.5|ground
@@ -10,7 +10,7 @@ OTLAYOUT|Altis|Selakano|ITEM|1|guard|gendarme|[20712.117,6725.833,45.930]|96.5|
 OTLAYOUT|Altis|Selakano|TIER|2|14
 OTLAYOUT|Altis|Selakano|ITEM|2|object|Land_TableDesk_F|[20704.659,6724.876,45.930]|[[-0.1139,-0.9935,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Selakano|ITEM|2|object|Land_OfficeChair_01_F|[20704.477,6723.286,45.930]|[[-0.1139,-0.9935,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Selakano|ITEM|2|object|Land_MapBoard_F|[20702.502,6723.613,45.930]|[[0.1139,0.9935,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Selakano|ITEM|2|object|Land_MapBoard_F|[20702.547,6724.011,45.930]|[[0.1139,0.9935,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Selakano|ITEM|2|object|Flag_NATO_F|[20714.887,6725.414,41.706]|[[-0.9935,0.1139,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
 OTLAYOUT|Altis|Selakano|ITEM|2|guard|gendarme|[20712.466,6724.484,42.490]|96.5|
 OTLAYOUT|Altis|Selakano|ITEM|2|guard|gendarme|[20699.939,6726.726,41.659]|276.5|ground
@@ -25,7 +25,7 @@ OTLAYOUT|Altis|Selakano|ITEM|2|guard|marksman|[20711.798,6723.051,45.930]|141.5|
 OTLAYOUT|Altis|Selakano|TIER|3|67
 OTLAYOUT|Altis|Selakano|ITEM|3|object|Land_TableDesk_F|[20704.659,6724.876,45.930]|[[-0.1139,-0.9935,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Selakano|ITEM|3|object|Land_OfficeChair_01_F|[20704.477,6723.286,45.930]|[[-0.1139,-0.9935,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Selakano|ITEM|3|object|Land_MapBoard_F|[20702.502,6723.613,45.930]|[[0.1139,0.9935,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Selakano|ITEM|3|object|Land_MapBoard_F|[20702.547,6724.011,45.930]|[[0.1139,0.9935,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Selakano|ITEM|3|object|Flag_NATO_F|[20714.887,6725.414,41.706]|[[-0.9935,0.1139,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
 OTLAYOUT|Altis|Selakano|ITEM|3|guard|gendarme|[20712.466,6724.484,42.490]|96.5|
 OTLAYOUT|Altis|Selakano|ITEM|3|guard|gendarme|[20699.939,6726.726,41.659]|276.5|ground

@@ -197,6 +197,32 @@ class Site:
 
     OFFICE = [(-5.4, -6.7), (-5.4, 7.0), (5.4, -6.7), (5.4, 7.0)]  # The house, its porch and front steps
 
+    def game_rays(self, it):
+        """The in-game clip test (fn_checkLayouts): two rays across the diagonals of a ground thing's footprint at its
+        real (measured, upper-bound) size; a barrier's only over its middle (0.6 m off each end, half its depth).
+        Returns what they run through: [(kind, where)] of the probed walls/buildings/rocks and the office."""
+        if "ground" not in it[4] or it[0] == "guard":
+            return []
+        what = it[1] if it[0] == "object" else f"static {it[1]}"
+        L, D = next((v[:2] for k, v in tl.MEASURED.items() if (k == what or k.startswith(what + " (")) and k != "Land_BarGate_F"),
+                    tl.CLASSES.get(it[1], (1.4, 2.3)))  # The bar gate's real box takes in its arm's swing: its posts only
+        if it[0] == "object" and barrierish(it[1]):
+            ix, iy = max(L / 2 - 0.6, 0.1), D / 4
+        else:
+            ix, iy = 0.4 * L, 0.4 * D
+        m = self.t.to_model(it[2])
+        d = (self.yaw(it) - self.t.dir) % 360
+        cx, cy = tl.rot(1, 0, d), tl.rot(0, 1, d)
+        P = lambda a, b: (m[0] + a * ix * cx[0] + b * iy * cy[0], m[1] + a * ix * cx[1] + b * iy * cy[1])
+        rays = [(P(-1, -1), P(1, 1)), (P(-1, 1), P(1, -1))]
+        out = []
+        for kind, r in self.rects + [("office", self.OFFICE)]:
+            if kind == "tree":
+                continue  # The game's test leaves trees out
+            if any(seg_rect(a, b, r) for a, b in rays):
+                out.append((kind, tuple(round(v, 1) for v in rect_centre(r))))
+        return out
+
     def on_road(self, x, y):
         w = self.t.to_world(x, y, 0)
         return any(d <= min(4.0, s["width"] / 2) for d, s in self.t.roads_near(w[0], w[1], 10))
@@ -261,6 +287,8 @@ class Site:
             return False
         ground = "ground" in it[4]
         bar = it[0] == "object" and barrierish(it[1])
+        if self.game_rays(it):
+            return False  # The game's own clip test (its rays across the real footprint) would flag it
         if ground and it[0] == "object":
             m = t.to_model(it[2])
             if any(self.on_road(x, y) for x, y in self.corners(it, core=True) + [(m[0], m[1])]):
@@ -386,6 +414,27 @@ FRONT_BALCONY = [(3.3, 6.3, 0), (-2.0, 6.3, 0), (3.3, 6.3, 30), (-2.0, 6.3, 330)
 WINDOW = [(4.3, 2.9, 90)]
 
 
+def rect_centre(r):
+    return sum(p[0] for p in r) / 4, sum(p[1] for p in r) / 4
+
+
+def seg_rect(a, b, r):
+    """Whether segment a-b crosses rectangle r (4 corners, ordered as Site.corners gives them)."""
+    poly = [r[0], r[1], r[3], r[2]]
+    def inside(p):
+        s = []
+        for i in range(4):
+            q0, q1 = poly[i], poly[(i + 1) % 4]
+            s.append((q1[0] - q0[0]) * (p[1] - q0[1]) - (q1[1] - q0[1]) * (p[0] - q0[0]))
+        return all(v >= 0 for v in s) or all(v <= 0 for v in s)
+    if inside(a) or inside(b):
+        return True
+    def cross(p, q, u, v):
+        o = lambda p1, p2, p3: (p2[0] - p1[0]) * (p3[1] - p1[1]) - (p2[1] - p1[1]) * (p3[0] - p1[0])
+        return o(p, q, u) * o(p, q, v) < 0 and o(u, v, p) * o(u, v, q) < 0
+    return any(cross(a, b, poly[i], poly[(i + 1) % 4]) for i in range(4))
+
+
 def near(x, y, reach=3.0, step=0.5):
     n = int(reach / step)
     pts = [(x + i * step, y + j * step) for i in range(-n, n + 1) for j in range(-n, n + 1)]
@@ -405,7 +454,7 @@ def tier1(s):
     f0, f1 = s.f0, s.f1
     # The office upstairs (the generated template's desk corner, which reviewed fine)
     s.cur += [s.O("Land_TableDesk_F", -2.4, 2.0, 270, f1), s.O("Land_OfficeChair_01_F", -4.0, 2.0, 270, f1),
-              s.O("Land_MapBoard_F", -3.9, 4.0, 90, f1)]
+              s.O("Land_MapBoard_F", -3.5, 4.0, 90, f1)]  # Its real box is 1 m deep: 0.4 m clear of the west wall
     # The way in's lane: from the door out to the tier 3 gate (or 8 m)
     ux, uy = uv(s.d)
     if "ring" in s.cfg:
@@ -534,6 +583,56 @@ def ring_side(s, side, gate=None, tall=False):
             else:
                 u += step * 0.5  # Blocked here (a neighbour, a wall, a road, a gun post): a bit further on
     return placed
+
+
+def fill_holes(s, tries=10):
+    """Close every hole a man could slip through (closed_audit): a short piece on the ring's line at the hole,
+    overlapping the pieces either side at their ends. Returns the pieces added."""
+    x0, x1, y0, y1 = s.cfg["ring"]
+    added = []
+    for _ in range(tries):
+        s.tiers.append(s.cur)  # closed_audit reads the snapshots
+        holes = closed_audit(s)
+        s.tiers.pop()
+        if not holes:
+            break
+        hx, hy = holes[0]
+        # The nearest side's line
+        sides = sorted([(abs(hy - y0), "back"), (abs(hy - y1), "front"), (abs(hx - x0), "left"), (abs(hx - x1), "right")])
+        got = None
+        for _, side in sides[:2]:
+            along = 0 if side in ("back", "front") else 90
+            for cls in ("Land_HBarrier_1_F", "Land_HBarrier_3_F", "Land_BagFence_Long_F", "Land_BagFence_Short_F", "Land_CncBarrier_F", "Land_HBarrier_5_F"):
+                for du in (0, 0.4, -0.4, 0.8, -0.8, 1.2, -1.2, 1.8, -1.8, 2.4, -2.4):
+                    for dv in (0, -0.4, 0.4, -0.8, 0.8):
+                        for turn in (0, 90):
+                            if side in ("back", "front"):
+                                x, y = hx + du, (y0 if side == "back" else y1) + dv
+                            else:
+                                x, y = (x0 if side == "left" else x1) + dv, hy + du
+                            it = s.O(cls, x, y, along + turn)
+                            if s.ok(it):
+                                s.cur.append(it)
+                                s.tiers.append(s.cur)
+                                left = closed_audit(s)
+                                s.tiers.pop()
+                                if not left or all(math.dist(h, (hx, hy)) > 1.0 for h in left):
+                                    got = it
+                                    break
+                                s.cur.pop()
+                        if got:
+                            break
+                    if got:
+                        break
+                if got:
+                    break
+            if got:
+                break
+        if not got:
+            s.skipped.append(f"hole at {(hx, hy)}")
+            break
+        added.append(got)
+    return added
 
 
 def low_here(s, pt, centre, ln, gate):
@@ -722,6 +821,7 @@ def tier3(s):
     lines = {}
     for side in ("back", "front", "left", "right"):
         lines[side] = ring_side(s, side, gate_at if side == gate_side else None, side in tall)
+    s.filled = fill_holes(s)
     # The chicane: a barrier inside the gate, offset so the way in dog-legs round it under the nest's guns
     off = -ns * 1.6
     if gate_dist >= 6.0:
@@ -775,6 +875,148 @@ def report(s):
         st = sum(1 for i in items if i[0] == "static")
         out.append(f"T{n}: {len(items)} things, {g} guards, {st} statics")
     return "; ".join(out)
+
+
+def clip_audit(s):
+    """Every ground thing of the top tier the game's clip rays would flag: [text]."""
+    out = []
+    for it in s.snapshots()[-1]:
+        h = s.game_rays(it)
+        if h:
+            m = s.t.to_model(it[2])
+            out.append(f"{it[1]}@({m[0]:.1f},{m[1]:.1f}) into {h}")
+    return out
+
+
+def line_audit(s, step=0.1):
+    """Each ring side, end to end: its length, what closes it (the pieces on it, the neighbours, old walls, the
+    office, the gate) and every open stretch over 0.3 m. Returns [(side, length, run, by_neighbours, gaps)]."""
+    if "ring" not in s.cfg or s.t.cap < 3:
+        return []
+    x0, x1, y0, y1 = s.cfg["ring"]
+    items = [it for it in s.snapshots()[-1] if it[0] == "object" and "ground" in it[4] and
+             (barrierish(it[1]) or "Bunker" in it[1])]
+    out = []
+    for side in ("back", "front", "left", "right"):
+        if side in ("back", "front"):
+            fixed, a, c = (y0 if side == "back" else y1), x0, x1
+            pt = lambda u, f=fixed: (u, f)
+        else:
+            fixed, a, c = (x0 if side == "left" else x1), y0, y1
+            pt = lambda u, f=fixed: (f, u)
+        n = int(round((c - a) / step))
+        state, run_pts, nb_pts, gaps, open_from = [], 0, 0, [], None
+        for k in range(n + 1):
+            u = a + k * step
+            x, y = pt(u)
+            piece = next((it for it in items if s.inside(it, x, y)), None)
+            nb = None
+            if piece is None:
+                if any(seg_rect((x - 0.15, y - 0.15), (x + 0.15, y + 0.15), r) or seg_rect((x - 0.15, y + 0.15), (x + 0.15, y - 0.15), r)
+                       for kind, r in s.rects if kind in ("wall", "building", "rock")) or \
+                        seg_rect((x, y), (x, y), s.OFFICE):
+                    nb = True
+            if piece is not None:
+                run_pts += 1
+            elif nb:
+                nb_pts += 1
+            closed = piece is not None or nb
+            if not closed and open_from is None:
+                open_from = u
+            if closed and open_from is not None:
+                if u - open_from > 0.3:
+                    gaps.append((round(open_from, 1), round(u, 1)))
+                open_from = None
+        if open_from is not None and c - open_from > 0.3:
+            gaps.append((round(open_from, 1), round(c, 1)))
+        out.append((side, round(c - a, 1), round(run_pts * step, 1), round(nb_pts * step, 1), gaps))
+    return out
+
+
+def closed_audit(s, cell=0.25, man=0.25, reach=40.0):
+    """Whether the top tier's yard is closed: a flood fill from the way in (a man, his shoulders 2 x man wide, on a
+    cell m grid) through everything but the barrier pieces, the tower, the neighbours, old walls and the office.
+    Returns [] when no man gets out, else where he crosses the ring's outline: [(x, y)], one per hole."""
+    if "ring" not in s.cfg or s.t.cap < 3:
+        return []
+    x0, x1, y0, y1 = s.cfg["ring"]
+    n = int(2 * reach / cell)
+    idx = lambda v: int(round((v + reach) / cell))
+    blocked = bytearray(n * n)
+    shapes = [r for k, r in s.rects if k in ("wall", "building", "rock")] + [s.OFFICE]
+    for it in s.snapshots()[-1]:
+        if it[0] == "object" and "ground" in it[4] and (barrierish(it[1]) or "Bunker" in it[1]):
+            shapes.append(s.corners(it))
+    for r in shapes:
+        xs, ys = [p[0] for p in r], [p[1] for p in r]
+        poly = [r[0], r[1], r[3], r[2]]
+        # Grown by the man's half width: test cell centres against the polygon pushed out by man (approximately: the
+        # distance to the polygon)
+        for i in range(max(idx(min(xs) - man - cell), 0), min(idx(max(xs) + man + cell), n - 1) + 1):
+            for j in range(max(idx(min(ys) - man - cell), 0), min(idx(max(ys) + man + cell), n - 1) + 1):
+                p = (i * cell - reach, j * cell - reach)
+                if poly_dist(p, poly) <= man:
+                    blocked[j * n + i] = 1
+    sx, sy = s.ef(1.5, 0)
+    start = (idx(sx), idx(sy))
+    if blocked[start[1] * n + start[0]]:
+        start = next(((i, j) for i, j in ((idx(sx + dx), idx(sy + dy)) for dx in (-1, 1, -2, 2) for dy in (0, -1, 1))
+                      if not blocked[j * n + i]), start)
+    holes = []
+    for _ in range(6):
+        # Breadth first, so the way out found is the shortest; it leaves the ring's outline at the hole
+        prev = {start: None}
+        todo = [start]
+        out = None
+        k = 0
+        while k < len(todo):
+            i, j = todo[k]
+            k += 1
+            x, y = i * cell - reach, j * cell - reach
+            if not (x0 - 3 <= x <= x1 + 3 and y0 - 3 <= y <= y1 + 3):
+                out = (i, j)
+                break
+            for a, b in ((i + 1, j), (i - 1, j), (i, j + 1), (i, j - 1)):
+                if 0 <= a < n and 0 <= b < n and (a, b) not in prev and not blocked[b * n + a]:
+                    prev[(a, b)] = (i, j)
+                    todo.append((a, b))
+        if out is None:
+            break
+        p, hole = out, None
+        while p is not None:
+            x, y = p[0] * cell - reach, p[1] * cell - reach
+            if x0 - 0.5 <= x <= x1 + 0.5 and y0 - 0.5 <= y <= y1 + 0.5:
+                hole = (round(x, 1), round(y, 1))
+                break
+            p = prev[p]
+        hole = hole or (round(out[0] * cell - reach, 1), round(out[1] * cell - reach, 1))
+        holes.append(hole)
+        # Plug it (a 1.5 m disc) and look for the next
+        hi, hj = idx(hole[0]), idx(hole[1])
+        r = int(1.5 / cell)
+        for a in range(hi - r, hi + r + 1):
+            for b in range(hj - r, hj + r + 1):
+                if 0 <= a < n and 0 <= b < n and math.hypot(a - hi, b - hj) <= r:
+                    blocked[b * n + a] = 1
+    return holes
+
+
+def poly_dist(p, poly):
+    """Distance from point p to a convex polygon (0 inside)."""
+    inside = True
+    best = 1e9
+    sgn = None
+    for k in range(len(poly)):
+        a, b = poly[k], poly[(k + 1) % len(poly)]
+        c = (b[0] - a[0]) * (p[1] - a[1]) - (b[1] - a[1]) * (p[0] - a[0])
+        if sgn is None and c != 0:
+            sgn = c > 0
+        elif c != 0 and (c > 0) != sgn:
+            inside = False
+        vx, vy = b[0] - a[0], b[1] - a[1]
+        t = max(0, min(1, ((p[0] - a[0]) * vx + (p[1] - a[1]) * vy) / (vx * vx + vy * vy or 1)))
+        best = min(best, math.hypot(a[0] + t * vx - p[0], a[1] + t * vy - p[1]))
+    return 0.0 if inside else best
 
 
 def views(s):
@@ -836,7 +1078,15 @@ if __name__ == "__main__":
     for name in (args or TOWNS):
         s = build(name)
         path = tl.write(s.t, s.snapshots())
-        print(f"{name} ({s.entry}): {report(s)}; skipped {s.skipped}")
+        print(f"{name} ({s.entry}): {report(s)}; skipped {s.skipped}; holes filled {len(getattr(s, 'filled', []))}")
+        if "--audit" in sys.argv:
+            for side, ln, run, nb, gaps in line_audit(s):
+                print(f"   line {side:5}: {ln:5.1f} m; pieces {run:5.1f}, neighbours/walls/office {nb:5.1f}; open {gaps}")
+            for c in clip_audit(s):
+                print("   CLIP", c)
+            holes = closed_audit(s)
+            if s.t.cap >= 3:
+                print("   closed:", "yes" if not holes else f"NO, a man gets out at {holes}")
         if "--views" in sys.argv:
             print("   views:", ", ".join(views(s)))
         if "--map" in sys.argv:

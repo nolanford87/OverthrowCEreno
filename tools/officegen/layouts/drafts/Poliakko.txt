@@ -2,7 +2,7 @@ OTLAYOUT|Altis|Poliakko|OFFICE|Land_i_House_Big_02_V3_F|[10958.076,13427.154,29.
 OTLAYOUT|Altis|Poliakko|TIER|1|7
 OTLAYOUT|Altis|Poliakko|ITEM|1|object|Land_TableDesk_F|[10955.240,13425.840,33.340]|[[-0.4266,-0.9045,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Poliakko|ITEM|1|object|Land_OfficeChair_01_F|[10954.558,13424.393,33.340]|[[-0.4266,-0.9045,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Poliakko|ITEM|1|object|Land_MapBoard_F|[10952.792,13425.337,33.340]|[[0.4266,0.9045,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Poliakko|ITEM|1|object|Land_MapBoard_F|[10952.962,13425.698,33.340]|[[0.4266,0.9045,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Poliakko|ITEM|1|object|Flag_NATO_F|[10965.101,13423.069,28.327]|[[-0.9045,0.4266,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
 OTLAYOUT|Altis|Poliakko|ITEM|1|guard|gendarme|[10962.508,13422.965,29.890]|115.2|
 OTLAYOUT|Altis|Poliakko|ITEM|1|guard|gendarme|[10950.994,13433.481,29.765]|295.2|ground
@@ -10,7 +10,7 @@ OTLAYOUT|Altis|Poliakko|ITEM|1|guard|gendarme|[10962.611,13424.354,33.340]|115.2
 OTLAYOUT|Altis|Poliakko|TIER|2|16
 OTLAYOUT|Altis|Poliakko|ITEM|2|object|Land_TableDesk_F|[10955.240,13425.840,33.340]|[[-0.4266,-0.9045,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Poliakko|ITEM|2|object|Land_OfficeChair_01_F|[10954.558,13424.393,33.340]|[[-0.4266,-0.9045,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Poliakko|ITEM|2|object|Land_MapBoard_F|[10952.792,13425.337,33.340]|[[0.4266,0.9045,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Poliakko|ITEM|2|object|Land_MapBoard_F|[10952.962,13425.698,33.340]|[[0.4266,0.9045,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Poliakko|ITEM|2|object|Flag_NATO_F|[10965.101,13423.069,28.327]|[[-0.9045,0.4266,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
 OTLAYOUT|Altis|Poliakko|ITEM|2|guard|gendarme|[10962.508,13422.965,29.890]|115.2|
 OTLAYOUT|Altis|Poliakko|ITEM|2|guard|gendarme|[10950.994,13433.481,29.765]|295.2|ground
@@ -27,7 +27,7 @@ OTLAYOUT|Altis|Poliakko|ITEM|2|guard|marksman|[10957.284,13432.284,33.340]|25.2|
 OTLAYOUT|Altis|Poliakko|TIER|3|57
 OTLAYOUT|Altis|Poliakko|ITEM|3|object|Land_TableDesk_F|[10955.240,13425.840,33.340]|[[-0.4266,-0.9045,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Poliakko|ITEM|3|object|Land_OfficeChair_01_F|[10954.558,13424.393,33.340]|[[-0.4266,-0.9045,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Poliakko|ITEM|3|object|Land_MapBoard_F|[10952.792,13425.337,33.340]|[[0.4266,0.9045,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Poliakko|ITEM|3|object|Land_MapBoard_F|[10952.962,13425.698,33.340]|[[0.4266,0.9045,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Poliakko|ITEM|3|object|Flag_NATO_F|[10965.101,13423.069,28.327]|[[-0.9045,0.4266,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
 OTLAYOUT|Altis|Poliakko|ITEM|3|guard|gendarme|[10962.508,13422.965,29.890]|115.2|
 OTLAYOUT|Altis|Poliakko|ITEM|3|guard|gendarme|[10950.994,13433.481,29.765]|295.2|ground
