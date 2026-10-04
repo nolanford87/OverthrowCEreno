@@ -23,7 +23,7 @@ The ladder (every tier keeps the one before):
      each other and butt into the neighbours and old walls; 2-high H-barriers (Land_HBarrier_Big_F) on the sides
      facing a road or open ground, 1-high ones elsewhere and either side of the gate so the gate pair can fire over
      them; the way in a bar gate square with the door, a chicane inside it when the yard is deep enough; a bag
-     bunker tower beside the gate, its marksman on the platform; an HMG and a GMG set into the lines (round bags in
+     bunker tower at a corner of the gate's line (beside the gate when no corner fits), its marksman on the platform; an HMG and a GMG set into the lines (round bags in
      the line, the gun just inside), each placed where its field of fire down an approach is longest; an MG on the
      other balcony, the officer upstairs, a rifleman on the porch/at the front door, an autorifleman on a 1-high line.
 """
@@ -42,7 +42,7 @@ OUT = {"back": 180, "front": 0, "left": 270, "right": 90}
 # open sides, the neighbours close the rest); tall (the sides facing a road or open ground: 2-high); statics
 # ([(role, [(side, lateral, skew), ...])]: the posts tried, the one with the longest field of fire taken); nest_a /
 # nest_side (the tier 2 nest's distance out from the door and its side); screen_a (the second door's screen);
-# gate_at (the gate off the door's axis).
+# gate_at (the gate off the door's axis); tower "gate" (the tower beside the gate, not at a corner).
 TOWNS = {
     "Alikampos": {"ring": (-10, 8, -10, 12), "nest_a": 2.0, "tall": ("back", "right"),
                   "statics": [("hmg", [("right", -6, 30), ("right", -2, 45), ("back", 5, -30)]),
@@ -62,7 +62,7 @@ TOWNS = {
                          ("gmg", [("left", 8, 30), ("left", 4, 0)])]},
     "Poliakko": {"ring": (-9, 7.3, -13, 12), "tall": ("right", "back"),
                  "statics": [("hmg", [("right", -8, 30), ("right", -5, 45)]), ("gmg", [("right", 8, -30), ("right", 5, -45)])]},
-    "Selakano": {"ring": (-10, 8, -9.6, 12), "nest_a": 1.9, "nest_side": -1, "tall": ("back", "left"),
+    "Selakano": {"ring": (-10, 8, -9.6, 12), "tower": "gate", "nest_a": 1.9, "nest_side": -1, "tall": ("back", "left"),
                  "statics": [("hmg", [("back", -8, 30), ("left", -6, -30)]), ("gmg", [("front", -6, -30), ("left", 8, 30)])]},
     "Stavros": {"entry": "front", "ring": (-8, 5.5, -7.5, 12), "tall": ("back", "left"),
                 "statics": [("hmg", [("left", -4, -30), ("back", -5, 30), ("left", 0, -45)]), ("gmg", [("left", 8, 0), ("front", -5, -30)])]},
@@ -554,7 +554,29 @@ def tier3(s):
     ns = getattr(s, "nest_side", None) or 1
     inward = 1 if gate_side == "back" else -1
     tower = None
-    for sgn in (-ns, ns):
+    # First choice: a corner of the gate's line, straddling the corner, the one whose platform sees furthest out
+    # over the approach (diagonally out from the corner)
+    corners = []
+    for cx in (x0, x1):
+        for k in (1.0, 1.6, 2.4, 3.2):
+            tx = cx + (k if cx == x0 else -k)
+            ty = line_at + inward * k
+            out = (s.d + (45 if (cx == x1) == (s.d == 0) else -45)) % 360
+            it = s.O("Land_BagBunker_Tower_F", tx, ty, out)
+            if s.ok(it) and s.keeps_views([it]):
+                n = len(s.cur)
+                s.cur.append(it)
+                z = t.ground_model(tx, ty) + TOWER_PLATFORM
+                v = max(s.view(s.G("marksman", tx, ty, out + dd, z)) for dd in (0, 30, -30))
+                del s.cur[n:]
+                corners.append((v, tx, ty, out))
+                break
+    if corners and s.cfg.get("tower") != "gate":
+        v, tx, ty, out = max(corners)
+        if v >= 20:
+            s.cur.append(s.O("Land_BagBunker_Tower_F", tx, ty, out))
+            tower = (tx, ty)
+    for sgn in ((-ns, ns) if not tower else ()):
         for off in (4.4, 5.0, 5.6, 6.2, 6.8, 7.4, 8.0, 8.6, 3.8):
             tx = s.D[0] + uv(s.d + 90)[0] * sgn * off
             if abs(tx) > 6.0:
