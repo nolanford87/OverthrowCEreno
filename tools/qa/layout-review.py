@@ -68,10 +68,10 @@ def watch():
 def main(argv):
     if "--watch" in argv:
         return watch()
-    args = [a for a in argv if not a.startswith("--")]
+    only = argv[argv.index("--group") + 1] if "--group" in argv else None
+    args = [a for a in argv if not a.startswith("--") and a != only]
     rnd = int(args[0])
     rpt = args[1] if len(args) > 1 else max(glob.glob(os.path.join(os.environ["LOCALAPPDATA"], "Arma 3", "*.rpt")), key=os.path.getmtime)
-    only = argv[argv.index("--group") + 1] if "--group" in argv else None
     groups = json.load(open(os.path.join(REVIEW, "groups.json"), encoding="utf-8"))
     checks, classes, bpos = {}, {}, {}
     for line in open(rpt, encoding="utf-8", errors="replace"):
@@ -98,7 +98,8 @@ def main(argv):
               "Per tier: items in the layout / guards / props / statics / items not made (class missing); then the problems found.",
               "clips = a building, wall, rock or the office's walls runs through it; floating = gap under it (m); moved = a guard pushed",
               "more than 1 m off his post (stuck in geometry); blind = a guard's view ends within 4 m (facing a wall); blocked = a",
-              "static's field of fire ends within 15 m; view = the guards' median clear view (m). Screenshots beside this file:",
+              "static's field of fire ends within 15 m; view = the guards' median clear view (m). A flagged item's [x, y] is where",
+              "it stood in the office's model coordinates (your drafts' own). Screenshots beside this file:",
               "<town>_T<tier>_top.jpg (from 48 m above, north up) and <town>_T<tier>_street.jpg (from 35 m out on the street side, 20 m up).", ""]
         for town in mine:
             md.append(f"## {town}")
