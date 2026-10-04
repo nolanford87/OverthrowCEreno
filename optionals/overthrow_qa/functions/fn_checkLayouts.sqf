@@ -154,7 +154,9 @@
                     private _name = (_town splitString " ") joinString "_";
                     private _c = getPosASL _b;
                     _cam camPrepareTarget (ASLToAGL (_c vectorAdd [0, 0.5, 0]));
-                    _cam camPreparePos (ASLToAGL (_c vectorAdd [0, 0, 48]));
+                    // 48 m above the ground, or 40 m above the roof of a tall office (the Offices_01 tower)
+                    (boundingBoxReal _b) params ["", "_top"];
+                    _cam camPreparePos (ASLToAGL (_c vectorAdd [0, 0, 48 max ((_top select 2) + 40)]));
                     _cam camPrepareFOV 0.75;
                     _cam camCommitPrepared 0;
                     sleep 1.5;
