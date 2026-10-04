@@ -2,7 +2,8 @@
     Description:
     Taking a town by its mayor's office, once the town's stability is down to 0 (OT_fnc_NATOcheckTowns):
     the resistance gets a task to take the office; it's taken once no occupier soldier is left within
-    30 m of it and the resistance has held it for 2 minutes. The occupier then counter-attacks the office
+    30 m of it and the resistance has held it for 2 minutes. A town under 100 people is then the
+    resistance's; a bigger one the occupier counter-attacks at the office
     (OT_fnc_NATOResponseTown, after its 10 minutes to get there, the time to bunker down): the resistance
     wins the town if it still holds the office when the attack is spent or runs out of time, the occupier
     wins it back by holding the office with nobody of the resistance inside for 2 minutes. While the
@@ -59,7 +60,16 @@ if !(server getVariable [_held, false]) then {
     };
 };
 
-if (server getVariable [_held, false]) then {
+// A small town (under 100 people) is the resistance's with its office, no counter-attack
+if ((server getVariable [_held, false]) && { (server getVariable [format ["population%1", _town], 100]) < 100 } && { !(_town in (server getVariable ["NATOabandoned", []])) }) then {
+    private _abandoned = server getVariable ["NATOabandoned", []];
+    _abandoned pushBack _town;
+    server setVariable ["NATOabandoned", _abandoned, true];
+    server setVariable [format ["garrison%1", _town], 0, true];
+    format ["%2 has abandoned %1", _town, OT_NATO_name] remoteExec ["OT_fnc_notifyGood", 0, false];
+};
+
+if ((server getVariable [_held, false]) && { !(_town in (server getVariable ["NATOabandoned", []])) }) then {
     // The counter-attack, once no other is being fought
     waitUntil { sleep 5; (server getVariable ["NATOattacking", ""]) isEqualTo "" };
     private _resources = server getVariable ["NATOresources", 2000];

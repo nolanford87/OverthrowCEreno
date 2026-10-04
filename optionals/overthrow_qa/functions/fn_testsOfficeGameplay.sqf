@@ -7,6 +7,7 @@
        the resistance holds it
     3. Capture: the task, cleared and held (2 minutes, shortened), the office held, the QRF for it; the
        resistance wins it (forced) and has the town
+    3b. A town under 100 people is the resistance's with its office, no QRF
     4. Lost again: the occupier wins the QRF (forced), stability 50, the office theirs again
     5. Called off: the town's stability rises before the office is taken, the task is cancelled
     6. The fight for the office: the occupier holding it with nobody of ours inside wins
@@ -21,9 +22,10 @@
 "Office: save while the office is held (before the QRF) and load: the guards don't come back and the QRF still comes" call OTQA_fnc_manual;
 "Office: a QRF for the office that runs out (13 minutes with none of theirs left near, or 30) is a resistance win" call OTQA_fnc_manual;
 
-// Towns with an office layout, farthest from the host first
+// Towns with an office layout, farthest from the host first (of 100 people or more, or under 100 with _small)
 OTQA_og_towns = {
-    private _towns = OT_allTowns select { ([_x] call OT_fnc_officeLayout) isNotEqualTo [] };
+    params [["_small", false]];
+    private _towns = OT_allTowns select { ([_x] call OT_fnc_officeLayout) isNotEqualTo [] && { ((server getVariable [format ["population%1", _x], 0]) < 100) isEqualTo _small } };
     [_towns, [], { (server getVariable [_x, [0, 0, 0]]) distance2D player }, "DESCEND"] call BIS_fnc_sortBy;
 };
 OTQA_og_officePos = { ASLToAGL ((([_this] call OT_fnc_officeLayout) select 0) select 1) };
@@ -91,7 +93,7 @@ _tests pushBack ["Office: the tier by population bracket, capped", {
     ["Tier: starts by bracket (1, 1, 2, 3, 4)", _got isEqualTo [1, 1, 2, 3, 4], str _got] call OTQA_fnc_check;
     ["Tier: never above bracket + 1", _capped isEqualTo 2, str _capped] call OTQA_fnc_check;
     // A layout's top tier caps it too
-    private _small = (call OTQA_og_towns) select { count ((([_x] call OT_fnc_officeLayout) select 1) select { _x isNotEqualTo [] }) isEqualTo 2 };
+    private _small = ([true] call OTQA_og_towns) select { count ((([_x] call OT_fnc_officeLayout) select 1) select { _x isNotEqualTo [] }) isEqualTo 2 };
     if (_small isEqualTo []) exitWith { ["Tier: a two-tier layout to cap", false, "none"] call OTQA_fnc_check };
     private _t = _small select 0;
     private _pop = server getVariable [format ["population%1", _t], 0];
@@ -156,6 +158,24 @@ _tests pushBack ["Office: taken, held, the QRF for it won", {
     deleteVehicle _unit;
     [_town, _saved] call OTQA_og_restore;
 }, 120];
+
+_tests pushBack ["Office: a small town is taken with its office", {
+    if !(call OTQA_og_idle) exitWith { ["Small town: no QRF running first", false, server getVariable ["NATOattacking", ""]] call OTQA_fnc_check };
+    private _town = ([true] call OTQA_og_towns) select 0;
+    private _saved = [_town] call OTQA_og_save;
+    OT_officeHoldTime = 10;
+    server setVariable [format ["stability%1", _town], 0, true];
+    [_town] spawn OT_fnc_officeCapture;
+    sleep 2;
+    private _unit = [_town call OTQA_og_officePos] call OTQA_og_ours;
+    private _timeout = time + 40;
+    waitUntil { sleep 1; _town in (server getVariable ["NATOabandoned", []]) || { time > _timeout } };
+    sleep 6;
+    private _taken = _town in (server getVariable ["NATOabandoned", []]);
+    ["Small town: the resistance's with its office, no QRF", _taken && { (server getVariable ["NATOattacking", ""]) isEqualTo "" } && { !(missionNamespace getVariable [format ["OT_officeCapture%1", _town], false]) }, format ["%1 (%2 people): taken %3, attacking '%4'", _town, server getVariable [format ["population%1", _town], 0], _taken, server getVariable ["NATOattacking", ""]]] call OTQA_fnc_check;
+    deleteVehicle _unit;
+    [_town, _saved] call OTQA_og_restore;
+}, 60];
 
 _tests pushBack ["Office: lost again when the occupier wins its QRF", {
     if !(call OTQA_og_idle) exitWith { ["Lost: no QRF running first", false, server getVariable ["NATOattacking", ""]] call OTQA_fnc_check };

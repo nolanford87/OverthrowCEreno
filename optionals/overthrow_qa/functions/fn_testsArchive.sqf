@@ -18,13 +18,11 @@ private _tests = [];
 } forEach [
     OTQA_fnc_testsOfficeTemplates,
     OTQA_fnc_testsOfficeReviewTown,
-    OTQA_fnc_testsDrugRaids,
     OTQA_fnc_testsDrugTurf,
     OTQA_fnc_testsDrugsBlow,
     OTQA_fnc_testsDrugsGanja,
     OTQA_fnc_testsBodies,
     OTQA_fnc_testsFOBVirtual,
-    OTQA_fnc_testsCounterattacks,
     OTQA_fnc_testsAirdropEscort,
     OTQA_fnc_testsPoachers,
     OTQA_fnc_testsFisherman,
@@ -41,6 +39,8 @@ private _tests = [];
     OTQA_fnc_testsFollowups,
     OTQA_fnc_testsOccupiers,
     OTQA_fnc_testsBugFixes,
-    OTQA_fnc_testsTownLayout
+    OTQA_fnc_testsTownLayout,
+    OTQA_fnc_testsCounterattacks,
+    OTQA_fnc_testsDrugRaids
 ];
 _tests;
