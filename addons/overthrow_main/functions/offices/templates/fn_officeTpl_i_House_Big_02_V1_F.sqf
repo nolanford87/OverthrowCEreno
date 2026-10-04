@@ -75,8 +75,7 @@
         ["object", "Land_HBarrier_1_F", [-23.65, 10.13, -2.5], 270, ["outside"]],
         ["object", "Land_BarGate_F", [-23.65, -5.8, -2.5], 270, ["outside", "axis", "gate"]],
         ["object", "Land_BagFence_Long_F", [-0.2, 2, 1], 90, []],
-        ["object", "Land_BagFence_Short_F", [-1.7, -2.3, 1], 0, []],
-        ["object", "Land_BagFence_Short_F", [-1.7, 3.3, 1], 180, []],
+        ["object", "Land_BagFence_Short_F", [-1.57, -2.3, 1], 0, []],
         ["guard", "at", [-22.15, -1.6, -2.5], 270, ["outside"]],
         ["guard", "marksman", [-0.6, -5.3, 1], 180, []]
     ]

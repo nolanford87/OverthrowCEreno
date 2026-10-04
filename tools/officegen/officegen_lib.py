@@ -351,7 +351,10 @@ class Building:
         if not counts:
             return None
         # The wall line: the most wall between 1.5 m behind and 3 m before the point, nearest the point on ties
-        best = max((n, -abs(a4)) for a4, n in counts.items() if -6 <= a4 <= 12)
+        near = [(n, -abs(a4)) for a4, n in counts.items() if -6 <= a4 <= 12]
+        if not near:
+            return None
+        best = max(near)
         if best[0] < 8:
             return None
         a4 = -best[1]
@@ -1207,19 +1210,25 @@ class Plan:
 
     def reinforce_office(self, tier, cls="Land_BagFence_Short_F", reach=7.0, inside=2.0, lateral=1.2):
         """Tier 5: the office room's doors reinforced: for each door within reach of the desk, a pair
-        of bags 2 m from it towards the desk, square with that line, either side of it."""
+        of bags on the desk's side of its wall, square with the door, either side of its axis. A
+        door's axis is the one whose fine grid shows a narrow gap with the wall line at the point."""
         if not self.desk:
             return 0
         dx, dy, level, _ = self.desk
         n = 0
-        for door in self.b.doors:
+        for i, door in enumerate(self.b.doors):
             if abs(door[2] - 1.0 - level) > 2.5 or dist2(door, (dx, dy)) > reach:
                 continue
-            # the probe has no wall data to read a door's axis from: face the desk along the nearer axis
-            d = norm_dir(round(vec_dir(dx - door[0], dy - door[1]) / 90.0) * 90)
+            gaps = [(w["width"], a, w) for a in (0, 90) for w in [self.b.doorway(i, a)] if w and abs(w["wall"]) <= 0.25 and w["width"] <= 2.0]
+            if not gaps:
+                continue
+            _, d, w = min(gaps, key=lambda g: g[0])
+            if along((dx, dy), w["centre"], d)[0] < 0:
+                d += 180
             for lat in (-lateral, lateral):
-                p = offset(door, d, inside, lat)
-                if self.floor_ok(level, p, d, size_of(cls)[0] / 2.0) and self.add_object(tier, cls, p, d, level):
+                p = offset(w["centre"], d, inside, lat)
+                near_guard = any(it[0] == "guard" and abs(it[2][2] - level) < 1.5 and dist2(it[2], p) < 1.8 for t in self.tiers for it in t)  # rule 4
+                if not near_guard and self.floor_ok(level, p, d, size_of(cls)[0] / 2.0) and self.add_object(tier, cls, p, d, level):
                     n += 1
         return n
 
