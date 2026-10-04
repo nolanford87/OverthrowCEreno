@@ -210,25 +210,32 @@ class Draft:
         classes = self.FAMILIES[family]
         dist = math.hypot(x1 - x0, y1 - y0)
         along = math.degrees(math.atan2(x1 - x0, y1 - y0))
-        best = None
-        for main in classes:
+        most = 2 * tl.BARRIER_OVERLAP  # The most two pieces may overlap (their cores just touching)
+        options = []
+        for main in classes:  # n of one piece, evenly spaced
             L = tl.CLASSES[main][0]
-            for last in classes:
+            for n in range(1, 40):
+                if n == 1:
+                    if L >= dist - 0.1 and L - dist <= most:
+                        options.append(((1, abs(L - dist)), [(main, dist / 2)]))
+                    continue
+                step = (dist - L) / (n - 1)
+                if 0.1 <= L - step <= most:
+                    options.append(((n, abs(L - step - LAP)), [(main, L / 2 + i * step) for i in range(n)]))
+                    break
+            for last in classes:  # n-1 of one piece at LAP and a shorter one to finish
                 Ll = tl.CLASSES[last][0]
-                m = max(0, math.ceil((dist - Ll) / (L - LAP)))  # main pieces before the last one
-                excess = m * (L - LAP) + Ll - dist
-                if m == 0 and Ll < dist:
+                if last == main or Ll > L:
                     continue
-                if (m and excess > 2 * tl.BARRIER_OVERLAP - LAP) or (not m and excess > 2 * tl.BARRIER_OVERLAP):
-                    continue
-                cost = (m + 1, excess)
-                if best is None or cost < best[0]:
-                    best = (cost, main, last, m, excess)
-        _, main, last, m, excess = best
-        L, Ll = tl.CLASSES[main][0], tl.CLASSES[last][0]
-        pieces = [(main, i * (L - LAP) + L / 2) for i in range(m)]
-        pieces.append((last, (dist - Ll / 2) if m else dist / 2))
-        for c, at in pieces:
+                m = max(1, math.ceil((dist - Ll) / (L - LAP)))
+                ov = m * (L - LAP) + LAP - (dist - Ll)  # The last joint's overlap
+                if 0.1 <= ov <= most and m * (L - LAP) + LAP <= dist:
+                    pieces = [(main, L / 2 + i * (L - LAP)) for i in range(m)] + [(last, dist - Ll / 2)]
+                    options.append(((m + 1, abs(ov - LAP) + 0.01), pieces))
+        if not options:
+            self.log.append(f"T{len(self.tiers)} SKIP fill {family} ({x0:.1f},{y0:.1f})-({x1:.1f},{y1:.1f}): no fit")
+            return
+        for c, at in min(options, key=lambda o: o[0])[1]:
             cx, cy = off(x0, y0, along, at)
             self.o(c, cx, cy, face, z, road_ok=road_ok or c == WIRE)
 
@@ -248,19 +255,20 @@ class Draft:
             gx, gy = off(m[0], m[1], face, 0.3)
             return self.g(role, gx, gy, face, nudge=0.25, ignore=(b,))
 
-    def checkpoint(self, x, y, face, width=7.0, out=6.0, side=1, roles=("rifleman", "autorifleman")):
+    def checkpoint(self, x, y, face, width=7.0, out=6.0, side=1, roles=("rifleman", "autorifleman"), hb=HB5, block=CNC4):
         """A checkpoint across a road, traffic coming from `face`: an H-barrier (man-high, the men fire over it)
         across one half at (x, y) with its two men 1.2 m behind it, a concrete block across the other half `out`
         metres further out (negative: further in), `side` 1/-1 which half the H-barrier takes (right/left seen
         from the office). A vehicle can only get through in an S at walking pace, under the men's guns."""
         half = side * width / 4
-        hb = self.o(HB5, *off(x, y, face, 0.0, half), face, road_ok=True, nudge=0.5)
+        hb = self.o(hb, *off(x, y, face, 0.0, half), face, road_ok=True, nudge=0.5)
         if hb:
             m = self.t.to_model(hb[2])
-            for role, lat in zip(roles, (-1.5, 1.5)):
+            spread = min(1.5, tl.CLASSES[hb[1]][0] / 2 - 0.4)
+            for role, lat in zip(roles, (-spread, spread)):
                 gx, gy = off(m[0], m[1], face, -2.1, lat)
                 self.g(role, gx, gy, face, nudge=0.5)
-        self.o(CNC4, *off(x, y, face, out, -half), face, road_ok=True, nudge=0.5)
+        self.o(block, *off(x, y, face, out, -half), face, road_ok=True, nudge=0.5)
 
     def finish(self):
         return self.tiers
@@ -569,70 +577,83 @@ def house_t5_inside(d):
 
 
 def athira(d):
-    """Athira: the house stands in a dense block. North: House_Small_02 hard behind it, Big_02 beyond. East: a
-    courtyard (x 5..18, y -8..7) closed north by a city wall with a 5 m opening (x 12-17) onto a strip that runs
-    east to the east road, and east by the shop block. South: in front of the main door, open ground to House_Big_02
-    and a lane south (x -4..3) between it and a city wall that runs south from the door's west side (x -4.4). West:
-    an open lot (x -12..-5, y -8..-1) between building blocks to the west road; a lane north (x -12..-6). The
-    approaches: the west lot from the west road, the south lane, the strip from the east road, and a narrow gap
-    south-east between House_Big_02 and the shop block."""
-    house_t1(d, (2.5, -9.4))
+    """Athira: the house stands in a dense block. North: House_Small_02 hard behind it. East: a courtyard
+    (x 5..20, y -8..7) closed north by a city wall with a 4.5 m opening (x 12.5-17) onto a strip that runs east to
+    the east road, and east by the shop block. South: in front of the main door, open ground to House_Big_02's tip
+    and a lane south (x -4..4) between it and a city wall that runs south from the door's west side (x -4.5). West:
+    an open lot (x -13..-5, y -8..-1) between building blocks to the west road, a lane north (x -12.5..-6) and a
+    lane south (x -15..-5) beyond the city wall. The approaches: the west lot from the west road, the south lane,
+    the west lane, the strip from the east road, and a narrow gap south-east between House_Big_02 and the shop."""
+    house_t1(d, (2.6, -9.6))
 
     d.tier()  # T2: a C square with the main door (the city wall its west side): a long bag across 3 m out, a short
     # back to the house on its east; the side door's C (the courtyard wall its north side); the balcony over the
     # west lot
-    d.o(LONG, -2.7, -10.4, 180)
-    d.o(SHORT, -0.9, -9.3, 90)
-    d.g("rifleman", -3.3, -9.2, 180)
-    d.g("autorifleman", -2.1, -9.2, 180)
+    d.o(LONG, -2.8, -10.4, 180)
+    d.o(SHORT, -1.0, -9.4, 90)
+    d.g("rifleman", -3.4, -9.2, 180)
+    d.g("autorifleman", -2.2, -9.2, 180)
     d.o(LONG, 7.4, 5.4, 90)
     d.o(SHORT, 6.5, 3.6, 180)
     d.g("rifleman", 6.2, 5.4, 90)
     d.g("rifleman", -3.6, -3.4, 270, H1)
 
-    d.tier()  # T3: the compound closed. The west lot shut by an H-barrier line on its west side (x -12.5) and
-    # the lane north by a Mil wall pair; the courtyard's opening by a tall H-barrier wall; the south front by an
-    # H-barrier line (y -12.6) from the city wall east to the shop block, the gate gap in front of the main door
-    # (x -4.2..0.8) with a bar gate. HMG in the west lot covering the lot's mouth (the west road), GMG in the
-    # courtyard covering the south over the line.
-    d.line(-12.6, -1.6, 180, "H1", face=270)                 # x -12.6, y -1.6 .. -9.2
-    d.line(-12.6, -9.6, 90, "H1", face=180)                  # y -9.6, x -12.6 .. -5.0
-    d.line(-12.4, 8.6, 90, "MM", face=0)                     # The lane north
-    d.o(HBW6, 14.7, 6.4, 0, nudge=0.5)                       # The courtyard's opening
-    d.o(BARGATE, -1.7, -12.6, 180)
-    d.line(0.8, -12.6, 90, "HHH1", face=180)                 # x 0.8 .. 20.4
-    d.gun("hmg", -9.6, -5.0, 270)
-    d.gun("gmg", 11.0, -4.0, 170)
-    d.g("rifleman", -11.0, -2.0, 270)
-    d.g("autorifleman", 6.0, -11.0, 180)
-    d.g("rifleman", 14.7, 4.0, 0)
+    d.tier()  # T3: the compound closed. The west lot: an H-barrier line down its west side (an HMG's embrasure in
+    # it, facing the west road) to a bag bunker at its south-west corner (its slit down the west lane), and
+    # along its south side to the city wall; the lane north shut with Mil walls; the courtyard's opening with a
+    # tall H-barrier wall; the south front an H-barrier line (y -12.6) from the city wall to the shop block, the
+    # bar gate before the main door (x -4.3..0.8), round-bag embrasures in it; a GMG in the courtyard; men behind
+    # the lines, upstairs at the east windows
+    d.fill(-13.2, -1.2, -13.2, -5.0, 270)
+    d.embrasure(-13.2, -5.8, 270)
+    d.fill(-13.2, -6.6, -13.2, -7.2, 270)
+    d.bunker(-12.3, -8.4, 180)
+    d.fill(-10.9, -9.2, -4.3, -9.2, 180)
+    d.fill(-12.4, 8.6, -5.5, 8.6, 0, "M")
+    d.fill(12.0, 7.0, 17.5, 5.8, 15, "W")
+    d.o(BARGATE, -1.75, -12.6, 180)
+    d.fill(0.5, -12.6, 7.2, -12.6, 180)
+    d.embrasure(8.0, -12.6, 180, role=None)
+    d.fill(8.8, -12.6, 14.2, -12.6, 180)
+    d.embrasure(15.0, -12.6, 180, role=None)
+    d.fill(15.8, -12.6, 22.8, -12.6, 180)
+    d.gun("gmg", 11.0, -3.0, 170)
+    d.g("rifleman", -12.0, -2.4, 270)
+    d.g("autorifleman", 4.6, -10.8, 180)
+    d.g("rifleman", 19.0, -10.8, 180)
     d.g("rifleman", 4.2, -5.3, 90, H1)
     d.g("marksman", 4.2, 5.5, 90, H1)
 
-    d.tier()  # T4
-    d.bunker(-10.6, -7.6, 225)
-    d.bunker(17.6, -10.2, 160)
-    d.o(HB3, -2.4, -17.2, 180)                               # The chicane in the lane
-    d.o(HB3, 1.2, -21.0, 180)
-    d.line(2.2, -16.0, 90, "ww", face=180)
-    d.line(-16.0, -9.0, 0, "w", face=270)
-    for x, y in ((16.5, -17.0), (17.0, -20.0), (21.0, 9.5), (24.0, 9.0), (-14.0, 11.0), (-9.0, 11.5)):
+    d.tier()  # T4: the fort. A bunker out in front of the south line's east end, its slit straight down the
+    # south-east gap; a chicane of two staggered H-barrier teeth in the south lane (the gate is reached in an S
+    # through a pocket the line, the door's C and the HMG cover); wire across the west lot's mouth; hedgehogs in
+    # the south-east gap, the strip's mouth on the east road and the west lane; the south line's HMG; the balcony
+    # MG over the west lot; men along the lines
+    d.bunker(19.0, -15.3, 160)
+    d.fill(-4.3, -16.4, 3.0, -16.4, 180)
+    d.fill(-0.4, -20.4, 6.2, -20.4, 180)
+    d.fill(-15.0, -1.6, -15.0, -8.2, 270, "w")
+    for x, y in ((19.6, -19.5), (19.8, -22.0), (24.0, 8.8), (24.0, 11.2), (-10.0, -15.0), (-7.0, -17.0)):
         d.o(HOG, x, y, 45, nudge=1.0)
-    d.gun("hmg", 8.0, -10.8, 180, bag=False)
+    d.embrasure(8.0, -12.6, 180, bag=False)
     d.g("mg_gunner", -3.6, -0.6, 270, H1)
-    d.g("autorifleman", 12.0, -11.0, 180)
-    d.g("rifleman", 1.6, -11.0, 180)
-    d.g("rifleman", -11.0, -5.5, 270)
-    d.g("rifleman", -9.0, 7.0, 0)
-    d.g("rifleman", 4.2, 5.4, 90, H0)
+    d.g("rifleman", 1.8, -10.8, 180)
+    d.g("autorifleman", 12.0, -10.8, 180)
+    d.g("rifleman", -7.5, -7.9, 180)
+    d.g("rifleman", -11.8, -4.0, 270)
+    d.g("rifleman", 6.2, 4.3, 90)
 
-    d.tier()  # T5
-    d.checkpoint(-28.0, -4.5, 270)
-    d.checkpoint(0.0, -30.0, 200)
-    d.checkpoint(30.0, 10.5, 60)
-    d.s("mortar", 12.0, 2.0, 180)
-    d.gun("at", 16.0, -6.0, 150)
-    d.g("at", -1.7, -11.0, 180)
+    d.tier()  # T5: checkpoints at the west lot's mouth on the west road, in the south lane and across the strip's
+    # mouth on the east road; the mortar in the courtyard; the AT launcher in the south line's second embrasure,
+    # an AT man at the gate; the kill zone inside
+    d.checkpoint(-27.0, -4.7, 270, width=6.5, out=-5.0, hb=HB3, block=CNC)
+    d.checkpoint(0.0, -26.0, 180, width=7.0, out=5.0, side=-1, hb=HB3, block=CNC)
+    d.o(HB3, 26.8, 9.9, 90)
+    d.g("rifleman", 25.4, 9.2, 90)
+    d.g("autorifleman", 25.4, 10.6, 90)
+    d.s("mortar", 11.0, 2.0, 180)
+    d.embrasure(15.0, -12.6, 180, role="at", bag=False)
+    d.g("at", 0.6, -11.0, 180)
     house_t5_inside(d)
 
 
