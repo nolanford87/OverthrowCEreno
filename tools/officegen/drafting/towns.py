@@ -66,10 +66,11 @@ SIZE = {WALL6: (8.0, 2.0), WALL4: (5.4, 2.0), HB1: (1.4, 1.6), LONG: (3.0, 0.5),
         WIRE: (8.0, 1.0), BAR: (6.0, 0.6), HOG: (1.8, 1.8), "Land_BagBunker_Tower_F": (3.6, 3.6)}
 TOWER = "Land_BagBunker_Tower_F"
 STACK = {HB3: 1.7, HB1: 1.6}  # Where a second H-barrier is dropped to stand on the first (townlib.MEASURED heights)
-TOWER_DECK = 2.7  # The tower's platform above the ground (a guess for the in-game check)
+TOWER_DECK = 3.4  # The tower's platform above the ground at its centre (measured in the game; no building positions)
 # Where the men stand on a tower, in the tower's own frame (x right, y out of its front, z above the ground under it,
-# facing relative to the tower's): a guess until the layout check logs the tower's real building positions
-TOWER_SPOTS = [(0.8, 0.0, TOWER_DECK, 0), (-0.8, 0.0, TOWER_DECK, 30), (0.0, 0.8, TOWER_DECK, 0)]
+# facing relative to the tower's): the platform is level from the centre to 0.6 m towards +y or either side (a
+# 5.5 m post stands 0.6 m towards -y), so the men stand at the centre and just forward of it, looking out over +y
+TOWER_SPOTS = [(0.0, 0.3, TOWER_DECK, 0), (0.45, 0.5, TOWER_DECK, 20), (-0.45, 0.5, TOWER_DECK, -20)]
 
 
 def size_of(kind, what):

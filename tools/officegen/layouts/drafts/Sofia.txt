@@ -153,8 +153,8 @@ OTLAYOUT|Altis|Sofia|ITEM|4|object|Land_HBarrier_1_F|[25680.327,21358.753,22.236
 OTLAYOUT|Altis|Sofia|ITEM|4|static|at|[25681.237,21355.477,20.560]|[[0.9164,0.4003,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Sofia|ITEM|4|object|Land_HBarrier_3_F|[25663.551,21358.243,20.896]|[[-0.6896,0.7242,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Sofia|ITEM|4|object|Land_BagBunker_Tower_F|[25692.865,21350.807,20.367]|[[0.9997,-0.0244,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Sofia|ITEM|4|guard|mg_gunner|[25692.845,21350.008,23.067]|91.4|
-OTLAYOUT|Altis|Sofia|ITEM|4|guard|marksman|[25692.884,21351.607,23.067]|121.4|
+OTLAYOUT|Altis|Sofia|ITEM|4|guard|mg_gunner|[25693.165,21350.800,23.767]|91.4|
+OTLAYOUT|Altis|Sofia|ITEM|4|guard|marksman|[25693.354,21350.345,23.767]|111.4|
 OTLAYOUT|Altis|Sofia|ITEM|4|object|Land_BagBunker_Small_F|[25680.893,21361.639,20.654]|[[0.4446,0.8957,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Sofia|ITEM|4|guard|at|[25680.893,21361.639,20.654]|26.4|ground
 OTLAYOUT|Altis|Sofia|ITEM|4|static|gmg|[25681.568,21340.049,20.188]|[[-0.2823,-0.9593,0.0000],[0.0000,0.0000,1.0000]]|ground
@@ -174,4 +174,4 @@ OTLAYOUT|Altis|Sofia|ITEM|4|object|Land_CzechHedgehog_01_F|[25677.720,21369.389,
 OTLAYOUT|Altis|Sofia|ITEM|4|object|Land_CzechHedgehog_01_F|[25678.778,21372.336,20.888]|[[0.9997,-0.0231,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Sofia|ITEM|4|guard|mg_gunner|[25662.724,21353.312,20.694]|271.4|ground
 OTLAYOUT|Altis|Sofia|ITEM|4|object|Land_BagFence_Short_F|[25661.824,21353.334,20.704]|[[-0.9997,0.0244,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Sofia|ITEM|4|guard|rifleman|[25693.665,21350.788,23.067]|91.4|
+OTLAYOUT|Altis|Sofia|ITEM|4|guard|rifleman|[25693.376,21351.245,23.767]|71.4|

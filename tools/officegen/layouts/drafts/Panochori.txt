@@ -121,8 +121,8 @@ OTLAYOUT|Altis|Panochori|ITEM|4|object|Land_HBarrier_1_F|[5010.403,11293.066,53.
 OTLAYOUT|Altis|Panochori|ITEM|4|object|Land_HBarrier_1_F|[5010.980,11293.882,52.326]|[[-0.8165,0.5773,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Panochori|ITEM|4|object|Land_HBarrier_1_F|[5010.980,11293.882,53.926]|[[-0.8165,0.5773,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Panochori|ITEM|4|object|Land_BagBunker_Tower_F|[5004.103,11273.761,50.061]|[[-0.5773,-0.8165,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Panochori|ITEM|4|guard|mg_gunner|[5003.449,11274.223,52.761]|215.3|
-OTLAYOUT|Altis|Panochori|ITEM|4|guard|marksman|[5004.756,11273.299,52.761]|245.3|
+OTLAYOUT|Altis|Panochori|ITEM|4|guard|mg_gunner|[5003.930,11273.516,53.461]|215.3|
+OTLAYOUT|Altis|Panochori|ITEM|4|guard|marksman|[5003.447,11273.612,53.461]|235.3|
 OTLAYOUT|Altis|Panochori|ITEM|4|static|gmg|[5009.386,11270.148,49.828]|[[0.9647,-0.2632,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Panochori|ITEM|4|object|Land_BagFence_Round_F|[5010.930,11269.727,49.807]|[[-0.9647,0.2632,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Panochori|ITEM|4|guard|autorifleman|[5014.936,11288.391,52.035]|350.3|ground
@@ -133,4 +133,4 @@ OTLAYOUT|Altis|Panochori|ITEM|4|object|Land_CzechHedgehog_01_F|[4988.710,11280.2
 OTLAYOUT|Altis|Panochori|ITEM|4|object|Land_CzechHedgehog_01_F|[5010.612,11260.403,49.231]|[[-0.8249,0.5652,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Panochori|ITEM|4|guard|mg_gunner|[5023.481,11276.226,51.627]|215.3|ground
 OTLAYOUT|Altis|Panochori|ITEM|4|object|Land_BagFence_Short_F|[5022.962,11275.491,51.507]|[[-0.5773,-0.8165,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Panochori|ITEM|4|guard|rifleman|[5003.641,11273.108,52.761]|215.3|
+OTLAYOUT|Altis|Panochori|ITEM|4|guard|rifleman|[5004.182,11273.093,53.461]|195.3|

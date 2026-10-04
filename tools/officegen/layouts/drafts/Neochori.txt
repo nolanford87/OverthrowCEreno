@@ -168,8 +168,8 @@ OTLAYOUT|Altis|Neochori|ITEM|4|object|Land_HBarrierWall4_F|[12530.304,14313.011,
 OTLAYOUT|Altis|Neochori|ITEM|4|object|Land_HBarrier_1_F|[12533.161,14314.214,11.564]|[[0.3882,-0.9216,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Neochori|ITEM|4|object|Land_HBarrier_1_F|[12533.161,14314.214,13.164]|[[0.3882,-0.9216,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Neochori|ITEM|4|object|Land_BagBunker_Tower_F|[12518.209,14329.619,12.018]|[[-0.9261,0.3772,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Neochori|ITEM|4|guard|mg_gunner|[12518.511,14330.360,14.718]|292.2|
-OTLAYOUT|Altis|Neochori|ITEM|4|guard|marksman|[12517.908,14328.878,14.718]|322.2|
+OTLAYOUT|Altis|Neochori|ITEM|4|guard|mg_gunner|[12517.932,14329.732,15.418]|292.2|
+OTLAYOUT|Altis|Neochori|ITEM|4|guard|marksman|[12517.916,14330.224,15.418]|312.2|
 OTLAYOUT|Altis|Neochori|ITEM|4|object|Land_BagBunker_Small_F|[12545.566,14340.924,13.126]|[[0.3772,0.9261,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Neochori|ITEM|4|guard|at|[12545.566,14340.924,13.126]|22.2|ground
 OTLAYOUT|Altis|Neochori|ITEM|4|object|Land_CncBarrierMedium_F|[12529.681,14335.101,12.557]|[[-0.3882,0.9216,0.0000],[0.0000,0.0000,1.0000]]|ground
@@ -184,4 +184,4 @@ OTLAYOUT|Altis|Neochori|ITEM|4|object|Land_Razorwire_F|[12520.548,14321.489,11.4
 OTLAYOUT|Altis|Neochori|ITEM|4|object|Land_Razorwire_F|[12523.498,14314.485,10.929]|[[0.9216,0.3882,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Neochori|ITEM|4|guard|mg_gunner|[12542.163,14321.695,12.236]|157.2|ground
 OTLAYOUT|Altis|Neochori|ITEM|4|object|Land_BagFence_Short_F|[12542.512,14320.866,12.095]|[[0.3882,-0.9216,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Neochori|ITEM|4|guard|rifleman|[12517.468,14329.920,14.718]|292.2|
+OTLAYOUT|Altis|Neochori|ITEM|4|guard|rifleman|[12517.577,14329.391,15.418]|272.2|

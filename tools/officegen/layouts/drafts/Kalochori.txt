@@ -138,8 +138,8 @@ OTLAYOUT|Altis|Kalochori|ITEM|4|object|Land_HBarrier_1_F|[21343.652,16325.059,21
 OTLAYOUT|Altis|Kalochori|ITEM|4|object|Land_HBarrier_1_F|[21343.226,16324.797,19.866]|[[0.5238,-0.8518,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Kalochori|ITEM|4|object|Land_HBarrier_1_F|[21343.226,16324.797,21.466]|[[0.5238,-0.8518,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Kalochori|ITEM|4|object|Land_BagBunker_Tower_F|[21335.426,16354.280,20.749]|[[-0.5238,0.8518,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Kalochori|ITEM|4|guard|mg_gunner|[21336.108,16354.699,23.449]|328.4|
-OTLAYOUT|Altis|Kalochori|ITEM|4|guard|marksman|[21334.745,16353.861,23.449]|358.4|
+OTLAYOUT|Altis|Kalochori|ITEM|4|guard|mg_gunner|[21335.269,16354.536,24.149]|328.4|
+OTLAYOUT|Altis|Kalochori|ITEM|4|guard|marksman|[21335.548,16354.942,24.149]|348.4|
 OTLAYOUT|Altis|Kalochori|ITEM|4|object|Land_BagBunker_Small_F|[21343.564,16359.088,20.799]|[[-0.2009,0.9796,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Kalochori|ITEM|4|guard|at|[21343.564,16359.088,20.799]|348.4|ground
 OTLAYOUT|Altis|Kalochori|ITEM|4|guard|at|[21343.083,16348.893,20.355]|328.4|ground

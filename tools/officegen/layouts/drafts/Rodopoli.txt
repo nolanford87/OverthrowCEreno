@@ -141,8 +141,8 @@ OTLAYOUT|Altis|Rodopoli|ITEM|4|object|Land_HBarrier_1_F|[18707.843,16607.385,36.
 OTLAYOUT|Altis|Rodopoli|ITEM|4|object|Land_HBarrier_3_F|[18724.894,16613.054,33.525]|[[0.8170,0.5766,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Rodopoli|ITEM|4|guard|rifleman|[18723.832,16612.304,33.624]|54.8|ground
 OTLAYOUT|Altis|Rodopoli|ITEM|4|object|Land_BagBunker_Tower_F|[18722.180,16581.519,32.841]|[[-0.1700,-0.9854,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Rodopoli|ITEM|4|guard|mg_gunner|[18721.391,16581.655,35.541]|189.8|
-OTLAYOUT|Altis|Rodopoli|ITEM|4|guard|marksman|[18722.968,16581.383,35.541]|219.8|
+OTLAYOUT|Altis|Rodopoli|ITEM|4|guard|mg_gunner|[18722.129,16581.224,36.241]|189.8|
+OTLAYOUT|Altis|Rodopoli|ITEM|4|guard|marksman|[18721.651,16581.103,36.241]|209.8|
 OTLAYOUT|Altis|Rodopoli|ITEM|4|static|gmg|[18742.442,16595.818,32.373]|[[0.9048,0.4259,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Rodopoli|ITEM|4|object|Land_BagFence_Round_F|[18743.890,16596.500,32.382]|[[-0.9048,-0.4259,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Rodopoli|ITEM|4|object|Land_CncBarrierMedium_F|[18735.911,16589.985,32.201]|[[0.5766,-0.8170,0.0000],[0.0000,0.0000,1.0000]]|ground
@@ -155,4 +155,4 @@ OTLAYOUT|Altis|Rodopoli|ITEM|4|object|Land_Razorwire_F|[18729.989,16585.194,32.3
 OTLAYOUT|Altis|Rodopoli|ITEM|4|guard|mg_gunner|[18730.573,16601.885,34.400]|144.8|
 OTLAYOUT|Altis|Rodopoli|ITEM|4|guard|rifleman|[18716.253,16610.383,34.165]|334.8|ground
 OTLAYOUT|Altis|Rodopoli|ITEM|4|object|Land_BagFence_Short_F|[18715.870,16611.197,34.187]|[[-0.4259,0.9048,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Rodopoli|ITEM|4|guard|autorifleman|[18722.043,16580.731,35.541]|189.8|
+OTLAYOUT|Altis|Rodopoli|ITEM|4|guard|autorifleman|[18722.538,16580.950,36.241]|169.8|

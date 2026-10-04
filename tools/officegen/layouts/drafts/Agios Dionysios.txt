@@ -176,8 +176,8 @@ OTLAYOUT|Altis|Agios Dionysios|ITEM|4|object|Land_HBarrierWall4_F|[9253.920,1595
 OTLAYOUT|Altis|Agios Dionysios|ITEM|4|object|Land_HBarrier_1_F|[9255.871,15952.909,115.734]|[[0.3699,0.9291,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Agios Dionysios|ITEM|4|object|Land_HBarrier_1_F|[9255.871,15952.909,117.334]|[[0.3699,0.9291,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Agios Dionysios|ITEM|4|object|Land_BagBunker_Tower_F|[9221.449,15937.553,120.202]|[[-0.9185,-0.3954,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Agios Dionysios|ITEM|4|guard|mg_gunner|[9221.133,15938.287,122.902]|246.7|
-OTLAYOUT|Altis|Agios Dionysios|ITEM|4|guard|marksman|[9221.766,15936.818,122.902]|276.7|
+OTLAYOUT|Altis|Agios Dionysios|ITEM|4|guard|mg_gunner|[9221.174,15937.434,123.602]|246.7|
+OTLAYOUT|Altis|Agios Dionysios|ITEM|4|guard|marksman|[9220.812,15937.768,123.602]|266.7|
 OTLAYOUT|Altis|Agios Dionysios|ITEM|4|object|Land_BagBunker_Small_F|[9248.169,15927.345,118.516]|[[0.3954,-0.9185,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Agios Dionysios|ITEM|4|guard|at|[9248.169,15927.345,118.516]|156.7|ground
 OTLAYOUT|Altis|Agios Dionysios|ITEM|4|object|Land_CncBarrierMedium_F|[9223.360,15950.461,119.052]|[[-0.9291,0.3699,0.0000],[0.0000,0.0000,1.0000]]|ground
@@ -194,4 +194,4 @@ OTLAYOUT|Altis|Agios Dionysios|ITEM|4|object|Land_CzechHedgehog_01_F|[9254.492,1
 OTLAYOUT|Altis|Agios Dionysios|ITEM|4|object|Land_CzechHedgehog_01_F|[9256.828,15935.306,116.534]|[[0.9185,0.3954,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Agios Dionysios|ITEM|4|object|Land_CzechHedgehog_01_F|[9256.563,15938.426,116.212]|[[0.9185,0.3954,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Agios Dionysios|ITEM|4|guard|mg_gunner|[9235.256,15943.034,118.560]|291.7|
-OTLAYOUT|Altis|Agios Dionysios|ITEM|4|guard|rifleman|[9220.715,15937.236,122.902]|246.7|
+OTLAYOUT|Altis|Agios Dionysios|ITEM|4|guard|rifleman|[9221.168,15936.941,123.602]|226.7|

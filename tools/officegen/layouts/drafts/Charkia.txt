@@ -137,8 +137,8 @@ OTLAYOUT|Altis|Charkia|ITEM|4|object|Land_HBarrierWall4_F|[18018.175,15290.641,3
 OTLAYOUT|Altis|Charkia|ITEM|4|object|Land_HBarrier_1_F|[18021.068,15291.433,31.720]|[[-0.2639,0.9646,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Charkia|ITEM|4|object|Land_HBarrier_1_F|[18021.068,15291.433,33.320]|[[-0.2639,0.9646,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Charkia|ITEM|4|object|Land_BagBunker_Tower_F|[18040.066,15268.223,28.863]|[[0.8686,-0.4955,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Charkia|ITEM|4|guard|mg_gunner|[18039.670,15267.528,31.563]|119.7|
-OTLAYOUT|Altis|Charkia|ITEM|4|guard|marksman|[18040.463,15268.918,31.563]|149.7|
+OTLAYOUT|Altis|Charkia|ITEM|4|guard|mg_gunner|[18040.327,15268.075,32.263]|119.7|
+OTLAYOUT|Altis|Charkia|ITEM|4|guard|marksman|[18040.278,15267.585,32.263]|139.7|
 OTLAYOUT|Altis|Charkia|ITEM|4|object|Land_BagBunker_Small_F|[18033.506,15290.688,31.107]|[[0.4955,0.8686,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Charkia|ITEM|4|guard|at|[18033.506,15290.688,31.107]|29.7|ground
 OTLAYOUT|Altis|Charkia|ITEM|4|guard|autorifleman|[18013.741,15284.867,30.854]|299.7|ground
@@ -153,4 +153,4 @@ OTLAYOUT|Altis|Charkia|ITEM|4|object|Land_CzechHedgehog_01_F|[18030.319,15299.69
 OTLAYOUT|Altis|Charkia|ITEM|4|object|Land_CzechHedgehog_01_F|[18001.683,15263.581,30.250]|[[0.9971,0.0757,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Charkia|ITEM|4|object|Land_CzechHedgehog_01_F|[18004.569,15264.793,30.312]|[[0.9971,0.0757,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Charkia|ITEM|4|object|Land_CzechHedgehog_01_F|[18005.332,15267.829,30.477]|[[0.9971,0.0757,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Charkia|ITEM|4|guard|mg_gunner|[18040.761,15267.827,31.563]|119.7|
+OTLAYOUT|Altis|Charkia|ITEM|4|guard|mg_gunner|[18040.723,15268.366,32.263]|99.7|

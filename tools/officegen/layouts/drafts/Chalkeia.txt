@@ -162,8 +162,8 @@ OTLAYOUT|Altis|Chalkeia|ITEM|4|object|Land_HBarrier_1_F|[20205.643,11654.078,54.
 OTLAYOUT|Altis|Chalkeia|ITEM|4|object|Land_HBarrier_1_F|[20205.515,11654.158,52.655]|[[-0.5287,-0.8488,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Chalkeia|ITEM|4|object|Land_HBarrier_1_F|[20205.515,11654.158,54.255]|[[-0.5287,-0.8488,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Chalkeia|ITEM|4|object|Land_BagBunker_Tower_F|[20220.262,11631.305,56.017]|[[-0.0335,-0.9994,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Chalkeia|ITEM|4|guard|mg_gunner|[20219.463,11631.332,58.717]|181.9|
-OTLAYOUT|Altis|Chalkeia|ITEM|4|guard|marksman|[20221.062,11631.278,58.717]|211.9|
+OTLAYOUT|Altis|Chalkeia|ITEM|4|guard|mg_gunner|[20220.252,11631.005,59.417]|181.9|
+OTLAYOUT|Altis|Chalkeia|ITEM|4|guard|marksman|[20219.796,11630.820,59.417]|201.9|
 OTLAYOUT|Altis|Chalkeia|ITEM|4|object|Land_CncBarrierMedium_F|[20230.982,11643.595,55.633]|[[0.8488,-0.5287,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Chalkeia|ITEM|4|object|Land_CncBarrierMedium_F|[20237.129,11644.007,55.687]|[[0.8488,-0.5287,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Chalkeia|ITEM|4|object|Land_CzechHedgehog_01_F|[20218.199,11619.649,56.561]|[[-0.1857,0.9826,0.0000],[0.0000,0.0000,1.0000]]|ground
@@ -174,4 +174,4 @@ OTLAYOUT|Altis|Chalkeia|ITEM|4|object|Land_CzechHedgehog_01_F|[20237.745,11654.6
 OTLAYOUT|Altis|Chalkeia|ITEM|4|object|Land_Razorwire_F|[20229.153,11661.464,54.537]|[[-0.5287,-0.8488,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Chalkeia|ITEM|4|guard|mg_gunner|[20208.543,11649.562,53.908]|301.9|ground
 OTLAYOUT|Altis|Chalkeia|ITEM|4|object|Land_BagFence_Short_F|[20207.779,11650.037,53.729]|[[-0.8488,0.5287,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Chalkeia|ITEM|4|guard|rifleman|[20220.235,11630.505,58.717]|181.9|
+OTLAYOUT|Altis|Chalkeia|ITEM|4|guard|rifleman|[20220.695,11630.790,59.417]|161.9|

@@ -164,8 +164,8 @@ OTLAYOUT|Altis|Therisa|ITEM|4|object|Land_HBarrier_1_F|[10670.867,12193.638,18.6
 OTLAYOUT|Altis|Therisa|ITEM|4|object|Land_HBarrier_1_F|[10670.248,12192.985,17.029]|[[0.7260,-0.6877,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Therisa|ITEM|4|object|Land_HBarrier_1_F|[10670.248,12192.985,18.629]|[[0.7260,-0.6877,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Therisa|ITEM|4|object|Land_BagBunker_Tower_F|[10636.205,12191.074,15.830]|[[-0.9996,-0.0270,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Therisa|ITEM|4|guard|mg_gunner|[10636.183,12191.873,18.530]|268.4|
-OTLAYOUT|Altis|Therisa|ITEM|4|guard|marksman|[10636.227,12190.274,18.530]|298.4|
+OTLAYOUT|Altis|Therisa|ITEM|4|guard|mg_gunner|[10635.905,12191.065,19.230]|268.4|
+OTLAYOUT|Altis|Therisa|ITEM|4|guard|marksman|[10635.693,12191.510,19.230]|288.4|
 OTLAYOUT|Altis|Therisa|ITEM|4|object|Land_BagBunker_Small_F|[10658.671,12215.661,16.353]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Therisa|ITEM|4|guard|at|[10658.671,12215.661,16.353]|313.4|ground
 OTLAYOUT|Altis|Therisa|ITEM|4|object|Land_CncBarrierMedium_F|[10650.941,12211.137,16.174]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|ground
@@ -179,4 +179,4 @@ OTLAYOUT|Altis|Therisa|ITEM|4|object|Land_CzechHedgehog_01_F|[10641.810,12211.38
 OTLAYOUT|Altis|Therisa|ITEM|4|object|Land_CzechHedgehog_01_F|[10640.152,12204.691,15.970]|[[-0.9996,-0.0270,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Therisa|ITEM|4|object|Land_CzechHedgehog_01_F|[10637.210,12203.621,15.924]|[[-0.9996,-0.0270,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Therisa|ITEM|4|object|Land_CzechHedgehog_01_F|[10636.300,12200.626,15.890]|[[-0.9996,-0.0270,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Therisa|ITEM|4|guard|mg_gunner|[10635.405,12191.052,18.530]|268.4|
+OTLAYOUT|Altis|Therisa|ITEM|4|guard|mg_gunner|[10635.717,12190.610,19.230]|248.4|

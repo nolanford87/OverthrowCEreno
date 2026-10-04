@@ -146,11 +146,11 @@ OTLAYOUT|Altis|Paros|ITEM|4|object|Land_HBarrierWall6_F|[20886.683,16931.628,47.
 OTLAYOUT|Altis|Paros|ITEM|4|object|Land_HBarrierWall6_F|[20885.710,16939.267,48.249]|[[-0.9920,-0.1264,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Paros|ITEM|4|object|Land_HBarrierWall6_F|[20884.737,16946.905,49.249]|[[-0.9920,-0.1264,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Paros|ITEM|4|object|Land_BagBunker_Tower_F|[20915.576,16929.563,44.932]|[[0.7908,-0.6121,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Paros|ITEM|4|guard|mg_gunner|[20915.086,16928.930,47.632]|127.7|
-OTLAYOUT|Altis|Paros|ITEM|4|guard|marksman|[20916.065,16930.196,47.632]|157.7|
+OTLAYOUT|Altis|Paros|ITEM|4|guard|mg_gunner|[20915.813,16929.379,48.332]|127.7|
+OTLAYOUT|Altis|Paros|ITEM|4|guard|marksman|[20915.696,16928.901,48.332]|147.7|
 OTLAYOUT|Altis|Paros|ITEM|4|object|Land_BagBunker_Tower_F|[20888.114,16949.276,49.095]|[[-0.7908,0.6121,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Paros|ITEM|4|guard|mg_gunner|[20888.603,16949.908,51.795]|307.7|
-OTLAYOUT|Altis|Paros|ITEM|4|guard|marksman|[20887.624,16948.643,51.795]|337.7|
+OTLAYOUT|Altis|Paros|ITEM|4|guard|mg_gunner|[20887.877,16949.459,52.495]|307.7|
+OTLAYOUT|Altis|Paros|ITEM|4|guard|marksman|[20887.994,16949.937,52.495]|327.7|
 OTLAYOUT|Altis|Paros|ITEM|4|static|at|[20890.989,16951.633,48.899]|[[-0.1264,0.9920,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Paros|ITEM|4|static|gmg|[20911.049,16928.306,45.042]|[[0.9223,-0.3866,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Paros|ITEM|4|object|Land_BagFence_Round_F|[20912.524,16927.687,45.003]|[[-0.9223,0.3866,0.0000],[0.0000,0.0000,1.0000]]|ground
@@ -164,6 +164,6 @@ OTLAYOUT|Altis|Paros|ITEM|4|object|Land_CzechHedgehog_01_F|[20916.279,16924.069,
 OTLAYOUT|Altis|Paros|ITEM|4|object|Land_Razorwire_F|[20889.243,16955.846,49.310]|[[0.1264,-0.9920,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Paros|ITEM|4|guard|mg_gunner|[20891.278,16947.915,48.554]|352.7|ground
 OTLAYOUT|Altis|Paros|ITEM|4|object|Land_BagFence_Short_F|[20891.164,16948.807,48.670]|[[-0.1264,0.9920,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Paros|ITEM|4|guard|rifleman|[20916.208,16929.073,47.632]|127.7|
-OTLAYOUT|Altis|Paros|ITEM|4|guard|autorifleman|[20887.481,16949.765,51.795]|307.7|
+OTLAYOUT|Altis|Paros|ITEM|4|guard|rifleman|[20916.246,16929.613,48.332]|107.7|
+OTLAYOUT|Altis|Paros|ITEM|4|guard|autorifleman|[20887.443,16949.226,52.495]|287.7|
 OTLAYOUT|Altis|Paros|ITEM|4|object|Land_HBarrier_1_F|[20884.250,16950.724,49.576]|[[-0.9920,-0.1264,0.0000],[0.0000,0.0000,1.0000]]|ground
