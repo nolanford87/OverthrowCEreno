@@ -1,0 +1,661 @@
+"""
+Mayor's office layouts, group "strongholds" (Overthrow CE): the four 5-tier towns.
+  Kavala, Pyrgos   Land_Offices_01_V1_F, the tower block on its podium (the showpieces)
+  Athira, Zaros    Land_House_Big_01, the two-storey house with the veranda
+Run from the repository root:
+    python tools/officegen/drafting/strongholds.py [town ...] [--map N] [--log]
+Writes tools/officegen/layouts/drafts/<town>.txt (tl.write checks each first). --map N prints tier N over the
+probe's map (1 m cells): H low H-barrier, W tall wall (Mil wall, HBarrierWall), B bunker, G gate, b sandbags,
+w razor wire, x hedgehog, c concrete barrier, g guard, S static, f furniture/flag; capitals of the probe:
+# building, = wall, : road, O the office.
+
+Everything below is in the office's MODEL coordinates (x right, y forward out of the model's front; mdir 0 = +y,
+90 = +x). Both buildings' main doors face model -y, so in the notes "south" is -y, "east" +x, "north" +y, "west" -x.
+
+The ladder (DESIGN_BRIEF.md), the same in all four:
+  T1 police: 2-3 gendarmes, the desk, chair and map board, the flag.
+  T2 noticeable: every door held from real cover (a C of sandbags square with the main door), upper windows.
+  T3 compound: the open sides closed (the neighbouring buildings and walls do most of it), a controlled gate,
+     two statics with fields of fire down the approaches, overwatch upstairs.
+  T4 fort: a continuous perimeter, bunkers at its corners, a chicane in front of the gate, wire and hedgehog belts
+     on the approaches inside the guns' arcs, four statics whose arcs cross, posts on the roof/upper floor.
+  T5 stronghold: checkpoints on every approach road (an H-barrier wall across one lane and a concrete block
+     across the other, staggered: a vehicle serpentine), mortar and AT, and the office's inside a kill zone
+     (barricades channelling anyone who gets in into a pocket an MG and riflemen cover from two sides, every room
+     and the stairs held).
+"""
+import math
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import townlib as tl  # noqa: E402
+
+# The pieces
+SHORT, LONG, ROUND, CORNER = "Land_BagFence_Short_F", "Land_BagFence_Long_F", "Land_BagFence_Round_F", "Land_BagFence_Corner_F"
+HB1, HB3, HB5, HBBIG = "Land_HBarrier_1_F", "Land_HBarrier_3_F", "Land_HBarrier_5_F", "Land_HBarrier_Big_F"
+HBW4, HBW6, HBWC = "Land_HBarrierWall4_F", "Land_HBarrierWall6_F", "Land_HBarrierWall_corner_F"
+MIL = "Land_Mil_WallBig_4m_F"
+CITYGATE, BARGATE = "Land_WallCity_01_gate_grey_F", "Land_BarGate_F"
+WIRE, HOG = "Land_Razorwire_F", "Land_CzechHedgehog_01_F"
+CNC, CNC4 = "Land_CncBarrierMedium_F", "Land_CncBarrierMedium4_F"
+BUNKER, TOWER = "Land_BagBunker_Small_F", "Land_BagBunker_Tower_F"
+DESK, CHAIR, BOARD, FLAG = "Land_TableDesk_F", "Land_OfficeChair_01_F", "Land_MapBoard_F", "Flag_NATO_F"
+CTABLE, CCHAIR, RADIO = "Land_CampingTable_F", "Land_CampingChair_V2_F", "Land_PortableLongRangeRadio_F"
+
+MAPCHAR = {SHORT: "b", LONG: "b", ROUND: "b", CORNER: "b", HB1: "H", HB3: "H", HB5: "H", HBBIG: "H",
+           HBW4: "W", HBW6: "W", HBWC: "W", MIL: "W", CITYGATE: "G", BARGATE: "G", WIRE: "w", HOG: "x",
+           CNC: "c", CNC4: "c", BUNKER: "B", TOWER: "B"}
+
+
+def fwd(d):
+    r = math.radians(d)
+    return math.sin(r), math.cos(r)
+
+
+def off(x, y, d, f, lat=0.0):
+    """(x, y) moved f metres along model direction d and lat metres to its right."""
+    a, b = fwd(d), fwd(d + 90)
+    return x + a[0] * f + b[0] * lat, y + a[1] * f + b[1] * lat
+
+
+# ---------------------------------------------------------------- footprints and overlaps (model xy)
+
+def size(it):
+    if it[0] == "object":
+        return tl.CLASSES.get(it[1], (0.6, 0.6))
+    return (1.6, 1.6) if it[0] == "static" else (0.6, 0.6)
+
+
+def yaw(it):
+    o = it[3]
+    return (o if it[0] == "guard" else math.degrees(math.atan2(o[0][0], o[0][1]))) % 360
+
+
+def corners(t, it, grow=0.0):
+    m = t.to_model(it[2])
+    L, D = size(it)
+    L, D = L + grow, D + grow
+    d = (yaw(it) - t.dir) % 360
+    cx, cy = tl.rot(1, 0, d), tl.rot(0, 1, d)
+    return [(m[0] + sx * L / 2 * cx[0] + sy * D / 2 * cy[0], m[1] + sx * L / 2 * cx[1] + sy * D / 2 * cy[1])
+            for sx, sy in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
+
+
+def overlap(t, a, b, tol=0.08):
+    """Separating-axis overlap of two footprints (only in the same height band)."""
+    za, zb = t.to_model(a[2])[2], t.to_model(b[2])[2]
+    if abs(za - zb) > 1.6:
+        return False
+    pa, pb = corners(t, a), corners(t, b)
+    for poly in (pa, pb):
+        for i in range(4):
+            j = (i + 1) % 4
+            ex, ey = poly[j][0] - poly[i][0], poly[j][1] - poly[i][1]
+            n = math.hypot(ex, ey) or 1
+            nx, ny = -ey / n, ex / n
+            a1 = [p[0] * nx + p[1] * ny for p in pa]
+            b1 = [p[0] * nx + p[1] * ny for p in pb]
+            if max(a1) <= min(b1) + tol or max(b1) <= min(a1) + tol:
+                return False
+    return True
+
+
+def single_problems(t, it):
+    """check()'s per-item rules for one item."""
+    probs = tl.check(t, [[it, it, it]] * t.cap)
+    return [p for p in probs if "guards" not in p and "tiers" not in p]
+
+
+class Draft:
+    """Cumulative tiers: tier() starts the next one from a copy of the last; put() adds an item when it passes the
+    single-item checks and doesn't overlap what's there (fortifications also stay off roads unless road_ok);
+    otherwise it tries small nudges (nudge > 0) or logs a SKIP (a design error to fix, not a fallback)."""
+
+    def __init__(self, t):
+        self.t, self.tiers, self.cur, self.log = t, [], None, []
+
+    def tier(self):
+        self.cur = list(self.tiers[-1]) if self.tiers else []
+        self.tiers.append(self.cur)
+
+    def _ok(self, it, road_ok, ignore=()):
+        if single_problems(self.t, it):
+            return False
+        if it[0] == "object" and "ground" in it[4] and not road_ok and it[1] not in (WIRE, HOG) and self.t.on_road(it[2][0], it[2][1]):
+            return False
+        return not any(overlap(self.t, it, o) for o in self.cur if not any(o is i for i in ignore))
+
+    def put(self, make, x, y, z, d, nudge=0.0, road_ok=False, label="", ignore=()):
+        tries = [(0.0, 0.0)]
+        r = 0.25
+        while r <= nudge + 1e-6:
+            tries += [(r * math.sin(math.radians(a)), r * math.cos(math.radians(a))) for a in range(0, 360, 45)]
+            r += 0.25
+        for dx, dy in tries:
+            it = make(x + dx, y + dy, z, d)
+            if self._ok(it, road_ok, ignore):
+                self.cur.append(it)
+                if dx or dy:
+                    self.log.append(f"T{len(self.tiers)} {label or it[1]} nudged {dx:+.2f},{dy:+.2f}")
+                return it
+        it = make(x, y, z, d)
+        why = single_problems(self.t, it)[:1] or [o[1] for o in self.cur if overlap(self.t, it, o)][:2] or ["road"]
+        self.log.append(f"T{len(self.tiers)} SKIP {label or it[1]} at ({x:.1f},{y:.1f}): {why}")
+        return None
+
+    # ---- the pieces
+    def g(self, role, x, y, d, z=None, nudge=0.5, ignore=()):
+        return self.put(lambda a, b, c, e: tl.guard(self.t, role, a, b, c, e), x, y, z, d, nudge, label=role, ignore=ignore)
+
+    def o(self, cls, x, y, d, z=None, nudge=0.0, road_ok=False, flag=False):
+        return self.put(lambda a, b, c, e: tl.obj(self.t, cls, a, b, c, e, flag), x, y, z, d, nudge, road_ok, cls)
+
+    def s(self, role, x, y, d, z=None, nudge=0.25):
+        return self.put(lambda a, b, c, e: tl.static(self.t, role, a, b, c, e), x, y, z, d, nudge, label=role + " static")
+
+    def post(self, role, x, y, face, cls=SHORT, z=None, gap=1.0, nudge=0.0):
+        """Cover at (x, y) square across the facing, the guard `gap` metres behind its near face, facing out."""
+        if self.o(cls, x, y, face, z, nudge=nudge):
+            gx, gy = off(x, y, face, -(tl.CLASSES[cls][1] / 2 + gap))
+            return self.g(role, gx, gy, face, z, nudge=0.25)
+        return None
+
+    def gun(self, role, x, y, face, z=None, bag=True):
+        """A static weapon with a round sandbag 1.3 m in front of it (an embrasure when it sits in a line)."""
+        s = self.s(role, x, y, face, z)
+        if s and bag:
+            bx, by = off(x, y, face, 1.3)
+            self.o(ROUND, bx, by, face + 180, z, nudge=0.25)
+        return s
+
+    def line(self, x0, y0, along, pieces, face=None, z=None, road_ok=False):
+        """A straight run from (x0, y0) along model direction `along`, butted end to end: "H" HBarrier_5 (6 m),
+        "h" HBarrier_3 (3.6), "1" HBarrier_1 (1.56), "W" HBarrierWall6 (6.5, tall), "V" HBarrierWall4 (4.5),
+        "M" Mil wall (4, tall), "w" razor wire (7.6), "c" concrete block (4), "C" (8), "_" a 1 m gap,
+        "=" a 2 m gap, "G" a 5 m gap (the gate's), "e" a 2 m gap holding a round sandbag (an embrasure).
+        `face` is the side the line faces (default: along - 90, the left). Returns the end point."""
+        spec = {"H": (HB5, 6.0), "h": (HB3, 3.6), "1": (HB1, 1.56), "W": (HBW6, 6.5), "V": (HBW4, 4.5),
+                "M": (MIL, 4.0), "w": (WIRE, 7.6), "c": (CNC, 4.0), "C": (CNC4, 8.0), "_": (None, 1.0),
+                "=": (None, 2.0), "G": (None, 5.0), "e": (ROUND, 2.0)}
+        face = (along - 90) if face is None else face
+        s = 0.0
+        for p in pieces:
+            cls, L = spec[p]
+            if cls:
+                cx, cy = off(x0, y0, along, s + L / 2)
+                d = face + 180 if cls == ROUND else (face if cls not in (MIL,) else face)
+                self.o(cls, cx, cy, d, z, road_ok=road_ok or cls in (WIRE,), nudge=0.0)
+            s += L
+        return off(x0, y0, along, s)
+
+    def bunker(self, x, y, face, role="autorifleman"):
+        """A small bag bunker facing out, a man inside at its slit."""
+        b = self.o(BUNKER, x, y, face, nudge=0.5)
+        if b:
+            m = self.t.to_model(b[2])
+            gx, gy = off(m[0], m[1], face, 0.3)
+            return self.g(role, gx, gy, face, nudge=0.25, ignore=(b,))
+
+    def checkpoint(self, x, y, face, width=7.0, out=6.0, side=1, roles=("rifleman", "autorifleman")):
+        """A checkpoint across a road, traffic coming from `face`: an H-barrier (man-high, the men fire over it)
+        across one half at (x, y) with its two men 1.2 m behind it, a concrete block across the other half `out`
+        metres further out (negative: further in), `side` 1/-1 which half the H-barrier takes (right/left seen
+        from the office). A vehicle can only get through in an S at walking pace, under the men's guns."""
+        half = side * width / 4
+        hb = self.o(HB5, *off(x, y, face, 0.0, half), face, road_ok=True, nudge=0.5)
+        if hb:
+            m = self.t.to_model(hb[2])
+            for role, lat in zip(roles, (-1.5, 1.5)):
+                gx, gy = off(m[0], m[1], face, -2.1, lat)
+                self.g(role, gx, gy, face, nudge=0.5)
+        self.o(CNC4, *off(x, y, face, out, -half), face, road_ok=True, nudge=0.5)
+
+    def finish(self):
+        return self.tiers
+
+
+def counts(tiers):
+    return [(len(ti), sum(1 for it in ti if it[0] == "guard"), sum(1 for it in ti if it[0] == "static")) for ti in tiers]
+
+
+def overlay(t, items, r=45):
+    """The fine map with the items drawn on it (model coordinates, up = +y)."""
+    grid = {}
+    for y in range(-r, r + 1):
+        for x in range(-r, r + 1):
+            w = t.to_world(x, y, 0)
+            c = "."
+            if t.on_road(w[0], w[1]):
+                c = ":"
+            h = t.hits(w[0], w[1], 0.3, 0.3, 0, 0)
+            if h:
+                c = {"building": "#", "wall": "=", "tree": "t", "rock": "r", "part": "O"}.get(h[0][0], "?")
+            if t.on_office(x, y, 0.3, 0.3):
+                c = "O"
+            grid[(x, y)] = c
+    for it in items:
+        m = t.to_model(it[2])
+        on_floor = "ground" not in it[4]
+        if it[0] == "guard":
+            ch = "g" if not on_floor else "^"
+        elif it[0] == "static":
+            ch = "S" if not on_floor else "$"
+        else:
+            ch = MAPCHAR.get(it[1], "f")
+            if on_floor and ch != "f":
+                ch = "~"
+        if it[0] != "object":
+            k = (int(round(m[0])), int(round(m[1])))
+            if k in grid:
+                grid[k] = ch
+            continue
+        L, D = size(it)
+        d = (yaw(it) - t.dir) % 360
+        cx, cy = tl.rot(1, 0, d), tl.rot(0, 1, d)
+        for i in range(int(L / 0.25) + 1):
+            for j in range(int(D / 0.25) + 1):
+                a, b = -L / 2 + i * 0.25, -D / 2 + j * 0.25
+                k = (int(round(m[0] + a * cx[0] + b * cy[0])), int(round(m[1] + a * cx[1] + b * cy[1])))
+                if k in grid and grid[k] not in "g^S$":
+                    grid[k] = ch
+    out = ["     " + "".join(str(abs(x) // 10) if x % 10 == 0 else " " for x in range(-r, r + 1))]
+    for y in range(r, -r - 1, -1):
+        out.append(f"{y:4d} " + "".join(grid[(x, y)] for x in range(-r, r + 1)))
+    return "\n".join(out)
+
+
+# ================================================================ Offices_01 (Kavala, Pyrgos)
+# The tower block (model plan, the probe's 1 m grid): the ground floor (-6.7) is the lobby, an L: the hall along the
+# south front (x -1..12, y -7..-3) and its east arm (x 4..12, y -3..4); the main door (10.5, -7.7) at the hall's
+# south-east corner opens onto a covered porch (x 8..13, y -8) and the forecourt; the back corridor (x -16..7,
+# y 5..8) runs to the back door (-14.8, 8.4) facing north; the west block (x -17..-2, y -12..4) is solid.
+# Floors -3 and 1 are the stair core over the hall's west end (x -1..7, y -7..4; the stair well x -1..2,
+# y -3..-4) with south windows; floor 5 (4.97) is the office floor (x 4..12, y -7..4; east windows at x 13), the
+# mayor's desk there; the roof (10.25) is a flat terrace over the whole block (x -17..13, y -12/-8..9), 17-18 m
+# above the street: the overwatch over everything.
+F0, F1, F2, F3, ROOF = -6.71, -2.95, 1.01, 4.97, 10.25
+
+
+def tower_t1(d, flag):
+    """T1: the desk, chair and map board on the office floor (the chair by the wall, both facing it), the flag in
+    the street; gendarmes at the main door inside the lobby, by the desk, and in the back corridor."""
+    d.tier()
+    d.o(DESK, 10.0, -1.6, 0, F3)
+    d.o(CHAIR, 10.0, 0.0, 0, F3)
+    d.o(BOARD, 8.75, -1.0, 90, F3)
+    d.o(FLAG, *flag, 180, flag=True, nudge=1.0)
+    d.g("gendarme", 11.8, -6.0, 180, F0)        # The lobby, watching the main door
+    d.g("gendarme", 11.4, -0.8, 180, F3)        # The office, by the desk
+    d.g("gendarme", -14.8, 6.0, 0, F0)          # The back corridor, watching the back door
+
+
+def tower_t2_inside(d):
+    """T2 inside: the back door bagged from inside, a man at the first-floor south window over the porch."""
+    d.o(SHORT, -14.8, 7.3, 0, F0)
+    d.g("rifleman", 4.1, -6.7, 180, F2)
+
+
+def tower_t3_inside(d):
+    """T3: overwatch: the roof's south-east corner HMG (the square and the junction below, from 17 m), a
+    marksman at the office floor's east window (over the east street), a rifleman at the first floor's west
+    south window."""
+    d.gun("hmg", 11.0, -5.6, 170, ROOF)
+    d.g("marksman", 12.3, -3.6, 90, F3)
+    d.g("rifleman", 0.6, -6.8, 180, F2)
+
+
+def tower_t4_inside(d):
+    """T4: the roof held: an MG behind bags at the south-west corner (the square's west), the office floor's
+    south-east window MG (the template's), a marksman on the roof's north-west over the yard and the west road."""
+    d.post("mg_gunner", -14.5, -10.6, 215, LONG, z=ROOF)
+    d.g("mg_gunner", 12.3, -6.6, 135, F3)
+    d.post("marksman", -15.5, 7.6, 315, z=ROOF)
+
+
+def tower_t5_inside(d, at=(11.6, 4.0, 90)):
+    """T5: the kill zone inside. The lobby: a sandbag barricade across the hall at x 7.3 (y -7..-4) shuts the hall's
+    west end, so whoever comes through the main door stands in a pocket (x 8..12, y -7..-3): riflemen behind the
+    barricade fire into it from the west, an MG behind a long bag in the east arm (10.5, 2.6) fires down it from
+    the north. The back corridor bagged across halfway, a rifleman covering the back door's 9 m. The stair head on
+    floor -3 held from behind bags; the office floor's door bagged with a rifleman behind; the officer by the desk.
+    Up top: an AT launcher on the roof's edge over the vehicle approach (from above: their thin roofs), and the
+    first floor's other south windows manned."""
+    d.o(LONG, 7.3, -5.6, 90, F0)                 # The barricade across the hall
+    d.g("rifleman", 6.0, -6.4, 90, F0)
+    d.g("autorifleman", 6.0, -4.8, 90, F0)
+    d.o(LONG, 10.5, 1.5, 180, F0)                # The MG's bags in the east arm
+    d.g("mg_gunner", 10.5, 2.7, 180, F0)
+    d.o(LONG, -6.5, 6.5, 270, F0)                # The back corridor
+    d.g("rifleman", -5.2, 6.5, 270, F0)
+    d.o(SHORT, 3.4, -5.8, 270, F1)               # The stair head on floor -3
+    d.g("rifleman", 4.8, -5.8, 270, F1)
+    d.o(LONG, 10.0, -4.0, 180, F3)               # The office floor
+    d.g("rifleman", 9.0, -2.9, 180, F3)
+    d.g("officer", 8.6, -0.1, 135, F3)
+    d.gun("at", *at, ROOF)
+    d.g("rifleman", 1.8, -6.8, 180, F1)
+    d.g("rifleman", 6.4, -6.8, 180, F1)
+
+
+def kavala(d):
+    """Kavala: the tower stands in a walled city block. The west and north yards are closed by the old city walls
+    (a diagonal wall from (-35, -11) to (-3, 35)), Addon_01 and Addon_02 stand north of it, a city wall runs down the
+    east side (x 17-22) between the tower and the east street (x 22-33, junction east at y -13); the south front
+    looks onto the open square: the west block's face, a low concrete wall (y -11.2, x -1..7) before the porch, and
+    the main door's forecourt between two city walls (x 8 and 13, y -8..-11.6). The open side is the square; the
+    approaches are the east street (north and south) with its junction east, the square from the south, and the
+    west road coming in at the square's south-west."""
+    tower_t1(d, (-0.5, -12.6))
+
+    d.tier()  # T2: the main door held from the forecourt: a long bag across its mouth, the walls its flanks (a C)
+    d.o(LONG, 10.6, -10.9, 180)
+    d.g("rifleman", 10.0, -9.7, 180)
+    d.g("autorifleman", 11.3, -9.7, 180)
+    tower_t2_inside(d)
+
+    d.tier()  # T3: the compound: the one gap in its walls (the west yard's, between the city wall's end and the
+    # tower's south-west corner) shut with an H-barrier and a man behind it; riflemen behind the low wall before
+    # the porch; the forecourt's mouth a bar gate; the back door's post; the roof HMG and the window marksman;
+    # a GMG on the roof's south-west covering the square's west half and the west road
+    d.o(HB3, -19.5, -12.6, 180, nudge=0.5)
+    d.g("rifleman", -19.5, -10.6, 180)
+    d.g("autorifleman", 1.2, -10.0, 180)
+    d.g("rifleman", 5.2, -10.0, 180)
+    d.o(BARGATE, 10.6, -12.2, 180)
+    d.post("autorifleman", -14.8, 10.6, 0)
+    tower_t3_inside(d)
+    d.gun("gmg", -9.0, -10.0, 205, ROOF)
+
+    d.tier()  # T4: the fort. A forward yard closed across the square: a low H-barrier line (y -21) from the house
+    # on the south-west (its north face the yard's south-west side) to the east line (x 19.5) that ties into the
+    # east city wall; small bunkers at its corners; the gate on the door's axis with a chicane of two staggered
+    # H-barriers outside it; HMG embrasures in the south line (the square) and the east line (the junction);
+    # wire in front of the south line, hedgehogs across the east street both ways and the junction road.
+    d.bunker(-9.0, -19.4, 225)                               # The south-west corner, by the house
+    d.line(-6.8, -21.0, 90, "H1eh1", face=180)               # x -6.8 .. 7.9, the embrasure x 0.8..2.8
+    d.o(BARGATE, 10.5, -21.0, 180)                           # The gate, x 8..13 on the door's axis
+    d.line(13.1, -21.0, 90, "1", face=180)
+    d.bunker(16.8, -19.9, 135)                               # The south-east corner
+    d.line(19.6, -17.6, 0, "e1", face=90)                    # East line y -17.6 .. -14, the embrasure first
+    d.o(HB3, 18.7, -13.0, 0)                                 # Tied into the city wall's corner
+    d.line(-11.6, -16.6, 0, "h", face=270)                   # West side: y -16.6 .. -13
+    d.gun("hmg", 1.8, -19.7, 185, bag=False)                 # In the south line's embrasure: the square
+    d.gun("hmg", 18.3, -16.6, 95, bag=False)                 # In the east line's embrasure: the junction
+    d.o(HB3, 8.6, -25.0, 180)                                # The chicane: the gate is reached in an S
+    d.o(HB3, 12.4, -28.6, 180)
+    d.line(-10.5, -24.6, 90, "ww", face=180)                 # Wire in front of the south line,
+    d.line(15.0, -24.6, 90, "w", face=180)                   # the chicane's lane left open
+    for x, y in ((23.5, -23.5), (26.5, -25.0), (29.5, -23.5), (24.0, 10.5), (27.0, 12.0), (30.0, 10.5),
+                 (31.0, -10.5), (31.5, -15.5)):
+        d.o(HOG, x, y, 45, road_ok=True, nudge=1.0)          # Hedgehogs: the street both ways, the junction road
+    d.g("autorifleman", -4.0, -19.2, 180)
+    d.g("rifleman", 5.0, -19.2, 180)
+    d.g("rifleman", 14.0, -19.2, 180)
+    d.g("rifleman", 18.4, -14.6, 90)
+    tower_t4_inside(d)
+
+    d.tier()  # T5: the stronghold: checkpoints on the east street north and south, the junction road and the west
+    # road's mouth on the square; a mortar in the north yard; AT man at the gate; the kill zone inside
+    d.checkpoint(27.4, 17.0, 10, out=6.0)
+    d.checkpoint(26.8, -30.5, 182, out=6.0)
+    d.checkpoint(36.5, -13.2, 92, out=6.0, side=-1)
+    d.checkpoint(-31.0, -16.5, 240, width=10.0, out=5.0)
+    d.s("mortar", -5.0, 15.0, 180)
+    d.g("at", 12.2, -19.3, 180)
+    tower_t5_inside(d)
+
+
+def pyrgos(d):
+    """Pyrgos: the tower stands in its own block. A city wall runs down the east side (x 19) with the hill rising
+    behind it (5-7 m higher at x 30-40: high ground looking into the compound); to the north a low concrete wall
+    (y 13.3) and a city wall (y 17) with a lane between them, open to the west; to the west and south only pipe
+    fences (low, see-through), the open lot west and the treed square south, the road 57 m south. The approaches:
+    the square from the south (in front of the main door, the main one), the west lot, the north lane from the
+    west, and fire from the hill over the east wall. The occupier builds the west and south sides itself."""
+    tower_t1(d, (16.2, -9.6))
+
+    d.tier()  # T2: a C of sandbags square with the main door, off the porch: a long bag across, shorts back to
+    # the porch at its ends, the pair inside it
+    d.o(LONG, 10.5, -11.4, 180)
+    d.o(SHORT, 8.6, -10.5, 270)
+    d.o(SHORT, 12.4, -10.5, 90)
+    d.g("rifleman", 9.9, -10.1, 180)
+    d.g("autorifleman", 11.1, -10.1, 180)
+    tower_t2_inside(d)
+
+    d.tier()  # T3: the compound closed. The west side a blank Mil wall (x -23.5, from the low north wall down);
+    # the south front: the west block's blank face (x -17..-2) with H-barriers either side of it: the west yard's
+    # mouth (x -23.3..-16.6, an embrasure in it), and from the block's corner across the porch's front to the
+    # east wall (y -13.6), a bar gate on the door's axis; men behind it, the back door's post; the roof HMG over
+    # the square, a GMG on the roof's west edge over the west lot, the window marksman over the hill
+    d.line(-23.5, 13.0, 180, "MMMMMM", face=270)             # y 13 .. -11
+    d.line(-23.3, -13.4, 90, "11e1", face=180)               # x -23.3 .. -16.6, the embrasure x -20.2..-18.2
+    d.line(-1.6, -13.6, 90, "Hh", face=180)                  # x -1.6 .. 8
+    d.o(BARGATE, 10.5, -13.6, 180)                           # x 8 .. 13
+    d.line(13.06, -13.6, 90, "1h1", face=180)                # x 13.06 .. 19.8, into the east wall
+    d.post("autorifleman", -14.8, 10.6, 0)
+    d.g("rifleman", -21.6, -11.9, 180)
+    d.g("autorifleman", 1.0, -11.8, 180)
+    tower_t3_inside(d)
+    d.gun("gmg", -15.6, -3.0, 270, ROOF)
+
+    d.tier()  # T4: the fort. Bunkers out from the line at both corners (their slits along the faces), the north
+    # lane shut where it meets the west wall; a chicane at the fence's gap in front of the gate; wire along the
+    # fence line either side of the chicane, hedgehogs across the square's open middle (vehicles from the road);
+    # an HMG in the west yard's embrasure (the square's west half, the lot's mouth), an HMG on the roof's east
+    # edge against the hill; men along the line and at the gate
+    d.bunker(-22.6, -16.6, 225)
+    d.bunker(16.0, -16.7, 160)
+    d.o(MIL, -23.5, 15.2, 270)                               # The north lane shut at the west wall
+    d.o(HB3, 8.3, -21.4, 180)                                # The chicane: the fence gap (x 6-10.6) masked
+    d.line(-19.0, -20.6, 90, "www", face=180)                # x -19 .. 3.8
+    d.line(12.0, -20.6, 90, "w", face=180)
+    for x, y in ((0.0, -28.0), (4.0, -30.0), (9.0, -31.0), (14.0, -30.0), (17.0, -27.5)):
+        d.o(HOG, x, y, 45, nudge=1.0)
+    d.gun("hmg", -19.2, -12.0, 190, bag=False)               # In the west yard's embrasure
+    d.gun("hmg", 11.8, 6.6, 90, ROOF)
+    d.g("autorifleman", 3.6, -11.8, 180)
+    d.g("rifleman", 6.0, -11.8, 180)
+    d.g("rifleman", 14.6, -11.8, 180)
+    d.g("rifleman", -21.8, 11.0, 270)
+    tower_t4_inside(d)
+
+    d.tier()  # T5: checkpoints on the square's path from the road, the west lot and the north lane; a bunker on
+    # the hill outside the east wall denying the high ground; the mortar behind the tower; AT on the roof over
+    # the square, an AT man at the gate; the kill zone inside
+    d.checkpoint(8.0, -36.0, 180, out=5.0)
+    d.checkpoint(-36.0, -8.0, 270, out=-6.0)
+    d.o(HB3, -36.0, 15.2, 270)
+    d.g("rifleman", -34.4, 14.4, 270)
+    d.g("autorifleman", -34.4, 16.0, 270)
+    d.bunker(27.0, -4.0, 70)
+    d.s("mortar", 0.0, 10.8, 180)
+    d.g("at", 13.6, -11.8, 180)
+    tower_t5_inside(d, at=(2.0, -9.5, 180))
+
+
+# ================================================================ House_Big_01 (Athira, Zaros)
+# The two-storey house (model plan): the ground floor (-2.47): the main room (x -1..4, y -7..-2, with a nook to
+# y 1), its door (-1.8, -6.1) off the veranda; the veranda (x -4..-3, y -7..2) along the west side, covered by the
+# balcony above, open to the west, the main door (-3.3, -7.3) at its south end; the hall (x -4..0, y 2) with the
+# stairs; the north room (x -4..4, y 4..7) with the side door (4.9, 5.6) facing east. The upper floor (0.95): the
+# south room and the balcony over the veranda (x -4..4, y -7..-4; the balcony x -4..-3 the length of the
+# house), the north room (y 4..7); windows east (x 5: y -5.25, -2.1, 5.5).
+H0, H1 = -2.47, 0.95
+
+
+def house_t1(d, flag):
+    """T1: the desk in the main room (the chair by the east wall, both facing it), the map board on the west
+    wall; gendarmes on the veranda by the main door and in the main room; the flag."""
+    d.tier()
+    d.o(DESK, 2.2, -3.4, 90, H0)
+    d.o(CHAIR, 3.8, -3.4, 90, H0)
+    d.o(BOARD, -1.1, -3.8, 270, H0)
+    d.o(FLAG, *flag, 180, flag=True, nudge=1.0)
+    d.g("gendarme", -3.5, -5.6, 180, H0)
+    d.g("gendarme", 1.2, -1.0, 200, H0)
+
+
+def house_t5_inside(d):
+    """T5: the kill zone inside. The veranda bagged across at y -3.4 (a rifleman behind it covers the main door 4 m
+    off); the main room's door (-1.8, -6.1) covered by an MG behind a long bag at the room's east side (5 m, the
+    length of the room) and a rifleman in the nook; the north room's side door covered from behind bags inside;
+    upstairs the stair head held, the south room's east window."""
+    d.o(SHORT, -3.5, -3.4, 180, H0)
+    d.g("rifleman", -3.5, -2.2, 180, H0)
+    d.o(LONG, 2.6, -6.0, 270, H0)
+    d.g("mg_gunner", 3.7, -5.9, 270, H0)
+    d.g("rifleman", 0.4, 0.4, 200, H0)
+    d.o(SHORT, 3.4, 5.4, 90, H0)
+    d.g("rifleman", 2.2, 5.4, 90, H0)
+    d.g("rifleman", -1.0, 1.0, 0, H1)
+    d.g("marksman", 4.2, -2.1, 90, H1)
+
+
+def athira(d):
+    """Athira: the house stands in a dense block. North: House_Small_02 hard behind it, Big_02 beyond. East: a
+    courtyard (x 5..18, y -8..7) closed north by a city wall with a 5 m opening (x 12-17) onto a strip that runs
+    east to the east road, and east by the shop block. South: in front of the main door, open ground to House_Big_02
+    and a lane south (x -4..3) between it and a city wall that runs south from the door's west side (x -4.4). West:
+    an open lot (x -12..-5, y -8..-1) between building blocks to the west road; a lane north (x -12..-6). The
+    approaches: the west lot from the west road, the south lane, the strip from the east road, and a narrow gap
+    south-east between House_Big_02 and the shop block."""
+    house_t1(d, (2.5, -9.4))
+
+    d.tier()  # T2: a C square with the main door (the city wall its west side): a long bag across 3 m out, a short
+    # back to the house on its east; the side door's C (the courtyard wall its north side); the balcony over the
+    # west lot
+    d.o(LONG, -2.7, -10.4, 180)
+    d.o(SHORT, -0.9, -9.3, 90)
+    d.g("rifleman", -3.3, -9.2, 180)
+    d.g("autorifleman", -2.1, -9.2, 180)
+    d.o(LONG, 7.4, 5.4, 90)
+    d.o(SHORT, 6.5, 3.6, 180)
+    d.g("rifleman", 6.2, 5.4, 90)
+    d.g("rifleman", -3.6, -3.4, 270, H1)
+
+    d.tier()  # T3: the compound closed. The west lot shut by an H-barrier line on its west side (x -12.5) and
+    # the lane north by a Mil wall pair; the courtyard's opening by a tall H-barrier wall; the south front by an
+    # H-barrier line (y -12.6) from the city wall east to the shop block, the gate gap in front of the main door
+    # (x -4.2..0.8) with a bar gate. HMG in the west lot covering the lot's mouth (the west road), GMG in the
+    # courtyard covering the south over the line.
+    d.line(-12.6, -1.6, 180, "H1", face=270)                 # x -12.6, y -1.6 .. -9.2
+    d.line(-12.6, -9.6, 90, "H1", face=180)                  # y -9.6, x -12.6 .. -5.0
+    d.line(-12.4, 8.6, 90, "MM", face=0)                     # The lane north
+    d.o(HBW6, 14.7, 6.4, 0, nudge=0.5)                       # The courtyard's opening
+    d.o(BARGATE, -1.7, -12.6, 180)
+    d.line(0.8, -12.6, 90, "HHH1", face=180)                 # x 0.8 .. 20.4
+    d.gun("hmg", -9.6, -5.0, 270)
+    d.gun("gmg", 11.0, -4.0, 170)
+    d.g("rifleman", -11.0, -2.0, 270)
+    d.g("autorifleman", 6.0, -11.0, 180)
+    d.g("rifleman", 14.7, 4.0, 0)
+    d.g("rifleman", 4.2, -5.3, 90, H1)
+    d.g("marksman", 4.2, 5.5, 90, H1)
+
+    d.tier()  # T4
+    d.bunker(-10.6, -7.6, 225)
+    d.bunker(17.6, -10.2, 160)
+    d.o(HB3, -2.4, -17.2, 180)                               # The chicane in the lane
+    d.o(HB3, 1.2, -21.0, 180)
+    d.line(2.2, -16.0, 90, "ww", face=180)
+    d.line(-16.0, -9.0, 0, "w", face=270)
+    for x, y in ((16.5, -17.0), (17.0, -20.0), (21.0, 9.5), (24.0, 9.0), (-14.0, 11.0), (-9.0, 11.5)):
+        d.o(HOG, x, y, 45, nudge=1.0)
+    d.gun("hmg", 8.0, -10.8, 180, bag=False)
+    d.g("mg_gunner", -3.6, -0.6, 270, H1)
+    d.g("autorifleman", 12.0, -11.0, 180)
+    d.g("rifleman", 1.6, -11.0, 180)
+    d.g("rifleman", -11.0, -5.5, 270)
+    d.g("rifleman", -9.0, 7.0, 0)
+    d.g("rifleman", 4.2, 5.4, 90, H0)
+
+    d.tier()  # T5
+    d.checkpoint(-28.0, -4.5, 270)
+    d.checkpoint(0.0, -30.0, 200)
+    d.checkpoint(30.0, 10.5, 60)
+    d.s("mortar", 12.0, 2.0, 180)
+    d.gun("at", 16.0, -6.0, 150)
+    d.g("at", -1.7, -11.0, 180)
+    house_t5_inside(d)
+
+
+def zaros(d):
+    """Zaros: a shop stands hard against the house's front, so the main door's way out is the veranda's open west
+    side, into a walled yard (x -22..-5, y -16..7, Addon_02 in it) with two openings: north (x -9..-5, y 8) onto
+    the open ground north of the house, and a 2 m gap south (-12.8, -15.5). The side door faces the main road
+    (x 12-22, north-south) across a 5 m strip; Addon_03 stands behind the house (north). The approaches: the road
+    from the north and the south (vehicles), the open ground north, the gap south."""
+    house_t1(d, (-8.0, -3.0))
+
+    d.tier()  # T2
+    d.o(LONG, -7.6, -3.5, 270)
+    d.o(SHORT, -6.7, -5.3, 180)
+    d.o(SHORT, -6.7, -1.7, 0)
+    d.g("rifleman", -6.4, -4.1, 270)
+    d.g("autorifleman", -6.4, -2.9, 270)
+    d.o(LONG, 7.6, 5.6, 90)
+    d.o(SHORT, 6.7, 4.0, 180)
+    d.o(SHORT, 6.7, 7.2, 0)
+    d.g("rifleman", 6.2, 5.6, 90)
+    d.g("rifleman", -3.6, -3.4, 270, H1)
+
+    d.tier()  # T3
+    d.o(CITYGATE, -7.0, 7.9, 0)
+    d.o(MIL, -12.75, -15.5, 0)
+    d.line(9.6, -6.6, 0, "H1", face=90)
+    d.o(BARGATE, 9.6, 5.6, 90)
+    d.o(HB1, 8.6, 8.9, 0)
+    d.gun("hmg", 7.6, -2.0, 120)
+    d.gun("gmg", -9.0, 1.0, 330)
+    d.post("rifleman", -7.0, 4.6, 0)
+    d.g("rifleman", -9.0, -12.5, 180)
+    d.g("rifleman", 4.2, -5.3, 90, H1)
+    d.g("marksman", 4.2, 5.5, 60, H1)
+
+    d.tier()  # T4
+    d.g("mg_gunner", -3.6, -0.6, 270, H1)
+
+    d.tier()  # T5
+    house_t5_inside(d)
+
+
+TOWNS = {"Kavala": kavala, "Pyrgos": pyrgos, "Athira": athira, "Zaros": zaros}
+
+
+def build(name, towns=None):
+    towns = towns or tl.load()
+    t = towns[name]
+    d = Draft(t)
+    TOWNS[name](d)
+    return t, d
+
+
+def main():
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    show = None
+    if "--map" in sys.argv:
+        show = int(sys.argv[sys.argv.index("--map") + 1])
+        args = [a for a in args if a != str(show)]
+    towns = tl.load()
+    for name in TOWNS:
+        if args and name not in args:
+            continue
+        t, d = build(name, towns)
+        tiers = d.finish()
+        if "--log" in sys.argv or any("SKIP" in l for l in d.log):
+            for line in d.log:
+                print(f"  {name}: {line}")
+        probs = tl.check(t, tiers)
+        if probs:
+            print(f"{name}: PROBLEMS {probs}")
+        else:
+            path = tl.write(t, tiers)
+            print(f"{name}: (things, guards, statics) per tier {counts(tiers)} -> {os.path.relpath(path, tl.ROOT)}")
+        if show:
+            print(overlay(t, tiers[show - 1]))
+
+
+if __name__ == "__main__":
+    main()
