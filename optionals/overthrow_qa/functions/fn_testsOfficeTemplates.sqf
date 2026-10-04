@@ -210,7 +210,7 @@ OTQA_officeTest_one = {
         private _gItem = _g call _itemOf;
         {
             private _f = _x;
-            if ((_f distance _g) < 4) then {
+            if ((_f distance _g) < 4 && { abs (((getPosATL _f) select 2) - ((getPosATL _g) select 2)) < 1.5 }) then { // a storey apart is no cover
                 (boundingBoxReal _f) params ["_bmin", "_bmax"];
                 private _halfX = ((_bmax select 0) - (_bmin select 0)) / 2;
                 private _halfY = ((_bmax select 1) - (_bmin select 1)) / 2;

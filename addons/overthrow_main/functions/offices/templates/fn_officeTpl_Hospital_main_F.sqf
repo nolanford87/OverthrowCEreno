@@ -22,7 +22,7 @@
         ["doorway", "side", [-11.3, -21, -7.8], 180, [1.2, 4]],
         ["object", "Land_TableDesk_F", [-6.4, 13, -7.8], 270, []],
         ["object", "Land_OfficeChair_01_F", [-8, 13, -7.8], 270, []],
-        ["object", "Land_MapBoard_F", [-8.35, 11, -7.8], 90, []],
+        ["object", "Land_MapBoard_F", [-8.25, 11, -7.8], 90, []],
         ["object", "Flag_NATO_F", [1.9, 20.93, -7.8], 270, ["outside", "flag"]],
         ["guard", "gendarme", [-4.2, 15.9, -7.8], 85.77, []],
         ["guard", "gendarme", [-4.2, 7.5, -7.8], 38.5, []],
@@ -52,7 +52,7 @@
     [
         ["guard", "rifleman", [-36.1, -8.75, 7.6], 270, ["free"]],
         ["object", "Land_HBarrier_3_F", [8, 17.2, -7.8], 180, ["outside"]],
-        ["guard", "autorifleman", [8, 18.7, -7.8], 180, ["outside"]],
+        ["guard", "autorifleman", [8, 18.98, -7.8], 180, ["outside"]],
         ["object", "Land_CampingTable_F", [-4.1, -1.4, -7.8], 0, []],
         ["object", "Land_PortableLongRangeRadio_F", [-4.4, -1.4, -7.04], 0, []],
         ["object", "Land_Map_altis_F", [-3.7, -1.4, -7.04], 90, []],
@@ -138,7 +138,7 @@
         ["object", "Land_HBarrier_1_F", [-46, 48.15, -7.8], 270, ["outside"]],
         ["object", "Land_BarGate_F", [-46, 16.43, -7.8], 270, ["outside", "axis", "gate"]],
         ["object", "Land_BagFence_Long_F", [-4.2, 13, -7.8], 90, []],
-        ["guard", "at", [-44.5, 12.23, -7.8], 270, ["outside"]],
+        ["guard", "at", [-44.22, 12.23, -7.8], 270, ["outside"]],
         ["guard", "marksman", [-38, -14.1, 7.6], 180, ["free"]]
     ]
 ]

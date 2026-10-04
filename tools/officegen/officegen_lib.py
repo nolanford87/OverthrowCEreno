@@ -61,9 +61,9 @@ SIZES = {
     "Land_BagFence_Round_F": (1.9, 1.0),
     "Land_BagFence_Corner_F": (1.8, 1.8),
     "Land_BagFence_End_F": (0.6, 0.45),
-    "Land_HBarrier_1_F": (1.2, 1.2),
-    "Land_HBarrier_3_F": (3.6, 1.2),
-    "Land_HBarrier_5_F": (6.0, 1.2),
+    "Land_HBarrier_1_F": (1.2, 1.56),
+    "Land_HBarrier_3_F": (3.6, 1.76),
+    "Land_HBarrier_5_F": (6.0, 1.76),
     "Land_HBarrier_Big_F": (8.4, 2.4),
     "Land_Razorwire_F": (7.6, 1.0),
     "Land_CncBarrier_stripes_F": (2.6, 0.6),
@@ -96,7 +96,7 @@ GUARD_ROLES = ("gendarme", "rifleman", "autorifleman", "marksman", "at", "mg_gun
 GUARD_BEHIND = 0.9        # a guard this far behind his cover's near face (rule 4 asks 0.8)
 NEST_OUT = 3.0            # the tier 2 nest's front, out from the main doorway's wall line
 STOPPERS_OUT = 13.0       # the tier 4 vehicle stoppers on the main approach
-GATE_OUT = 19.0           # the perimeter on the main door's side (the gate), out from its wall line
+GATE_OUT = 17.0           # the perimeter on the main door's side (the gate), out from its wall line
 GATE_GAP = 6.0
 
 # Guard counts per tier (what each tier adds) by building size; totals 10 / 11 / 12 at tier 5
@@ -1111,7 +1111,7 @@ class Plan:
         z = self.b.ground_z
         left, right = getattr(self, "gate_room", (9.0, 9.0))
         side = -1.0 if left >= right else 1.0
-        q = offset(p, d, -(1.2 / 2.0 + GUARD_BEHIND), side * (GATE_GAP / 2.0 + 1.2))
+        q = offset(p, d, -(size_of("Land_HBarrier_5_F")[1] / 2.0 + GUARD_BEHIND), side * (GATE_GAP / 2.0 + 1.2))
         return self.add_guard(tier, role, q, d, z, ["outside"])
 
     # --- the office (rule 6)
@@ -1192,7 +1192,7 @@ class Plan:
                     boards.append(((bx, by), wd))
         boards.sort(key=lambda t: dist2(t[0], desk))
         for (bx, by), wd in boards:
-            m = offset((bx, by), wd, 0.35)
+            m = offset((bx, by), wd, 0.25)
             if self.clear_of_doors((m[0], m[1], level), 1.6) and self.add_object(tier, "Land_MapBoard_F", m, wd + 180, level, [], 0.8):
                 n += 1
                 break
@@ -1404,7 +1404,7 @@ def check_tiers(b, tiers, plan=None):
     for it in tiers[0]:
         if it[0] == "object" and is_fortification(it[1]):
             problems.append("tier 1 has a fortification: %s" % it[1])
-    ring = plan.ring if plan else (b.bmin[0] - 22, b.bmin[1] - 22, b.bmax[0] + 22, b.bmax[1] + 22)
+    ring = (b.bmin[0] - 18, b.bmin[1] - 18, b.bmax[0] + 18, b.bmax[1] + 18)  # the in-game test's perimeter (bounding box + 18 m)
     doorways = [it for t in tiers for it in t if it[0] == "doorway"]
     forts = []
     for ti, t in enumerate(tiers):
