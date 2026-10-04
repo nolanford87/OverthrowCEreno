@@ -89,6 +89,10 @@ OTQA_probeOffices_parts = createHashMapFromArray [
         { _x hideObjectGlobal true } forEach (nearestTerrainObjects [_spot, [], 60, false]);
         diag_log format ["OTPROBE2|SITE|%1|%2", _spot apply { round _x }, _centre apply { round _x }];
 
+        // Only the classes asked for (run-qa.ps1 -Only), else all of them
+        private _classes = OTQA_probeOffices_classes;
+        private _only = missionNamespace getVariable ["OTQA_only", []];
+        if (_only isNotEqualTo []) then { _classes = _only };
         private _done = 0;
         {
             private _cls = _x;
@@ -153,7 +157,7 @@ OTQA_probeOffices_parts = createHashMapFromArray [
             { deleteVehicle _x } forEach _all;
             _done = _done + 1;
             sleep 1;
-        } forEach OTQA_probeOffices_classes;
-        ["Probe: candidate buildings mapped", _done isEqualTo (count OTQA_probeOffices_classes), format ["%1 of %2", _done, count OTQA_probeOffices_classes]] call OTQA_fnc_check;
+        } forEach _classes;
+        ["Probe: candidate buildings mapped", _done isEqualTo (count _classes), format ["%1 of %2", _done, count _classes]] call OTQA_fnc_check;
     }, 1800]
 ];

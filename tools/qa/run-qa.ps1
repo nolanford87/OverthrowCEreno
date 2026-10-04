@@ -8,12 +8,15 @@
     committed; copy it from the third line of an RPT launched the normal way.
 
     Usage:
-        powershell -File tools\qa\run-qa.ps1 [-Suite current|archive] [-World Altis|Tanoa|Malden|Livonia] [-Stop]
+        powershell -File tools\qa\run-qa.ps1 [-Suite current|archive] [-World Altis|Tanoa|Malden|Livonia] [-Only "a,b"] [-Stop]
+    -Only limits a survey suite to these items (e.g. building classes for the "offices" probe): it's passed
+    to the mission as uiNamespace "OTQA_autoOnly" and read by the suite.
     -Stop closes a running Arma 3 instead.
 #>
 param(
     [string]$Suite = "current",
     [string]$World = "Altis",
+    [string]$Only = "",
     [switch]$Stop
 )
 
@@ -39,7 +42,8 @@ if (-not $mission) { throw "Unknown world $World" }
 
 if (Get-Process arma3_x64 -ErrorAction SilentlyContinue) { throw "Arma 3 is already running" }
 
-$init = "uiNamespace setVariable ['OTQA_autoRun', '$Suite']; playMission ['', '\overthrow_main\campaign\missions\$mission'];"
+$onlyList = ($Only.Split(",") | Where-Object { $_.Trim() -ne "" } | ForEach-Object { "'" + $_.Trim() + "'" }) -join ","
+$init = "uiNamespace setVariable ['OTQA_autoRun', '$Suite']; uiNamespace setVariable ['OTQA_autoOnly', [$onlyList]]; playMission ['', '\overthrow_main\campaign\missions\$mission'];"
 $arguments = @(
     "`"-mod=$mods`"",
     "-skipIntro", "-noSplash", "-world=empty", "-window", "-noPause", "-noPauseAudio",
