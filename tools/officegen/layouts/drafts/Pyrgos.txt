@@ -124,7 +124,7 @@ OTLAYOUT|Altis|Pyrgos|ITEM|4|object|Land_CzechHedgehog_01_F|[16634.403,12769.828
 OTLAYOUT|Altis|Pyrgos|ITEM|4|static|hmg|[16646.916,12805.384,28.580]|[[0.8625,-0.5060,0.0000],[0.0000,0.0000,1.0000]]|
 OTLAYOUT|Altis|Pyrgos|ITEM|4|guard|autorifleman|[16631.698,12793.675,11.000]|210.4|ground
 OTLAYOUT|Altis|Pyrgos|ITEM|4|guard|rifleman|[16633.768,12792.461,11.000]|210.4|ground
-OTLAYOUT|Altis|Pyrgos|ITEM|4|guard|rifleman|[16633.636,12819.900,11.000]|30.4|ground
+OTLAYOUT|Altis|Pyrgos|ITEM|4|guard|rifleman|[16633.636,12819.900,11.000]|300.4|ground
 OTLAYOUT|Altis|Pyrgos|ITEM|4|object|Land_BagFence_Long_F|[16616.694,12803.869,28.580]|[[-0.9092,-0.4163,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Pyrgos|ITEM|4|guard|mg_gunner|[16617.831,12804.390,28.580]|245.4|
 OTLAYOUT|Altis|Pyrgos|ITEM|4|guard|mg_gunner|[16641.834,12793.758,23.300]|165.4|
@@ -194,7 +194,7 @@ OTLAYOUT|Altis|Pyrgos|ITEM|5|object|Land_CzechHedgehog_01_F|[16634.403,12769.828
 OTLAYOUT|Altis|Pyrgos|ITEM|5|static|hmg|[16646.916,12805.384,28.580]|[[0.8625,-0.5060,0.0000],[0.0000,0.0000,1.0000]]|
 OTLAYOUT|Altis|Pyrgos|ITEM|5|guard|autorifleman|[16631.698,12793.675,11.000]|210.4|ground
 OTLAYOUT|Altis|Pyrgos|ITEM|5|guard|rifleman|[16633.768,12792.461,11.000]|210.4|ground
-OTLAYOUT|Altis|Pyrgos|ITEM|5|guard|rifleman|[16633.636,12819.900,11.000]|30.4|ground
+OTLAYOUT|Altis|Pyrgos|ITEM|5|guard|rifleman|[16633.636,12819.900,11.000]|300.4|ground
 OTLAYOUT|Altis|Pyrgos|ITEM|5|object|Land_BagFence_Long_F|[16616.694,12803.869,28.580]|[[-0.9092,-0.4163,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Pyrgos|ITEM|5|guard|mg_gunner|[16617.831,12804.390,28.580]|245.4|
 OTLAYOUT|Altis|Pyrgos|ITEM|5|guard|mg_gunner|[16641.834,12793.758,23.300]|165.4|

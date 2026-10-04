@@ -313,7 +313,7 @@ class Draft:
         (measured in the game: 3.4 m over the ground at the centre, level 0.6 m towards +y and to either side;
         its back wall 0.6 m towards -y), 0.3 m forward of the centre, looking out over the open side; with
         `below`, a second man on the platform beside him (the tower has no room below to stand in)."""
-        tw = self.o(TOWER, x, y, face, nudge=0.5, road_ok=road_ok)
+        tw = self.o(TOWER, x, y, face, nudge=1.5, road_ok=road_ok)
         if tw:
             m = self.t.to_model(tw[2])
             z = self.t.ground_model(m[0], m[1]) + TOWER_TOP
@@ -697,7 +697,7 @@ def pyrgos(d):
     d.s("hmg", 10.8, 6.0, 90, ROOF)
     d.g("autorifleman", 3.6, -11.8, 180)
     d.g("rifleman", 6.0, -11.8, 180)
-    d.g("rifleman", -8.0, 11.8, 0)                           # Over the low north wall into the lane
+    d.g("rifleman", -8.0, 11.8, 270)                         # Along the back strip
     tower_t4_inside(d)
 
     d.tier()  # T5: checkpoints on the square's path from the road and on the west lot (an H-barrier and a
@@ -865,9 +865,7 @@ def zaros(d):
     # HMG down the road south (40 m clear), the GMG up it north; upstairs the east windows
     d.o(CITYGATE, -6.8, 7.7, 0)
     d.post("rifleman", -6.8, 4.6, 0)
-    d.fill(-14.8, -15.5, -14.3, -15.5, 180)
-    d.embrasure(-12.9, -15.5, 180, role=None)
-    d.fill(-11.5, -15.5, -11.2, -15.5, 180)
+    d.embrasure(-12.9, -15.5, 180, role=None)                # A round bag fills the gap
     d.g("rifleman", -12.9, -14.0, 180)
     d.fill(10.5, -6.6, 10.5, 3.3, 90)
     d.o(BARGATE, 10.5, 5.6, 90)
@@ -884,11 +882,21 @@ def zaros(d):
     # gate firing west across the open ground north; wire along the low wall north and outside the south gap;
     # hedgehogs across the road both ways; the balcony MG; men at the gate and upstairs
     d.o(HBBIG, 13.6, 5.6, 90, road_ok=True)
-    d.tower(-15.0, 3.6, 300, "marksman")
-    d.tower(-9.6, -12.4, 180, "marksman")
-    d.gun("hmg", -6.6, 11.8, 270)
+    # The compound closed with 2-high lines from the block to the neighbours: the open ground south of the shop
+    # (to the garden wall) walled on its road side and its west side; the yard's low west walls lined inside;
+    # the open ground north (the north yard) closed at its three gaps (the passage to the road, the gap to the
+    # north-west road, the corridor west); bag towers in the south ground and the north yard
+    d.fill(12.3, -16.8, 8.9, -23.0, 119, road_ok=True)
+    d.fill(-20.6, -15.4, -20.6, -21.6, 270, "B")
+    d.fill(-19.6, -10.4, -19.6, -14.4, 270, "B")
+    d.fill(-18.0, 1.6, -15.6, 5.2, 304, "B")
+    d.o(HB3, 3.0, 17.6, 90)
+    d.o(HB1, -15.6, 24.2, 0, nudge=1.0)
+    d.fill(-28.2, 12.6, -24.4, 12.6, 270, "B")
+    d.tower(-6.0, -19.5, 270, "marksman", "autorifleman")
+    d.tower(-21.0, 10.5, 0, "marksman")
+    d.gun("hmg", -6.6, 11.8, 290)
     d.fill(-17.0, 11.6, -10.0, 11.6, 0, "w")
-    d.fill(-16.5, -17.2, -9.5, -17.2, 180, "w")
     for x, y in ((14.5, 15.0), (17.5, 16.5), (20.5, 15.0), (16.5, -15.0), (18.0, -12.5)):
         d.o(HOG, x, y, 45, road_ok=True, nudge=1.0)
     d.g("mg_gunner", -3.6, -0.6, 270, H1)
@@ -901,13 +909,13 @@ def zaros(d):
     # the passage from the open ground north to the road; a bag bunker on the open ground north; the mortar in the
     # yard; an AT gun up the road north (beside the GMG), an AT man at the gate; the kill zone inside
     d.checkpoint(19.0, 23.0, 0, width=9.0, out=6.0)
-    d.checkpoint(16.6, -21.0, 180, width=9.0, out=6.0, roles=("autorifleman",), post=(-2.0, -7.0))
+    d.checkpoint(16.6, -28.0, 180, width=9.0, out=5.0, roles=("autorifleman",))
     d.o(HB3, 6.0, 17.6, 270)
     d.g("rifleman", 7.4, 16.9, 270)
     d.g("autorifleman", 7.4, 18.3, 270)
     d.s("mortar", -10.5, -6.0, 195)
-    d.gun("at", 10.6, 14.0, 15, road_ok=True)
-    d.g("at", 9.0, 2.5, 120)
+    d.gun("at", 13.6, -9.5, 175, road_ok=True)
+    d.g("at", 12.0, -0.8, 170)
     house_t5_inside(d)
 
 
