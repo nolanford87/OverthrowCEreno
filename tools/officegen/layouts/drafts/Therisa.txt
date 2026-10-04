@@ -24,7 +24,7 @@ OTLAYOUT|Altis|Therisa|ITEM|2|guard|autorifleman|[10651.625,12200.695,16.236]|33
 OTLAYOUT|Altis|Therisa|ITEM|2|object|Land_PipeFence_03_m_gate_r_F|[10660.903,12188.064,17.320]|[[-0.6877,-0.7260,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Therisa|ITEM|2|guard|rifleman|[10661.533,12188.293,20.750]|223.4|
 OTLAYOUT|Altis|Therisa|ITEM|2|guard|rifleman|[10661.330,12198.403,17.320]|43.4|
-OTLAYOUT|Altis|Therisa|TIER|3|53
+OTLAYOUT|Altis|Therisa|TIER|3|55
 OTLAYOUT|Altis|Therisa|ITEM|3|object|Land_TableDesk_F|[10655.267,12197.673,17.320]|[[-1.0000,0.0079,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Therisa|ITEM|3|object|Land_OfficeChair_01_F|[10653.662,12196.851,17.320]|[[-0.6368,0.7711,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Therisa|ITEM|3|object|Land_MapBoard_F|[10659.118,12193.886,17.320]|[[-0.0950,-0.9955,0.0000],[0.0000,0.0000,1.0000]]|drop
@@ -49,8 +49,6 @@ OTLAYOUT|Altis|Therisa|ITEM|3|object|Land_BagFence_Short_F|[10657.467,12207.848,
 OTLAYOUT|Altis|Therisa|ITEM|3|guard|rifleman|[10645.742,12194.161,16.031]|323.4|ground
 OTLAYOUT|Altis|Therisa|ITEM|3|object|Land_BagFence_Short_F|[10645.206,12194.884,16.011]|[[-0.5955,0.8033,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Therisa|ITEM|3|object|Land_BarGate_F|[10653.696,12206.048,16.284]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Therisa|ITEM|3|object|Land_HBarrier_3_F|[10660.711,12213.453,16.461]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Therisa|ITEM|3|guard|autorifleman|[10661.655,12212.559,16.507]|313.4|ground
 OTLAYOUT|Altis|Therisa|ITEM|3|object|Land_HBarrier_3_F|[10658.235,12210.839,16.437]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Therisa|ITEM|3|guard|rifleman|[10659.179,12209.945,16.478]|313.4|ground
 OTLAYOUT|Altis|Therisa|ITEM|3|object|Land_HBarrier_3_F|[10648.813,12200.893,16.137]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|ground
@@ -58,6 +56,10 @@ OTLAYOUT|Altis|Therisa|ITEM|3|guard|rifleman|[10649.757,12199.999,16.165]|313.4|
 OTLAYOUT|Altis|Therisa|ITEM|3|object|Land_BagFence_Long_F|[10645.512,12197.409,16.029]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Therisa|ITEM|3|static|hmg|[10646.674,12196.308,16.058]|[[-0.5955,0.8033,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Therisa|ITEM|3|object|Land_BagFence_Long_F|[10642.074,12193.779,15.936]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Therisa|ITEM|3|object|Land_HBarrier_3_F|[10660.952,12213.707,16.462]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Therisa|ITEM|3|object|Land_HBarrier_3_F|[10660.952,12213.707,18.162]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Therisa|ITEM|3|object|Land_HBarrier_1_F|[10659.748,12212.436,16.452]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Therisa|ITEM|3|object|Land_HBarrier_1_F|[10659.748,12212.436,18.052]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Therisa|ITEM|3|object|Land_HBarrier_1_F|[10656.722,12209.242,16.396]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Therisa|ITEM|3|object|Land_HBarrier_1_F|[10656.035,12208.516,16.372]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Therisa|ITEM|3|object|Land_HBarrier_1_F|[10651.358,12203.579,16.216]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|ground
@@ -78,7 +80,7 @@ OTLAYOUT|Altis|Therisa|ITEM|3|object|Land_HBarrier_1_F|[10640.011,12191.601,15.9
 OTLAYOUT|Altis|Therisa|ITEM|3|object|Land_HBarrier_1_F|[10640.011,12191.601,17.516]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Therisa|ITEM|3|object|Land_HBarrier_1_F|[10639.598,12191.165,15.911]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Therisa|ITEM|3|object|Land_HBarrier_1_F|[10639.598,12191.165,17.511]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Therisa|TIER|4|97
+OTLAYOUT|Altis|Therisa|TIER|4|99
 OTLAYOUT|Altis|Therisa|ITEM|4|object|Land_TableDesk_F|[10655.267,12197.673,17.320]|[[-1.0000,0.0079,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Therisa|ITEM|4|object|Land_OfficeChair_01_F|[10653.662,12196.851,17.320]|[[-0.6368,0.7711,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Therisa|ITEM|4|object|Land_MapBoard_F|[10659.118,12193.886,17.320]|[[-0.0950,-0.9955,0.0000],[0.0000,0.0000,1.0000]]|drop
@@ -103,8 +105,6 @@ OTLAYOUT|Altis|Therisa|ITEM|4|object|Land_BagFence_Short_F|[10657.467,12207.848,
 OTLAYOUT|Altis|Therisa|ITEM|4|guard|rifleman|[10645.742,12194.161,16.031]|323.4|ground
 OTLAYOUT|Altis|Therisa|ITEM|4|object|Land_BagFence_Short_F|[10645.206,12194.884,16.011]|[[-0.5955,0.8033,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Therisa|ITEM|4|object|Land_BarGate_F|[10653.696,12206.048,16.284]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Therisa|ITEM|4|object|Land_HBarrier_3_F|[10660.711,12213.453,16.461]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Therisa|ITEM|4|guard|autorifleman|[10661.655,12212.559,16.507]|313.4|ground
 OTLAYOUT|Altis|Therisa|ITEM|4|object|Land_HBarrier_3_F|[10658.235,12210.839,16.437]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Therisa|ITEM|4|guard|rifleman|[10659.179,12209.945,16.478]|313.4|ground
 OTLAYOUT|Altis|Therisa|ITEM|4|object|Land_HBarrier_3_F|[10648.813,12200.893,16.137]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|ground
@@ -112,6 +112,10 @@ OTLAYOUT|Altis|Therisa|ITEM|4|guard|rifleman|[10649.757,12199.999,16.165]|313.4|
 OTLAYOUT|Altis|Therisa|ITEM|4|object|Land_BagFence_Long_F|[10645.512,12197.409,16.029]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Therisa|ITEM|4|static|hmg|[10646.674,12196.308,16.058]|[[-0.5955,0.8033,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Therisa|ITEM|4|object|Land_BagFence_Long_F|[10642.074,12193.779,15.936]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Therisa|ITEM|4|object|Land_HBarrier_3_F|[10660.952,12213.707,16.462]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Therisa|ITEM|4|object|Land_HBarrier_3_F|[10660.952,12213.707,18.162]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Therisa|ITEM|4|object|Land_HBarrier_1_F|[10659.748,12212.436,16.452]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Therisa|ITEM|4|object|Land_HBarrier_1_F|[10659.748,12212.436,18.052]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Therisa|ITEM|4|object|Land_HBarrier_1_F|[10656.722,12209.242,16.396]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Therisa|ITEM|4|object|Land_HBarrier_1_F|[10656.035,12208.516,16.372]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Therisa|ITEM|4|object|Land_HBarrier_1_F|[10651.358,12203.579,16.216]|[[-0.7260,0.6877,0.0000],[0.0000,0.0000,1.0000]]|ground

@@ -67,6 +67,9 @@ SIZE = {WALL6: (8.0, 2.0), WALL4: (5.4, 2.0), HB1: (1.4, 1.6), LONG: (3.0, 0.5),
 TOWER = "Land_BagBunker_Tower_F"
 STACK = {HB3: 1.7, HB1: 1.6}  # Where a second H-barrier is dropped to stand on the first (townlib.MEASURED heights)
 TOWER_DECK = 2.7  # The tower's platform above the ground (a guess for the in-game check)
+# Where the men stand on a tower, in the tower's own frame (x right, y out of its front, z above the ground under it,
+# facing relative to the tower's): a guess until the layout check logs the tower's real building positions
+TOWER_SPOTS = [(0.8, 0.0, TOWER_DECK, 0), (-0.8, 0.0, TOWER_DECK, 30), (0.0, 0.8, TOWER_DECK, 0)]
 
 
 def size_of(kind, what):
@@ -480,6 +483,12 @@ class Drafter:
             dd += 0.5
         return maxd
 
+    def tower_man(self, tw, k, role):
+        """A man at the tower's k-th standing spot (TOWER_SPOTS)."""
+        dx, dy, dz, df = TOWER_SPOTS[k]
+        l, f = vec(tw[3] + 90), vec(tw[3])
+        return self.add("guard", role, tw[0] + l[0] * dx + f[0] * dy, tw[1] + l[1] * dx + f[1] * dy, (tw[3] + df) % 360, z=tw[2] + dz)
+
     def tower(self, x, y, face, role="mg_gunner", search=2.0, road_ok=True):
         """A sandbag watchtower with a man on its platform, facing `face`: the raised post over the main approach."""
         for r in [0.0] + [k * 0.25 for k in range(1, int(search * 4) + 1)]:
@@ -490,10 +499,8 @@ class Drafter:
                 if self.free("object", TOWER, px, py, face, road_ok):
                     self.add("object", TOWER, px, py, face)
                     z = self.t.ground_model(px, py) + TOWER_DECK
-                    self.towers.append([px, py, z, face, 2])
-                    l = vec(face + 90)
-                    return [self.items[-1], self.add("guard", role, px + l[0] * 0.8, py + l[1] * 0.8, face, z=z),
-                            self.add("guard", "marksman", px - l[0] * 0.8, py - l[1] * 0.8, (face + 30) % 360, z=z)]
+                    self.towers.append([px, py, self.t.ground_model(px, py), face, 2])
+                    return [self.items[-1], self.tower_man(self.towers[-1], 0, role), self.tower_man(self.towers[-1], 1, "marksman")]
         self.notes.append(f"no room for the tower at {x:.1f},{y:.1f}: {self.why('object', TOWER, x, y, face, road_ok)}")
         return []
 
@@ -555,10 +562,9 @@ def house_guard(t, d, cfg, role, prefer):
         if got:
             return got[0]
     for tw in d.towers:  # A second man on a tower's platform
-        if tw[4] < 3:
+        if tw[4] < len(TOWER_SPOTS):
             tw[4] += 1
-            f = vec(tw[3])
-            return d.add("guard", role, tw[0] + f[0] * 0.8, tw[1] + f[1] * 0.8, tw[3], z=tw[2])
+            return d.tower_man(tw, tw[4] - 1, role)
     d.notes.append(f"no house post nor spare for a {role}")
     return None
 
@@ -970,7 +976,7 @@ def therisa(d, tier):
     # east and south-east, open ground to the south (the road 35 m beyond it) and a passage from the north-west.
     # The way in: from the south, square onto the veranda's south end.
     if tier == 3:
-        d.line((-15.2, -12.4), (17.6, -12.4), [("gate", 12.1, None), ("fire", 1.9, "autorifleman"), ("fire", 5.5, "rifleman"), ("fire", 18.7, "rifleman"), ("static", 24.0, ("hmg", 180)), ("slot", 29.0, None)])
+        d.line((-15.2, -12.4), (17.6, -12.4), [("gate", 12.1, None), ("fire", 5.5, "rifleman"), ("fire", 18.7, "rifleman"), ("static", 24.0, ("hmg", 180)), ("slot", 29.0, None)])
     if tier == 4:
         d.static_at((-15.2, -12.4), (17.6, -12.4), 29.0, "gmg")
         d.line((17.6, -12.4), (17.6, 4.0), [("static", 3.0, ("at", 90)), ("fire", 8.0, "rifleman")])
