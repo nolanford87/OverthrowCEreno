@@ -148,7 +148,7 @@ OTQA_officeReview_site = {
     {
         private _strict = _x;
         for "_r" from 300 to 1500 step 100 do {
-            for "_d" from 0 to 90 step 10 do {
+            { private _d = _x;
                 private _p = _centre getPos [_r, _d];
                 {
                     private _rowDir = _x;
@@ -161,7 +161,7 @@ OTQA_officeReview_site = {
                     if (_ok) exitWith { _found = [_p, _rowDir] };
                 } forEach [45, 0, 90, 135, 30, 60];
                 if (_found isNotEqualTo []) exitWith {};
-            };
+            } forEach [45, 35, 55, 25, 65, 15, 75, 5, 85, 0, 90]; // North-east first, then either side of it
             if (_found isNotEqualTo []) exitWith {};
         };
         if (_found isNotEqualTo []) exitWith {};
