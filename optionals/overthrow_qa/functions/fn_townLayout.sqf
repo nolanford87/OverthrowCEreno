@@ -59,6 +59,9 @@ OTQA_townLayout_unfinished = {
 };
 
 // A guess at a town's office: [building, its real other pieces, spawned]
+// Towns whose office is a landmark rather than the first of their bracket's candidates (the user's choice)
+OTQA_townLayout_landmarks = createHashMapFromArray [["Kavala", "Hospital_main_F"]];
+
 OTQA_townLayout_guess = {
     params ["_town"];
     private _centre = server getVariable [_town, [0, 0, 0]];
@@ -67,7 +70,14 @@ OTQA_townLayout_guess = {
     };
     private _bracket = [_town] call OTQA_townLayout_bracket;
     private _b = objNull;
+    // A town's own landmark first (the user's choice), then its bracket's candidates
+    private _own = OTQA_townLayout_landmarks getOrDefault [_town, ""];
+    if (_own isNotEqualTo "") then {
+        private _i = _near findIf { ([_x] call OT_fnc_officeTemplateKey) isEqualTo _own };
+        if (_i > -1) then { _b = _near select _i };
+    };
     for "_br" from _bracket to 1 step -1 do {
+        if (!isNull _b) exitWith {};
         {
             private _key = _x;
             private _i = _near findIf { ([_x] call OT_fnc_officeTemplateKey) isEqualTo _key };
