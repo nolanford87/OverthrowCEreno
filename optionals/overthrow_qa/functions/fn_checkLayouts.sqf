@@ -120,7 +120,12 @@
                     private _hit = lineIntersectsSurfaces [_base vectorAdd [0, 0, 0.05], _base vectorAdd [0, 0, -3], _o, objNull, true, 1, "GEOM", "NONE"];
                     private _gap = if (_hit isEqualTo []) then { 3 } else { (_base select 2) - (((_hit select 0) select 0) select 2) };
                     if (_gap > 0.3) then { _floating pushBack [typeOf _o, _gap call _r1] };
-                    if !((typeOf _o) in _sizes) then { _sizes set [typeOf _o, [((_mx select 0) - (_mn select 0)) call _r1, ((_mx select 1) - (_mn select 1)) call _r1, ((_mx select 2) - (_mn select 2)) call _r1]] };
+                    if !((typeOf _o) in _sizes) then {
+                        _sizes set [typeOf _o, [((_mx select 0) - (_mn select 0)) call _r1, ((_mx select 1) - (_mn select 1)) call _r1, ((_mx select 2) - (_mn select 2)) call _r1]];
+                        // Where a man stands on it (a tower's platform, a bunker's inside): its building positions, model coordinates
+                        private _bp = (_o buildingPos -1) apply { (_o worldToModel _x) apply { _x call _r1 } };
+                        if (_bp isNotEqualTo []) then { diag_log format ["OTBPOS|%1|%2", typeOf _o, _bp] };
+                    };
                 } forEach (_props + _statics);
 
                 // Guards: pushed off their post, facing a wall; their views
