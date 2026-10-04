@@ -23,6 +23,9 @@ The tier ladder (the same steps in every town; the outside parts are fitted to e
       hedgehogs across the approach roads and razor wire belts in front of the walls (each under a static's or a
       post's fire), a GMG and an AT gun added (4 statics), an MG gunner on the balcony and more firing steps.
       ~20-22 guards.
+Every perimeter line is unbroken: its pieces overlap 0.3 m and reach 0.5 m into the buildings and features at its
+ends (a piece whose middle would stand in a building is left out: the building closes the line there), what's left
+open is plugged with 1-high blocks, and the run prints any stretch still open ("GAPS"; there are none now).
 """
 import math
 import os
@@ -62,9 +65,10 @@ def size_of(kind, what):
 class Drafter:
     def __init__(self, t):
         self.t = t
-        self.placed = []  # (x, y, length, depth, mdir) of the ground things so far
+        self.placed = []  # (x, y, length, depth, mdir, barrier) of the ground things so far
         self.notes = []
         self.items = []   # The current tier's full snapshot
+        self.lines = []   # The perimeter lines drawn (for the gap report)
 
     # ---- room
     def free(self, kind, what, x, y, mdir, road_ok=False, pad=0.15, gap=0.05):
@@ -72,17 +76,21 @@ class Drafter:
         if math.hypot(x, y) > 44.5:
             return False
         ln, dp = size_of(kind, what)
+        bar = kind == "object" and tl.is_barrier(what)
+        tln, tdp = (max(ln - 2 * tl.BARRIER_OVERLAP, 0.2), max(dp * 0.5, 0.2)) if bar else (ln, dp)  # Barriers: their middle
         w = t.to_world(x, y, 0)
-        for h in t.hits(w[0], w[1], ln, dp, (t.dir + mdir) % 360, pad):
-            if h[0] in ("building", "part", "rock", "tree") or (h[0] == "wall" and kind != "object"):
+        for h in t.hits(w[0], w[1], tln, tdp, (t.dir + mdir) % 360, pad):
+            if h[0] in ("building", "part", "rock") or (h[0] == "tree" and not bar) or (h[0] == "wall" and kind != "object"):
                 return False
-        if t.on_office(x, y, ln, dp, mdir):
+        if t.on_office(x, y, tln, tdp, mdir):
             return False
-        if self.overlaps(EXTENT, x, y, ln, dp, mdir, 0.3):
+        if self.overlaps(EXTENT, x, y, tln, tdp, mdir, 0.1 if bar else 0.3):
             return False
         if not road_ok and self.road(x, y, ln, mdir):
             return False
-        for px, py, pl, pd, pm in self.placed:
+        for px, py, pl, pd, pm, pb in self.placed:
+            if bar and pb:
+                continue  # Barrier pieces may overlap each other (an unbroken line)
             if self.boxes_overlap((x, y, ln, dp, mdir), (px, py, pl, pd, pm), gap):
                 return False
         return True
@@ -97,7 +105,7 @@ class Drafter:
             out.append("office")
         if not road_ok and self.road(x, y, ln, mdir):
             out.append("road")
-        out += [("placed", round(px, 1), round(py, 1)) for px, py, pl, pd, pm in self.placed if self.boxes_overlap((x, y, ln, dp, mdir), (px, py, pl, pd, pm), 0.05)]
+        out += [("placed", round(px, 1), round(py, 1)) for px, py, pl, pd, pm, pb in self.placed if self.boxes_overlap((x, y, ln, dp, mdir), (px, py, pl, pd, pm), 0.05)]
         return out
 
     @staticmethod
@@ -143,7 +151,7 @@ class Drafter:
         """Placed without checks (inside the house, or already checked)."""
         if z is None:
             ln, dp = size_of(kind, what)
-            self.placed.append((x, y, ln, dp, mdir))
+            self.placed.append((x, y, ln, dp, mdir, kind == "object" and tl.is_barrier(what)))
         it = self.make(kind, what, x, y, mdir, z, flag)
         self.items.append(it)
         return it
@@ -204,6 +212,7 @@ class Drafter:
         line: ("gate", s, width) a bar gate in a gap; ("fire", s, role) a 1-high H-barrier firing step with the guard
         behind it; ("static", s, role) a low bagged slot with the static behind it; ("open", s, length) a gap; the
         guards and statics face out (away from the house's side of the line)."""
+        self.lines.append((p0, p1))
         dx, dy = p1[0] - p0[0], p1[1] - p0[1]
         L = math.hypot(dx, dy)
         run = heading(dx, dy)
@@ -221,8 +230,7 @@ class Drafter:
         busy, lows = [], []
         for kind, s, arg in sorted(feats, key=lambda f: f[0] != "gate"):
             if kind == "gate":
-                w = arg or 6.0
-                busy.append((s - w / 2, s + w / 2))
+                busy.append((s - 2.5, s + 2.5))  # The bar gate's own length: the wall closes up to it
                 x, y = at(s)
                 it = self.put("object", BAR, x, y, wdir, road_ok=True, note="bar gate")
                 res += [it] if it else []
@@ -267,37 +275,41 @@ class Drafter:
         # Fill the rest
         return res + self.fill(at, trim[0], L - trim[1], busy, wdir, road_ok, fill)
 
-    def fill(self, at, s, end, busy, wdir, road_ok, fill):
+    def fill(self, at, s, end, busy, wdir, road_ok, fill, ov=0.3):
+        """Pieces end to end from s to end, each overlapping the one before (and the features either side) by ov, so
+        the line is unbroken; a piece whose middle would stand in a building is left out (the building closes the
+        line there) and the line picks up again with a piece reaching into it."""
         res = []
-        while s < end - 0.7:
-            nxt = [b for b in busy if b[1] > s + 0.05]
-            if nxt and nxt[0][0] <= s + 0.05:
-                s = nxt[0][1]
+        segs, pos = [], s
+        for b0, b1 in sorted(busy):
+            if b1 <= pos:
                 continue
-            room = (nxt[0][0] if nxt else end) - s
-            placed = False
-            for cls in fill:
-                ln = tl.CLASSES[cls][0]
-                if ln > room + 0.05:
-                    continue
-                x, y = at(s + ln / 2)
-                if self.free("object", cls, x, y, wdir, road_ok, pad=0.12, gap=0.15):
-                    res.append(self.add("object", cls, x, y, wdir))
-                    s += ln
-                    placed = True
+            if b0 > pos:
+                segs.append((pos, min(b0, end)))
+            pos = max(pos, b1)
+        if pos < end:
+            segs.append((pos, end))
+        for s0, s1 in segs:
+            a0, a1 = (s0 - ov if s0 > s else s0 - 0.5), (s1 + ov if s1 < end else s1 + 0.5)  # Into the features / past the ends
+            cur = a0
+            while cur < a1 - 0.2:
+                room = a1 - cur
+                done = False
+                for cls in fill:
+                    ln = tl.CLASSES[cls][0]
+                    if ln > room + 0.01 and cls != fill[-1]:
+                        continue
+                    c = cur + ln / 2 if ln <= room else a1 - ln / 2  # The last piece fitted back against the end
+                    x, y = at(c)
+                    if self.free("object", cls, x, y, wdir, road_ok, pad=0.1):
+                        res.append(self.add("object", cls, x, y, wdir))
+                        cur = c + ln / 2 - ov
+                        done = True
+                        break
+                if not done:
+                    cur += 0.25
+                if done and cur >= a1 - ov - 0.01:
                     break
-            if not placed and room < 1.6:
-                # A gap too short for any piece (between two features): plugged with a 1-high block overlapping them
-                x, y = at(s + room / 2)
-                keep = self.placed
-                self.placed = []
-                ok = self.free("object", HB1, x, y, wdir, road_ok, pad=0.12)
-                self.placed = keep
-                if ok and room > 0.25:
-                    res.append(self.add("object", HB1, x, y, wdir))
-                s += room
-            elif not placed:
-                s += 0.5
         return res
 
     def static_at(self, p0, p1, s, role, face=None):
@@ -423,6 +435,53 @@ def tier4_house(t, d, cfg):
         d.add("static", cfg["upstairs"], -3.0, 5.0, cfg.get("upstairs_face", 290), z=f1)
 
 
+def gaps(t, d):
+    """Stretches of the drawn lines that nothing closes (no barrier piece, building or the house): [(x, y, length)]."""
+    out = []
+    bars = [p for p in d.placed if p[5]]
+    for p0, p1 in d.lines:
+        L = math.dist(p0, p1)
+        run = None
+        for k in range(int(L / 0.25) + 1):
+            x, y = p0[0] + (p1[0] - p0[0]) * k * 0.25 / L, p0[1] + (p1[1] - p0[1]) * k * 0.25 / L
+            w = t.to_world(x, y, 0)
+            shut = any(d.boxes_overlap((x, y, 0.05, 0.05, 0), b[:5], 0) for b in bars) or                 any(h[0] in ("building", "part", "wall", "rock") for h in t.hits(w[0], w[1], 0.05, 0.05, 0, 0)) or                 (EXTENT[0] <= x <= EXTENT[2] and EXTENT[1] <= y <= EXTENT[3])
+            if not shut:
+                run = run or [x, y, 0]
+                run[2] += 0.25
+            elif run:
+                out.append(run)
+                run = None
+        if run:
+            out.append(run)
+    return [(round(x, 1), round(y, 1), round(l, 2)) for x, y, l in out if l > 0.3]
+
+
+def plug(t, d):
+    """Closes what's left open in the lines (short stretches beside buildings, round a static's slot) with 1-high
+    blocks reaching into what's either side. Before tier 4 is taken, so the tier's snapshot has them; each plug
+    goes in the tier whose line it closes (it's checked again at the tier of the line, see draft)."""
+    for gx, gy, gl in gaps(t, d):
+        line = min(d.lines, key=lambda l: abs((l[1][0] - l[0][0]) * (l[0][1] - gy) - (l[0][0] - gx) * (l[1][1] - l[0][1])) / math.dist(*l))
+        (x0, y0), (x1, y1) = line
+        L = math.dist(line[0], line[1])
+        u = ((x1 - x0) / L, (y1 - y0) / L)
+        cx, cy = gx + u[0] * (gl / 2 - 0.125), gy + u[1] * (gl / 2 - 0.125)
+        wdir = (heading(*u) - 90) % 360
+        keep = d.placed
+        d.placed = [p for p in keep if not (p[2] == 2.0 and p[3] == 2.0)]  # A plug may touch a static's generous footprint
+        done = False
+        for off in (0, 0.25, -0.25, 0.5, -0.5, 0.75, -0.75):
+            px, py = cx + u[0] * off, cy + u[1] * off
+            if d.free("object", HB1, px, py, wdir, True, pad=0.12):
+                d.placed = keep
+                d.add("object", HB1, px, py, wdir)
+                done = True
+                break
+        if not done:
+            d.placed = keep
+
+
 def draft(t, cfg):
     d = Drafter(t)
     tiers = []
@@ -432,10 +491,15 @@ def draft(t, cfg):
     tiers.append(list(d.items))
     tier3_house(t, d, cfg)
     cfg["build"](d, 3)
+    plug(t, d)
     tiers.append(list(d.items))
     tier4_house(t, d, cfg)
     cfg["build"](d, 4)
+    plug(t, d)
     tiers.append(list(d.items))
+    g = gaps(t, d)
+    if g:
+        d.notes.append(f"GAPS in the lines (x, y, length): {g}")
     return tiers, d.notes
 
 
@@ -531,7 +595,7 @@ def chalkeia(d, tier):
         d.line((-7.2, -14.5), (6.2, -14.5), [("fire", 4.0, "rifleman"), ("static", 10.0, ("hmg", 200))])
     if tier == 4:
         d.line((15.2, -1.0), (15.2, 10.6), [("fire", 3.0, "rifleman"), ("static", 7.5, ("at", 80))])
-        d.line((5.6, -0.6), (15.2, -0.6))
+        d.line((5.6, 0.2), (15.2, 0.2))
         d.bunker(-9.4, -16.6, 225)
         d.bunker(-9.4, 9.6, 315, search=1.5)
         d.post("autorifleman", 8.0, 8.0, 45)
