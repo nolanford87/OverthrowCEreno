@@ -414,8 +414,8 @@ class Drafter:
             step = 0.05 if s_to > s_from else -0.05
             s = s_from
             while (s <= s_to) if step > 0 else (s >= s_to):
-                for o in ((0.0,) if low else (0.0, side, -side)):  # (a fence: where its middle crosses it)
-                    if self.solid_at(*at(s, o), low=low):
+                for o in ((0.0,) if low else (0.0, side, -side)):  # (a fence: where its middle crosses it, the probe's alone)
+                    if (self.probe_hits(*at(s, o), 0.1, 0.1, 0.0, 0.0) if low else self.solid_at(*at(s, o))):
                         return s, o
                 s += step
             return None, None
@@ -433,8 +433,13 @@ class Drafter:
                     self.problems.append(f"run {name}: nothing to tie into at its {'start' if k == 0 else 'end'}")
                     s = 0.0 if k == 0 else L
                     eranges.append((0.0, 0.05))
-                elif end == "fence":
-                    eranges.append((0.2, 0.3))  # Into a fence it crosses (often obliquely): its middle stays clear
+                elif end == "fence":  # Into the low wall or fence it crosses, past its middle (its thickness along the
+                    # run measured on the run's middle line), so the run beyond it overlaps this one through it
+                    s2 = s
+                    while abs(s2 - s) < 2.0 and self.probe_hits(*at(s2, 0.0), 0.1, 0.1, 0.0, 0.0):
+                        s2 += 0.05 if k else -0.05
+                    th = abs(s2 - s)
+                    eranges.append((th / 2 + 0.12, th / 2 + 0.2))
                 elif in_house(*at(s + (0.05 if k else -0.05), o)):
                     eranges.append((0.2, 0.3))  # Into the house: its walls are kept 0.2 m clear of a piece's middle
                 else:
@@ -480,6 +485,10 @@ class Drafter:
                         errs.append(f"run {name}: features overlap by {-g:.2f} at s {a:.1f}")
                     continue
                 sol = solve(g, ea, eb, fill)
+                if sol and CNC1 in (sol[0][0], sol[0][-1]):  # A 1 m section at a tie: its middle is its centre, so in less
+                    ca = (ea[0], min(ea[1], 0.33)) if sol[0][0] == CNC1 and ea[1] > 0 else ea
+                    cb = (eb[0], min(eb[1], 0.33)) if sol[0][-1] == CNC1 and eb[1] > 0 else eb
+                    sol = solve(g, ca, cb, fill) or sol
                 if sol is None:
                     errs.append(f"run {name}: no fit for a {g:.2f} m gap at s {a:.1f}")
                     continue
@@ -516,6 +525,11 @@ class Drafter:
             if self.t.on_office(x, y, mln, mdp, odir) or self.overlaps(EXTENT, x, y, mln, mdp, odir, 0.2):
                 bad.append(("office",))
             bad += [("placed", p[6]) for p in self.placed if not p[5] and self.boxes_overlap((x, y, ln, dp, odir), p[:5], 0.05)]
+            for ps_ in (s0 + 0.3, sc, s1 - 0.3):  # On a road's paved core (a ring may cross a track, never a road)
+                for po in (0.0,):
+                    w = self.t.to_world(*at(ps_, po), 0)
+                    if ("road",) not in bad and any(seg["type"] != "TRACK" and dd < seg["width"] / 2 - 1.5 for dd, seg in self.t.roads_near(w[0], w[1], 15)):
+                        bad.append(("road",))
             if bad:
                 self.problems.append(f"run {name}: {cls} at s {s0:.1f}..{s1:.1f} ({x:.1f}, {y:.1f}) clips {bad[:2]}")
             it = self.add("object", cls, x, y, odir)
@@ -869,13 +883,15 @@ def fields(t, d, items):
     return out
 
 
-def leak(t, d, r=43.0, step=0.5, skip=0):
+def leak(t, d, r=43.0, step=0.5, skip=0, keep=()):
     """Whether the compound is closed: a walk on a 0.5 m grid from the house's doors outward (as the game's own check
     walks a man from the door; the side door counts too: he may cross the house) that a man (0.5 m) can make
     through neither the probe's buildings, real walls and rocks nor our run pieces (the gate counts as shut; wire
     and hedgehogs don't), reaching r m out. skip: leave out the first `skip` things placed (the inner ring, to test
-    the outer one alone). Returns the walk from the house to the outside (the leak), or []."""
+    the outer one alone), but for the runs named in `keep` (inner faces the outer ring shares: along a road, where
+    there is no room for two lines). Returns the walk from the house to the outside (the leak), or []."""
     bars = [p for p in d.placed[skip:] if p[5] and p[6] not in (WIRE, HOG)]
+    bars += [(p["x"], p["y"]) + SIZE[p["cls"]] + (d.runs[n]["out"], True, p["cls"]) for n in keep for p in d.runs[n]["pieces"]]
     n = int(r / step)
 
     def shut(i, j):
@@ -982,7 +998,7 @@ def draft(t, cfg):
     d.tier = 4
     cfg["build"](d, 4)
     leaks["T4"] = leak(t, d)
-    leaks["T4's outer ring alone"] = leak(t, d, skip=inner)
+    leaks["T4's outer ring alone"] = leak(t, d, skip=inner, keep=cfg.get("shared", ()))
     tiers.append(list(d.items))
     for n, path in leaks.items():
         if path:
@@ -1181,18 +1197,27 @@ def kalochori(d, tier):
     # lane over them), the gaps either side of the north shed and the east yard's south side with H-barrier runs.
     # The way in: from the road up the lane onto the veranda, the nest looking down the lane at the gate; at tier 4
     # two baffles in the lane make it the chicane.
-    if tier == 3:
-        d.run("lane_s", (-10.5, -14.0), (-3.5, -14.0), ends=("tie", "tie"), out=180)
-        d.run("lane_n", (-10.5, 9.0), (-5.0, 9.0), ends=("tie", "tie"), out=0)
-        d.run("north", (2.0, 13.0), (11.0, 13.0), ends=("tie", "tie"), out=0)
-        d.run("ne", (11.0, 11.8), (21.0, 11.8), ends=("tie", "tie"), out=0)
-        d.run("east_s", (4.0, -12.0), (15.0, -12.0), ends=("tie", "tie"), out=180)
-    if tier == 4:
-        pass  # pass 1: the outer ring (to come)
+    if tier == 3:  # (pass 1: the yard's and the lane's walls are low: a tight ring of its own round the house and the
+        # front yard, crossing the yard's two side walls square; west in the lane, east across the east yard, north
+        # against the house north of the house)
+        d.run("west", (-6.0, -13.7), (-6.0, 7.0), ends=("corner", "tie"))
+        d.run("s_w", (-6.0, -13.7), (-4.25, -13.7), ends=("tie", "fence"))
+        d.run("s_m", (-4.25, -13.7), (4.5, -13.7), ends=("fence", "fence"))
+        d.run("s_e", (4.5, -13.7), (8.0, -13.7), ends=("fence", "corner"))
+        d.run("east", (8.0, -13.7), (8.0, 10.5), ends=("tie", "corner"))
+        d.run("north_e", (8.0, 10.5), (3.5, 10.5), ends=("tie", "tie"))
+    if tier == 4:  # The outer ring: up the lane (across its north end from the big stone house to the north house),
+        # along the main road's verge, up the east yard to the north shed, and from the north house square into the
+        # shed's south-west face (the 0.9 m gap between them)
+        W = WALL_FILL
+        d.run("o_lane", (-10.5, 9.0), (-5.0, 10.27), ends=("tie", "tie"), fill=W, out=0)  # (13 degrees off square: a 4 m wall and a 1 m section fit)
+        d.run("o_s", (-8.3, -16.4), (11.5, -16.4), ends=("corner", "corner"), fill=W, out=180)
+        d.run("o_w", (-8.3, -16.4), (-8.3, 9.5), ends=("tie", "tie"), fill=W, out=270)
+        d.run("o_e", (11.5, -16.4), (11.5, 12.8), ends=("tie", "tie"), fill=W, out=90)
+        d.run("o_n", (3.5, 14.8), (5.37, 17.38), ends=("tie", "tie"), fill=W, out=315)
 
 
-
-@site("Neochori", entry="W", nest=(3.8, -11.5, 180), flag=(4.0, -8.8), spare=[])
+@site("Neochori", entry="W", nest=(3.8, -11.5, 180), flag=(4.0, -8.8), spare=[], shared=("west",))
 def neochori(d, tier):
     # The main road runs north-south right along the veranda (no room for a gate box on it); a big garage and a
     # house fill the east; a small house closes the south yard's south side, an old city wall runs north from it
@@ -1206,8 +1231,17 @@ def neochori(d, tier):
         d.run("north", (-6.2, 14.0), (13.5, 14.0), ends=("tie", "corner"))
         d.run("ne", (13.5, 14.0), (13.5, 6.0), ends=("tie", "tie"))
         d.run("se", (6.0, -23.5), (12.8, -7.0), ends=("tie", "tie"))
-    if tier == 4:
-        pass  # pass 1: the outer ring (to come)
+    if tier == 4:  # The outer ring: the main road leaves no room west, so the inner ring's west face is the outer line
+        # there too (stacked 2-high); from its north end a wall runs up the plaza's diagonal garden wall (lined, 1 m
+        # off it) into the north shop; the shops, the big house and the garage east, the annexe and the big house
+        # south-east and the small house south close the rest, with runs across the gaps between them (the one from
+        # the shop to the big house through a gap in the low garden wall)
+        W = WALL_FILL
+        d.stack("west")
+        d.run("o_nw", (-5.8, 14.05), (4.37, 27.1), ends=("tie", "tie"), fill=W, out=322)
+        d.run("o_ne", (22.0, 18.5), (22.0, 11.0), ends=("tie", "tie"), fill=W, out=90)
+        d.run("o_e", (26.0, -4.9), (26.0, -14.9), ends=("tie", "tie"), fill=W, out=90)
+        d.run("o_s", (7.8, -28.0), (24.2, -28.0), ends=("tie", "tie"), fill=W, out=180)
 
 
 
