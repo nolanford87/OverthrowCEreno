@@ -238,6 +238,91 @@ private _tests = [
 {
     _tests pushBack [format ["Office templates: %1", _x], compile format ["['%1'] call OTQA_officeTest_one", _x], 90];
 } forEach OTQA_officeTest_keys;
+_tests pushBack ["Office review: the vote, issue and tier check paths, the actions and the site", {
+    // The review's code paths without the reviewer: its functions defined (OTQA_fnc_officeReview returns its test
+    // and defines them), one tier 2 copy of the first building with a template on the airfield with the review's
+    // actions on everything, then the vote, the issue note and the tier check called as the actions call them
+    private _site = OTQA_officeTest getOrDefault ["site", []];
+    if (_site isEqualTo []) exitWith { "Office review: the vote and tier check paths not checked, no site on the airfield" call OTQA_fnc_manual };
+    call OTQA_fnc_officeReview;
+    private _key = (OTQA_officeTest_keys select { ([_x] call OT_fnc_officeTemplate) isNotEqualTo [] }) param [0, ""];
+    if (_key isEqualTo "") exitWith { "Office review: the vote and tier check paths not checked, no template yet" call OTQA_fnc_manual };
+    OTQA_officeReview set ["keys", [_key]];
+    OTQA_officeReview set ["key", _key];
+    OTQA_officeReview set ["votes", []];
+    OTQA_officeReview set ["done", []];
+    OTQA_officeReview set ["width", 40];
+    ([_key, _site, 0] call OTQA_fnc_officeSpawn) params ["_b", "_parts"];
+    private _pieces = [_b] + _parts;
+    ([_b, 2, west, _parts, true] call OT_fnc_officeApplyTemplate) params ["_objects", "_guards"];
+    { _x enableSimulationGlobal true; [_x] call OTQA_officeReview_actions } forEach _objects;
+    { [_x] call OTQA_officeReview_actions } forEach _guards;
+    OTQA_officeReview set ["copies", [[_b, _parts, _objects, _guards, 2, _site, 10]]];
+    sleep 0.5;
+    private _obj = _objects param [0, objNull];
+    private _guard = _guards param [0, objNull];
+    ["Office review: a copy with placeholders to vote on", !isNull _obj && { !isNull _guard } && { _guard getVariable ["OT_placeholder", false] } && { alive _guard } && { (weapons _guard) isEqualTo [] }, format ["%1 objects, %2 guards", count _objects, count _guards]] call OTQA_fnc_check;
+    if (isNull _obj || { isNull _guard }) exitWith {};
+
+    (_obj getVariable ["OT_officeItem", ["", 0, -1, ["", "", [0, 0, 0]]]]) params ["", "_tier", "_index", "_item"];
+    private _line = [_obj, player, -1, ["good"]] call OTQA_officeReview_voteAction;
+    private _want = format ["OTFEEDBACK|%1|%2|%3|%4|%5|good|", _key, _tier, _index, _item select 1, _item select 2];
+    ["Office review: a Good vote logs the thing's key, tier, index, class and position", _line isEqualTo _want && { (OTQA_officeReview get "votes") isEqualTo [[_key, _tier, _index, _item select 1, "good", ""]] }, format ["%1 / wanted %2", _line, _want]] call OTQA_fnc_check;
+    (_guard getVariable ["OT_officeItem", ["", 0, -1, ["", "", [0, 0, 0]]]]) params ["", "_gTier", "_gIndex", "_gItem"];
+    _line = [_guard, player, -1, ["bad"]] call OTQA_officeReview_voteAction;
+    _want = format ["OTFEEDBACK|%1|%2|%3|%4|%5|bad|", _key, _gTier, _gIndex, _gItem select 1, _gItem select 2];
+    ["Office review: a Bad vote on a guard placeholder logs his role and position", _line isEqualTo _want && { (_gItem select 1) in OTQA_officeTest_roles }, format ["%1 / wanted %2", _line, _want]] call OTQA_fnc_check;
+    _line = [["the bags float"], [_obj]] call OTQA_officeReview_issueConfirm;
+    _want = format ["OTFEEDBACK|%1|%2|%3|%4|%5|issue|the bags float", _key, _tier, _index, _item select 1, _item select 2];
+    ["Office review: the issue box's note is logged with the thing", _line isEqualTo _want && { (count (OTQA_officeReview get "votes")) isEqualTo 3 }, format ["%1 / wanted %2", _line, _want]] call OTQA_fnc_check;
+    ["Office review: a vote on something that isn't the template's logs nothing", ([player, "good"] call OTQA_officeReview_vote) isEqualTo "" && { (count (OTQA_officeReview get "votes")) isEqualTo 3 }, ""] call OTQA_fnc_check;
+
+    // The actions: three on each thing (a unit carries the mod's own as well), named after it, only while the
+    // player looks at it
+    private _label = format ["%1 (Tier %2, #%3)", _item select 1, _tier, _index];
+    private _gLabel = format ["%1 (Tier %2, #%3)", _gItem select 1, _gTier, _gIndex];
+    private _params = ((actionIDs _obj) apply { _obj actionParams _x }) select { _label in (_x select 0) };
+    private _gParams = ((actionIDs _guard) apply { _guard actionParams _x }) select { _gLabel in (_x select 0) };
+    private _mine = _params + _gParams;
+    ["Office review: each thing has its Good, Bad and Issue actions, named after it, for the thing under the cursor only", (count _params) isEqualTo 3 && { (count _gParams) isEqualTo 3 } && { (_mine findIf { (_x select 7) isNotEqualTo "cursorObject isEqualTo _target" }) isEqualTo -1 } && { (_mine findIf { (_x select 8) isNotEqualTo 6 }) isEqualTo -1 },
+        format ["%1 on the thing, %2 on the guard: %3", count _params, count _gParams, _mine apply { [_x select 0, _x select 7, _x select 8] }]] call OTQA_fnc_check;
+
+    // The tier check: at the copy (the host is 80 m off, so by the copy's position) it's offered, once marked it isn't, logged, in the list's data
+    private _home = getPosATL player;
+    player setPosATL [_site select 0, _site select 1, 0];
+    private _offeredBefore = [2] call OTQA_officeReview_atTier;
+    _line = [player, player, -1, [2]] call OTQA_officeReview_tierAction;
+    private _offeredAfter = [2] call OTQA_officeReview_atTier;
+    player setPosATL _home;
+    ["Office review: marking a tier reviewed logs it and takes the action away for that tier only", _offeredBefore && { !_offeredAfter } && { _line isEqualTo format ["OTFEEDBACK|TIERDONE|%1|2", _key] } && { [2] call OTQA_officeReview_tierIsDone } && { !([1] call OTQA_officeReview_tierIsDone) } && { (OTQA_officeReview get "done") isEqualTo [[_key, 2]] } && { ([2] call OTQA_officeReview_tierDone) isEqualTo "" },
+        format ["offered %1 then %2, %3", _offeredBefore, _offeredAfter, _line]] call OTQA_fnc_check;
+
+    // The review's site: the north-east side of the main airfield, five flat spots along the row
+    private _airport = OT_airportData apply { [(_x select 0) distance2D [14600, 16700, 0], _x select 0] };
+    _airport sort true;
+    private _centre = (_airport param [0, [0, [14600, 16700, 0]]]) select 1;
+    private _width = 60;
+    private _row = [_width] call OTQA_officeReview_site;
+    private _flat = _row isNotEqualTo [];
+    if (_flat) then {
+        _row params ["_base", "_rowDir"];
+        for "_i" from 0 to 4 do {
+            private _c = _base getPos [_i * _width, _rowDir];
+            if (surfaceIsWater _c || { (_c isFlatEmpty [-1, -1, 0.2, 30, 0, false, objNull]) isEqualTo [] }) exitWith { _flat = false };
+        };
+    };
+    private _bearing = if (_row isEqualTo []) then { -1 } else { _centre getDir (_row select 0) };
+    ["Office review: the site is on the main airfield's north-east side and its row of five is flat", _row isNotEqualTo [] && { _bearing >= 0 && { _bearing <= 90 } } && { _flat },
+        format ["site %1, row %2, %3 m at %4 degrees from the airport centre %5", _row param [0, []], _row param [1, 0], if (_row isEqualTo []) then { 0 } else { round (_centre distance2D (_row select 0)) }, round _bearing, _centre apply { round _x }]] call OTQA_fnc_check;
+
+    // Away again
+    [_b] call OT_fnc_officeClearTemplate;
+    sleep 1;
+    { deleteVehicle _x } forEach _pieces;
+    sleep 1;
+    { if (!isNull _x) then { _x hideObjectGlobal true; deleteVehicle _x } } forEach (_objects + _guards + _pieces);
+    OTQA_officeReview = createHashMap;
+}, 90];
 _tests pushBack ["Office templates: the host back from the airfield", {
     { _x hideObjectGlobal false } forEach (OTQA_officeTest getOrDefault ["hidden", []]);
     private _home = OTQA_officeTest getOrDefault ["home", []];
