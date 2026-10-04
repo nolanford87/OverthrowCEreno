@@ -4,13 +4,13 @@ OTLAYOUT|Altis|Agios Dionysios|TIER|2|5
 OTLAYOUT|Altis|Agios Dionysios|ITEM|2|object|Land_BagFence_Short_F|[9235.910,15946.433,118.560]|[[-0.9291,0.3699,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Agios Dionysios|ITEM|2|object|Land_BagFence_Short_F|[9236.576,15948.106,118.560]|[[-0.9291,0.3699,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Agios Dionysios|ITEM|2|object|Land_BagFence_Long_F|[9235.220,15942.672,118.560]|[[-0.3699,-0.9291,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Agios Dionysios|ITEM|2|object|Land_BagFence_Long_F|[9249.089,15950.896,116.523]|[[0.9291,-0.3699,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Agios Dionysios|ITEM|2|object|Land_BagFence_Long_F|[9249.786,15950.618,116.436]|[[0.9291,-0.3699,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Agios Dionysios|ITEM|2|object|Land_BagFence_Short_F|[9244.842,15940.886,117.348]|[[0.9291,-0.3699,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Agios Dionysios|TIER|3|33
 OTLAYOUT|Altis|Agios Dionysios|ITEM|3|object|Land_BagFence_Short_F|[9235.910,15946.433,118.560]|[[-0.9291,0.3699,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Agios Dionysios|ITEM|3|object|Land_BagFence_Short_F|[9236.576,15948.106,118.560]|[[-0.9291,0.3699,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Agios Dionysios|ITEM|3|object|Land_BagFence_Long_F|[9235.220,15942.672,118.560]|[[-0.3699,-0.9291,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Agios Dionysios|ITEM|3|object|Land_BagFence_Long_F|[9249.089,15950.896,116.523]|[[0.9291,-0.3699,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Agios Dionysios|ITEM|3|object|Land_BagFence_Long_F|[9249.786,15950.618,116.436]|[[0.9291,-0.3699,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Agios Dionysios|ITEM|3|object|Land_BagFence_Short_F|[9244.842,15940.886,117.348]|[[0.9291,-0.3699,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Agios Dionysios|ITEM|3|object|Land_HBarrier_3_F|[9222.995,15938.731,120.022]|[[-0.9291,0.3699,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Agios Dionysios|ITEM|3|object|Land_HBarrier_3_F|[9224.143,15941.615,119.635]|[[-0.9291,0.3699,0.0000],[0.0000,0.0000,1.0000]]|ground
@@ -44,7 +44,7 @@ OTLAYOUT|Altis|Agios Dionysios|TIER|4|76
 OTLAYOUT|Altis|Agios Dionysios|ITEM|4|object|Land_BagFence_Short_F|[9235.910,15946.433,118.560]|[[-0.9291,0.3699,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Agios Dionysios|ITEM|4|object|Land_BagFence_Short_F|[9236.576,15948.106,118.560]|[[-0.9291,0.3699,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Agios Dionysios|ITEM|4|object|Land_BagFence_Long_F|[9235.220,15942.672,118.560]|[[-0.3699,-0.9291,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Agios Dionysios|ITEM|4|object|Land_BagFence_Long_F|[9249.089,15950.896,116.523]|[[0.9291,-0.3699,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Agios Dionysios|ITEM|4|object|Land_BagFence_Long_F|[9249.786,15950.618,116.436]|[[0.9291,-0.3699,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Agios Dionysios|ITEM|4|object|Land_BagFence_Short_F|[9244.842,15940.886,117.348]|[[0.9291,-0.3699,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Agios Dionysios|ITEM|4|object|Land_HBarrier_3_F|[9222.995,15938.731,120.022]|[[-0.9291,0.3699,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Agios Dionysios|ITEM|4|object|Land_HBarrier_3_F|[9224.143,15941.615,119.635]|[[-0.9291,0.3699,0.0000],[0.0000,0.0000,1.0000]]|ground

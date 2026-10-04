@@ -32,16 +32,11 @@ out (from the doors, as the game's own check walks); T4's outer ring is walked a
 import collections
 import math
 import os
-import re
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 import townlib as tl  # noqa: E402
 
-# Pass 1 is walls only (DESIGN_BRIEF.md, "The work is now split into passes"): no guards on any tier, so townlib's
-# old "2 guards a tier" line is left out of the check (here, for writing too); every other check stands.
-_check = tl.check
-tl.check = lambda town, tiers: [p for p in _check(town, tiers) if not re.fullmatch(r"tier \d+: [01] guards", p)]
 
 TOWNS = ["Agios Dionysios", "Chalkeia", "Charkia", "Kalochori", "Molos", "Neochori", "Panochori", "Paros",
          "Rodopoli", "Sofia", "Therisa"]
@@ -67,14 +62,35 @@ def heading(dx, dy):
 
 
 # Real sizes [length, depth] (townlib.MEASURED less its slack, and the screenshots for the tower and bunker)
-SIZE = {HB5: (5.8, 1.76), HB3: (3.6, 1.76), HB1: (1.4, 1.7), LONG: (3.0, 0.5), SHORT: (1.8, 0.5), ROUND: (2.6, 1.0),
+# The H-barriers and walls are fitted by their solid lengths: the measured boxes (5.8, 3.6, 1.4, 4.1) take in some
+# slack beyond the baskets and the wall's ends, and pass 1's closure test found ways out at joints fitted to them
+SIZE = {HB5: (5.4, 1.76), HB3: (3.2, 1.76), HB1: (1.1, 1.7), LONG: (3.0, 0.5), SHORT: (1.8, 0.5), ROUND: (2.6, 1.0),
         WIRE: (8.0, 1.0), BAR: (6.0, 0.6), PIPEGATE: (4.0, 0.3), HOG: (1.8, 1.8), TOWER: (4.8, 7.2), BUNKER: (4.4, 4.6),
-        WALL: (4.0, 0.8), CNC1: (1.0, 0.6)}
+        WALL: (3.7, 0.8), CNC1: (1.0, 0.6)}
+MEAS = {CNC1: (1.4, 1.0)}  # Measured in the game since townlib.MEASURED was written (pass 1, round 1)
 FILL = (HB5, HB3, HB1)  # The run pieces, longest first
 WALL_FILL = (WALL, CNC1, CNC1)  # A high-wall run: 4 m walls, 1 m concrete sections where the 4 m ones can't fit exactly
-JOINT = (0.3, 0.6)      # How far a piece overlaps the next one at its end
-TIE = (0.3, 0.4)        # ... and a face it ties into (within 0.6 m of its end even as townlib.check sizes it)
-TIE_WALL = (0.3, 0.5)   # ... for the high walls (4.0 m, measured 4.1: 0.5 m in keeps 0.6 m off its end clear)
+JOINT = (0.35, 0.6)     # How far a piece overlaps the next one at its end (solid lengths)
+TIE = (0.12, 0.2)       # ... and a building or real wall it ties into (its middle, 0.6 m off townlib's box's end, stays clear)
+TIE_WALL = TIE          # ... the same for the high walls
+TIE_OWN = (0.5, 0.8)    # ... and another run's piece: well into it (pass 1 found ways out where runs met)
+TIE_OWN_WALL = (0.35, 0.55)
+CORNER = (0.0, 0.5)     # A corner end: flush with the cross run's outer face, or past it
+# The fitting of pass 1's first round (box lengths, shallower overlaps), kept for the towns the game found closed so
+# their rings stay as tested (fit("box")); the rest fit by the solid lengths (fit("solid"))
+FITS = {"box": dict(lens={HB5: 5.8, HB3: 3.6, HB1: 1.4, WALL: 4.0}, JOINT=(0.3, 0.6), TIE=(0.3, 0.4), TIE_WALL=(0.3, 0.5),
+                    TIE_OWN=(0.3, 0.4), TIE_OWN_WALL=(0.3, 0.5), CORNER=(-0.4, 0.6), house=(0.2, 0.3)),
+        "solid": dict(lens={HB5: 5.4, HB3: 3.2, HB1: 1.1, WALL: 3.7}, JOINT=JOINT, TIE=TIE, TIE_WALL=TIE_WALL,
+                      TIE_OWN=TIE_OWN, TIE_OWN_WALL=TIE_OWN_WALL, CORNER=CORNER, house=(0.1, 0.2))}
+HOUSE_TIE = (0.1, 0.2)
+
+
+def fit(kind):
+    global JOINT, TIE, TIE_WALL, TIE_OWN, TIE_OWN_WALL, CORNER, HOUSE_TIE
+    f = FITS[kind]
+    for cls, ln in f["lens"].items():
+        SIZE[cls] = (ln, SIZE[cls][1])
+    JOINT, TIE, TIE_WALL, TIE_OWN, TIE_OWN_WALL, CORNER, HOUSE_TIE = (f[k] for k in ("JOINT", "TIE", "TIE_WALL", "TIE_OWN", "TIE_OWN_WALL", "CORNER", "house"))
 STACK = {HB5: 1.7, HB3: 1.7, HB1: 1.6}  # Where a second H-barrier is dropped to stand on the first (2-high)
 HB_DEPTH = 1.76
 SOLID = ("building", "part", "wall", "rock")
@@ -105,7 +121,10 @@ def middle_of(what):
     """A barrier's middle as the in-game check measures it: 0.6 m off each end of its longest known length, half
     its depth."""
     ln, dp = SIZE.get(what) or tl.CLASSES[what]
-    if what not in (BAR,):
+    meas = MEAS.get(what) or tl.MEASURED.get(what)
+    if meas and what != WIRE and JOINT == FITS["solid"]["JOINT"]:
+        ln = meas[0]  # The game's box: the middle the in-game check measures
+    elif what not in (BAR,):
         ln = max(ln, tl.CLASSES.get(what, (0, 0))[0], tl.MEASURED.get(what, (0, 0))[0] if what != WIRE else 0)
     if "Gate" in what and what != BAR:
         dp = max(dp, tl.MEASURED.get(what, (0, 0))[1])  # A gate's leaf swings
@@ -116,9 +135,10 @@ def in_house(x, y, m=0.0):
     return any(b[0] - m <= x <= b[2] + m and b[1] - m <= y <= b[3] + m for b in HOUSE)
 
 
-def solve(g, ea, eb, opts=FILL, jr=JOINT):
+def solve(g, ea, eb, opts=FILL, jr=None):
     """Pieces that close a gap of g m between two faces: their ends overlap the faces by ea / eb (ranges) and each
     other by jr. Returns (classes in order, [end overlap a, joints..., end overlap b]) or None."""
+    jr = jr or JOINT
     best = None
     lens = [SIZE[c][0] for c in opts]
     for n0 in range(0, 16):
@@ -145,6 +165,19 @@ def solve(g, ea, eb, opts=FILL, jr=JOINT):
         order = [opts[0]] * k + [opts[1]] * n1 + [opts[2]] * n2 + [opts[0]] * (n0 - k)
     ov = [ea[0] + lam * (ea[1] - ea[0])] + [jr[0] + lam * (jr[1] - jr[0])] * (n - 1) + [eb[0] + lam * (eb[1] - eb[0])]
     return order, ov
+
+
+def trim(t, model, near, metres):
+    """Pulls in the face of a probed building's box nearest the model point `near` by `metres`: where the game's
+    top-down screenshots show the box running past the real wall (a porch, an arcade, eaves), so a run ties into the
+    real wall. Every check (townlib's too) then uses the trimmed box."""
+    w = t.to_world(near[0], near[1], 0)
+    o = min((o for o in t.objs if o["model"] == model), key=lambda o: math.hypot(o["pos"][0] - w[0], o["pos"][1] - w[1]))
+    lx, ly = tl.rot(w[0] - o["pos"][0], w[1] - o["pos"][1], -o["dir"])
+    b = o["box"]
+    k = min(range(4), key=lambda i: abs((lx, ly, lx, ly)[i] - b[i]))
+    b[k] += metres if k < 2 else -metres
+    t.__dict__.pop("_fp", None)
 
 
 class Drafter:
@@ -445,9 +478,10 @@ class Drafter:
                     th = abs(s2 - s)
                     eranges.append((th / 2 + 0.08, th / 2 + 0.16))  # (the two runs overlap 0.16-0.32 m in it)
                 elif in_house(*at(s + (0.05 if k else -0.05), o)):
-                    eranges.append((0.2, 0.3))  # Into the house: its walls are kept 0.2 m clear of a piece's middle
+                    eranges.append(HOUSE_TIE)  # Into the house: its walls are kept 0.2 m clear of a piece's middle
                 else:
-                    eranges.append(TIE_WALL if fill[0] == WALL else TIE)
+                    own = self.what_at(*at(s + (0.1 if k else -0.1), o)).startswith("run ")
+                    eranges.append((TIE_OWN_WALL if fill[0] == WALL else TIE_OWN) if own else (TIE_WALL if fill[0] == WALL else TIE))
                 faces.append(s)
                 if s is not None and not dry:
                     fh = self.probe_hits(*at(s, 0.0), 0.15, 0.15, 0.0, 0.0) if end == "fence" else None
@@ -456,7 +490,7 @@ class Drafter:
                 dep = SIZE[fill[0]][1]  # (the cross run is of the same material)
                 faces.append(-dep / 2 if k == 0 else L + dep / 2)
                 ties.append("corner (a run ties into it)")
-                eranges.append((-0.4, 0.6))  # Flush with the cross run's outer face, give or take: it ties into this one
+                eranges.append(CORNER)  # The cross run ties into this one
             else:
                 faces.append(0.0 if k == 0 else L)
                 eranges.append((-0.3, 0.3))  # A free end stops at the point, give or take
@@ -840,7 +874,7 @@ def tier2(t, d, cfg):
     # The side door and the ground floor's window (both in the east wall) bagged on the ground against the house:
     # 1.85 m out from the door (round 4: 1.35 m cut into its step), 1.5 m out from the window's frame
     sd = t.door("side")["model"]
-    if not d.put("object", cfg.get("side_bags", LONG), sd[0] + 1.85, sd[1], 90, search=0.3, note="side door bags"):
+    if not d.put("object", cfg.get("side_bags", LONG), sd[0] + cfg.get("side_out", 1.85), sd[1], 90, search=0.3, note="side door bags"):
         d.notes.append("the side door opens onto the neighbour (no bags)")
     for wx, wy, wz, wdir, ww in t.plan().windows if cfg.get("window_bags", True) else ():
         if abs(wz - t.plan().levels[0]) < 0.5:
@@ -994,6 +1028,9 @@ def draft(t, cfg):
     """Pass 1 (walls only): T1 empty, T2 sandbags on the house, T3 the closed H-barrier ring, T4 the high-wall
     outer ring round it. Each tier keeps the one before."""
     cfg = dict(cfg)
+    fit(cfg.get("fit", "solid"))
+    for model, near, metres in cfg.get("trims", ()):
+        trim(t, model, near, metres)
     d = Drafter(t)
     tiers, leaks = [[]], {}
     d.tier = 2
@@ -1088,7 +1125,7 @@ def site(name, **cfg):
 # main door face -x (left).
 
 
-@site("Molos", entry="W", nest=(11.3, 9.3, 0), flag=(-5.8, 5.0), spare=[])
+@site("Molos", entry="W", nest=(11.3, 9.3, 0), flag=(-5.8, 5.0), spare=[], fit="box")
 def molos(d, tier):
     # A track runs north-south 6 m west of the veranda and a big road east-west 14 m north; a shop abuts the
     # house's front (south); old city walls run east from it to the chapel's corner. The ring: the west face along
@@ -1109,7 +1146,7 @@ def molos(d, tier):
         d.run("o_ne", (24.3, 19.5), (24.3, 8.0), ends=("tie", "tie"), fill=W, out=90)
 
 
-@site("Agios Dionysios", entry="W", nest=(-8.5, -4.6, 270), flag=(3.0, -10.5), spare=[])
+@site("Agios Dionysios", entry="W", nest=(-8.5, -4.6, 270), flag=(3.0, -10.5), spare=[], fit="box", side_out=2.6)
 def agios_dionysios(d, tier):
     # No road within 60 m: open ground south and east, a big house north-west, a tin fence running west from the
     # veranda's north end and another north from the house's north-east corner. The ring: four faces on the open
@@ -1134,7 +1171,8 @@ def agios_dionysios(d, tier):
 
 
 
-@site("Chalkeia", entry="W", nest=(-11.0, -2.0, 0), nest_road=True, flag=(-10.0, -9.0), spare=[])
+@site("Chalkeia", entry="W", nest=(-11.0, -2.0, 0), nest_road=True, flag=(-10.0, -9.0), spare=[], side_out=2.6,
+      trims=[("Land_u_Shop_01_V1_F", (-15.5, -16.0), 3.0), ("Land_i_Shop_02_V2_F", (-18.4, -28.0), 2.2)])  # Round 1's screenshot: the shop's box runs 3 m past its east wall at the yard's corner, the south shop's 2 m
 def chalkeia(d, tier):
     # A dead-end track runs down from the north just west of the veranda and stops at a shop and a garage south-
     # west; an annexe abuts the house's north side and a ruin closes the north-east; a house abuts the east side's
@@ -1144,11 +1182,12 @@ def chalkeia(d, tier):
     # short run closing the gap between them), and a run across the east yard from the ruin to the stone wall. The
     # guns look up the track (the long field). The way in: from the open ground west, through the west gate.
     if tier == 3:  # (pass 1: off the low stone walls; the east yard closed against the annexe, not the ruin)
-        d.run("west", (-17.0, -13.0), (-17.0, 12.0), ends=("tie", "corner"))
+        d.run("west", (-17.0, -19.3), (-17.0, 12.0), ends=("corner", "corner"))  # (round 2: down to its own corner with the south face: the shop's box there is open yard)
         d.run("north", (-17.0, 12.0), (-2.0, 12.0), ends=("tie", "tie"))
-        d.run("south", (-14.0, -19.3), (3.2, -19.3), ends=("tie", "corner"))
+        d.run("south", (-17.0, -19.3), (3.2, -19.3), ends=("tie", "corner"))
         d.run("se", (3.2, -19.3), (3.2, -7.8), ends=("tie", "tie"))
-        d.run("e1", (9.0, -1.0), (9.0, 9.5), ends=("tie", "corner"))
+        d.run("e_s", (9.0, 1.2), (5.6, 1.2), ends=("corner", "tie"))  # (round 2: the side door's yard closed against the house, not the east house: pass 1's route went through it)
+        d.run("e1", (9.0, 1.2), (9.0, 9.5), ends=("tie", "corner"))
         d.run("e2", (9.0, 9.5), (5.5, 9.5), ends=("tie", "tie"))
     if tier == 4:  # The outer ring: the shops and garage west and south-west, the big house north-west, the shop, the
         # ruin and the two big rocks north-east and east; runs close the gaps between them (each tie met at 55 degrees
@@ -1197,7 +1236,7 @@ def charkia(d, tier):
         d.run("o_g", (13.0, -1.75), (4.86, -6.32), ends=("tie", "tie"), fill=W, out=150)
 
 
-@site("Kalochori", entry="W", nest=(-7.0, 0.2, 180), nest_road=True, flag=(6.3, -5.0), spare=[])
+@site("Kalochori", entry="W", nest=(-7.0, 0.2, 180), nest_road=True, flag=(6.3, -5.0), spare=[], fit="box")
 def kalochori(d, tier):
     # The main road runs 7 m south of the house's walled front yard (old concrete walls round it, no gateway); a
     # lane runs north-south west of the house between it and an old stone wall, from the road up to a narrow gap
@@ -1227,7 +1266,8 @@ def kalochori(d, tier):
         d.run("o_n", (3.5, 14.8), (5.37, 17.38), ends=("tie", "tie"), fill=W, out=315)
 
 
-@site("Neochori", entry="W", nest=(3.8, -11.5, 180), flag=(4.0, -8.8), spare=[], shared=("west",))
+@site("Neochori", entry="W", nest=(3.8, -11.5, 180), flag=(4.0, -8.8), spare=[], shared=("west",),
+      trims=[("Land_u_Shop_01_V1_F", (13.0, 22.5), 3.5), ("Land_u_Shop_01_V1_F", (6.3, 31.3), 5.9)])  # The north shop's box runs 3.5 m past its south-west wall and 6 m past its north-west wall (round 1's screenshot)
 def neochori(d, tier):
     # The main road runs north-south right along the veranda (no room for a gate box on it); a big garage and a
     # house fill the east; a small house closes the south yard's south side, an old city wall runs north from it
@@ -1236,26 +1276,29 @@ def neochori(d, tier):
     # the garage, a run from the south house to the garage's corner across the south-east gap. The way in: off the
     # road onto the plaza, through the north gate; at tier 4 a wall across the plaza makes it a dogleg passage.
     # The guns fire south-east through the gap between the south house and the garage, and up the road north.
-    if tier == 3:
-        d.run("west", (-6.2, -24.0), (-6.2, 14.0), ends=("tie", "corner"))
-        d.run("north", (-6.2, 14.0), (13.5, 14.0), ends=("tie", "corner"))
-        d.run("ne", (13.5, 14.0), (13.5, 6.0), ends=("tie", "tie"))
-        d.run("se", (6.0, -23.5), (12.8, -7.0), ends=("tie", "tie"))
+    if tier == 3:  # (round 2: a box of its own round the house: pass 1's ring went into the garage and out of it,
+        # and round its corners)
+        d.run("west", (-6.2, -11.0), (-6.2, 14.0), ends=("corner", "corner"))
+        d.run("north", (-6.2, 14.0), (10.5, 14.0), ends=("tie", "corner"))
+        d.run("east", (10.5, 14.0), (10.5, -11.0), ends=("tie", "corner"))
+        d.run("south", (10.5, -11.0), (-6.2, -11.0), ends=("tie", "tie"))
     if tier == 4:  # The outer ring: the main road leaves no room west, so the inner ring's west face is the outer line
-        # there too (stacked 2-high); from its north end a wall runs up the plaza's diagonal garden wall (lined, 1 m
-        # off it) into the north shop; the shops, the big house and the garage east, the annexe and the big house
-        # south-east and the small house south close the rest, with runs across the gaps between them (the one from
-        # the shop to the big house through a gap in the low garden wall)
+        # there too (stacked 2-high), carried on south along the verge into the south house and north along it past
+        # the plaza's low-walled garden; a wall from there east into the north shop's real north-west wall (its box runs
+        # 6 m past it); from the shop's far side
+        # a wall runs east and down past the big east house and back west north of the south-east annexe to the old
+        # city wall, so the garage and the big house (whose doors pass 1's routes used) are inside
         W = WALL_FILL
         d.stack("west")
-        d.run("o_nw", (-5.8, 14.05), (4.37, 27.1), ends=("tie", "tie"), fill=W, out=322)
-        d.run("o_ne", (22.0, 18.5), (22.0, 11.0), ends=("tie", "tie"), fill=W, out=90)
-        d.run("o_e", (26.0, -4.9), (26.0, -14.9), ends=("tie", "tie"), fill=W, out=90)
-        d.run("o_s", (7.8, -28.0), (24.2, -28.0), ends=("tie", "tie"), fill=W, out=180)
+        d.run("o_w2", (-6.2, -11.9), (-6.2, -22.6), ends=("tie", "tie"), fill=W, out=270)
+        d.run("o_wn", (-6.2, 14.9), (-6.2, 29.0), ends=("tie", "corner"), fill=W, out=270)
+        d.run("o_n", (-6.2, 29.0), (12.5, 29.0), ends=("tie", "tie"), fill=W, out=0)
+        d.run("o_ne", (23.8, 21.0), (36.5, 21.0), ends=("tie", "corner"), fill=W, out=0)
+        d.run("o_e", (36.5, 21.0), (36.5, -13.5), ends=("tie", "corner"), fill=W, out=90)
+        d.run("o_s", (36.5, -13.5), (-3.8, -13.5), ends=("tie", "tie"), fill=W, out=180)
 
 
-
-@site("Panochori", entry="W", nest=(6.5, -11.2, 90), flag=(8.5, -4.0), spare=[])
+@site("Panochori", entry="W", nest=(6.5, -11.2, 90), flag=(8.5, -4.0), spare=[], fit="box")
 def panochori(d, tier):
     # A track runs north-south right along the veranda; a house abuts the north side, a big house stands south-
     # west; old stone walls close a yard east of the house and south of it, open only at its south-east corner
@@ -1265,9 +1308,9 @@ def panochori(d, tier):
     # out of the east yard's north end.
     if tier == 3:  # (pass 1: the east yard's walls are low stone walls: the yard is lined inside them; the south face
         # runs into the big south-west house's north-east face)
-        d.run("south", (10.6, -12.5), (-7.0, -12.5), ends=("corner", "tie"))
-        d.run("west", (-6.2, -12.5), (-6.2, 10.0), ends=("tie", "corner"))
-        d.run("nw", (-6.2, 10.0), (-1.0, 10.0), ends=("tie", "tie"))  # (1.3 m off the house: round 4 measured 1-high pieces 0.35 m off it cutting in)
+        d.run("south", (10.6, -12.5), (-7.8, -12.5), ends=("corner", "tie"))
+        d.run("west", (-7.0, -12.5), (-7.0, 10.0), ends=("tie", "corner"))  # (0.8 m further off the veranda: round 1 measured its pieces cutting into the office)
+        d.run("nw", (-7.0, 10.0), (-1.0, 10.0), ends=("tie", "tie"))  # (1.3 m off the house: round 4 measured 1-high pieces 0.35 m off it cutting in)
         d.run("ne", (6.7, 10.5), (10.6, 10.5), ends=("tie", "corner"))
         d.run("east", (10.6, 10.5), (10.6, -12.5), ends=("tie", "tie"))
     if tier == 4:  # The outer ring: west across the track (into the big south-west house's north face), north along
@@ -1283,7 +1326,9 @@ def panochori(d, tier):
         d.run("o_s", (-4.3, -18.0), (3.2, -18.0), ends=("tie", "tie"), fill=W, out=180)
 
 
-@site("Paros", entry="W", nest=(0.5, -10.0, 260), flag=(-7.0, 11.0), spare=[])
+@site("Paros", entry="W", nest=(0.5, -10.0, 260), flag=(-7.0, 11.0), spare=[],
+      trims=[("Land_i_House_Big_02_V2_F", (-11.0, 21.0), 5.0), ("Land_i_House_Big_02_V2_F", (13.0, 23.0), 5.7),
+             ("Land_i_House_Small_01_V1_F", (10.0, 5.0), 1.5), ("Land_i_House_Small_02_V1_F", (-6.5, -16.5), 2.4)], side_bags=SHORT)  # Round 1's screenshot: the big north house's box runs 5-6 m past both its ends, the east house's 1.5 m, the south house's 2.4 m
 def paros(d, tier):
     # A track runs north-south 7 m west of the veranda; houses abut the east side and close the south; a big house
     # closes the north beyond a yard that opens east; an old city wall runs from the house's north-west corner to
@@ -1291,22 +1336,25 @@ def paros(d, tier):
     # a short run from its corner into the south house, one from its north corner into the city wall, and one
     # closing the north yard's open east side between the east house and the big house. Towers at the north yard's
     # two corners.
-    if tier == 3:  # (pass 1: the broken city wall north-west of the house is low: the west face runs on up into the
-        # big north house; the south-west run goes into the south house's west face, not alongside it)
-        d.run("west", (-9.5, -13.0), (-9.5, 16.5), ends=("corner", "tie"))
+    if tier == 3:  # (round 2: the big north house is 5 m shorter than its box at both ends: the west face turns into
+        # its real west end, and the north yard is closed by an L from the east house up and across into its real
+        # east end; the south-west run goes 2.4 m deeper, to the south house's real wall)
+        d.run("west", (-9.5, -13.0), (-9.5, 20.0), ends=("corner", "corner"))
         d.run("sw", (-9.5, -13.0), (-5.5, -13.0), ends=("tie", "tie"))
-        d.run("ne", (12.5, 4.5), (12.5, 18.5), ends=("tie", "tie"))
+        d.run("nw", (-9.5, 20.0), (-5.0, 20.0), ends=("tie", "tie"))
+        d.run("ne1", (12.5, 3.0), (12.5, 22.0), ends=("tie", "corner"))
+        d.run("ne2", (12.5, 22.0), (6.0, 22.0), ends=("tie", "tie"))
     if tier == 4:  # The outer ring: west of the track (clear of the main road south-west), into the big north house
         # and the south house; north and east the big houses, the shed, the garage, the old city walls and the shops
         # close it, with a wall in the one gap in the old city wall east
         W = WALL_FILL
         d.run("o_s", (-18.0, -15.8), (-6.35, -15.8), ends=("corner", "tie"), fill=W, out=180)
-        d.run("o_w", (-18.0, -15.8), (-18.0, 18.0), ends=("tie", "corner"), fill=W, out=270)
-        d.run("o_n", (-18.0, 18.0), (-11.1, 18.0), ends=("tie", "tie"), fill=W, out=0)
+        d.run("o_w", (-18.0, -15.8), (-18.0, 23.0), ends=("tie", "corner"), fill=W, out=270)
+        d.run("o_n", (-18.0, 23.0), (-5.5, 23.0), ends=("tie", "tie"), fill=W, out=0)
         d.run("o_e", (36.9, 4.6), (38.15, 8.6), ends=("tie", "tie"), fill=W, out=17)
 
 
-@site("Rodopoli", entry="W", nest=(-9.0, -1.8, 270), flag=(-9.0, 8.0), spare=[])
+@site("Rodopoli", entry="W", nest=(-9.0, -1.8, 270), flag=(-9.0, 8.0), spare=[], fit="box")
 def rodopoli(d, tier):
     # An annexe abuts the house's north side and houses its south side; a big yard west of the house is walled in
     # by old city walls (west and north) and a big house (south-west), open only at a 3 m gap in its south wall and
@@ -1347,7 +1395,7 @@ def sofia(d, tier):
         d.run("west", (-8.6, 9.0), (-8.6, -11.5), ends=("tie", "corner"))
         d.run("south", (-8.6, -11.5), (5.5, -11.5), ends=("tie", "corner"))
         d.run("se", (5.5, -11.5), (5.5, -7.5), ends=("tie", "tie"))
-        d.run("east_gap", (18.5, -1.5), (18.5, 4.5), ends=("tie", "tie"), out=90)
+        d.run("e1", (8.5, 7.6), (8.5, 0.4), ends=("tie", "tie"), out=90)  # (round 2: the side door's yard closed short; pass 1's east gap stood in open yard, the boxes either side run past their buildings)
     if tier == 4:  # The outer ring: the main road leaves no room west, so the inner ring's west face is the outer line
         # there too (stacked 2-high) and runs on south along the verge; south across the track, east up to the east
         # annexe; the big houses north and east close the rest
@@ -1358,7 +1406,8 @@ def sofia(d, tier):
         d.run("o_e", (30.0, -20.0), (30.0, 9.0), ends=("tie", "tie"), fill=W, out=90)
 
 
-@site("Therisa", entry="S", nest=(1.6, -10.5, 180), flag=(-1.0, 9.5), spare=[])
+@site("Therisa", entry="S", nest=(1.6, -10.5, 180), flag=(-1.0, 9.5), spare=[],
+      trims=[("Land_u_Shop_02_V1_F", (-29.0, -10.0), 2.5)])  # Round 1's screenshot: the west shop's box runs 2.5 m past its south wall
 def therisa(d, tier):
     # No road within 25 m: annexes abut the house's west and east sides (a 2.7 m passage between the west one and
     # the veranda, leading to a walled garden north-west), houses close the north beyond a yard that opens east; a
@@ -1366,12 +1415,15 @@ def therisa(d, tier):
     # 30 m beyond it. The ring: the south face across the plaza from the south-west annexe to a short run into the
     # city wall, and a run closing the north yard's east side. Towers at the south face's corners; the gate on the
     # veranda's south end, its chicane out on the plaza.
-    if tier == 3:  # (pass 1: the old city wall south-east of the house is broken in its middle (a low ruin): the south
-        # face turns up into its whole first stretch instead)
-        d.run("south", (-17.0, -16.0), (15.6, -16.0), ends=("tie", "corner"))
+    if tier == 3:  # (round 2: the south-west shop's box runs 7 m past its real front, so pass 1's run between it and
+        # the annexe stood in the open: the plaza is closed by a west face of its own up into the west annexe, and the
+        # passage between the annexe and the house by a run into the house's north-west room (a wall with no door);
+        # the walled garden north-west is now outside T3 (inside T4). The south-east corner turns into the intact
+        # first stretch of the old city wall, as before)
+        d.run("south", (-13.5, -16.0), (15.6, -16.0), ends=("corner", "corner"))
+        d.run("w", (-13.5, -16.0), (-13.5, -5.4), ends=("tie", "tie"))
+        d.run("pass", (-7.4, 3.0), (-4.7, 3.0), ends=("tie", "tie"), out=0)
         d.run("se", (15.6, -16.0), (15.6, -6.0), ends=("tie", "tie"))
-        d.run("sw", (-14.6, -11.5), (-14.6, -17.5), ends=("tie", "tie"), out=270)
-        d.run("nw_gap", (-19.0, 19.3), (-11.0, 19.3), ends=("tie", "tie"), out=0)
         d.run("n_e", (15.5, 0.0), (15.5, 13.0), ends=("tie", "tie"), out=90)
     if tier == 4:  # The outer ring: south across the plaza (between the south-west annexe and the big south-east house,
         # clear of the road), up the east between the annexe and the big north-east house, along the north track's
