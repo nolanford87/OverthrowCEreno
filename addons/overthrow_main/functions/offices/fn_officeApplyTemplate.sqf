@@ -50,6 +50,12 @@ for "_t" from 1 to _tier do {
             _unit setPosATL _world;
             _unit setUnitPos "UP";
             doStop _unit; // Holds the post until the office's own AI takes over
+            // A man put down on an upper floor now and then dies of the knock the engine gives him settling
+            // on the floor (seen by a stair opening), so nothing hurts him for his first moments
+            _unit allowDamage false;
+            if (!_placeholders) then {
+                [_unit] spawn { params ["_unit"]; sleep 3; if (alive _unit) then { _unit allowDamage true } };
+            };
             if (_placeholders) then {
                 { _unit disableAI _x } forEach ["MOVE", "PATH", "TARGET", "AUTOTARGET", "AUTOCOMBAT", "FSM", "SUPPRESSION"];
                 removeAllWeapons _unit;
