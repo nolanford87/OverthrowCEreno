@@ -91,9 +91,9 @@ OTLAYOUT|Altis|Zaros|ITEM|4|guard|rifleman|[9093.310,11938.114,24.110]|9.4|
 OTLAYOUT|Altis|Zaros|ITEM|4|guard|marksman|[9082.654,11939.874,24.110]|9.4|
 OTLAYOUT|Altis|Zaros|ITEM|4|object|Land_HBarrier_Big_F|[9084.088,11949.165,20.037]|[[0.1630,0.9866,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Zaros|ITEM|4|object|Land_BagBunker_Tower_F|[9081.400,11920.621,19.461]|[[-0.6345,-0.7730,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Zaros|ITEM|4|guard|marksman|[9081.400,11920.621,22.211]|219.4|
+OTLAYOUT|Altis|Zaros|ITEM|4|guard|marksman|[9081.209,11920.389,22.861]|219.4|
 OTLAYOUT|Altis|Zaros|ITEM|4|object|Land_BagBunker_Tower_F|[9098.025,11923.095,18.620]|[[0.9866,-0.1630,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Zaros|ITEM|4|guard|marksman|[9098.025,11923.095,21.370]|99.4|
+OTLAYOUT|Altis|Zaros|ITEM|4|guard|marksman|[9098.321,11923.046,22.020]|99.4|
 OTLAYOUT|Altis|Zaros|ITEM|4|static|hmg|[9074.678,11930.245,20.024]|[[-0.1630,-0.9866,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Zaros|ITEM|4|object|Land_BagFence_Round_F|[9074.369,11928.371,20.002]|[[0.1630,0.9866,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Zaros|ITEM|4|object|Land_Razorwire_F|[9073.751,11923.405,20.008]|[[-0.9866,0.1630,0.0000],[0.0000,0.0000,1.0000]]|ground
@@ -144,9 +144,9 @@ OTLAYOUT|Altis|Zaros|ITEM|5|guard|rifleman|[9093.310,11938.114,24.110]|9.4|
 OTLAYOUT|Altis|Zaros|ITEM|5|guard|marksman|[9082.654,11939.874,24.110]|9.4|
 OTLAYOUT|Altis|Zaros|ITEM|5|object|Land_HBarrier_Big_F|[9084.088,11949.165,20.037]|[[0.1630,0.9866,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Zaros|ITEM|5|object|Land_BagBunker_Tower_F|[9081.400,11920.621,19.461]|[[-0.6345,-0.7730,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Zaros|ITEM|5|guard|marksman|[9081.400,11920.621,22.211]|219.4|
+OTLAYOUT|Altis|Zaros|ITEM|5|guard|marksman|[9081.209,11920.389,22.861]|219.4|
 OTLAYOUT|Altis|Zaros|ITEM|5|object|Land_BagBunker_Tower_F|[9098.025,11923.095,18.620]|[[0.9866,-0.1630,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Zaros|ITEM|5|guard|marksman|[9098.025,11923.095,21.370]|99.4|
+OTLAYOUT|Altis|Zaros|ITEM|5|guard|marksman|[9098.321,11923.046,22.020]|99.4|
 OTLAYOUT|Altis|Zaros|ITEM|5|static|hmg|[9074.678,11930.245,20.024]|[[-0.1630,-0.9866,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Zaros|ITEM|5|object|Land_BagFence_Round_F|[9074.369,11928.371,20.002]|[[0.1630,0.9866,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Zaros|ITEM|5|object|Land_Razorwire_F|[9073.751,11923.405,20.008]|[[-0.9866,0.1630,0.0000],[0.0000,0.0000,1.0000]]|ground

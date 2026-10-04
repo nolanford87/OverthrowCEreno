@@ -42,7 +42,7 @@ MIL = "Land_Mil_WallBig_4m_F"
 CITYGATE, BARGATE = "Land_WallCity_01_gate_grey_F", "Land_BarGate_F"
 WIRE, HOG = "Land_Razorwire_F", "Land_CzechHedgehog_01_F"
 CNC, CNC4, JERSEY = "Land_CncBarrierMedium_F", "Land_CncBarrierMedium4_F", "Land_CncBarrier_F"
-TOWER_TOP = 2.75  # The bag tower's platform over the ground (a guess for the in-game check to measure)
+TOWER_TOP = 3.4  # The bag tower's platform over the ground (measured in the game)
 BUNKER, TOWER = "Land_BagBunker_Small_F", "Land_BagBunker_Tower_F"
 DESK, CHAIR, BOARD, FLAG = "Land_TableDesk_F", "Land_OfficeChair_01_F", "Land_MapBoard_F", "Flag_NATO_F"
 CTABLE, CCHAIR, RADIO = "Land_CampingTable_F", "Land_CampingChair_V2_F", "Land_PortableLongRangeRadio_F"
@@ -272,15 +272,17 @@ class Draft:
             return self.g(role, gx, gy, face, nudge=0.25, ignore=(b,))
 
     def tower(self, x, y, face, top="marksman", below=None, below_face=None, road_ok=False):
-        """A bag tower (a corner tower of the perimeter): a man on its platform looking out over the lines and,
-        below, one in its bunker room."""
+        """A bag tower (a corner tower of the perimeter), its open side (+y) facing out: a man on its platform
+        (measured in the game: 3.4 m over the ground at the centre, level 0.6 m towards +y and to either side;
+        its back wall 0.6 m towards -y), 0.3 m forward of the centre, looking out over the open side; with
+        `below`, a second man on the platform beside him (the tower has no room below to stand in)."""
         tw = self.o(TOWER, x, y, face, nudge=0.5, road_ok=road_ok)
         if tw:
             m = self.t.to_model(tw[2])
             z = self.t.ground_model(m[0], m[1]) + TOWER_TOP
-            self.g(top, m[0], m[1], face, z, nudge=0.0, ignore=(tw,))
-            if below:
-                self.g(below, *off(m[0], m[1], below_face if below_face is not None else face, 0.6), below_face if below_face is not None else face, nudge=0.25, ignore=(tw,))
+            spots = [(0.0,)] if not below else [(-0.45,), (0.45,)]
+            for role, (lat,) in zip((top, below) if below else (top,), spots):
+                self.g(role, *off(m[0], m[1], face, 0.3, lat), face, z, nudge=0.0, ignore=(tw,))
         return tw
 
     def checkpoint(self, x, y, face, width=7.0, out=6.0, side=1, roles=("rifleman", "autorifleman"), hb=HBBIG, block=CNC4,

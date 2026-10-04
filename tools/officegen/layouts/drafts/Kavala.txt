@@ -69,8 +69,8 @@ OTLAYOUT|Altis|Kavala|ITEM|4|guard|rifleman|[3529.615,13004.938,12.980]|280.8|
 OTLAYOUT|Altis|Kavala|ITEM|4|guard|rifleman|[3528.754,13000.420,12.980]|280.8|
 OTLAYOUT|Altis|Kavala|ITEM|4|static|gmg|[3528.887,13016.072,26.180]|[[-0.8112,0.5848,0.0000],[0.0000,0.0000,1.0000]]|
 OTLAYOUT|Altis|Kavala|ITEM|4|object|Land_BagBunker_Tower_F|[3519.223,13017.710,8.017]|[[-0.9004,0.4351,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Kavala|ITEM|4|guard|marksman|[3519.223,13017.710,10.767]|295.8|
-OTLAYOUT|Altis|Kavala|ITEM|4|guard|autorifleman|[3518.633,13017.822,8.012]|280.8|ground
+OTLAYOUT|Altis|Kavala|ITEM|4|guard|marksman|[3518.757,13017.435,11.417]|295.8|
+OTLAYOUT|Altis|Kavala|ITEM|4|guard|autorifleman|[3519.148,13018.246,11.417]|295.8|
 OTLAYOUT|Altis|Kavala|ITEM|4|object|Land_HBarrier_5_F|[3524.104,13019.019,8.021]|[[0.1872,0.9823,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Kavala|ITEM|4|object|Land_HBarrier_Big_F|[3516.621,13012.607,8.147]|[[-0.9823,0.1872,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Kavala|ITEM|4|object|Land_BagFence_Round_F|[3515.666,13007.597,8.421]|[[0.9823,-0.1872,0.0000],[0.0000,0.0000,1.0000]]|ground
@@ -79,8 +79,8 @@ OTLAYOUT|Altis|Kavala|ITEM|4|object|Land_HBarrier_5_F|[3514.918,13003.668,8.522]
 OTLAYOUT|Altis|Kavala|ITEM|4|object|Land_BarGate_F|[3514.038,12999.051,8.482]|[[-0.9823,0.1872,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Kavala|ITEM|4|object|Land_HBarrier_3_F|[3513.373,12995.563,8.411]|[[-0.9823,0.1872,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Kavala|ITEM|4|object|Land_BagBunker_Tower_F|[3514.299,12991.875,8.338]|[[-0.8270,-0.5622,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Kavala|ITEM|4|guard|marksman|[3514.299,12991.875,11.088]|235.8|
-OTLAYOUT|Altis|Kavala|ITEM|4|guard|autorifleman|[3514.187,12991.285,8.329]|190.8|ground
+OTLAYOUT|Altis|Kavala|ITEM|4|guard|marksman|[3514.304,12991.334,11.738]|235.8|
+OTLAYOUT|Altis|Kavala|ITEM|4|guard|autorifleman|[3513.798,12992.078,11.738]|235.8|
 OTLAYOUT|Altis|Kavala|ITEM|4|object|Land_HBarrier_3_F|[3516.804,12989.260,8.313]|[[-0.1872,-0.9823,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Kavala|ITEM|4|object|Land_BagFence_Round_F|[3519.210,12988.801,8.340]|[[0.1872,0.9823,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Kavala|ITEM|4|static|hmg|[3519.566,12990.667,8.345]|[[-0.1872,-0.9823,0.0000],[0.0000,0.0000,1.0000]]|ground
@@ -129,8 +129,8 @@ OTLAYOUT|Altis|Kavala|ITEM|5|guard|rifleman|[3529.615,13004.938,12.980]|280.8|
 OTLAYOUT|Altis|Kavala|ITEM|5|guard|rifleman|[3528.754,13000.420,12.980]|280.8|
 OTLAYOUT|Altis|Kavala|ITEM|5|static|gmg|[3528.887,13016.072,26.180]|[[-0.8112,0.5848,0.0000],[0.0000,0.0000,1.0000]]|
 OTLAYOUT|Altis|Kavala|ITEM|5|object|Land_BagBunker_Tower_F|[3519.223,13017.710,8.017]|[[-0.9004,0.4351,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Kavala|ITEM|5|guard|marksman|[3519.223,13017.710,10.767]|295.8|
-OTLAYOUT|Altis|Kavala|ITEM|5|guard|autorifleman|[3518.633,13017.822,8.012]|280.8|ground
+OTLAYOUT|Altis|Kavala|ITEM|5|guard|marksman|[3518.757,13017.435,11.417]|295.8|
+OTLAYOUT|Altis|Kavala|ITEM|5|guard|autorifleman|[3519.148,13018.246,11.417]|295.8|
 OTLAYOUT|Altis|Kavala|ITEM|5|object|Land_HBarrier_5_F|[3524.104,13019.019,8.021]|[[0.1872,0.9823,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Kavala|ITEM|5|object|Land_HBarrier_Big_F|[3516.621,13012.607,8.147]|[[-0.9823,0.1872,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Kavala|ITEM|5|object|Land_BagFence_Round_F|[3515.666,13007.597,8.421]|[[0.9823,-0.1872,0.0000],[0.0000,0.0000,1.0000]]|ground
@@ -139,8 +139,8 @@ OTLAYOUT|Altis|Kavala|ITEM|5|object|Land_HBarrier_5_F|[3514.918,13003.668,8.522]
 OTLAYOUT|Altis|Kavala|ITEM|5|object|Land_BarGate_F|[3514.038,12999.051,8.482]|[[-0.9823,0.1872,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Kavala|ITEM|5|object|Land_HBarrier_3_F|[3513.373,12995.563,8.411]|[[-0.9823,0.1872,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Kavala|ITEM|5|object|Land_BagBunker_Tower_F|[3514.299,12991.875,8.338]|[[-0.8270,-0.5622,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Kavala|ITEM|5|guard|marksman|[3514.299,12991.875,11.088]|235.8|
-OTLAYOUT|Altis|Kavala|ITEM|5|guard|autorifleman|[3514.187,12991.285,8.329]|190.8|ground
+OTLAYOUT|Altis|Kavala|ITEM|5|guard|marksman|[3514.304,12991.334,11.738]|235.8|
+OTLAYOUT|Altis|Kavala|ITEM|5|guard|autorifleman|[3513.798,12992.078,11.738]|235.8|
 OTLAYOUT|Altis|Kavala|ITEM|5|object|Land_HBarrier_3_F|[3516.804,12989.260,8.313]|[[-0.1872,-0.9823,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Kavala|ITEM|5|object|Land_BagFence_Round_F|[3519.210,12988.801,8.340]|[[0.1872,0.9823,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Kavala|ITEM|5|static|hmg|[3519.566,12990.667,8.345]|[[-0.1872,-0.9823,0.0000],[0.0000,0.0000,1.0000]]|ground
@@ -197,9 +197,9 @@ OTLAYOUT|Altis|Kavala|ITEM|5|static|gmg|[3505.571,12995.566,8.351]|[[-0.9973,-0.
 OTLAYOUT|Altis|Kavala|ITEM|5|object|Land_HBarrier_3_F|[3503.021,12991.988,8.263]|[[-0.9823,0.1872,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Kavala|ITEM|5|object|Land_HBarrier_Big_F|[3507.670,12989.677,8.283]|[[-0.1872,-0.9823,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Kavala|ITEM|5|object|Land_BagBunker_Tower_F|[3510.405,13018.983,7.922]|[[-0.8590,0.5119,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Kavala|ITEM|5|guard|marksman|[3510.405,13018.983,10.672]|300.8|
+OTLAYOUT|Altis|Kavala|ITEM|5|guard|marksman|[3510.147,13019.137,11.322]|300.8|
 OTLAYOUT|Altis|Kavala|ITEM|5|object|Land_BagBunker_Tower_F|[3505.725,12992.287,8.298]|[[-0.9443,-0.3290,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Kavala|ITEM|5|guard|marksman|[3505.725,12992.287,11.048]|250.8|
+OTLAYOUT|Altis|Kavala|ITEM|5|guard|marksman|[3505.441,12992.189,11.698]|250.8|
 OTLAYOUT|Altis|Kavala|ITEM|5|object|Land_HBarrier_3_F|[3501.034,13003.463,8.302]|[[-0.9823,0.1872,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Kavala|ITEM|5|object|Land_HBarrier_3_F|[3496.590,13000.442,8.164]|[[-0.9823,0.1872,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Kavala|ITEM|5|static|mortar|[3554.875,13005.011,8.551]|[[0.9823,-0.1872,0.0000],[0.0000,0.0000,1.0000]]|ground

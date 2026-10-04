@@ -107,10 +107,10 @@ OTLAYOUT|Altis|Pyrgos|ITEM|4|static|hmg|[16620.870,12796.889,11.000]|[[-0.4289,-
 OTLAYOUT|Altis|Pyrgos|ITEM|4|object|Land_HBarrier_5_F|[16623.678,12793.047,11.000]|[[-0.5060,-0.8625,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Pyrgos|ITEM|4|object|Land_HBarrier_1_F|[16626.335,12793.228,11.000]|[[0.8625,-0.5060,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Pyrgos|ITEM|4|object|Land_BagBunker_Tower_F|[16611.088,12807.159,11.000]|[[-0.8695,-0.4939,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Pyrgos|ITEM|4|guard|marksman|[16611.088,12807.159,13.750]|240.4|
-OTLAYOUT|Altis|Pyrgos|ITEM|4|guard|autorifleman|[16610.784,12806.641,11.000]|210.4|ground
+OTLAYOUT|Altis|Pyrgos|ITEM|4|guard|marksman|[16611.049,12806.619,14.400]|240.4|
+OTLAYOUT|Altis|Pyrgos|ITEM|4|guard|autorifleman|[16610.605,12807.402,14.400]|240.4|
 OTLAYOUT|Altis|Pyrgos|ITEM|4|object|Land_BagBunker_Tower_F|[16643.316,12787.787,11.048]|[[-0.1805,-0.9836,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Pyrgos|ITEM|4|guard|marksman|[16643.316,12787.787,13.798]|190.4|
+OTLAYOUT|Altis|Pyrgos|ITEM|4|guard|marksman|[16643.262,12787.492,14.448]|190.4|
 OTLAYOUT|Altis|Pyrgos|ITEM|4|object|Land_HBarrier_Big_F|[16628.822,12788.870,11.000]|[[-0.5060,-0.8625,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Pyrgos|ITEM|4|object|Land_BarGate_F|[16634.816,12785.353,11.000]|[[-0.5060,-0.8625,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Pyrgos|ITEM|4|object|Land_HBarrier_5_F|[16639.775,12782.444,11.000]|[[-0.5060,-0.8625,0.0000],[0.0000,0.0000,1.0000]]|ground
@@ -180,10 +180,10 @@ OTLAYOUT|Altis|Pyrgos|ITEM|5|static|hmg|[16620.870,12796.889,11.000]|[[-0.4289,-
 OTLAYOUT|Altis|Pyrgos|ITEM|5|object|Land_HBarrier_5_F|[16623.678,12793.047,11.000]|[[-0.5060,-0.8625,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Pyrgos|ITEM|5|object|Land_HBarrier_1_F|[16626.335,12793.228,11.000]|[[0.8625,-0.5060,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Pyrgos|ITEM|5|object|Land_BagBunker_Tower_F|[16611.088,12807.159,11.000]|[[-0.8695,-0.4939,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Pyrgos|ITEM|5|guard|marksman|[16611.088,12807.159,13.750]|240.4|
-OTLAYOUT|Altis|Pyrgos|ITEM|5|guard|autorifleman|[16610.784,12806.641,11.000]|210.4|ground
+OTLAYOUT|Altis|Pyrgos|ITEM|5|guard|marksman|[16611.049,12806.619,14.400]|240.4|
+OTLAYOUT|Altis|Pyrgos|ITEM|5|guard|autorifleman|[16610.605,12807.402,14.400]|240.4|
 OTLAYOUT|Altis|Pyrgos|ITEM|5|object|Land_BagBunker_Tower_F|[16643.316,12787.787,11.048]|[[-0.1805,-0.9836,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Pyrgos|ITEM|5|guard|marksman|[16643.316,12787.787,13.798]|190.4|
+OTLAYOUT|Altis|Pyrgos|ITEM|5|guard|marksman|[16643.262,12787.492,14.448]|190.4|
 OTLAYOUT|Altis|Pyrgos|ITEM|5|object|Land_HBarrier_Big_F|[16628.822,12788.870,11.000]|[[-0.5060,-0.8625,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Pyrgos|ITEM|5|object|Land_BarGate_F|[16634.816,12785.353,11.000]|[[-0.5060,-0.8625,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Pyrgos|ITEM|5|object|Land_HBarrier_5_F|[16639.775,12782.444,11.000]|[[-0.5060,-0.8625,0.0000],[0.0000,0.0000,1.0000]]|ground
@@ -225,7 +225,7 @@ OTLAYOUT|Altis|Pyrgos|ITEM|5|guard|autorifleman|[16612.991,12836.882,11.000]|300
 OTLAYOUT|Altis|Pyrgos|ITEM|5|object|Land_BagBunker_Small_F|[16655.828,12788.562,12.431]|[[0.9836,-0.1805,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Pyrgos|ITEM|5|guard|autorifleman|[16656.418,12788.453,12.520]|100.4|ground
 OTLAYOUT|Altis|Pyrgos|ITEM|5|object|Land_BagBunker_Tower_F|[16631.405,12820.050,11.000]|[[0.0070,1.0000,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Pyrgos|ITEM|5|guard|marksman|[16631.405,12820.050,13.750]|0.4|
+OTLAYOUT|Altis|Pyrgos|ITEM|5|guard|marksman|[16631.407,12820.350,14.400]|0.4|
 OTLAYOUT|Altis|Pyrgos|ITEM|5|static|mortar|[16640.131,12815.162,11.000]|[[0.8625,-0.5060,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Pyrgos|ITEM|5|guard|at|[16640.324,12788.615,11.000]|210.4|ground
 OTLAYOUT|Altis|Pyrgos|ITEM|5|object|Land_BagFence_Long_F|[16638.027,12797.150,11.620]|[[0.8625,-0.5060,0.0000],[0.0000,0.0000,1.0000]]|drop
