@@ -2,7 +2,7 @@ OTLAYOUT|Altis|Agios Konstantinos|OFFICE|Land_u_House_Big_02_V1_F|[3950.367,1730
 OTLAYOUT|Altis|Agios Konstantinos|TIER|1|7
 OTLAYOUT|Altis|Agios Konstantinos|ITEM|1|object|Land_TableDesk_F|[3950.562,17308.920,15.330]|[[-0.5906,0.8070,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Agios Konstantinos|ITEM|1|object|Land_OfficeChair_01_F|[3949.617,17310.211,15.330]|[[-0.5906,0.8070,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Agios Konstantinos|ITEM|1|object|Land_MapBoard_F|[3951.526,17310.988,15.330]|[[0.5906,-0.8070,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|1|object|Land_MapBoard_F|[3951.408,17311.150,15.330]|[[0.5906,-0.8070,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Agios Konstantinos|ITEM|1|object|Flag_NATO_F|[3943.415,17301.583,10.346]|[[0.8070,0.5906,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
 OTLAYOUT|Altis|Agios Konstantinos|ITEM|1|guard|gendarme|[3944.563,17303.909,11.890]|233.8|
 OTLAYOUT|Altis|Agios Konstantinos|ITEM|1|guard|gendarme|[3955.284,17310.765,11.718]|53.8|ground
@@ -10,7 +10,7 @@ OTLAYOUT|Altis|Agios Konstantinos|ITEM|1|guard|gendarme|[3955.245,17304.044,15.3
 OTLAYOUT|Altis|Agios Konstantinos|TIER|2|16
 OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|object|Land_TableDesk_F|[3950.562,17308.920,15.330]|[[-0.5906,0.8070,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|object|Land_OfficeChair_01_F|[3949.617,17310.211,15.330]|[[-0.5906,0.8070,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|object|Land_MapBoard_F|[3951.526,17310.988,15.330]|[[0.5906,-0.8070,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|object|Land_MapBoard_F|[3951.408,17311.150,15.330]|[[0.5906,-0.8070,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|object|Flag_NATO_F|[3943.415,17301.583,10.346]|[[0.8070,0.5906,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
 OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|guard|gendarme|[3944.563,17303.909,11.890]|233.8|
 OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|guard|gendarme|[3955.284,17310.765,11.718]|53.8|ground
