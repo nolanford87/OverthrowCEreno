@@ -57,3 +57,4 @@ ArmaScriptCompiler.exe
 
 # QA runner: machine-specific mod list
 tools/qa/mods.local.txt
+__pycache__/
