@@ -26,6 +26,8 @@ matter, so don't caveat changes about them.
 - The QA addon is `optionals/overthrow_qa`. `tools\qa\run-qa.ps1 [-Suite current|archive|offices|officereview]
   [-World Altis] [-Only "a,b"] [-Stop]` launches Arma, starts a new game and runs the suite.
 - Results appear in the RPT as `OT_QA PASS/FAIL/MANUAL` and finish with `OT_QA ===== DONE`.
+- `python tools/qa/rpt-lines.py [rpt] [--pass] [--probe] [-o file]` pulls just the START/DONE, FAIL, MANUAL and
+  OTFEEDBACK lines out of an RPT (the newest one when none is given): send that instead of the whole RPT.
 - The suite registry is in `optionals/overthrow_qa/functions/fn_run.sqf`.
 - Passed tests are archived. Manual in-game checks are deferred to a pure-QA phase: add new ones silently and
   don't list them in reports.
