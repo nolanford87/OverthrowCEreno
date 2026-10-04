@@ -43,6 +43,10 @@ biggest 5), but every tier means the same thing everywhere: a hamlet's tier 2 is
 - Use the real site: roads (where attackers come from, vehicles too), the gaps between buildings, neighbouring walls,
   high ground. The neighbouring buildings are part of the defence (they close sides of the compound; the occupier
   can put posts in gaps between them).
+- Lines must be unbroken: walls, fences, H-barriers, concrete barriers, gates, wire and sandbags may (and should)
+  overlap each other, the neighbouring buildings and existing walls slightly, so a perimeter is one continuous wall
+  with no gaps a man can slip through. The checks only look at the middle of such pieces (0.6 m off each end, half
+  their depth).
 - Keep the office's way in: a defended, controlled route from the street to the main door (that's where the player
   has to fight through).
 - Performance: at most ~200 things at tier 5, ~40 guards.
