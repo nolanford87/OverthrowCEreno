@@ -43,7 +43,8 @@ OUT = {"back": 180, "front": 0, "left": 270, "right": 90}
 # ([(role, [(side, lateral, skew), ...])]: the posts tried, the one with the longest field of fire taken); nest_a /
 # nest_side (the tier 2 nest's distance out from the door and its side); screen_a (the second door's screen);
 # gate_at (the gate off the door's axis); door_posts ([(a, l, dir)]: the second door's gendarme, stepped out
-# beside its screen where the doorway post measured blind); mg_posts ("back": the MG on the back balcony); avoid ([(x, y, r)]: no gun there, measured blocked in the game); tower "gate" (the tower beside the gate, not at a corner).
+# beside its screen where the doorway post measured blind); mg_posts ("back": the MG on the back balcony); no_window (the office gendarme not at the east
+# window, measured blind); avoid ([(x, y, r)]: no gun there, measured blocked in the game); tower "gate" (the tower beside the gate, not at a corner).
 TOWNS = {
     "Alikampos": {"ring": (-10, 8, -10, 12), "nest_a": 2.0, "tall": ("back", "right", "front"),
                   "statics": [("hmg", [("right", -6, 30), ("right", -2, 45), ("back", 5, -30)]),
@@ -54,14 +55,14 @@ TOWNS = {
     "Gravia": {"ring": (-9, 9, -13, 11.2), "tall": ("back", "front"),
                "statics": [("hmg", [("back", 4, 0), ("back", 6, -20), ("back", 2, 0)]),
                            ("gmg", [("front", -4, -30), ("front", -2, -15), ("left", 9, -30)])]},
-    "Kore": {"mg_posts": "back", "avoid": [(16.7, -9.5, 2.5)], "ring": (-16, 17.5, -14, 12), "tall": ("back", "front", "left", "right"),
-             "statics": [("hmg", [("back", -6, 30), ("back", 5, -30)]), ("gmg", [("left", 2, 0), ("left", -6, 0), ("left", 6, 0), ("front", -5, -30), ("front", 4, 20)])]},
+    "Kore": {"mg_posts": "back", "avoid": [(16.7, -9.5, 2.5), (-15.5, 0.5, 3.0)], "ring": (-16, 17.5, -14, 12), "tall": ("back", "front", "left", "right"),
+             "statics": [("hmg", [("back", -6, 30), ("back", 5, -30)]), ("gmg", [("back", -10, 0), ("back", -12, 0), ("left", -6, 0), ("front", -5, -30)])]},
     "Lakka": {"ring": (-10, 10, -14, 12), "tall": ("back", "right", "left", "front"),
               "statics": [("hmg", [("back", 6, -30), ("right", -10, 30)]), ("gmg", [("front", -6, -30), ("left", 6, -30)])]},
     "Neri": {"ring": (-10, 10, -12.5, 12), "gate_at": -3.2, "tall": ("back", "left"),
              "statics": [("hmg", [("back", -7, 30), ("left", -8, -30), ("back", 6, -30), ("back", 4, 0)]),
                          ("gmg", [("left", 8, 30), ("left", 4, 0)])]},
-    "Poliakko": {"door_posts": [(3.2, -2.6, 0), (3.2, 2.6, 0), (3.2, -2.6, 330), (3.6, -3.0, 0)], "ring": (-18, 7.3, -13, 12), "tall": ("right", "back", "left"),
+    "Poliakko": {"no_window": True, "door_posts": [(3.2, -2.6, 0), (3.2, 2.6, 0), (3.2, -2.6, 330), (3.6, -3.0, 0)], "ring": (-18, 7.3, -13, 12), "tall": ("right", "back", "left"),
                  "statics": [("hmg", [("right", -8, 30), ("right", -5, 45)]), ("gmg", [("right", 8, -30), ("right", 5, -45)])]},
     "Selakano": {"avoid": [(14.7, 1.8, 2.0)], "ring": (-17.5, 15.5, -9.6, 12), "tower": "gate", "nest_a": 1.9, "nest_side": -1, "tall": ("back", "left", "right", "front"),
                  "statics": [("hmg", [("back", -8, 30), ("left", -6, -30)]), ("gmg", [("front", -6, -30), ("left", 8, 30)])]},
@@ -101,6 +102,23 @@ class Site:
             self.D, self.d = (0.1, 5.9), 0
         self.front_blocked = bool(self.building_at(0.1, 7.6, 1.6, 1.0))
         self.porch_s_blocked = bool(self.building_at(-1.5, -7.8, 3.0, 1.0))
+        # The probed walls, buildings and tree trunks as rectangles in model coordinates (centre, model dir, half
+        # sizes), for a proper overlap test: a thin wall crossing a piece's middle has no corner inside it
+        self.rects = []
+        for o in t.objs:
+            if o["kind"] not in ("wall", "building", "rock", "tree"):
+                continue
+            b = o["box"]
+            if o["kind"] == "tree":
+                b = [-0.6, -0.6, 0.6, 0.6]
+            cx, cy = (b[0] + b[2]) / 2, (b[1] + b[3]) / 2
+            dx, dy = tl.rot(cx, cy, o["dir"])
+            m = t.to_model([o["pos"][0] + dx, o["pos"][1] + dy, 0])
+            md = (o["dir"] - t.dir) % 360
+            hx, hy = (b[2] - b[0]) / 2, (b[3] - b[1]) / 2
+            ax, ay = tl.rot(1, 0, md), tl.rot(0, 1, md)
+            self.rects.append((o["kind"], [(m[0] + sx * hx * ax[0] + sy * hy * ay[0], m[1] + sx * hx * ax[1] + sy * hy * ay[1])
+                                          for sx in (-1, 1) for sy in (-1, 1)]))
 
     # ---- geometry
     def building_at(self, x, y, length, depth):
@@ -162,6 +180,22 @@ class Site:
                 if max(a1) < min(b1) + tol or max(b1) < min(a1) + tol:
                     return False
         return True
+
+    @staticmethod
+    def sat(pa, pb, tol=0.05):
+        """Whether two rectangles (4 corners each, ordered as corners() gives them) overlap by more than tol."""
+        for poly in (pa, pb):
+            for i, j in ((0, 1), (1, 3)):
+                ex, ey = poly[j][0] - poly[i][0], poly[j][1] - poly[i][1]
+                n = math.hypot(ex, ey) or 1
+                nx, ny = -ey / n, ex / n
+                a1 = [p[0] * nx + p[1] * ny for p in pa]
+                b1 = [p[0] * nx + p[1] * ny for p in pb]
+                if max(a1) < min(b1) + tol or max(b1) < min(a1) + tol:
+                    return False
+        return True
+
+    OFFICE = [(-5.4, -6.7), (-5.4, 7.0), (5.4, -6.7), (5.4, 7.0)]  # The house, its porch and front steps
 
     def on_road(self, x, y):
         w = self.t.to_world(x, y, 0)
@@ -235,6 +269,13 @@ class Site:
             L, D = self.size(it, core=True)
             if [h for h in t.hits(w[0], w[1], L, D, self.yaw(it), 0.0) if h[0] in ("wall", "tree")]:
                 return False  # An old wall or a tree already there: it closes that bit
+            core = self.corners(it, core=True)
+            if any(self.sat(core, r) for k, r in self.rects):
+                return False  # Into an old wall, a building or a trunk (the middle of the piece)
+            margin = 1.0 if it[1] == "Flag_NATO_F" else 0.0
+            box = [(x * (5.4 + margin) / 5.4, y + (margin if y > 0 else -margin)) for x, y in self.OFFICE]
+            if self.sat(self.corners(it), box, 0.0):
+                return False  # Into the house itself (its whole footprint, not only the middle)
         if ground and not lane_ok and it[0] in ("object", "static") and it[1] != "Flag_NATO_F":
             for x, y, ux, uy, ln, hw in self.lanes:
                 for cx, cy in self.corners(it, core=bar) + [tuple(t.to_model(it[2])[:2])]:
@@ -364,7 +405,7 @@ def tier1(s):
     f0, f1 = s.f0, s.f1
     # The office upstairs (the generated template's desk corner, which reviewed fine)
     s.cur += [s.O("Land_TableDesk_F", -2.4, 2.0, 270, f1), s.O("Land_OfficeChair_01_F", -4.0, 2.0, 270, f1),
-              s.O("Land_MapBoard_F", -4.25, 4.0, 90, f1)]
+              s.O("Land_MapBoard_F", -3.9, 4.0, 90, f1)]
     # The way in's lane: from the door out to the tier 3 gate (or 8 m)
     ux, uy = uv(s.d)
     if "ring" in s.cfg:
@@ -375,7 +416,8 @@ def tier1(s):
     s.lanes.append((s.D[0] - ux * 0.5, s.D[1] - uy * 0.5, ux, uy, reach, 1.1))
     # The flag beside the way in, where everyone coming to the office sees it
     s.first([s.O("Flag_NATO_F", *s.ef(a, l), 0, flag=True) for a, l in
-             ((1.5, -2.2), (2.0, -2.6), (1.5, 2.2), (2.5, -3.0), (3.0, 2.6), (1.0, -3.0), (4.0, -2.5), (4.0, 2.5))], "flag")
+             ((1.5, -2.2), (2.0, -2.6), (1.5, 2.2), (2.5, -3.0), (3.0, 2.6), (1.0, -3.0), (4.0, -2.5), (4.0, 2.5),
+              (1.0, -4.0), (1.0, 4.0), (0.6, -4.8), (0.6, 7.0), (0.6, 8.2), (1.2, -6.0))], "flag")
     # Gendarme at the way in: on the porch at its mouth, or outside the front door beside it
     if s.entry == "porch_s":
         s.first([s.G("gendarme", x, -5.8, d, f0) for x in (-1.9, -0.9, -3.9) for d in (180, 200, 160)], "porch gendarme", see=8)
@@ -395,7 +437,7 @@ def tier1(s):
         posts = s.cfg.get("door_posts") or [(max(a, 1.0), l, d) for l in (-1.2, 1.2, -1.6, 1.6, -2.2, 2.2) for d in (0, 340, 20)]
         s.first([s.G("gendarme", *s.ef(pa, pl, D2, d2), pd) for pa, pl, pd in posts], "second gendarme", see=6)
     # Upstairs, at the opening with the longest view
-    s.upstairs("gendarme", WINDOW + (BACK_BALCONY[:1] if s.entry == "porch_s" else FRONT_BALCONY[:1]), "office gendarme")
+    s.upstairs("gendarme", ([] if s.cfg.get("no_window") else WINDOW) + (BACK_BALCONY[:2] if s.entry == "porch_s" else FRONT_BALCONY[:2]), "office gendarme")
     s.tier()
 
 
@@ -434,8 +476,8 @@ def tier2(s):
         # No ground for it (a road right off the porch): the nest on the porch's edge, under the balcony, its flank
         # shielded by an H-barrier on the ground beside the porch
         s.skipped.pop()
-        s.nest_side = -1 if s.group([s.O("Land_BagFence_Long_F", 1.4, -6.3, 180, f0),
-                                      s.G("rifleman", 0.8, -5.3, 180, f0), s.G("autorifleman", 2.0, -5.3, 180, f0)]) else None
+        s.nest_side = -1 if s.group([s.O("Land_BagFence_Long_F", 1.4, -5.8, 180, f0),
+                                      s.G("rifleman", 0.8, -4.8, 180, f0), s.G("autorifleman", 2.0, -4.8, 180, f0)]) else None
         s.first([s.O("Land_HBarrier_3_F", x, y, 90) for x, y in ((6.3, -7.0), (6.3, -7.6), (5.0, -8.2))], "porch blast wall")
     else:
         s.nest_side = None
