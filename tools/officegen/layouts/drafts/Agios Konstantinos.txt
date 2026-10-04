@@ -2,6 +2,6 @@ OTLAYOUT|Altis|Agios Konstantinos|OFFICE|Land_u_House_Big_02_V1_F|[3950.367,1730
 OTLAYOUT|Altis|Agios Konstantinos|TIER|1|0
 OTLAYOUT|Altis|Agios Konstantinos|TIER|2|4
 OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|object|Land_BagFence_Long_F|[3944.579,17303.549,11.890]|[[0.8070,0.5906,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|object|Land_BagFence_Short_F|[3942.952,17306.448,11.890]|[[0.5906,-0.8070,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|object|Land_BagFence_Short_F|[3943.248,17306.045,11.890]|[[0.5906,-0.8070,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|object|Land_BagFence_Long_F|[3956.557,17310.210,11.726]|[[0.8070,0.5906,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|object|Land_BagFence_Long_F|[3956.190,17302.753,11.727]|[[0.5906,-0.8070,0.0000],[0.0000,0.0000,1.0000]]|ground

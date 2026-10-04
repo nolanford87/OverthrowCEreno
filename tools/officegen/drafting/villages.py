@@ -19,12 +19,15 @@ The ladder for pass 1 (every tier keeps the one before; walls, H-barriers and sa
   2  sandbags on the house: a long bag along the porch's back edge on the porch floor (the men in the door and on
      the porch bunker behind it) and a short one across the porch's west mouth, leaving a way on at the corner; a
      long bag at the foot of the front steps; a long bag on the ground under the east window. Nothing in the yard.
-  3  a tight ring round the house and its yard, closed all round with no opening (the entrances come in pass 2):
-     H-barriers on a rectangle per town, 2-high (Land_HBarrier_Big_F) laid first on the sides facing a road or
-     open ground, 1-high ones (HBarrier_5/3/1) filling the rest, each piece 0.3-0.6 m into the one before. A line
-     may end only on a real barrier: a full-height city wall or a solid building (not an addon, a ruin, a stone,
-     pipe or wire fence, a low concrete wall). The house itself never closes the ring (its two doors would make a
-     way through it).
+  3  a tight ring round the house, its yard and what stands against it, closed all round with no opening (the
+     entrances come in pass 2): H-barriers on a rectangle or a polygon per town, 2-high (Land_HBarrier_Big_F) laid
+     first, 1-high ones (HBarrier_5/3/1) filling the rest, each piece 0.3-0.6 m into the one before. A line may end
+     only on another line or a full-height city wall: a neighbour's probe box stands well outside its walls (round
+     1 in the game: the man walked round the line's end), so a ring takes in the neighbours it touches. Where one
+     can't be taken in, the line runs into its real walls as the top view shows them ("walls"), and where a
+     neighbour's tie held in the game it's kept ("trust"). No piece over the back porch's steps (they run out about
+     1.4 m per metre the porch stands above the ground, and the game walked a man down them over the pieces there).
+     The house itself never closes the ring (its two doors would make a way through it).
 """
 import math
 import os
@@ -46,24 +49,36 @@ MEASURED_MORE = {"Land_BagBunker_Tower_F": (6.4, 9.8), "Land_BagBunker_Small_F":
 # planned overlap is at least that in the game (HBarrier_1 measured 1.4 m, HBarrier_5 5.8 m)
 LENGTH = {c: min(tl.CLASSES[c][0], tl.MEASURED.get(c, MEASURED_MORE.get(c, (99,)))[0]) for c in HBARRIERS + TALL}
 
-# Per town: ring (the tier 3 yard: model x0, x1, y0, y1; its lines close it all round, a real barrier may close a
-# stretch); tall (the sides facing a road or open ground: 2-high first); ties (models that close a line here though
-# real_barrier() leaves them out: a damaged city wall that crosses a line, the pieces butting into it from both sides);
-# road_margin (how near a track's centre line a piece may stand, default 4 m: less where the ring has to run on the
-# track's verge).
+# Per town: ring (the tier 3 yard: model x0, x1, y0, y1) or poly (its corners in order, every side along x or y); tall
+# (the sides laid 2-high first: their names, or True for all); ties (models that close a line here though
+# real_barrier() leaves them out: a damaged city wall that crosses a line, the pieces butting into it from both
+# sides); trust (neighbours whose probe box closes a line: their ties held in the game) and trust_buildings (every
+# solid building's); walls ([(model, (x0, x1, y0, y1))]: a neighbour's real walls in model coordinates, read off the
+# top view, closing a line; the pieces into its probe box go in with "drop"); road_margin (how near a track's centre
+# line a piece may stand, default 4 m); fill_flood ((cell, man) for the hole filler: Selakano's round 1, which the
+# game passed); porch_west_x (the T2 bag across the porch's west mouth).
 TOWNS = {
-    "Alikampos": {"ring": (-10, 8, -10, 12), "tall": ("back", "right", "front")},
-    "Dorida": {"ring": (-19, 17, -11, 9.9), "tall": ("front", "right", "left")},
-    "Gravia": {"ties": ("city_8md_f.p3d",), "ring": (-9, 9, -13, 11.2), "tall": ("back", "front")},
+    # Round 1 in the game: the man walked round a line's end on a neighbour's box (its walls stand well inside it):
+    # the ring now takes in the neighbours it touched and closes on itself
+    "Alikampos": {"poly": [(-31, -8.9), (-3.9, -8.9), (-3.9, -10.6), (4.9, -10.6), (4.9, -8.9), (8, -8.9), (8, 12), (-31, 12)], "tall": True},
+    "Dorida": {"ring": (-13.5, 17, -8.95, 10.7), "tall": True},
+    # Its right-hand neighbour stands against the office and is boxed in by others: the right line runs into its
+    # real walls (the top view); the left side's ties held in the game
+    "Gravia": {"trust": ("Land_i_House_Big_01_V2_F", "Land_i_Shop_01_V3_F", "Land_u_House_Small_02_V1_F"), "ties": ("city_8md_f.p3d",),
+               "walls": [("Land_i_House_Big_01_V3_F", (5.3, 20.5, -6.4, 6.4))], "ring": (-9, 9, -13, 11.2), "tall": ("back", "front")},
+    # Its back porch opens onto a road (missing from the probe): see the report
     "Kore": {"ring": (-16, 17.5, -14, 12), "tall": ("back", "front", "left", "right")},
-    "Lakka": {"ring": (-10, 10, -14, 12), "tall": ("back", "right", "left", "front")},
-    "Neri": {"ring": (-10, 10, -12.5, 14.6), "tall": ("back", "left")},
-    "Poliakko": {"ring": (-18, 7.3, -13, 12), "tall": ("right", "back", "left")},
-    "Selakano": {"road_margin": 3.0, "ring": (-17.5, 15.5, -9.9, 12), "tall": ("back", "left", "right", "front")},
-    "Stavros": {"ring": (-8, 5.5, -7.5, 12), "tall": ("back", "left", "front")},
-    "Telos": {"ring": (-21, 10, -14, 7.6), "tall": ("front", "back", "right", "left")},
+    "Lakka": {"trust_buildings": True, "ring": (-10, 10, -14, 12), "tall": ("back", "right", "left", "front")},
+    "Neri": {"walls": [("Land_u_Shop_01_V1_F", (5.6, 13.8, 0.5, 12.2)), ("Land_i_Addon_04_V1_F", (-2.4, 4.3, 5.5, 11.8))],
+             "poly": [(-10, -10.5), (9.6, -10.5), (9.6, -7.8), (15.3, -7.8), (15.3, 14.6), (-10, 14.6)], "tall": True},
+    "Poliakko": {"poly": [(-18, -13), (7.3, -13), (7.3, 9.6), (-10.6, 9.6), (-10.6, 6.9), (-18, 6.9)], "tall": True},
+    "Selakano": {"fill_flood": (0.25, 0.2), "road_margin": 3.0, "ring": (-17.5, 15.5, -9.9, 12), "tall": ("back", "left", "right", "front")},
+    # Its right side, the two neighbours, held in the game; the back line clears the porch's steps
+    "Stavros": {"road_margin": 3.0, "trust": ("Land_u_House_Big_01_V1_F", "Land_i_House_Small_02_V3_F"),
+                "poly": [(-8, 12), (-8, -7.8), (-4, -7.8), (-4, -9.6), (5.5, -9.6), (5.5, 12)], "tall": True},
+    "Telos": {"walls": [("Land_u_House_Small_01_V1_F", (-13.6, -4.3, -5.6, 5.1))], "ring": (-21, 10.8, -14, 7.6), "tall": True},
     "Abdera": {},
-    "Agios Konstantinos": {},
+    "Agios Konstantinos": {"porch_west_x": (-4.4,)},  # At -4.9 it floated 1.5 m: off the porch's west end
     "Galati": {},
     "Nifi": {},
     "Topolia": {},
@@ -71,8 +86,9 @@ TOWNS = {
 
 
 def real_barrier(o):
-    """Whether a probed thing closes a line by itself: a full-height city wall (4.2 m box, not a damaged "md" piece)
-    or a solid building. Not an addon (sheds, lean-tos and terraces, their boxes far bigger than their walls), a ruin
+    """Whether a probed thing could close a line by itself: a full-height city wall (4.2 m box, not a damaged "md"
+    piece) or a solid building (only with TOWNS "trust" or "trust_buildings": their boxes stand well outside their
+    walls). Not an addon (sheds, lean-tos and terraces, their boxes far bigger than their walls), a ruin
     or a damaged building, the stone walls (chest high), pipe and wire fences, low concrete walls, planters, wells."""
     m = o["model"].lower()
     if o["kind"] == "wall":
@@ -82,10 +98,50 @@ def real_barrier(o):
     return False
 
 
+def edges(cfg):
+    """The ring's straight lines: from "ring" (x0, x1, y0, y1) the back, front, left and right sides, or from "poly"
+    (the corners in order, every side along x or y) its sides. Each {"name", "h" (along x), "fixed" (its y, or x),
+    "a", "c" (its run along it), "inward" (the unit normal into the ring)}; along x first, then along y, each low to
+    high."""
+    if "poly" in cfg:
+        pts = cfg["poly"]
+        area = sum(p[0] * q[1] - q[0] * p[1] for p, q in zip(pts, pts[1:] + pts[:1]))
+        out = []
+        for p, q in zip(pts, pts[1:] + pts[:1]):
+            h = abs(p[1] - q[1]) < 1e-6
+            dx, dy = (1 if q[0] > p[0] else -1, 0) if h else (0, 1 if q[1] > p[1] else -1)
+            inward = (-dy, dx) if area > 0 else (dy, -dx)
+            fixed, a, c = (p[1], min(p[0], q[0]), max(p[0], q[0])) if h else (p[0], min(p[1], q[1]), max(p[1], q[1]))
+            out.append({"name": f"{'y' if h else 'x'} {fixed:g} ({a:g}..{c:g})", "h": h, "fixed": fixed, "a": a, "c": c, "inward": inward})
+        return sorted(out, key=lambda e: (not e["h"], e["fixed"]))
+    x0, x1, y0, y1 = cfg["ring"]
+    return [{"name": "back", "h": True, "fixed": y0, "a": x0, "c": x1, "inward": (0, 1)},
+            {"name": "front", "h": True, "fixed": y1, "a": x0, "c": x1, "inward": (0, -1)},
+            {"name": "left", "h": False, "fixed": x0, "a": y0, "c": y1, "inward": (1, 0)},
+            {"name": "right", "h": False, "fixed": x1, "a": y0, "c": y1, "inward": (-1, 0)}]
+
+
+def bounds(cfg):
+    """The ring's outline box: x0, x1, y0, y1."""
+    if "poly" in cfg:
+        xs, ys = [p[0] for p in cfg["poly"]], [p[1] for p in cfg["poly"]]
+        return min(xs), max(xs), min(ys), max(ys)
+    return cfg["ring"]
+
+
+def has_ring(s):
+    return ("ring" in s.cfg or "poly" in s.cfg) and s.t.cap >= 3
+
+
 def uv(d):
     """Model direction d as a unit vector (compass: 0 = +y, 90 = +x)."""
     r = math.radians(d)
     return math.sin(r), math.cos(r)
+
+
+def is_piece(it):
+    """An H-barrier of the ring: on the ground, or dropped onto it (into a neighbour's box, TOWNS "walls")."""
+    return it[0] == "object" and "HBarrier" in it[1] and ("ground" in it[4] or "drop" in it[4])
 
 
 def barrierish(cls):
@@ -98,9 +154,15 @@ class Site:
         self.t, self.cfg = t, cfg
         self.f0, self.f1 = t.floors[0], t.floors[-1]
         self.tiers, self.cur, self.skipped = [], [], []
+        for p, q in cfg.get("roads", ()):  # Roads the probe missed, read off the top view (model coordinates)
+            t.roads.append({"type": "SEEN", "width": 10.0, "beg": t.to_world(p[0], p[1], 0), "end": t.to_world(q[0], q[1], 0)})
         # The probed walls, buildings and tree trunks as rectangles in model coordinates (centre, model dir, half
         # sizes), for a proper overlap test: a thin wall crossing a piece's middle has no corner inside it
-        self.rects, self.names = [], []
+        # The back porch's steps: they aren't in the house's footprint and run out from its edge (y -6.5) about 1.4 m
+        # per metre the porch stands above the ground (a man walks down them over a piece standing there)
+        rise = max(self.f0 - t.ground_model(x, -7.0) for x in (-4.0, -1.0, 2.0, 4.0))
+        self.steps = [(x, y) for x in (-3.0, 4.0) for y in (-6.5 - 1.4 * max(rise, 0.0) - 0.6, -6.5)]  # Where they come down (the routes the game walked, a clip at x 1.4-2.9)
+        self.rects, self.names, self.walls = [], [], []
         for o in t.objs:
             if o["kind"] not in ("wall", "building", "rock", "tree"):
                 continue
@@ -114,7 +176,16 @@ class Site:
             md = (o["dir"] - t.dir) % 360
             hx, hy = (b[2] - b[0]) / 2, (b[3] - b[1]) / 2
             ax, ay = tl.rot(1, 0, md), tl.rot(0, 1, md)
-            real = real_barrier(o) or o["model"] in cfg.get("ties", ())
+            real = ((real_barrier(o) and (o["kind"] == "wall" or cfg.get("trust_buildings"))) or o["model"] in cfg.get("ties", ())
+                    or o["model"] in cfg.get("trust", ()))
+            seen = next((w for mdl, w in cfg.get("walls", ()) if mdl == o["model"] and
+                         math.dist(((w[0] + w[1]) / 2, (w[2] + w[3]) / 2), (m[0], m[1])) < 8), None)
+            if seen:
+                # Its real walls as the top view shows them (the probe's box takes in its eaves, porches and steps)
+                x0, x1, y0, y1 = seen
+                self.rects.append(("real building", [(x, y) for x in (x0, x1) for y in (y0, y1)]))
+                self.walls.append(o["model"])
+                continue
             self.rects.append((o["kind"] if not real else "real " + o["kind"], [(m[0] + sx * hx * ax[0] + sy * hy * ay[0], m[1] + sx * hx * ax[1] + sy * hy * ay[1])
                                           for sx in (-1, 1) for sy in (-1, 1)]))
 
@@ -194,7 +265,7 @@ class Site:
         """The in-game clip test (fn_checkLayouts): two rays across the diagonals of a ground thing's footprint at its
         real (measured, upper-bound) size; a barrier's only over its middle (0.6 m off each end, half its depth).
         Returns what they run through: [(kind, where)] of the probed walls/buildings/rocks and the office."""
-        if "ground" not in it[4] or it[0] == "guard" or it[1] == "Flag_NATO_F":
+        if ("ground" not in it[4] and not is_piece(it)) or it[0] == "guard" or it[1] == "Flag_NATO_F":
             return []  # The flag's box takes in its cloth's swing: it has its own rule (ok())
         what = it[1] if it[0] == "object" else f"static {it[1]}"
         L, D = next((v[:2] for k, v in tl.MEASURED.items() if (k == what or k.startswith(what + " (")) and k != "Land_BarGate_F"),
@@ -232,8 +303,13 @@ class Site:
     # ---- the per-item rules
     def ok(self, it):
         t = self.t
-        probs = tl.check(t, [[it, it]] * t.cap)
-        if [p for p in probs if "guards" not in p and "tiers" not in p]:
+        probs = [p for p in tl.check(t, [[it, it]] * t.cap) if "guards" not in p and "tiers" not in p]
+        # Into the box of a building whose real walls are known (TOWNS "walls") and no further: it goes in with
+        # "drop" (onto the ground under it), as townlib's box test can't tell those walls from the eaves, porches and
+        # steps its box takes in; the rules below and the game's clip test judge it against the real walls
+        drop = bool(probs) and all(re.findall(r"'(Land_\w+)'", p) and set(re.findall(r"'(Land_\w+)'", p)) <= set(self.walls)
+                                   for p in probs)
+        if probs and not drop:
             return False
         ground = "ground" in it[4]
         bar = it[0] == "object" and barrierish(it[1])
@@ -252,6 +328,8 @@ class Site:
                 return False  # Into an old wall, a building or a trunk (the middle of the piece)
             if self.sat(self.corners(it), self.OFFICE, 0.35):
                 return False  # Into the house itself (its whole footprint, beyond the 0.3 m the box is padded by)
+            if is_piece(it) and self.sat(self.corners(it), self.steps, 0.0):
+                return False  # Over the back porch's steps
             if it[1] != "Land_BagBunker_Tower_F" and self.sat(self.corners(it, real=True), self.WALLS, 0.05):
                 return False  # Its real (measured) footprint into the house's walls
         for b in self.placed:
@@ -269,6 +347,8 @@ class Site:
                 continue
             if self.overlap(it, b):
                 return False
+        if drop:
+            it[4] = ["drop"]
         return True
 
     def add(self, it, note=""):
@@ -321,28 +401,27 @@ def seg_rect(a, b, r):
     return any(cross(a, b, poly[i], poly[(i + 1) % 4]) for i in range(4))
 
 
-def ring_side(s, side, tall=False, phase="fill"):
+def ring_side(s, e, tall=False, phase="fill"):
     """H-barrier pieces along one side of the ring, overlapping so the line is unbroken. Where tall, first the 2-high
     pieces, wherever one fits, each stepping in up to 1.2 m to clear an old wall (phase "tall", run for every side
     first); then (phase "fill") 1-high pieces fill what is still open. Every piece starts OVERLAP into what is
     before it (a piece or a real barrier). The back and front lines run on past the corners to the side lines' outer
     faces; the side lines butt into them. Returns the pieces placed."""
-    x0, x1, y0, y1 = s.cfg["ring"]
-    if side in ("back", "front"):
-        fixed, a, c, mdir = (y0 if side == "back" else y1), x0 - CORNER, x1 + CORNER, 0
+    fixed, inward = e["fixed"], e["inward"]
+    if e["h"]:
+        a, c, mdir = e["a"] - CORNER, e["c"] + CORNER, 0
         pt = lambda u: (u, fixed)
         cut = lambda u, w: ((u, fixed - w), (u, fixed + w))
     else:
-        fixed, a, c, mdir = (x0 if side == "left" else x1), y0, y1, 90
+        a, c, mdir = e["a"], e["c"], 90
         pt = lambda u: (fixed, u)
         cut = lambda u, w: ((fixed - w, u), (fixed + w, u))
-    inward = {"back": (0, 1), "front": (0, -1), "left": (1, 0), "right": (-1, 0)}[side]
     old = [r for n, r in s.closers]
 
     def covered(u):
         """The line closed at u: a piece across it (within 1 m) or a real barrier on it."""
         p, q = cut(u, 1.0)
-        if any(seg_rect(p, q, s.corners(it, spacing=True)) for it in s.cur if it[0] == "object" and "ground" in it[4] and "HBarrier" in it[1]):
+        if any(seg_rect(p, q, s.corners(it, spacing=True)) for it in s.cur if it[0] == "object" and is_piece(it)):
             return True
         p, q = cut(u, 0.3)
         return any(seg_rect(p, q, r) for r in old)
@@ -359,7 +438,7 @@ def ring_side(s, side, tall=False, phase="fill"):
             u += 0.1
         u = max(a, u - OVERLAP) if u > a else a
         stop = end
-        if side in ("left", "right"):
+        if not e["h"]:
             # Where the back or front line isn't there yet (it comes 1-high in the fill), leave its half depth
             # free at the corner: it runs on to the corner and this piece's end butts into its side
             if u == a:
@@ -465,33 +544,33 @@ def tile(R):
 def fill_holes(s, tries=10):
     """Close every hole a man could slip through (closed_audit): an H-barrier on the ring's line at the hole (or up
     to 1.2 m off it), overlapping the pieces either side at their ends. Returns the pieces added."""
-    x0, x1, y0, y1 = s.cfg["ring"]
     added = []
     for _ in range(tries):
         s.tiers.append(s.cur)  # closed_audit reads the snapshots
-        holes = closed_audit(s)
+        holes = closed_audit(s, *s.cfg.get("fill_flood", ()))
         s.tiers.pop()
         if not holes:
             break
         hx, hy = holes[0]
-        # The nearest side's line
-        sides = sorted([(abs(hy - y0), "back"), (abs(hy - y1), "front"), (abs(hx - x0), "left"), (abs(hx - x1), "right")])
+        # The nearest lines
+        near = sorted(edges(s.cfg), key=lambda e: math.hypot(*(((hx - min(max(hx, e["a"]), e["c"])), hy - e["fixed"]) if e["h"] else
+                                                               (hx - e["fixed"], hy - min(max(hy, e["a"]), e["c"])))))
         got = None
-        for _, side in sides[:2]:
-            along = 0 if side in ("back", "front") else 90
+        for e in near[:2]:
+            along = 0 if e["h"] else 90
             for cls in ("Land_HBarrier_1_F", "Land_HBarrier_3_F", "Land_HBarrier_5_F"):
                 for du in (0, 0.4, -0.4, 0.8, -0.8, 1.2, -1.2, 1.8, -1.8, 2.4, -2.4):
                     for dv in (0, -0.4, 0.4, -0.8, 0.8, -1.2, 1.2):
                         for turn in (0, 90):
-                            if side in ("back", "front"):
-                                x, y = hx + du, (y0 if side == "back" else y1) + dv
+                            if e["h"]:
+                                x, y = hx + du, e["fixed"] + dv
                             else:
-                                x, y = (x0 if side == "left" else x1) + dv, hy + du
+                                x, y = e["fixed"] + dv, hy + du
                             it = s.O(cls, x, y, along + turn)
                             if s.ok(it):
                                 s.cur.append(it)
                                 s.tiers.append(s.cur)
-                                left = closed_audit(s)
+                                left = closed_audit(s, *s.cfg.get("fill_flood", ()))
                                 s.tiers.pop()
                                 if not left or all(math.dist(h, (hx, hy)) > 1.0 for h in left):
                                     got = it
@@ -522,7 +601,7 @@ def tier2(s):
     f0 = s.f0
     posts = [
         ("porch", [s.O("Land_BagFence_Long_F", x, y, 0, f0) for y in (-6.0, -5.8, -6.2) for x in (-1.6, -1.3, -1.9)]),
-        ("porch", [s.O("Land_BagFence_Short_F", x, y, 90, f0) for x in (-4.9, -4.7) for y in (-5.6, -5.4)]),
+        ("porch", [s.O("Land_BagFence_Short_F", x, y, 90, f0) for x in s.cfg.get("porch_west_x", (-4.9, -4.7)) for y in (-5.6, -5.4)]),
         ("front", [s.O("Land_BagFence_Long_F", 0.1, y, 0) for y in (7.6, 7.9, 8.2)]),
         ("window", [s.O("Land_BagFence_Long_F", x, 2.9, 90) for x in (5.9, 6.1, 6.3)]),
     ]
@@ -535,9 +614,11 @@ def tier2(s):
 def tier3(s):
     """The ring: every side's 2-high pieces first, then the 1-high fill, then whatever hole a man still finds."""
     tall = s.cfg.get("tall", ())
-    s.lines = {side: ring_side(s, side, side in tall, "tall") for side in ("back", "front", "left", "right")}
-    for side in ("back", "front", "left", "right"):
-        s.lines[side] += ring_side(s, side, side in tall, "fill")
+    es = edges(s.cfg)
+    istall = lambda e: tall is True or e["name"] in tall
+    s.lines = {e["name"]: ring_side(s, e, istall(e), "tall") for e in es}
+    for e in es:
+        s.lines[e["name"]] += ring_side(s, e, istall(e), "fill")
     s.filled = fill_holes(s)
     s.tier()
 
@@ -547,7 +628,7 @@ def build(name):
     s = Site(t, TOWNS[name])
     tier1(s)
     tier2(s)
-    if t.cap >= 3:
+    if has_ring(s):
         tier3(s)
     return s
 
@@ -608,22 +689,20 @@ def line_audit(s, step=0.1, band=1.2):
     already closes the line (a real barrier within band m of it, or the next side's line at a corner). Per gap: its length, the length of line the pieces cover there, how far the pieces run past its ends
     (onto what they tie into) and any stretch left open. Per side: the metres closed 2-high, 1-high and by the real
     barriers ("neighbours"). Returns [(side, span, {kind: m}, [gap dicts])]."""
-    if "ring" not in s.cfg or s.t.cap < 3:
+    if not has_ring(s):
         return []
-    x0, x1, y0, y1 = s.cfg["ring"]
-    items = [it for it in s.snapshots()[-1] if it[0] == "object" and "ground" in it[4] and "HBarrier" in it[1]]
+    items = [it for it in s.snapshots()[-1] if it[0] == "object" and is_piece(it)]
     old = s.closers
 
     def kind_of(cls):
         return "2-high" if cls in TALL else "1-high"
 
     out = []
-    for side in ("back", "front", "left", "right"):
-        if side in ("back", "front"):
-            fixed, a, c = (y0 if side == "back" else y1), x0, x1
+    for e in edges(s.cfg):
+        side, fixed, a, c = e["name"], e["fixed"], e["a"], e["c"]
+        if e["h"]:
             cut = lambda u, f=fixed: ((u, f - band), (u, f + band))
         else:
-            fixed, a, c = (x0 if side == "left" else x1), y0, y1
             cut = lambda u, f=fixed: ((f - band, u), (f + band, u))
         n = int(round((c - a) / step))
         marks = []
@@ -676,20 +755,21 @@ def line_audit(s, step=0.1, band=1.2):
     return out
 
 
-def closed_audit(s, cell=0.25, man=0.2, reach=40.0):
+def closed_audit(s, cell=0.125, man=0.24, reach=None):
     """Whether the top tier's yard is closed: a flood fill from the way in (a man, his shoulders 2 x man wide, on a
-    cell m grid) from all round the house through everything but the H-barriers, the real barriers and the house
+    cell m grid: a gap of 0.5 m lets him through) from all round the house through everything but the H-barriers, the real barriers and the house
     (the low walls, fences, addons and ruins don't stop him).
     Returns [] when no man gets out, else where he crosses the ring's outline: [(x, y)], one per hole."""
-    if "ring" not in s.cfg or s.t.cap < 3:
+    if not has_ring(s):
         return []
-    x0, x1, y0, y1 = s.cfg["ring"]
+    x0, x1, y0, y1 = bounds(s.cfg)
+    reach = reach or max(abs(x0), abs(x1), abs(y0), abs(y1)) + 5.0
     n = int(2 * reach / cell)
     idx = lambda v: int(round((v + reach) / cell))
     blocked = bytearray(n * n)
     shapes = [r for n, r in s.closers] + [s.OFFICE]
     for it in s.snapshots()[-1]:
-        if it[0] == "object" and "ground" in it[4] and "HBarrier" in it[1]:
+        if it[0] == "object" and is_piece(it):
             shapes.append(s.corners(it, spacing=True))
     for r in shapes:
         xs, ys = [p[0] for p in r], [p[1] for p in r]
@@ -807,17 +887,6 @@ def show(s, r=24):
 
 
 
-_check = tl.check
-
-
-def check_pass1(town, tiers):
-    """townlib's check without its guard count: pass 1 has walls only (the guards come back in pass 3)."""
-    return [p for p in _check(town, tiers) if not re.fullmatch(r"tier \d+: \d+ guards", p)]
-
-
-tl.check = check_pass1  # tl.write checks with it too
-
-
 if __name__ == "__main__":
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     for name in (args or TOWNS):
@@ -834,7 +903,7 @@ if __name__ == "__main__":
                 print("   CLIP", c)
             for c in overlap_audit(s):
                 print("   OVERLAP", c)
-            if s.t.cap >= 3:
+            if has_ring(s):
                 holes = closed_audit(s)
                 print("   closed:", "yes" if not holes else f"NO, a man gets out at {holes}")
         if "--map" in sys.argv:
