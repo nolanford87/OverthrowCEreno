@@ -43,6 +43,7 @@ CLASSES = {
     "Land_CncBarrier_F": (1.6, 0.6), "Land_CncBarrier_stripes_F": (2.6, 0.6), "Land_CncBarrierMedium_F": (4.0, 0.6),
     "Land_CncBarrierMedium4_F": (8.0, 0.6),
     "Land_Mil_WallBig_4m_F": (4.0, 0.6), "Land_Mil_WallBig_Corner_F": (1.0, 1.0),
+    "Land_CncWall4_F": (4.0, 1.0), "Land_CncWall1_F": (1.0, 1.0),  # Best guesses (the 4 m concrete wall and its 1 m piece)
     "Land_WallCity_01_gate_grey_F": (5.0, 0.6), "Land_BarGate_F": (5.0, 0.6),
     "Land_PipeFence_03_m_gate_r_F": (4.0, 0.3), "Land_GameProofFence_01_l_gate_F": (4.0, 0.3),  # The gates used at Aggelochori
     "Land_BagBunker_Small_F": (3.2, 3.0), "Land_BagBunker_Tower_F": (3.5, 3.5),
@@ -68,6 +69,10 @@ STATIC_ROLES = ("hmg", "gmg", "at", "aa", "mortar")
 # the checks only look at their middle (BARRIER_OVERLAP m off each end, half their depth)
 BARRIERS = ("Wall", "Fence", "HBarrier", "Barrier", "Gate", "Razorwire", "BagFence", "Cnc", "Hedgehog")
 BARRIER_OVERLAP = 0.6
+
+
+# Fewest guards a tier may hold; the walls-only pass (DESIGN_BRIEF.md, pass 1) drafts set it to 0
+MIN_GUARDS = 2
 
 
 def is_barrier(cls):
@@ -340,7 +345,7 @@ def check(town, tiers):
             problems.append(f"tier {n + 1} drops {len(lost)} things of tier {n} (each tier is tier N-1 plus more): {[(i[0], i[1]) for i in lost[:4]]}")
     for n, items in enumerate(tiers, 1):
         guards = sum(1 for it in items if it[0] == "guard")
-        if guards < 2:
+        if guards < MIN_GUARDS:
             problems.append(f"tier {n}: {guards} guards")
         for it in items:
             kind, what, p, o, extra = it
