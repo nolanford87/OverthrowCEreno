@@ -51,6 +51,18 @@ CLASSES = {
     "Land_PortableLongRangeRadio_F": (0.5, 0.3), "Land_PortableLight_single_F": (0.6, 0.6),
     "Flag_NATO_F": (0.3, 0.3),
 }
+# Real bounding boxes measured in the game ([length, depth, height] m, boundingBoxReal, an UPPER bound: it takes in
+# a gate's raised arm or swing and some slack), from the layout check's OTCLASS lines
+MEASURED = {
+    "Land_BagFence_Long_F": (3.1, 0.5, 0.9), "Land_BagFence_Round_F": (2.9, 1.1, 0.9), "Land_BagFence_Short_F": (2.0, 0.5, 0.9),
+    "Land_BarGate_F": (9.7, 0.5, 8.8), "Land_CncBarrier_F": (2.6, 0.4, 0.8), "Land_CzechHedgehog_01_F": (1.8, 1.8, 1.4),
+    "Land_HBarrierWall6_F": (8.5, 4.9, 3.7), "Land_HBarrier_1_F": (1.4, 1.7, 1.5), "Land_HBarrier_3_F": (3.6, 1.8, 1.6),
+    "Land_HBarrier_5_F": (5.8, 1.7, 1.6), "Land_Mil_WallBig_4m_F": (4.1, 1.1, 4.7), "Land_Razorwire_F": (8.5, 2.1, 2.1),
+    "Land_WallCity_01_gate_grey_F": (4.6, 4.3, 4.3), "Land_PipeFence_03_m_gate_r_F": (3.3, 5.1, 2.4),
+    "Land_GameProofFence_01_l_gate_F": (1.5, 3.0, 2.8), "Land_TableDesk_F": (1.8, 0.9, 0.8), "Land_MapBoard_F": (1.5, 1.0, 2.0),
+    "Flag_NATO_F": (0.4, 1.2, 8.3),
+    "static gmg (B_GMG_01_high_F)": (1.6, 2.3, 3.4), "static at (B_static_AT_F)": (1.0, 2.3, 2.0), "static mortar (B_Mortar_01_F)": (2.5, 1.9, 1.7),
+}
 STATIC_ROLES = ("hmg", "gmg", "at", "aa", "mortar")
 # Barrier pieces may overlap each other, the neighbours and their walls a little, so a line is one unbroken wall:
 # the checks only look at their middle (BARRIER_OVERLAP m off each end, half their depth)
