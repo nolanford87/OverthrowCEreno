@@ -117,6 +117,16 @@ still full snapshots, each keeping the tier below.
 - **Pieces overlap only at their ends** (0.3-0.6 m into each other, a wall or a building), never mid-piece.
 - **Don't close a main road.** A ring may cross a track or a dead-end lane.
 - **Materials as listed per tier.** Other vanilla classes only if one of these can't do the job, and say why.
+- **Upgrade the existing walls (tier 3 and up).** Where a real wall already runs along the line, H-barriers may stand
+  ON or INTO it along its length, so the old wall looks reinforced. That's the one place a piece may overlap
+  mid-piece. Say in the audit which pieces do it; the lead discounts those clips.
+- **Tiers don't have to keep everything below.** Full snapshots still, but a tier may drop pieces of the tier
+  below where that's better (e.g. tier 2's sandbags at a door that tier 3's ring makes pointless, or that would sit
+  in the way).
+- **Wall in the compound, not just the house.** The office usually stands in a small cluster of buildings (an annex,
+  the neighbours across a yard or a lane). As the tiers rise the perimeter should take in that cluster as one
+  compound: tier 3 tight round the office and what's attached to it, tier 4 out round the whole cluster, tier 5
+  hardened.
 
 **Hand-in for pass 1:** your report's line audit per ring (each gap's width, the run that closes it, what each end
 ties into), and the counts per tier.
