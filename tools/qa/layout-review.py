@@ -73,13 +73,15 @@ def main(argv):
     rnd = int(args[0])
     rpt = args[1] if len(args) > 1 else max(glob.glob(os.path.join(os.environ["LOCALAPPDATA"], "Arma 3", "*.rpt")), key=os.path.getmtime)
     groups = json.load(open(os.path.join(REVIEW, "groups.json"), encoding="utf-8"))
-    checks, classes, bpos = {}, {}, {}
+    checks, classes, bpos, paths = {}, {}, {}, {}
     for line in open(rpt, encoding="utf-8", errors="replace"):
-        m = re.search(r'"(OT(CHECK|CLASS|BPOS)\|.*)"\s*$', line)
+        m = re.search(r'"(OT(CHECK|CLASS|BPOS|PATH)\|.*)"\s*$', line)
         if not m:
             continue
         f = m.group(1).replace('""', '"').split("|")
-        if f[0] == "OTBPOS":
+        if f[0] == "OTPATH":
+            paths.setdefault(f[1], {})[int(f[2])] = f[3]
+        elif f[0] == "OTBPOS":
             bpos[f[1]] = f[2]
         elif f[0] == "OTCHECK":
             checks.setdefault(f[1], {})[int(f[2])] = f[3:]
@@ -106,6 +108,9 @@ def main(argv):
             for tier in sorted(checks[town]):
                 items, guards, props, statics, missing, clips, floating, moved, blind, blocked, view = checks[town][tier]
                 md.append(f"- **Tier {tier}**: {items} items / {guards} guards / {props} props / {statics} statics / {missing} missing; median view {view} m")
+                way = paths.get(town, {}).get(tier)
+                if way is not None:
+                    md.append("  - closed: no way out" if way == "[]" else f"  - ways out (bearing from the office's front, [x, y] the gap): {way}")
                 for name, val in (("clips", clips), ("floating", floating), ("moved", moved), ("blind", blind), ("blocked", blocked)):
                     if val not in ("[]", ""):
                         md.append(f"  - {name}: {val}")

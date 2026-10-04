@@ -13,6 +13,9 @@
                 within 4 m: facing a wall
             blocked: [[role, m, [x, y]], ...] statics whose field of fire (a 60 degree cone, 40 m) ends within 15 m
             views: the guards' median clear view in metres
+        OTPATH|town|tier|[[bearing, [x, y]], ...] the ways out: a man's route (the engine's path finding) from the
+            office's door to a point 60 m out at that bearing from the office's front, and [x, y] where it passes
+            nearest the fortifications (the gap). [] = no way out on any bearing
         OTCLASS|class|[length, depth, height] the real size of every class the layouts use (once)
     and two screenshots per tier (the profile's Screenshots folder): OTL_<town>_T<tier>_top.png from 60 m
     above, OTL_<town>_T<tier>_street.png from 35 m out on the street side, 20 m up (the first bearing with a clear view).
@@ -171,6 +174,41 @@
 
                 diag_log format ["OTCHECK|%1|%2|%3|%4|%5|%6|%7|%8|%9|%10|%11|%12|%13", _town, _tier, count _items, count _guards, count _props, count _statics,
                     (count _items) - (count _objects) - (count _guards), _clips, _floating, _moved, _blind, _blocked, (_views param [floor ((count _views) / 2), 0]) call _r1];
+
+                // Closure: can a man walk out? The engine's own route from the office's door to 8 points 60 m out
+                // (on a road where there's one). A route that gets there is a way out; where it passes closest to the
+                // layout's fortifications is the gap
+                private _exit = _b buildingExit 0;
+                if (_exit isEqualTo [0, 0, 0]) then { _exit = getPosATL _b };
+                private _ways = [];
+                {
+                    private _to = (getPosATL _b) getPos [60, (getDir _b) + _x];
+                    private _road = (_to nearRoads 25) param [0, objNull];
+                    if (!isNull _road) then { _to = getPosATL _road };
+                    OTQA_pathDone = nil;
+                    private _agent = calculatePath ["man", "safe", _exit, _to];
+                    _agent addEventHandler ["PathCalculated", { OTQA_pathDone = _this select 1 }];
+                    private _t = time + 10;
+                    waitUntil { sleep 0.2; !isNil "OTQA_pathDone" || { time > _t } };
+                    private _path = missionNamespace getVariable ["OTQA_pathDone", []];
+                    private _out = _path isNotEqualTo [] && { ((_path select -1) distance2D _to) < 4 };
+                    if (_out) then {
+                        // The gap: the last point of the route that passes within 3 m of a fortification (where it
+                        // leaves the outermost line); the route itself every ~5 m out to 45 m, to follow it
+                        private _gap = [];
+                        private _trace = [];
+                        {
+                            private _p = _x;
+                            if ((_p distance2D _b) < 45) then {
+                                if ((_props findIf { (_x distance2D _p) < 3 }) > -1) then { _gap = _p };
+                                if (_trace isEqualTo [] || { ((_trace select -1) distance2D _p) > 5 }) then { _trace pushBack _p };
+                            };
+                        } forEach _path;
+                        private _model = { ((_b worldToModel _this) select [0, 2]) apply { _x call _r1 } };
+                        _ways pushBack [_x, if (_gap isEqualTo []) then { [] } else { _gap call _model }, _trace apply { _x call _model }];
+                    };
+                } forEach [0, 45, 90, 135, 180, 225, 270, 315];
+                diag_log format ["OTPATH|%1|%2|%3", _town, _tier, _ways];
 
                 // The pictures: from above, and from out along the way to the street
                 if (_shots) then {
