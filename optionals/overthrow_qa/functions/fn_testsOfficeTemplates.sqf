@@ -141,8 +141,8 @@ OTQA_officeTest_one = {
         private _o = _x;
         (_o getVariable ["OT_officeItem", ["", 0, -1, ["", "", [0, 0, 0], 0, []]]]) params ["", "_tier", "_index", "_item"];
         _item params ["_kind", "_what", "_pos", "", "_extra"];
-        // A prop's origin (its foot: a tilted pole's getPos is its bounding centre, up the pole), a guard's feet
-        private _model = _b worldToModel (if (_kind isEqualTo "guard") then { getPosATL _o } else { _o modelToWorld [0, 0, 0] });
+        // getPosATL is the thing's origin, its foot (modelToWorld [0, 0, 0] would be its bounding centre, up a pole)
+        private _model = _b worldToModel (getPosATL _o);
         private _outside = "outside" in _extra;
         private _ok = if (_kind isEqualTo "guard") then {
             if (_outside) then { (_model distance2D _pos) <= 0.75 } else { (_model distance _pos) <= 0.75 }
@@ -173,9 +173,10 @@ OTQA_officeTest_one = {
     [format ["Office templates: %1 everything on a floor, the ground or a table (not floating or sunk)", _key], _floating isEqualTo [], str _floating] call OTQA_fnc_check;
     [format ["Office templates: %1 no object inside a wall or under a floor", _key], _inWall isEqualTo [], str _inWall] call OTQA_fnc_check;
 
-    // Away again: the template's things (OT_fnc_officeClearTemplate: the guards first, the rest a moment later),
-    // then the building; what's left after a second gets a second pass and, if it still won't go, a few
-    // tries with their state logged (for the RPT)
+    // Away again: the template's things (OT_fnc_officeClearTemplate: the guards first, the rest a moment later,
+    // and a hidden retry for anything that stays), then the building. A few House objects (the Offices_01
+    // block and its gate bunkers) ignore deleteVehicle until they're hidden; what's left after the first pass
+    // is logged with its state and hidden before the second
     private _group = if (_guards isEqualTo []) then { grpNull } else { group (_guards select 0) };
     [_b] call OT_fnc_officeClearTemplate;
     sleep 1;
@@ -183,31 +184,12 @@ OTQA_officeTest_one = {
     sleep 1;
     private _firstPass = (_objects + _guards + _pieces) select { !isNull _x };
     if (_firstPass isNotEqualTo []) then {
-        diag_log format ["OT_QA office templates: %1 left after the first delete pass: %2", _key, _firstPass apply { [typeOf _x, (_x getVariable ["OT_officeItem", []]) param [1, "building"], getPosATL _x, local _x, simulationEnabled _x, isObjectHidden _x, alive _x, damage _x, attachedTo _x, count attachedObjects _x, _x distance player, isTouchingGround _x, dynamicSimulationEnabled _x, getModelInfo _x]] };
-        { deleteVehicle _x } forEach _firstPass;
-        sleep 1;
-        {
-            if (!isNull _x) then {
-                private _o = _x;
-                private _tried = [];
-                {
-                    _x params ["_name", "_code"];
-                    _o call _code;
-                    sleep 1;
-                    _tried pushBack [_name, isNull _o];
-                    if (isNull _o) exitWith {};
-                } forEach [
-                    ["simulation on", { _this enableSimulationGlobal true; deleteVehicle _this }],
-                    ["hidden", { _this hideObjectGlobal true; deleteVehicle _this }],
-                    ["moved away", { _this setPosATL [0, 0, 0]; deleteVehicle _this }],
-                    ["dynamic simulation off", { _this enableDynamicSimulation false; _this triggerDynamicSimulation true; deleteVehicle _this }]
-                ];
-                diag_log format ["OT_QA office templates: %1 %2 tried: %3", _key, typeOf _o, _tried];
-            };
-        } forEach _firstPass;
+        diag_log format ["OT_QA office templates: %1 left after the first delete pass: %2", _key, _firstPass apply { [typeOf _x, (_x getVariable ["OT_officeItem", []]) param [1, "building"], getPosATL _x, local _x, simulationEnabled _x, isObjectHidden _x, alive _x, damage _x, attachedTo _x, count attachedObjects _x, _x distance player, isTouchingGround _x, dynamicSimulationEnabled _x, getModelInfo _x] }];
+        { _x hideObjectGlobal true; deleteVehicle _x } forEach _firstPass;
+        sleep 3;
     };
     private _left = (_objects + _guards + _pieces) select { !isNull _x };
-    [format ["Office templates: %1 deletes cleanly", _key], _left isEqualTo [] && { isNull _group }, format ["left: %1 (after the first pass: %2), group %3 (%4 units)", _left apply { typeOf _x }, _firstPass apply { typeOf _x }, _group, if (isNull _group) then { 0 } else { count units _group }]] call OTQA_fnc_check;
+    [format ["Office templates: %1 deletes cleanly", _key], _left isEqualTo [] && { isNull _group }, format ["left: %1 (a second pass, hidden first, was needed for %2), group %3 (%4 units)", _left apply { typeOf _x }, _firstPass apply { typeOf _x }, _group, if (isNull _group) then { 0 } else { count units _group }]] call OTQA_fnc_check;
 };
 
 private _tests = [

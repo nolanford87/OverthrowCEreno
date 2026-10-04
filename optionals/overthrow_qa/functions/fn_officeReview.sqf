@@ -102,11 +102,19 @@ OTQA_officeReview_clear = {
     OTQA_officeReview set ["copies", []];
     { [_x select 0] call OT_fnc_officeClearTemplate } forEach _copies;
     if (canSuspend) then { sleep 1 };
+    private _buildings = [];
     {
         _x params ["_b", "_parts"];
         { deleteVehicle _x } forEach _parts;
         deleteVehicle _b;
+        _buildings append (_parts + [_b]);
     } forEach _copies;
+    // A building that ignores deleteVehicle (the Offices_01 block does) goes once hidden
+    [_buildings] spawn {
+        params ["_buildings"];
+        sleep 1;
+        { if (!isNull _x) then { _x hideObjectGlobal true; deleteVehicle _x } } forEach _buildings;
+    };
     { _x hideObjectGlobal false } forEach (OTQA_officeReview getOrDefault ["hidden", []]);
     OTQA_officeReview set ["hidden", []];
 };
