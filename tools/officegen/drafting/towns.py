@@ -38,10 +38,16 @@ would see less than 4 m and any gun less than 15 m.
 import collections
 import math
 import os
+import re
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 import townlib as tl  # noqa: E402
+
+# Pass 1 is walls only (DESIGN_BRIEF.md, "The work is now split into passes"): no guards on any tier, so townlib's
+# old "2 guards a tier" line is left out of the check (here, for writing too); every other check stands.
+_check = tl.check
+tl.check = lambda town, tiers: [p for p in _check(town, tiers) if not re.fullmatch(r"tier \d+: [01] guards", p)]
 
 TOWNS = ["Agios Dionysios", "Chalkeia", "Charkia", "Kalochori", "Molos", "Neochori", "Panochori", "Paros",
          "Rodopoli", "Sofia", "Therisa"]
@@ -55,6 +61,7 @@ LONG, SHORT, ROUND = "Land_BagFence_Long_F", "Land_BagFence_Short_F", "Land_BagF
 BUNKER, TOWER = "Land_BagBunker_Small_F", "Land_BagBunker_Tower_F"
 HOG, WIRE = "Land_CzechHedgehog_01_F", "Land_Razorwire_F"
 PIPEGATE = "Land_PipeFence_03_m_gate_r_F"  # A 4 m gate for an opening too narrow for the bar gate (its leaf swings 2.5 m)
+WALL, CNC1 = "Land_Mil_WallBig_4m_F", "Land_CncWall1_F"  # The tier 4 high wall, and its 1 m filler
 
 
 def vec(mdir):
@@ -67,10 +74,13 @@ def heading(dx, dy):
 
 # Real sizes [length, depth] (townlib.MEASURED less its slack, and the screenshots for the tower and bunker)
 SIZE = {HB5: (5.8, 1.76), HB3: (3.6, 1.76), HB1: (1.4, 1.7), LONG: (3.0, 0.5), SHORT: (1.8, 0.5), ROUND: (2.6, 1.0),
-        WIRE: (8.0, 1.0), BAR: (6.0, 0.6), PIPEGATE: (4.0, 0.3), HOG: (1.8, 1.8), TOWER: (4.8, 7.2), BUNKER: (4.4, 4.6)}
+        WIRE: (8.0, 1.0), BAR: (6.0, 0.6), PIPEGATE: (4.0, 0.3), HOG: (1.8, 1.8), TOWER: (4.8, 7.2), BUNKER: (4.4, 4.6),
+        WALL: (4.0, 0.8), CNC1: (1.0, 0.6)}
 FILL = (HB5, HB3, HB1)  # The run pieces, longest first
+WALL_FILL = (WALL, CNC1, CNC1)  # A high-wall run: 4 m walls, 1 m concrete sections where the 4 m ones can't fit exactly
 JOINT = (0.3, 0.6)      # How far a piece overlaps the next one at its end
 TIE = (0.3, 0.4)        # ... and a face it ties into (within 0.6 m of its end even as townlib.check sizes it)
+TIE_WALL = (0.3, 0.5)   # ... for the high walls (4.0 m, measured 4.1: 0.5 m in keeps 0.6 m off its end clear)
 STACK = {HB5: 1.7, HB3: 1.7, HB1: 1.6}  # Where a second H-barrier is dropped to stand on the first (2-high)
 HB_DEPTH = 1.76
 SOLID = ("building", "part", "wall", "rock")
@@ -78,6 +88,17 @@ TOWER_DECK = 3.4  # The tower's platform above the ground at its centre (measure
 # Where the men stand on a tower, in the tower's own frame (x right, y out of its front, z above the ground under it,
 # facing relative to the tower's): at the centre and just forward of it, looking out over +y (round 3: fine)
 TOWER_SPOTS = [(0.0, 0.3, TOWER_DECK, 0), (0.45, 0.5, TOWER_DECK, 20), (-0.45, 0.5, TOWER_DECK, -20)]
+
+
+def real_wall(model):
+    """Whether an old wall is a real barrier (about 2 m or more, whole): the city walls and their pillars (a bounding
+    box over 4 m high, some 2.5 m of it above the ground), the canal and pipe-concrete walls. The stone walls and
+    their pillars (a 2.6 m box: about 1.3 m high), the low concrete garden walls, tin walls (a 3 m box: under 2 m),
+    fences, railings and the broken ("d") pieces aren't: a man climbs or steps over them, so the rings line them."""
+    m = model.lower()
+    if m.endswith("d_f.p3d"):
+        return False
+    return m.startswith(("city_", "city2_", "canal_wall", "pipewall_concrete"))
 
 
 def size_of(kind, what):
@@ -106,11 +127,11 @@ def solve(g, ea, eb, opts=FILL, jr=JOINT):
     other by jr. Returns (classes in order, [end overlap a, joints..., end overlap b]) or None."""
     best = None
     lens = [SIZE[c][0] for c in opts]
-    for n0 in range(0, 12):
+    for n0 in range(0, 16):
         for n1 in range(0, 5):
             for n2 in range(0, 7):
                 n = n0 + n1 + n2
-                if n == 0 or n > 12:
+                if n == 0 or n > 16:
                     continue
                 T = n0 * lens[0] + n1 * lens[1] + n2 * lens[2]
                 lo = g + ea[0] + eb[0] + (n - 1) * jr[0]
@@ -150,13 +171,21 @@ class Drafter:
         w = t.to_world(x, y, 0)
         return [h for h in t.hits(w[0], w[1], ln, dp, (t.dir + mdir) % 360, pad) if h[0] in kinds]
 
-    def solid_at(self, x, y, own=None):
-        """Whether a point is in a building, wall, rock, the house's walls or one of our run pieces (not `own`)."""
+    def barrier_hits(self, x, y, ln, dp, mdir=0.0, pad=0.0):
+        """The probed things a man can't get through or over at a footprint: buildings (not the small props the
+        probe lists as buildings: he walks round them), rocks and the real walls (real_wall)."""
+        if not hasattr(self, "_small"):
+            self._small = {o["model"] for o in self.t.objs if o["kind"] == "building" and max(o["box"][2] - o["box"][0], o["box"][3] - o["box"][1]) < 2.5}
+        return [h for h in self.probe_hits(x, y, ln, dp, mdir, pad) if (h[0] != "wall" or real_wall(h[1])) and h[1] not in self._small]
+
+    def solid_at(self, x, y, own=None, low=False):
+        """Whether a point is in a building, real wall (any wall or fence: low), rock, the house's walls or one of our
+        run pieces (not `own`)."""
         if in_house(x, y):
             return True
-        if self.probe_hits(x, y, 0.1, 0.1, 0, 0.0):
+        if (self.probe_hits if low else self.barrier_hits)(x, y, 0.1, 0.1, 0.0, 0.0):
             return True
-        return any(p[5] and p[6] not in (WIRE, HOG) and (own is None or p not in own) and
+        return any(p[5] and p[6] not in (WIRE, HOG, LONG, SHORT) and (own is None or p not in own) and
                    self.boxes_overlap((x, y, 0.05, 0.05, 0), p[:5], 0) for p in self.placed)
 
     def free(self, kind, what, x, y, mdir, road_ok=False, pad=0.15, gap=0.05):
@@ -345,8 +374,9 @@ class Drafter:
     # ---- runs: the perimeter lines
     def run(self, name, p0, p1, feats=(), ends=("tie", "tie"), out=None, fill=FILL, note="", dry=False):
         """An unbroken H-barrier run from p0 to p1 (model x, y). Each end either ties into what's there ("tie": the
-        first building, wall, house wall or run piece found scanning along the line from its middle, up to 2.5 m
-        past the end), turns a corner ("corner": the run ends flush with the outer face of a run that will tie into
+        first building, real wall, house wall or run piece found scanning along the line from its middle, up to 2.5 m
+        past the end; "fence": the same, stopping at a low wall or fence too, where a run on its far side ties in
+        from the other side, the two overlapping through it), turns a corner ("corner": the run ends flush with the outer face of a run that will tie into
         it there) or stops at the point ("free"). feats, at s metres from p0: ("gate", s) a bar gate in a 6 m
         opening; ("fire", s, role) a 1-high firing step (HBarrier_3) with a guard 1.3 m behind it; ("slot", s) a low
         bagged slot (BagFence_Long) for a static (slot_static). The pieces between are fitted exactly (solve).
@@ -378,12 +408,14 @@ class Drafter:
                "posts": [], "tier": self.tier, "note": note, "spans": []}
         self.runs[name] = rec
 
-        def scan(s_from, s_to):
+        side = min(0.8, SIZE[fill[0]][1] / 2)  # The scan lines: the run's middle and its two faces
+
+        def scan(s_from, s_to, low=False):
             step = 0.05 if s_to > s_from else -0.05
             s = s_from
             while (s <= s_to) if step > 0 else (s >= s_to):
-                for o in (0.0, 0.8, -0.8):
-                    if self.solid_at(*at(s, o)):
+                for o in ((0.0,) if low else (0.0, side, -side)):  # (a fence: where its middle crosses it)
+                    if self.solid_at(*at(s, o), low=low):
                         return s, o
                 s += step
             return None, None
@@ -392,8 +424,8 @@ class Drafter:
         if any(self.solid_at(*at(s_ref, o)) for o in (0.0, 0.8, -0.8)):
             s_ref = next((k * 0.1 for k in range(int(L * 10) + 1) if not any(self.solid_at(*at(k * 0.1, o)) for o in (0.0, 0.8, -0.8))), L / 2)
         for k, (end, s_mid, s_lim) in enumerate(((ends[0], s_ref, -2.5), (ends[1], s_ref, L + 2.5))):
-            if end == "tie":
-                s, o = scan(s_mid, s_lim)
+            if end in ("tie", "fence"):  # (fence: a low wall or fence it crosses; the run beyond it ties in too)
+                s, o = scan(s_mid, s_lim, low=end == "fence")
                 if s is None:
                     if dry:
                         del self.runs[name]
@@ -401,17 +433,22 @@ class Drafter:
                     self.problems.append(f"run {name}: nothing to tie into at its {'start' if k == 0 else 'end'}")
                     s = 0.0 if k == 0 else L
                     eranges.append((0.0, 0.05))
+                elif end == "fence":
+                    eranges.append((0.2, 0.3))  # Into a fence it crosses (often obliquely): its middle stays clear
+                elif in_house(*at(s + (0.05 if k else -0.05), o)):
+                    eranges.append((0.2, 0.3))  # Into the house: its walls are kept 0.2 m clear of a piece's middle
                 else:
-                    eranges.append(TIE)
+                    eranges.append(TIE_WALL if fill[0] == WALL else TIE)
                 faces.append(s)
             elif end == "corner":
-                faces.append(-HB_DEPTH / 2 if k == 0 else L + HB_DEPTH / 2)
+                dep = SIZE[fill[0]][1]  # (the cross run is of the same material)
+                faces.append(-dep / 2 if k == 0 else L + dep / 2)
                 eranges.append((-0.4, 0.6))  # Flush with the cross run's outer face, give or take: it ties into this one
             else:
                 faces.append(0.0 if k == 0 else L)
                 eranges.append((-0.3, 0.3))  # A free end stops at the point, give or take
             ekinds.append(end)
-        rec["faces"], rec["ends"] = faces, ekinds
+        rec["faces"], rec["ends"], rec["eranges"] = faces, ekinds, eranges
         # Fixed spans along the run; the firing steps and slots may slide up to 1 m (together) for an exact fit
         def plan(shift, gshift=0.0):
             spans = []  # (s0, s1, kind, what, extra, end-overlap range for the pieces meeting it)
@@ -767,24 +804,26 @@ def house_guard(t, d, cfg, role, prefer):
 
 
 def tier2(t, d, cfg):
+    """Pass 1: sandbags on the house only, so those inside can bunker down; nothing out in the yard."""
     f0 = t.floors[0]
-    # The veranda as a porch position: bags inside the pillars on its north bay (the T1 gendarme behind them) and
-    # across its south end, the bay in front of the door left as the way in (or the south end, entering from S)
+    # The veranda as a porch position: bags inside the pillars on its north bay and across its south end, the bay in
+    # front of the door left open (or the south end, entering from S)
     d.add("object", SHORT, -3.85, -3.4, 270, z=f0)
     d.add("object", SHORT, -3.85, -1.6, 270, z=f0)
     if cfg["entry"] == "W":
         d.add("object", LONG, -3.1, -7.15, 180, z=f0)
     else:  # The way in from the south: the bay in front of the door bagged instead
         d.add("object", SHORT, -3.85, -6.0, 270, z=f0)
-    # The C-nest on the ground covering the approach to the veranda
-    nx, ny, nf = cfg["nest"]
-    if not d.nest(nx, ny, nf, search=2.0, road_ok=cfg.get("nest_road", False)):
-        d.problems.append("no room for the T2 nest")
-    # The side door barricaded: a sandbag wall on the ground outside it (round 3: the pipe gate stood in the wall)
-    if not d.put("object", LONG, 6.25, 5.6, 90, search=0.4, note="side door bags"):
+    # The side door and the ground floor's window (both in the east wall) bagged on the ground against the house:
+    # 1.85 m out from the door (round 4: 1.35 m cut into its step), 1.5 m out from the window's frame
+    sd = t.door("side")["model"]
+    if not d.put("object", cfg.get("side_bags", LONG), sd[0] + 1.85, sd[1], 90, search=0.3, note="side door bags"):
         d.notes.append("the side door opens onto the neighbour (no bags)")
-    house_guard(t, d, cfg, "rifleman", ["win_u_s", "win_u_n", "win_u_m", "ver_n"])
-    house_guard(t, d, cfg, "rifleman", ["ver_n", "win_u_n", "win_u_m", "win_u_s"])
+    for wx, wy, wz, wdir, ww in t.plan().windows if cfg.get("window_bags", True) else ():
+        if abs(wz - t.plan().levels[0]) < 0.5:
+            f = vec(wdir)
+            if not d.put("object", SHORT, wx + f[0] * 1.5, wy + f[1] * 1.5, wdir, search=0.3, note="window bags"):
+                d.notes.append(f"the window at {wx},{wy} opens onto the neighbour (no bags)")
 
 
 def tier3_house(t, d, cfg):
@@ -830,23 +869,26 @@ def fields(t, d, items):
     return out
 
 
-def leak(t, d, r=38.0, step=0.5):
-    """Whether the compound is closed: a walk on a 0.5 m grid from the house outward that a man (0.5 m) can make
-    through neither the probe's buildings, walls and rocks nor our run pieces (the gate counts as shut; wire and
-    hedgehogs don't), reaching r m out. Returns the walk from the house to the outside (the leak), or []."""
-    bars = [p for p in d.placed if p[5] and p[6] not in (WIRE, HOG)]
+def leak(t, d, r=43.0, step=0.5, skip=0):
+    """Whether the compound is closed: a walk on a 0.5 m grid from the house's doors outward (as the game's own check
+    walks a man from the door; the side door counts too: he may cross the house) that a man (0.5 m) can make
+    through neither the probe's buildings, real walls and rocks nor our run pieces (the gate counts as shut; wire
+    and hedgehogs don't), reaching r m out. skip: leave out the first `skip` things placed (the inner ring, to test
+    the outer one alone). Returns the walk from the house to the outside (the leak), or []."""
+    bars = [p for p in d.placed[skip:] if p[5] and p[6] not in (WIRE, HOG)]
     n = int(r / step)
 
     def shut(i, j):
         x, y = i * step, j * step
         if in_house(x, y, 0.2):
             return True
-        if d.probe_hits(x, y, 0.4, 0.4, 0, 0.0):
+        if d.barrier_hits(x, y, 0.4, 0.4):
             return True
         return any(d.boxes_overlap((x, y, 0.4, 0.4, 0), q[:5], 0) for q in bars)
     cache = {}
-    x0, y0, x1, y1 = [int(round(v / step)) for v in EXTENT]
-    start = [(i, j) for i in range(x0 - 1, x1 + 2) for j in (y0 - 1, y1 + 1)] + [(i, j) for j in range(y0 - 1, y1 + 2) for i in (x0 - 1, x1 + 1)]
+    sd = t.door("side")
+    sx, sy = sd["model"][0] + vec(sd["mdir"])[0] * 1.2, sd["model"][1] + vec(sd["mdir"])[1] * 1.2
+    start = [(round(-3.3 / step), round(-5.0 / step)), (round(sx / step), round(sy / step))]  # The veranda (the main door) and outside the side door
     prev = {}
     q = collections.deque()
     for c in start:
@@ -886,7 +928,7 @@ def audit(t, d):
             joints.append(round(a["s1"] - b["s0"], 2))
         e0 = round(f0 - ps[0]["s0"], 2) if ps else None
         e1 = round(ps[-1]["s1"] - f1, 2) if ps else None
-        names = " + ".join({HB5: "HB5", HB3: "HB3", HB1: "HB1", LONG: "bags", SHORT: "bags(short)", BAR: "GATE", PIPEGATE: "GATE(4 m)", WIRE: "wire", HOG: "hog"}.get(p["cls"], p["cls"]) +
+        names = " + ".join({HB5: "HB5", HB3: "HB3", HB1: "HB1", WALL: "W4", CNC1: "C1", LONG: "bags", SHORT: "bags(short)", BAR: "GATE", PIPEGATE: "GATE(4 m)", WIRE: "wire", HOG: "hog"}.get(p["cls"], p["cls"]) +
                             ("(fire)" if p["kind"] == "fire" else "(slot)" if p["kind"] == "slot" else "") for p in ps)
         ends = "/".join(rec["ends"])
         out.append(f"| {name} | T{rec['tier']} | {rec['L']:.1f} | {f1 - f0:.2f} | {ends} | {len(ps)}: {names} | {cover:.1f} | "
@@ -901,10 +943,11 @@ def audit(t, d):
                 bad.append(f"{name}: the gate's opening is off by {j:.2f}")
             if not gate and not (JOINT[0] - 0.01 <= j <= JOINT[1] + 0.01):
                 bad.append(f"{name}: joint {k + 1} overlaps {j:.2f} m")
-        for e, kind, p in ((e0, rec["ends"][0], ps[0] if ps else None), (e1, rec["ends"][1], ps[-1] if ps else None)):
+        for k, (e, kind, p) in enumerate(((e0, rec["ends"][0], ps[0] if ps else None), (e1, rec["ends"][1], ps[-1] if ps else None))):
             if e is None or (p["cls"] in (BAR, PIPEGATE) and -0.36 <= e <= 0.06):
                 continue  # (a gate may stop short of what's beside it by less than a man's width)
-            if kind == "tie" and not (TIE[0] - 0.01 <= e <= TIE[1] + 0.01) and not (is_wire and ps[-1]["cls"] == HOG):
+            tr = rec["eranges"][k] if "eranges" in rec else TIE
+            if kind in ("tie", "fence") and not (tr[0] - 0.01 <= e <= tr[1] + 0.01) and not (is_wire and ps[-1]["cls"] == HOG):
                 bad.append(f"{name}: an end overlaps its face by {e:.2f} m")
         # The line sampled every 0.1 m between the faces: covered by its pieces (the gate's opening counts)
         u = rec.get("u")
@@ -923,42 +966,38 @@ def audit(t, d):
 
 
 def draft(t, cfg):
-    cfg = dict(cfg, spare=list(cfg.get("spare", [])), _used=set())
+    """Pass 1 (walls only): T1 empty, T2 sandbags on the house, T3 the closed H-barrier ring, T4 the high-wall
+    outer ring round it. Each tier keeps the one before."""
+    cfg = dict(cfg)
     d = Drafter(t)
-    tiers, leaks = [], {}
-    d.tier = 1
-    tier1(t, d, cfg)
-    tiers.append(list(d.items))
+    tiers, leaks = [[]], {}
     d.tier = 2
     tier2(t, d, cfg)
     tiers.append(list(d.items))
     d.tier = 3
     cfg["build"](d, 3)
-    tier3_house(t, d, cfg)
-    leaks[3] = leak(t, d)
+    leaks["T3"] = leak(t, d)
     tiers.append(list(d.items))
+    inner = len(d.placed)
     d.tier = 4
-    tier4_house(t, d, cfg)
     cfg["build"](d, 4)
-    leaks[4] = leak(t, d)
+    leaks["T4"] = leak(t, d)
+    leaks["T4's outer ring alone"] = leak(t, d, skip=inner)
     tiers.append(list(d.items))
-    for r in report(t, d, tiers):
-        d.notes.append("VIEW " + r)
-    for n, (lo, hi) in ((2, (5, 6)), (3, (10, 14)), (4, (18, 24))):
-        g = sum(1 for it in tiers[n - 1] if it[0] == "guard")
-        if not lo <= g <= hi:
-            d.problems.append(f"T{n}: {g} guards (the ladder: {lo}-{hi})")
     for n, path in leaks.items():
         if path:
-            d.problems.append(f"T{n} not closed: a way out {[(round(x, 1), round(y, 1)) for x, y in path[::max(1, len(path) // 8)]]}")
+            d.problems.append(f"{n} not closed: a way out {[(round(x, 1), round(y, 1)) for x, y in path[::max(1, len(path) // 8)]]}")
+    for it in tiers[-1]:
+        if it[0] != "object" or not any(m in it[1] for m in ("BagFence", "HBarrier", "Wall")):
+            d.problems.append(f"{it[1]}: not a wall, H-barrier or sandbag (pass 1)")
     return tiers, d
 
 
 # ---------------------------------------------------------------- maps
 
-def cmap(t, items, r=34, step=1):
+def cmap(t, items, r=44, step=1):
     """Top-down, model coordinates (up = +y; the veranda and the main door face left/down): O house, # building,
-    = wall, t tree, r rock, : road; W 2-high, w H-barrier, G bar gate, b bags, T tower, B bunker, h hedgehog,
+    = real wall, - low wall or fence, t tree, r rock, : road; M high wall, W 2-high, w H-barrier, G bar gate, b bags, T tower, B bunker, h hedgehog,
     z wire, f flag, g guard (outside), S static."""
     marks = {}
     high = {(round(t.to_model(p)[0], 1), round(t.to_model(p)[1], 1)) for kind, what, p, o, extra in items if "drop" in extra and what in FILL}
@@ -968,7 +1007,7 @@ def cmap(t, items, r=34, step=1):
         m = t.to_model(p)
         c = {"guard": "g", "static": "S"}.get(kind)
         if c is None:
-            c = {HB5: "w", HB3: "w", HB1: "w", BAR: "G", HOG: "h", WIRE: "z", BUNKER: "B", TOWER: "T",
+            c = {HB5: "w", HB3: "w", HB1: "w", WALL: "M", CNC1: "M", BAR: "G", HOG: "h", WIRE: "z", BUNKER: "B", TOWER: "T",
                  "Flag_NATO_F": "f"}.get(what, "b" if "Bag" in what else "x")
             if c == "w" and (round(m[0], 1), round(m[1], 1)) in high:
                 c = "W"
@@ -997,7 +1036,7 @@ def cmap(t, items, r=34, step=1):
                 c = ":"
             hit = t.hits(w[0], w[1], step * 0.9, step * 0.9, t.dir, 0)
             if hit:
-                c = {"building": "#", "wall": "=", "tree": "t", "rock": "r", "part": "O"}.get(hit[0][0], "?")
+                c = {"building": "#", "wall": "=" if real_wall(hit[0][1]) else "-", "tree": "t", "rock": "r", "part": "O"}.get(hit[0][0], "?")
             if in_house(x, y):
                 c = "O"
             c = marks.get((i, j), c)
@@ -1031,23 +1070,18 @@ def molos(d, tier):
     # the track from the shop, the north face along the big road, the east face down the yard to the city wall.
     # The way in: off the west track onto the veranda.
     if tier == 3:
-        d.run("west", (-7.5, -8.5), (-7.5, 14.6), [("gate", 5.5), ("fire", 13.5, "rifleman")], ends=("tie", "corner"))
-        d.run("north", (-7.5, 14.6), (18.0, 11.5), [("slot", 11.0), ("slot", 15.0)], ends=("tie", "corner"))
-        d.run("east", (18.0, 11.5), (18.0, -12.0), [("slot", 3.5), ("fire", 14.0, "rifleman")])
-        d.slot_static("north", 0, "hmg", face=345)
-        d.behind("east", 9.5, "rifleman")
-    if tier == 4:
-        d.tower(-3.0, 10.32, 270, search=0.5)
-        d.tower(13.5, -3.0, 135)
-        d.entry("gate", "west", 5.5, side=1)
-        d.slot_static("north", 1, "at", face=330)
-        d.slot_static("east", 0, "gmg", face=60, spread=20)
-        d.road_belt(-13.0, 24.0)
-        d.road_belt(-13.0, -14.0)
-        d.road_belt(28.0, 15.0)
-        d.behind("north", 21.5, "autorifleman")
-        d.behind("east", 17.5, "autorifleman")
-        d.stack("west", "north")
+        d.run("west", (-7.5, -8.5), (-7.5, 14.6), ends=("tie", "corner"))
+        d.run("north", (-7.5, 14.6), (18.0, 11.5), ends=("tie", "corner"))
+        d.run("east", (18.0, 11.5), (18.0, -12.0))
+    if tier == 4:  # The outer ring: west of the track and north of the north track, closed on the east by the big
+        # houses, the chapel and the old city walls (runs into the gaps between them); both tracks run between the rings
+        W = WALL_FILL
+        d.run("o_n", (6.6, 23.0), (-20.4, 23.0), ends=("tie", "corner"), fill=W)
+        d.run("o_w", (-20.4, 23.0), (-20.4, -19.5), ends=("tie", "corner"), fill=W)
+        d.run("o_s", (-20.4, -19.5), (-3.3, -19.5), ends=("tie", "tie"), fill=W)
+        d.run("o_se", (24.0, -21.0), (24.0, -15.5), ends=("tie", "tie"), fill=W, out=90)
+        d.run("o_e", (38.5, -19.5), (38.5, -10.5), ends=("tie", "tie"), fill=W, out=90)
+        d.run("o_ne", (24.3, 19.5), (24.3, 8.0), ends=("tie", "tie"), fill=W, out=90)
 
 
 @site("Agios Dionysios", entry="W", nest=(-8.5, -4.6, 270), flag=(3.0, -10.5), spare=[])
@@ -1057,30 +1091,21 @@ def agios_dionysios(d, tier):
     # ground, the west and north faces tied into the two tin fences where they cross them. The way in: from the
     # west, square onto the veranda's door bay, the nest covering the gate from inside.
     if tier == 3:
-        d.run("west_s", (-13.0, -16.0), (-13.0, 0.0), [("gate", 8.0)], ends=("corner", "tie"))
-        d.run("south", (-13.0, -16.0), (14.0, -16.0), [("slot", 13.0), ("fire", 20.0, "rifleman")], ends=("tie", "corner"))
-        d.run("east", (14.0, -16.0), (14.0, 12.0), [("slot", 10.0), ("fire", 18.0, "rifleman")], ends=("tie", "corner"))
-        d.run("north_e", (14.0, 12.0), (4.0, 12.0), ends=("tie", "tie"))
-        d.run("north_w", (6.0, 12.0), (-13.0, 12.0), [("slot", 5.0), ("fire", 11.0, "rifleman")], ends=("tie", "corner"))
-        d.run("west_n", (-13.0, 12.0), (-13.0, -3.0), [("fire", 6.0, "autorifleman")], ends=("tie", "tie"))
-        d.slot_static("south", 0, "hmg", face=150)
-    if tier == 4:
-        d.tower(-8.6, -11.4, 180)
-        d.tower(10.4, 7.0, 0)
-        d.entry("gate", "west_s", 8.0, side=1, half=4.5)
-        d.slot_static("east", 0, "at")
-        d.slot_static("north_w", 0, "gmg", face=0)
-        d.belt("wire_s", (-18.0, -20.5), (19.0, -20.5), ends=("free", "free"))
-        d.belt("wire_e", (18.5, -20.5), (18.5, 16.0), ends=("free", "free"))
-        d.belt("wire_w", (-17.5, -20.5), (-17.5, -9.0), ends=("free", "tie"))
-        d.belt("wire_nw", (-17.5, 10.5), (-17.5, -6.0), ends=("free", "tie"))
-        d.belt("wire_n", (-11.0, 16.5), (8.0, 16.5), ends=("free", "tie"))
-        d.belt("wire_ne", (2.0, 16.5), (19.0, 16.5), ends=("tie", "free"))
-        d.hogs(12.0, -25.5, 90, n=4)
-        d.hogs(25.0, -2.0, 0, n=4)
-        d.behind("south", 9.0, "autorifleman")
-        d.behind("north_w", 8.0, "marksman")
-        d.stack("west_s", "west_n", "north_w")
+        d.run("west_s", (-13.0, -16.0), (-13.0, 0.0), ends=("corner", "fence"))
+        d.run("south", (-13.0, -16.0), (14.0, -16.0), ends=("tie", "corner"))
+        d.run("east", (14.0, -16.0), (14.0, 12.0), ends=("tie", "corner"))
+        d.run("north_e", (14.0, 12.0), (4.0, 12.0), ends=("tie", "fence"))
+        d.run("north_w", (6.0, 12.0), (-13.0, 12.0), ends=("fence", "corner"))
+        d.run("west_n", (-13.0, 12.0), (-13.0, -3.0), ends=("tie", "fence"))
+    if tier == 4:  # The outer ring: 6-8 m out on the open ground, its west and north faces tied into the big shed's
+        # south-east and north-east faces (each met at about 53 degrees), the north face through the tin fence. The
+        # south face stays north of the unfinished building's tip.
+        W = WALL_FILL
+        d.run("o_w", (-20.0, -19.5), (-20.0, 12.0), ends=("corner", "tie"), fill=W)
+        d.run("o_s", (-20.0, -19.5), (24.0, -19.5), ends=("tie", "corner"), fill=W)
+        d.run("o_e", (24.0, -19.5), (24.0, 23.0), ends=("tie", "corner"), fill=W)
+        d.run("o_ne", (24.0, 23.0), (5.0, 23.0), ends=("tie", "fence"), fill=W)
+        d.run("o_nw", (5.0, 23.0), (-9.0, 23.0), ends=("fence", "tie"), fill=W)
 
 
 
@@ -1093,30 +1118,27 @@ def chalkeia(d, tier):
     # to the shop, the south face from the shop across the open ground to the old wall south of the east house (a
     # short run closing the gap between them), and a run across the east yard from the ruin to the stone wall. The
     # guns look up the track (the long field). The way in: from the open ground west, through the west gate.
-    if tier == 3:
-        d.run("west", (-17.0, -13.0), (-17.0, 12.0), [("gate", 13.0)], ends=("tie", "corner"))
-        d.run("north", (-17.0, 12.0), (-2.0, 12.0), [("slot", 7.0), ("slot", 10.3)], ends=("tie", "tie"))
-        d.run("south", (-14.0, -19.0), (6.0, -19.0), [("slot", 5.0), ("fire", 14.0, "rifleman")], ends=("tie", "tie"))
-        d.run("se", (5.0, -14.0), (5.0, -21.5), ends=("tie", "tie"))
-        d.run("east", (14.5, 13.0), (14.5, -1.0), [("fire", 6.0, "rifleman")], ends=("tie", "tie"))
-        d.slot_static("north", 0, "hmg", face=350)
-        d.behind("south", 11.0, "marksman")
-    if tier == 4:
-        d.tower(-13.6, 7.3, 0, roles=("mg_gunner", "marksman", "rifleman"))
-        d.tower(9.8, 4.4, 0, roles=("autorifleman", "marksman", "rifleman"))
-        d.entry("gate", "west", 13.0, side=1, half=4.5)
-        d.slot_static("south", 0, "gmg", face=200)
-        d.slot_static("north", 1, "at", face=345)
-        d.belt("wire_w_n", (-21.5, 15.5), (-21.5, 5.0), ends=("free", "tie"))
-        d.belt("wire_s", (-14.0, -23.5), (4.0, -23.5), ends=("free", "tie"))
-        d.road_belt(-12.0, 21.0)
-        d.behind("east", 10.5, "autorifleman")
-        d.behind("south", 8.5, "rifleman")
-        d.stack("north", "west")
+    if tier == 3:  # (pass 1: off the low stone walls; the east yard closed against the annexe, not the ruin)
+        d.run("west", (-17.0, -13.0), (-17.0, 12.0), ends=("tie", "corner"))
+        d.run("north", (-17.0, 12.0), (-2.0, 12.0), ends=("tie", "tie"))
+        d.run("south", (-14.0, -19.3), (3.2, -19.3), ends=("tie", "corner"))
+        d.run("se", (3.2, -19.3), (3.2, -7.8), ends=("tie", "tie"))
+        d.run("e1", (9.0, -1.0), (9.0, 9.5), ends=("tie", "corner"))
+        d.run("e2", (9.0, 9.5), (5.5, 9.5), ends=("tie", "tie"))
+    if tier == 4:  # The outer ring: the shops and garage west and south-west, the big house north-west, the shop, the
+        # ruin and the two big rocks north-east and east; runs close the gaps between them (each tie met at 55 degrees
+        # or more), the south face through the low stone wall
+        W = WALL_FILL
+        d.run("o_w", (-24.0, -5.0), (-24.0, 15.5), ends=("tie", "tie"), fill=W, out=270)
+        d.run("o_n", (-24.0, 24.0), (-5.0, 24.0), ends=("tie", "corner"), fill=W, out=0)
+        d.run("o_ne", (-5.0, 24.0), (-5.0, 29.5), ends=("tie", "tie"), fill=W, out=270)
+        d.run("o_e", (18.0, 10.0), (18.0, -3.5), ends=("tie", "tie"), fill=W, out=90)
+        d.run("o_s_w", (-18.4, -28.0), (4.8, -28.0), ends=("tie", "fence"), fill=W, out=180)
+        d.run("o_s_e", (4.8, -28.0), (18.5, -28.0), ends=("fence", "corner"), fill=W, out=180)
+        d.run("o_se", (18.5, -28.0), (18.5, -20.5), ends=("tie", "tie"), fill=W, out=90)
 
 
-
-@site("Charkia", entry="W", nest=(-9.0, -4.4, 270), flag=(-6.5, 1.5), spare=[])
+@site("Charkia", entry="W", nest=(-9.0, -4.4, 270), flag=(-6.5, 1.5), spare=[], window_bags=False, side_bags=SHORT)
 def charkia(d, tier):
     # Between tracks (north-west, west and south-east); a long garage close north-west, its corner at the house's
     # north-west corner; an old walled garden north-east of the house (stone walls from the house's south-east
@@ -1124,29 +1146,29 @@ def charkia(d, tier):
     # own walls are its east half; a north run from the garage to the garden fence; the west face from the garage
     # down the open ground, the south face, and a run from its corner into the garden wall at the house's south-
     # east corner. The way in: from the west, square onto the door bay; the garage closes the chicane's north side.
-    if tier == 3:
-        d.run("west", (-12.5, -14.5), (-12.5, 6.0), [("gate", 9.5), ("fire", 14.3, "rifleman")], ends=("corner", "tie"))
-        d.run("south", (-12.5, -14.5), (3.0, -14.5), [("slot", 10.2), ("slot", 13.5)], ends=("tie", "corner"))
-        d.run("se", (3.0, -14.5), (5.8, -5.5), [("slot", 4.4)], ends=("tie", "tie"))
-        d.run("north", (-5.0, 11.0), (6.0, 11.0), [("fire", 6.0, "rifleman")], ends=("tie", "tie"))
-        d.slot_static("south", 0, "hmg", face=200)
-        d.behind("west", 7.0, "rifleman")  # The gate's sentry, looking out through it
-    if tier == 4:
-        d.tower(-7.9, -11.1, 270, roles=("mg_gunner", "marksman", "rifleman"))
-        d.tower(11.0, 12.0, 0, roles=("autorifleman", "marksman", "rifleman"))
-        d.entry("gate", "west", 9.5, side=1, right="none")
-        d.slot_static("south", 1, "at", face=170)
-        d.slot_static("se", 0, "gmg", face=110)
-        d.belt("wire_w_s", (-17.0, -18.0), (-17.0, -9.0), ends=("free", "tie"))
-        d.belt("wire_s", (-16.0, -18.0), (-1.0, -18.0), ends=("free", "free"))
-        d.road_belt(-24.0, -6.0)
-        d.road_belt(14.0, -13.0)
-        d.road_belt(-8.0, 20.0)
-        d.behind("north", 2.5, "autorifleman")
-        d.behind("north", 0.5, "rifleman")
-        d.stack("west")
-
-
+    if tier == 3:  # (pass 1: the garden's walls are low stone walls and wire fences: the north face stops short of the
+        # garden's wire fence and turns into the house; a box against the house's east wall holds the side door)
+        d.run("west", (-12.5, -14.5), (-12.5, 6.0), ends=("corner", "tie"))
+        d.run("south", (-12.5, -14.5), (0.0, -14.5), ends=("tie", "corner"))
+        d.run("se", (0.0, -14.5), (0.0, -7.8), ends=("tie", "tie"))
+        d.run("north", (-5.0, 11.6), (2.0, 11.6), ends=("tie", "corner"))
+        d.run("n_down", (2.0, 11.6), (2.0, 7.8), ends=("tie", "tie"))
+        d.run("e_top", (8.3, 7.4), (5.6, 7.4), ends=("corner", "tie"))
+        d.run("e_n", (8.3, 7.4), (8.3, -1.0), ends=("tie", "corner"))
+        d.run("e_w", (8.3, -1.0), (5.6, -1.0), ends=("tie", "tie"))
+    if tier == 4:  # The outer ring: on the open ground and across the tracks west, south and north (the garage inside
+        # it, the west face threading between the garage and the west house's corner and the wire fence's end), and
+        # inside the walled garden east: the garden's low walls are lined, the wall along its south-west side
+        # running into the house's east wall below the window. The north face crosses the garden's west wire fence
+        # square (fence ties). The ground-floor window is left without bags (the wall stands in front of it).
+        W = WALL_FILL
+        d.run("o_s", (-23.6, -22.5), (5.0, -22.5), ends=("corner", "corner"), fill=W, out=180)
+        d.run("o_h", (5.0, -22.5), (5.0, -7.8), ends=("tie", "tie"), fill=W, out=90)
+        d.run("o_w", (-26.4, 15.5), (-23.6, -22.5), ends=("corner", "tie"), fill=W, out=270)
+        d.run("o_n_w", (-26.4, 15.5), (1.3, 15.5), ends=("tie", "fence"), fill=W, out=0)
+        d.run("o_n_e", (1.3, 15.5), (13.0, 15.5), ends=("fence", "corner"), fill=W, out=0)
+        d.run("o_e", (13.0, 15.5), (13.0, -1.75), ends=("tie", "corner"), fill=W, out=90)
+        d.run("o_g", (13.0, -1.75), (4.86, -6.32), ends=("tie", "tie"), fill=W, out=150)
 
 
 @site("Kalochori", entry="W", nest=(-7.0, 0.2, 180), nest_road=True, flag=(6.3, -5.0), spare=[])
@@ -1160,25 +1182,13 @@ def kalochori(d, tier):
     # The way in: from the road up the lane onto the veranda, the nest looking down the lane at the gate; at tier 4
     # two baffles in the lane make it the chicane.
     if tier == 3:
-        d.run("lane_s", (-10.5, -14.0), (-3.5, -14.0), [("gate", 3.75, PIPEGATE)], ends=("tie", "tie"), out=180)
-        d.run("lane_n", (-10.5, 9.0), (-5.0, 9.0), ends=("tie", "tie"), out=0, fill=(LONG, SHORT, SHORT))
-        d.run("north", (2.0, 13.0), (11.0, 13.0), [("fire", 4.5, "rifleman")], ends=("tie", "tie"), out=0)
+        d.run("lane_s", (-10.5, -14.0), (-3.5, -14.0), ends=("tie", "tie"), out=180)
+        d.run("lane_n", (-10.5, 9.0), (-5.0, 9.0), ends=("tie", "tie"), out=0)
+        d.run("north", (2.0, 13.0), (11.0, 13.0), ends=("tie", "tie"), out=0)
         d.run("ne", (11.0, 11.8), (21.0, 11.8), ends=("tie", "tie"), out=0)
-        d.run("east_s", (4.0, -12.0), (15.0, -12.0), [("slot", 3.6), ("slot", 7.3)], ends=("tie", "tie"), out=180)
-        d.slot_static("east_s", 1, "hmg", face=180)
-        d.behind("lane_s", 2.5, "rifleman")  # The gate's sentry
+        d.run("east_s", (4.0, -12.0), (15.0, -12.0), ends=("tie", "tie"), out=180)
     if tier == 4:
-        d.tower(11.0, -4.5, 180, roles=("mg_gunner", "marksman", "rifleman"))
-        d.tower(0.15, -11.5, 90, roles=("autorifleman", "marksman", "rifleman"))
-        d.run("chicane_1", (-3.8, -10.6), (-6.65, -10.6), ends=("tie", "free"), out=180, note="chicane baffle")
-        d.run("chicane_2", (-9.8, -7.0), (-7.0, -7.0), ends=("tie", "free"), out=180, note="chicane baffle")
-        d.slot_static("east_s", 0, "gmg", face=200)
-        at = d.post("at", -7.4, 6.4, 0, kind="static", search=0.5, cover=None)
-        d.belt("wire_s", (-3.5, -17.0), (15.0, -17.0), ends=("free", "free"))
-        d.road_belt(-14.0, -22.0)
-        d.road_belt(17.0, -19.0)
-        d.behind("ne", 4.0, "autorifleman")
-        d.stack("north", "ne")
+        pass  # pass 1: the outer ring (to come)
 
 
 
@@ -1192,24 +1202,12 @@ def neochori(d, tier):
     # road onto the plaza, through the north gate; at tier 4 a wall across the plaza makes it a dogleg passage.
     # The guns fire south-east through the gap between the south house and the garage, and up the road north.
     if tier == 3:
-        d.run("west", (-6.2, -24.0), (-6.2, 14.0), [("fire", 35.0, "rifleman")], ends=("tie", "corner"))
-        d.run("north", (-6.2, 14.0), (13.5, 14.0), [("gate", 3.6), ("slot", 8.2)], ends=("tie", "corner"))
+        d.run("west", (-6.2, -24.0), (-6.2, 14.0), ends=("tie", "corner"))
+        d.run("north", (-6.2, 14.0), (13.5, 14.0), ends=("tie", "corner"))
         d.run("ne", (13.5, 14.0), (13.5, 6.0), ends=("tie", "tie"))
-        d.run("se", (6.0, -23.5), (12.8, -7.0), [("slot", 7.0), ("slot", 11.0)], ends=("tie", "tie"))
-        d.slot_static("se", 0, "hmg", face=150)
-        d.behind("north", 6.0, "rifleman")  # The gate's sentry
+        d.run("se", (6.0, -23.5), (12.8, -7.0), ends=("tie", "tie"))
     if tier == 4:
-        d.tower(-1.2, -17.5, 180, roles=("mg_gunner", "marksman", "rifleman"))
-        d.tower(6.9, 10.5, 270, roles=("autorifleman", "marksman", "rifleman"))
-        d.slot_static("north", 0, "at", face=300, spread=10)
-        d.slot_static("se", 1, "gmg", face=120)
-        d.run("plaza", (-1.0, 18.8), (-5.6, 18.8), ends=("tie", "free"), out=0, note="dogleg wall")
-        d.run("lane_e", (5.0, 13.5), (5.0, 18.0), ends=("tie", "tie"), out=90)
-        d.belt("wire_se", (10.5, -25.0), (16.8, -10.0), ends=("free", "tie"))
-        d.road_belt(-10.0, 24.0)
-        d.road_belt(-10.0, -22.0)
-        d.behind("se", 3.5, "autorifleman")
-        d.stack("west")
+        pass  # pass 1: the outer ring (to come)
 
 
 
@@ -1222,24 +1220,12 @@ def panochori(d, tier):
     # east yard's north end and the south-east corner. The guns fire east out of the south-east corner and north
     # out of the east yard's north end.
     if tier == 3:
-        d.run("west", (-6.2, -10.5), (-6.2, 9.0), [("gate", 8.0)], ends=("tie", "corner"))
+        d.run("west", (-6.2, -10.5), (-6.2, 9.0), ends=("tie", "corner"))
         d.run("nw", (-6.2, 9.0), (-1.0, 9.0), ends=("tie", "tie"))
-        d.run("north", (5.5, 17.0), (13.5, 17.0), [("slot", 4.0)], ends=("tie", "tie"))
-        d.run("se", (14.0, -6.5), (14.0, -17.0), [("slot", 3.4), ("slot", 6.0)], ends=("tie", "tie"))
-        d.slot_static("se", 0, "hmg", face=75, spread=20)
-        d.behind("se", 8.3, "rifleman")
-        d.behind("north", 1.8, "rifleman")
+        d.run("north", (5.5, 17.0), (13.5, 17.0), ends=("tie", "tie"))
+        d.run("se", (14.0, -6.5), (14.0, -17.0), ends=("tie", "tie"))
     if tier == 4:
-        d.tower(-0.4, -10.8, 270, roles=("mg_gunner", "marksman", "rifleman"))
-        d.tower(9.2, 4.0, 0, roles=("autorifleman", "marksman", "rifleman"))
-        d.entry("gate", "west", 8.0, side=1, half=4.5)
-        d.slot_static("north", 0, "gmg", face=0)
-        d.slot_static("se", 1, "at", face=115, spread=20)
-        d.road_belt(-11.0, 20.0)
-        d.road_belt(-20.0, -16.0)
-        d.belt("wire_e", (18.0, -7.0), (18.0, -14.5), ends=("tie", "free"))
-        d.behind("north", 5.7, "autorifleman")
-        d.stack("west")
+        pass  # pass 1: the outer ring (to come)
 
 
 @site("Paros", entry="W", nest=(0.5, -10.0, 260), flag=(-7.0, 11.0), spare=[])
@@ -1251,25 +1237,12 @@ def paros(d, tier):
     # closing the north yard's open east side between the east house and the big house. Towers at the north yard's
     # two corners.
     if tier == 3:
-        d.run("west", (-10.0, -11.0), (-10.0, 13.0), [("slot", 4.0), ("gate", 11.0), ("fire", 18.0, "rifleman")], ends=("corner", "corner"))
+        d.run("west", (-10.0, -11.0), (-10.0, 13.0), ends=("corner", "corner"))
         d.run("sw", (-10.0, -11.0), (-4.5, -11.0), ends=("tie", "free"))  # Its south face 0.2 m off the south house
         d.run("nw", (-10.0, 13.0), (-4.0, 13.0), ends=("tie", "tie"))
-        d.run("ne", (14.0, 3.5), (14.0, 17.0), [("slot", 2.75), ("slot", 5.35)], ends=("tie", "tie"))
-        d.slot_static("ne", 0, "hmg", face=100, spread=20)
-        d.behind("ne", 11.0, "autorifleman")
-        d.behind("west", 7.5, "rifleman")  # The gate's sentry
+        d.run("ne", (14.0, 3.5), (14.0, 17.0), ends=("tie", "tie"))
     if tier == 4:
-        d.tower(0.7, 10.5, 270, roles=("mg_gunner", "marksman", "rifleman"))
-        d.tower(8.5, 13.2, 270, roles=("autorifleman", "marksman", "rifleman"))
-        d.entry("gate", "west", 11.0, side=1)
-        d.slot_static("west", 0, "at", face=235)
-        d.slot_static("ne", 1, "gmg", face=70, spread=20)
-        d.road_belt(-14.0, 20.0)
-        d.road_belt(-19.0, -18.0)
-        d.belt("wire_e", (18.0, 7.0), (18.0, 13.5), ends=("free", "free"))
-        d.behind("ne", 8.6, "rifleman")
-        d.behind("west", 22.0, "autorifleman")
-        d.stack("west")
+        pass  # pass 1: the outer ring (to come)
 
 
 @site("Rodopoli", entry="W", nest=(-9.0, -1.8, 270), flag=(-9.0, 8.0), spare=[])
@@ -1283,24 +1256,11 @@ def rodopoli(d, tier):
     # onto the veranda.
     if tier == 3:
         d.run("south_gap", (-15.5, -17.0), (-8.5, -17.0), ends=("tie", "tie"), out=180)
-        d.run("north_gap", (-15.0, 27.0), (-7.5, 27.0), [("slot", 3.3)], ends=("tie", "tie"), out=0)
-        d.run("lane_s", (4.5, -13.0), (16.5, -13.0), [("slot", 2.5), ("gate", 7.3)], ends=("tie", "tie"), out=180)
-        d.run("lane_n", (4.5, 26.2), (16.0, 26.2), [("slot", 4.0), ("fire", 6.9, "rifleman")], ends=("tie", "tie"), out=0)
-        d.slot_static("lane_s", 0, "hmg", face=180)
-        d.behind("lane_s", 4.8, "rifleman")  # The gate's sentry
-        d.behind("south_gap", 3.5, "autorifleman")
+        d.run("north_gap", (-15.0, 27.0), (-7.5, 27.0), ends=("tie", "tie"), out=0)
+        d.run("lane_s", (4.5, -13.0), (16.5, -13.0), ends=("tie", "tie"), out=180)
+        d.run("lane_n", (4.5, 26.2), (16.0, 26.2), ends=("tie", "tie"), out=0)
     if tier == 4:
-        d.tower(-16.0, -12.5, 180, roles=("mg_gunner", "marksman", "rifleman"))
-        d.tower(9.8, 9.5, 90, roles=("autorifleman", "marksman", "rifleman"))
-        d.run("chicane_1", (5.2, -7.0), (11.6, -7.0), ends=("tie", "free"), out=180, note="chicane baffle")
-        d.run("chicane_2", (15.8, -2.6), (9.0, -2.6), ends=("tie", "free"), out=180, note="chicane baffle")
-        d.slot_static("north_gap", 0, "gmg", face=0)
-        d.slot_static("lane_n", 0, "at", face=0)
-        d.road_belt(10.0, -28.0)
-        d.road_belt(-14.0, -26.0)
-        d.road_belt(8.0, 33.0)
-        d.behind("lane_n", 10.0, "rifleman")
-        d.stack("lane_s")
+        pass  # pass 1: the outer ring (to come)
 
 
 @site("Sofia", entry="S", nest=(-6.2, 3.0, 270), flag=(9.0, 6.8), spare=[])
@@ -1312,29 +1272,12 @@ def sofia(d, tier):
     # along the track (the gate in it, its chicane on the track), a short run into the east house and one closing
     # the east yard's gap. One tower, in the east yard (no room for a second without closing the road or track).
     if tier == 3:
-        d.run("west", (-8.6, 9.0), (-8.6, -11.5), [("fire", 10.4, "rifleman"), ("slot", 13.3), ("slot", 15.9)], ends=("tie", "corner"))
-        d.run("south", (-8.6, -11.5), (5.5, -11.5), [("gate", 4.3), ("slot", 11.5)], ends=("tie", "corner"))
+        d.run("west", (-8.6, 9.0), (-8.6, -11.5), ends=("tie", "corner"))
+        d.run("south", (-8.6, -11.5), (5.5, -11.5), ends=("tie", "corner"))
         d.run("se", (5.5, -11.5), (5.5, -7.5), ends=("tie", "tie"))
         d.run("east_gap", (18.5, -1.5), (18.5, 4.5), ends=("tie", "tie"), out=90)
-        d.slot_static("south", 0, "hmg", face=170)
-        d.behind("south", 6.5, "rifleman")  # The gate's sentries
-        d.behind("south", 2.0, "rifleman")
-        d.behind("south", 8.0, "autorifleman")
-        d.behind("east_gap", 3.0, "autorifleman")
     if tier == 4:
-        d.tower(10.1, 4.0, 90, roles=("mg_gunner", "marksman", "rifleman"))
-        d.entry("gate", "south", 4.3, side=1, half=4.5)
-        d.slot_static("west", 0, "gmg", face=240)
-        d.slot_static("west", 1, "at", face=265)
-        d.road_belt(-15.0, 22.0)
-        d.road_belt(-15.0, -26.0)
-        d.road_belt(14.0, -16.0)
-        d.belt("wire_e", (22.0, -6.0), (22.0, 2.0), ends=("free", "free"))
-        d.behind("gate_l", 4.5, "rifleman")
-        d.behind("gate_r", 4.5, "autorifleman")
-        d.behind("gate_b2", 2.2, "rifleman")
-        d.behind("gate_b1", 2.2, "rifleman")
-        d.stack("west", "south")
+        pass  # pass 1: the outer ring (to come)
 
 
 @site("Therisa", entry="S", nest=(1.6, -10.5, 180), flag=(-1.0, 9.5), spare=[])
@@ -1346,25 +1289,13 @@ def therisa(d, tier):
     # city wall, and a run closing the north yard's east side. Towers at the south face's corners; the gate on the
     # veranda's south end, its chicane out on the plaza.
     if tier == 3:
-        d.run("south", (-17.0, -16.0), (21.0, -16.0), [("fire", 6.0, "rifleman"), ("gate", 14.0), ("fire", 21.5, "autorifleman"), ("slot", 24.4), ("slot", 27.1)], ends=("tie", "corner"))
+        d.run("south", (-17.0, -16.0), (21.0, -16.0), ends=("tie", "corner"))
         d.run("se", (21.0, -16.0), (21.0, -9.0), ends=("tie", "tie"))
         d.run("sw", (-14.6, -11.5), (-14.6, -17.5), ends=("tie", "tie"), out=270)
         d.run("nw_gap", (-19.0, 19.3), (-11.0, 19.3), ends=("tie", "tie"), out=0)
-        d.run("n_e", (15.5, 0.0), (15.5, 13.0), [("fire", 5.2, "rifleman"), ("slot", 8.2)], ends=("tie", "tie"), out=90)
-        d.slot_static("south", 0, "hmg", face=180)
-        d.behind("south", 16.5, "rifleman")  # The gate's sentry
+        d.run("n_e", (15.5, 0.0), (15.5, 13.0), ends=("tie", "tie"), out=90)
     if tier == 4:
-        d.tower(-11.5, -11.3, 270, roles=("mg_gunner", "marksman", "rifleman"))
-        d.tower(16.5, -11.3, 90, roles=("autorifleman", "marksman", "rifleman"))
-        d.entry("gate", "south", 14.0, side=1, half=4.5)
-        d.slot_static("south", 1, "gmg", face=150)
-        d.belt("wire_w", (-16.0, -20.0), (-8.0, -20.0), ends=("tie", "free"))
-        d.belt("wire_e", (7.5, -19.5), (14.5, -19.5), ends=("free", "free"))
-        d.slot_static("n_e", 0, "at", face=90)
-        d.hogs(-3.0, -30.0, 90, n=4)
-        d.hogs(14.0, -30.0, 90, n=4)
-        d.behind("n_e", 9.5, "autorifleman")
-        d.stack("south")
+        pass  # pass 1: the outer ring (to come)
 
 
 def counts(tiers):
