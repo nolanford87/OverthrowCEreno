@@ -43,7 +43,7 @@ CLASSES = {
     "Land_CncBarrier_F": (1.6, 0.6), "Land_CncBarrier_stripes_F": (2.6, 0.6), "Land_CncBarrierMedium_F": (4.0, 0.6),
     "Land_CncBarrierMedium4_F": (8.0, 0.6),
     "Land_Mil_WallBig_4m_F": (4.0, 0.6), "Land_Mil_WallBig_Corner_F": (1.0, 1.0),
-    "Land_CncWall4_F": (4.0, 1.0), "Land_CncWall1_F": (1.0, 1.0),  # Best guesses (the 4 m concrete wall and its 1 m piece)
+    "Land_CncWall4_F": (4.0, 1.0), "Land_CncWall1_F": (1.4, 1.0),  # CncWall4 a guess; CncWall1 measured (pass 1)
     "Land_WallCity_01_gate_grey_F": (5.0, 0.6), "Land_BarGate_F": (5.0, 0.6),
     "Land_PipeFence_03_m_gate_r_F": (4.0, 0.3), "Land_GameProofFence_01_l_gate_F": (4.0, 0.3),  # The gates used at Aggelochori
     "Land_BagBunker_Small_F": (3.2, 3.0), "Land_BagBunker_Tower_F": (3.5, 3.5),

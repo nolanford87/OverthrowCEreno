@@ -308,6 +308,11 @@ class Draft:
         self.cur = list(self.tiers[-1]) if self.tiers else []
         self.tiers.append(self.cur)
 
+    def drop(self, ring):
+        """Take a ring's pieces (placed in any tier below) out of this tier: a tier may drop what it replaces."""
+        gone = [it for rings in self.rings.values() for it in rings.get(ring, [])]
+        self.cur[:] = [it for it in self.cur if not any(it is g for g in gone)]
+
     def _ok(self, it, road_ok, ignore=()):
         if single_problems(self.t, it, [i for i in ignore if i[1] == TOWER]):
             return False
@@ -390,6 +395,7 @@ class Draft:
     JOINT, END, FREE = (0.3, 0.6), (0.3, 0.38), (-0.3, 0.6)  # END 0.38: tl.check() takes HB1/HB5 for longer  # FREE: an end that only meets a crossing run
     END_WALL = (0.3, 0.6)  # Into a wall or another piece (tl.check() doesn't hold pieces out of walls)
     END_SHORT = (0.15, 0.22)  # A 1 m concrete piece into a building or a wall
+    END_OFFICE = (0.0, 0.12)  # Up to the office's face, not into it (the game counts any overlap as a clip)
 
     def solid(self, x, y):
         """What closes a run's end at model (x, y): the site (a planned neighbour's box too: a piece can't go further
@@ -422,13 +428,13 @@ class Draft:
             out.append((s - 0.025 * sign, hit) if hit else ((0.0 if sign < 0 else L), None))
         return out
 
-    def choose(self, gap, family, free, site_end=(False, False), building=(True, True), hard=(False, False)):
+    def choose(self, gap, family, free, site_end=(False, False), building=(True, True), hard=(False, False), office=(False, False)):
         """The pieces closing a gap: ([(class, start, end)] from 0 (the first face) along the run, the overlaps),
         the joints overlapping JOINT and the ends running END into what closes them (FREE at a free end); None when
         nothing fits. A concrete block never ends a run against the site (tl.check() takes it for 4 m long)."""
         main, fin = self.FAMILIES[family]
         classes = (main,) + fin
-        rng = [self.FREE if f else (self.END if b else self.END_WALL) for f, b in zip(free, building)]
+        rng = [self.FREE if f else (self.END_OFFICE if o else (self.END if b else self.END_WALL)) for f, b, o in zip(free, building, office)]
         joint = self.JOINT
         if family == "w":  # Wire coils overlap as much as they need to (an obstacle, not a wall)
             joint, rng = (0.3, 6.0), [(-1.5, 0.5)] * 2
@@ -507,13 +513,14 @@ class Draft:
         site_end = tuple(h is not None and h[0] in ("building", "part", "office") for h in (h0, h1))
         bld = tuple(h is not None and h[0] in ("building", "part", "office") for h in (h0, h1))
         hard = tuple(h is not None and h[0] != "piece" for h in (h0, h1))
-        pick = self.choose(gap, family, (h0 is None, h1 is None), site_end, bld, hard)
+        offc = tuple(h is not None and h[0] == "office" for h in (h0, h1))
+        pick = self.choose(gap, family, (h0 is None, h1 is None), site_end, bld, hard, offc)
         self.wall_ends = False
         if gap <= 0.05:  # Already shut (the pieces at its ends overlap)
             run["over"] = (0.0, 0.0)
             return run
         if not pick and family == "X":  # Too short a gap for HBarrier_Big: the 1-high pieces
-            pick = self.choose(gap, "H", (h0 is None, h1 is None), site_end, bld, hard)
+            pick = self.choose(gap, "H", (h0 is None, h1 is None), site_end, bld, hard, offc)
             run["family"] = "H"
         if not pick:
             self.log.append(f"T{len(self.tiers)} SKIP fill {run['label']}: nothing fits {gap:.2f} m")
@@ -1026,57 +1033,59 @@ def tower_t2(d, front=-13.0, wings=False):
     d.o(LONG, -14.8, 9.8, 0)
 
 
+def raise_inner(d, inner):
+    """T5: the T3 ring raised: its H-barriers dropped and the same lines drawn again in Mil walls."""
+    d.drop("T3 ring")
+    inner(d, "M", "T5 ring", CNCW1)
+
+
 def kavala(d):
     """Kavala (model coordinates; "south" -y, the square; "east" +x, the street). The block's walls are low city
     walls with railings and the old city wall north-west of the block (from (-36, -11) to (-4, 37), a road outside
     it) is the same: none is a barrier, so every ring is the occupier's own, tied only into buildings: the office,
     Addon_01 hard against its north-east (x 4.4..13.5, y 8.5..21.5) and Addon_02 at the north end (x 1..13,
-    y 22..34). Between the office and the street (x 21) are 7.5 m and the low walls; between the office's
-    north-west corner and the old city wall 4 m: the inner rings hug the office there.
+    y 22..34).
     T3: H-barriers round the office: the south line (y -14.5) in front of the window bags, the west side (x -19)
     with a chamfer parallel to the old wall at the north-west corner, the north line (y 11.4) into Addon_01; on the
     east a line hugging the office's blank east face (x 14.4) from the south line, crossing the forecourt's low
-    wall (a junction), capped into the office; a plug between the office and Addon_01.
-    T4: Mil walls round the whole block, west yard and north yard: the square face (y -21), the street face on the
-    street's edge (x 20.6, bending out to 23 at the north end), the north side into Addon_02, Addon_02, and outside
-    the old city wall (1 m out) from the square face to Addon_02.
-    T5: a second line of Mil walls 1.7 m outside the T3 ring (y -16.3, x -20.7, the chamfer, y 13.1), its east side
-    outside the block's low east wall (x 18.5), capped into the office's east face across that wall."""
+    wall (a junction), capped against the office; a plug between the office and Addon_01.
+    T4: Mil walls round the whole block, the west yard, the north yard and a forward yard out in the square: the
+    forward yard's face (y -30.5, x -10..21) and its west side (x -10, along House_Big_01's end) back to the square
+    face (y -21) west of it, the street face on the street's edge (x 20.6, bending out to 23 at the north end), the
+    north side into Addon_02, Addon_02, and outside the old city wall (1.7 m out) from the square face to Addon_02.
+    T5: the T3 ring raised: the same lines in Mil walls."""
     d.tier()  # T1: nothing
     tower_t2(d)
 
+    def inner(d, fam, R, short):
+        d.fill(-19.9, -14.5, 15.3, -14.5, 180, fam, label="south line, west corner to east corner", ring=R)
+        d.fill(-19.0, -14.5, -19.0, 8.35, 270, fam, label="west line, south line to the chamfer", ring=R, past=0.3)
+        d.fill(-19.0, 8.35, -16.9, 11.4, 304.6, fam, label="north-west chamfer", ring=R, past=0.6)
+        d.fill(-16.9, 11.4, 4.4, 11.4, 0, fam, label="north line, chamfer to Addon_01", ring=R)
+        d.fill(14.4, -14.5, 14.4, -11.2, 90, fam, label="east line, south line to the forecourt wall", ring=R, walls=True)
+        d.fill(14.4, -11.2, 14.4, -6.6, 90, fam, label="east line along the office, wall to the cap", ring=R, walls=True, past=0.0)
+        d.piece(short, 14.25, -6.6, 0, R)                    # The cap, its west end against the office's east face
+        d.piece(short, 14.4, 8.5, 90, R)                     # The plug between the office and Addon_01
+
     d.tier()  # T3
-    R = "T3 ring"
-    d.fill(-19.9, -14.5, 15.3, -14.5, 180, "H", label="south line, west corner to east corner", ring=R)
-    d.fill(-19.0, -14.5, -19.0, 8.35, 270, "H", label="west line, south line to the chamfer", ring=R, past=0.3)
-    d.fill(-19.0, 8.35, -16.9, 11.4, 304.6, "H", label="north-west chamfer", ring=R, past=0.6)
-    d.fill(-16.9, 11.4, 4.4, 11.4, 0, "H", label="north line, chamfer to Addon_01", ring=R)
-    d.fill(14.4, -14.5, 14.4, -11.2, 90, "H", label="east line, south line to the forecourt wall", ring=R, walls=True)
-    d.fill(14.4, -11.2, 14.4, -6.6, 90, "H", label="east line along the office, wall to the cap", ring=R, walls=True, past=0.0)
-    d.piece(HB1, 13.95, -6.6, 0, R)                          # The cap: its west end into the office's east face
-    d.piece(HB1, 14.1, 8.5, 90, R)                           # The plug between the office and Addon_01
+    inner(d, "H", "T3 ring", HB1)
 
     d.tier()  # T4
     R = "T4 ring"
-    d.fill(21.2, -21.0, -38.2, -21.0, 180, "M", road_ok=True, label="square face, street to the west corner", ring=R)
+    d.fill(21.75, -30.5, -10.55, -30.5, 180, "M", road_ok=True, label="forward yard's face, street to its west corner", ring=R, past=0.3)
+    d.fill(-10.0, -30.5, -10.0, -21.0, 270, "M", label="forward yard's west side, along House_Big_01's end", ring=R, past=0.6)
+    d.fill(-9.45, -21.0, -38.2, -21.0, 180, "M", label="square face, forward yard to the west corner", ring=R)
     d.fill(-37.6, -21.0, -37.6, -11.4, 270, "M", label="west face, square face to the old wall", ring=R, past=0.6)
     # Outside the old city wall, 1.7 m off its line (its damaged stretch's box is 2 m thick), to its north end
-    d.fill(-37.6, -11.6, -10.0, 30.3, 303.4, "M", label="outside the old city wall, west corner to the north", ring=R, past=0.6)
-    d.fill(-10.6, 30.3, -7.95, 30.3, 0, "M", label="across the old city wall", ring=R, walls=True, past=0.6)
-    d.fill(-7.95, 30.3, 3.0, 30.3, 0, "M", label="old city wall to Addon_02", ring=R, walls=True)
+    d.fill(-37.6, -11.6, -10.6, 30.45, 303.4, "M", label="outside the old city wall, west corner to the north", ring=R, past=0.6)
+    d.fill(-11.2, 30.45, -7.95, 30.45, 0, "M", label="across the old city wall", ring=R, walls=True, past=0.6)
+    d.fill(-7.95, 30.45, 3.0, 30.45, 0, "M", label="old city wall to Addon_02", ring=R, walls=True)
     d.fill(11.3, 26.4, 22.3, 26.4, 0, "M", label="north side, Addon_02 to the low wall (the street face beyond)", ring=R, walls=True)
     d.fill(23.3, 27.4, 20.6, 8.8, 98, "M", road_ok=True, label="street face, north corner to the bend", ring=R, past=0.6)
-    d.fill(20.6, 9.6, 20.6, -21.0, 90, "M", road_ok=True, label="street face, bend to the square face", ring=R, past=0.6)
+    d.fill(20.6, 9.6, 20.6, -30.5, 90, "M", road_ok=True, label="street face, bend to the forward yard", ring=R, past=0.6)
 
     d.tier()  # T5
-    R = "T5 ring"
-    d.fill(-21.25, -16.3, 19.05, -16.3, 180, "M", label="south line", ring=R)
-    d.fill(-20.7, -16.3, -20.7, 8.9, 270, "M", label="west line, south line to the chamfer", ring=R, past=0.3)
-    d.fill(-20.7, 8.9, -17.8, 13.1, 304.6, "M", label="north-west chamfer", ring=R, past=0.6)
-    d.fill(-17.8, 13.1, 4.4, 13.1, 0, "M", label="north line, chamfer to Addon_01", ring=R)
-    d.fill(18.2, -16.3, 18.2, -4.3, 90, "M", label="east line outside the low east wall", ring=R, past=0.3)
-    d.fill(18.2, -4.9, 17.1, -4.9, 0, "M", label="cap, east line to the low wall", ring=R, walls=True, past=0.3)
-    d.fill(17.1, -4.9, 13.0, -4.9, 0, "M", label="cap, low wall to the office", ring=R, walls=True)
+    raise_inner(d, inner)
 
 
 def pyrgos(d):
@@ -1087,39 +1096,31 @@ def pyrgos(d):
     every ring itself, crossing the low walls and pipe fences at junctions (both runs end into them).
     T3: a rectangle of H-barriers round the office: y -14.5 (in front of the window bags) to y 11.0 (the back
     door's bag), x -20 to 15.
-    T4: Mil walls round the office's whole ground: the square face (y -20.5, inside the fence line, across the
-    lot's fence), the east face outside the east city wall (x 20.15, on the hill's foot), the north face beyond
-    the lane's city wall (y 18.6), the west face down the middle of the west lot (x -29).
-    T5: a second line of Mil walls round the T3 ring: y -16.3, x -21.7, x 17.3 (inside the city wall), and the
-    north side in the lane (y 14.6), across the low concrete wall at both corners."""
+    T4: Mil walls round the office's whole ground: the square's north half (y -27, across its path fences), the
+    hill's foot outside the east city wall (x 24), beyond the lane's city wall (y 21.5), and round the west lot
+    (x -32, inside its far fence).
+    T5: the T3 ring raised: the same lines in Mil walls."""
     d.tier()  # T1: nothing
     tower_t2(d, wings=True)
 
+    def inner(d, fam, R, short):
+        d.fill(-20.85, -14.5, 15.85, -14.5, 180, fam, label="south line", ring=R)
+        d.fill(-20.85, 11.0, 15.85, 11.0, 0, fam, label="north line", ring=R)
+        d.fill(-20.0, -14.5, -20.0, 11.0, 270, fam, label="west line", ring=R, past=0.3)
+        d.fill(15.0, -14.5, 15.0, 11.0, 90, fam, label="east line", ring=R, past=0.3)
+
     d.tier()  # T3
-    R = "T3 ring"
-    d.fill(-20.85, -14.5, 15.85, -14.5, 180, "H", label="south line", ring=R)
-    d.fill(-20.85, 11.0, 15.85, 11.0, 0, "H", label="north line", ring=R)
-    d.fill(-20.0, -14.5, -20.0, 11.0, 270, "H", label="west line", ring=R, past=0.3)
-    d.fill(15.0, -14.5, 15.0, 11.0, 90, "H", label="east line", ring=R, past=0.3)
+    inner(d, "H", "T3 ring", HB1)
 
     d.tier()  # T4
     R = "T4 ring"
-    d.fill(-29.0, -21.05, -29.0, 7.1, 270, "M", label="west face, south corner to the lot's fence", ring=R, walls=True)
-    d.fill(-29.0, 7.1, -29.0, 13.5, 270, "M", label="west face, fence to the low wall", ring=R, walls=True)
-    d.fill(-29.0, 13.5, -29.0, 17.3, 270, "M", label="west face, low wall to the lane's city wall", ring=R, walls=True)
-    d.fill(-29.55, 18.2, 20.7, 18.2, 0, "M", label="north face, along the lane's city wall", ring=R, past=0.6)
-    d.fill(20.15, 18.2, 20.15, -21.05, 90, "M", label="east face, outside the east city wall", ring=R, past=0.6)
-    d.fill(-29.0, -20.5, -12.5, -20.5, 180, "M", label="square face, west corner to the fence", ring=R, walls=True)
-    d.fill(-12.5, -20.5, 18.9, -20.5, 180, "M", label="square face, fence to the east city wall", ring=R, walls=True)
+    d.run(-32.55, -27.0, 24.55, -27.0, 180, "M", R, "square face")
+    d.run(24.0, -27.0, 24.0, 22.05, 90, "M", R, "east face, the hill's foot", past=0.6)
+    d.run(24.55, 21.5, -32.55, 21.5, 0, "M", R, "north face, beyond the lane")
+    d.run(-32.0, 21.5, -32.0, -27.0, 270, "M", R, "west face, round the west lot", past=0.6)
 
     d.tier()  # T5
-    R = "T5 ring"
-    d.fill(-22.25, -16.3, 17.85, -16.3, 180, "M", label="south line", ring=R)
-    d.fill(-22.25, 14.6, 17.85, 14.6, 0, "M", label="north line, in the lane", ring=R)
-    d.fill(-21.7, -16.3, -21.7, 13.5, 270, "M", label="west line, south line to the low wall", ring=R, walls=True)
-    d.fill(-21.7, 13.5, -21.7, 14.6, 270, "M", label="west line, low wall to the north line", ring=R, walls=True)
-    d.fill(17.3, -16.3, 17.3, 13.0, 90, "M", label="east line, south line to the low wall", ring=R, walls=True)
-    d.fill(17.3, 13.0, 17.3, 14.6, 90, "M", label="east line, low wall to the north line", ring=R, walls=True)
+    raise_inner(d, inner)
 
 
 # ================================================================ House_Big_01 (Athira, Zaros)
@@ -1130,21 +1131,24 @@ def pyrgos(d):
 
 def athira(d):
     """Athira (model coordinates; "south" -y, the main door's side). A dense block: House_Small_02 hard behind the
-    house (x -5.6..3.7, y 7.5..23.9), a courtyard east (its north wall y 7.3, x 5..12, a low city wall), House_Big_02
-    north-east (box x 2..26, y 11.9..22.6; its real walls only x 9..20: the box's west part is open ground, a
-    corridor north between it and House_Small_02), the shop east and House_Big_02 south-east (its box's north tip at
-    (11.1, -13.6) is open ground too), a low city wall south from the door's west side (x -4.4), the scaffolding on
-    House_Big_01 west (x -12.6). tl.check() keeps a piece's middle out of a neighbour's box, and the box-only ground
-    can't be walled across, so the rings close on House_Small_02 (the only neighbour solid to its box) and on
-    themselves.
-    T3: H-barriers round the house: y -10.75 (behind the door's screen), x -7, x 7.5; capped into House_Small_02's
-    west and east faces (y 8.6, 8.75), crossing the low city wall and the courtyard wall at junctions.
-    T4: Mil walls round both inner rings: y -14.1 (across the low wall), x -11.5 (the scaffolding's foot) with a line
-    across the lane north (y 12.6) into House_Small_02, a chamfer past House_Big_02's tip in the south-east, x 14.8
-    up through the courtyard's opening, and a cap (y 11.33) across the corridor into House_Small_02, the last 0.6 m
-    before House_Big_02's box.
-    T5: a second line of Mil walls between them: y -12.45, x -8.7, x 9.6, capped into House_Small_02 (y 10.6, 10.2):
-    in the north-east the three caps stand side by side, touching (the gap is 4 m)."""
+    house (x -5.6..3.7, y 7.5..23.9), a courtyard east (x 5..22; its north wall y 7.3 with an opening at x 12.5-17,
+    and a wall slanting down to the shop, all low), the shop beyond it, House_Big_02 north-east (box x 2..26,
+    y 11.9..22.6; its real walls only x 9..20: the box's west part is open ground, a corridor north between it and
+    House_Small_02), House_Big_02 south-east (its box's north tip at (11.1, -13.6)), House_Small_01 south-west, the
+    west lot (x -13..-5) between it and the scaffolding on House_Big_01 (x -12.6), a lane north (x -12.6..-5.6), and a
+    low city wall south from the door's west side (x -4.4). tl.check() keeps a piece's middle out of a neighbour's
+    box, and the shop's and both House_Big_02s' boxes reach 1-4 m past their real walls (open ground), so the rings
+    close on House_Small_02, House_Small_01 and the scaffolding (solid to their boxes) and on themselves; where the
+    outer ring meets the shop it lines the shop's box, 0.6 m off it.
+    T3: H-barriers round the house: y -10.75 (behind the door's screen), x -7, x 8.8 (clear of the in-game walk's
+    start at (6.7, -1.5)); capped into House_Small_02's west and east faces (y 8.6, 8.75), crossing the low city
+    wall and the courtyard wall at junctions.
+    T4: Mil walls round the compound: the west lot's mouth (x -16, House_Small_01 to the scaffolding), the lane
+    north (y 12), House_Small_02, a cap across the corridor (y 11.33, the last 0.6 m before House_Big_02's box)
+    east past the courtyard's opening to x 22, down to the courtyard's slanting wall, along the shop's
+    north-west face (from that wall) and south-west face, and the south face (y -13, across the low city wall, past House_Big_02's tip)
+    back to House_Small_01: the courtyard, the strip north of it, the west lot and the lane south inside.
+    T5: the T3 ring raised: the same lines in Mil walls."""
     d.tier()  # T1: nothing
 
     d.tier()  # T2: a screen across the main door (open to the east, the low wall on its west), bags along the
@@ -1155,34 +1159,29 @@ def athira(d):
     d.o(LONG, 6.3, 5.0, 90)
     d.o(LONG, 6.3, -5.25, 90)
 
+    def inner(d, fam, R, short):
+        d.fill(-7.85, -10.75, -4.45, -10.75, 180, fam, label="south line, west corner to the low wall", ring=R, walls=True)
+        d.fill(-4.45, -10.75, 9.65, -10.75, 180, fam, label="south line, low wall to the east corner", ring=R, walls=True)
+        d.fill(-7.0, -10.75, -7.0, 9.45, 270, fam, label="west line", ring=R, past=0.3)
+        d.fill(-7.0, 8.6, -5.0, 8.6, 0, fam, label="west cap into House_Small_02", ring=R)
+        d.fill(8.8, -10.75, 8.8, 7.34, 90, fam, label="east line, south line to the courtyard wall", ring=R, walls=True)
+        d.fill(9.65, 8.75, 3.1, 8.75, 0, fam, label="east cap into House_Small_02", ring=R)
+
     d.tier()  # T3
-    R = "T3 ring"
-    d.fill(-7.85, -10.75, -4.45, -10.75, 180, "H", label="south line, west corner to the low wall", ring=R, walls=True)
-    d.fill(-4.45, -10.75, 8.35, -10.75, 180, "H", label="south line, low wall to the east corner", ring=R, walls=True)
-    d.fill(-7.0, -10.75, -7.0, 9.45, 270, "H", label="west line", ring=R, past=0.3)
-    d.fill(-7.0, 8.6, -5.0, 8.6, 0, "H", label="west cap into House_Small_02", ring=R)
-    d.fill(7.5, -10.75, 7.5, 7.43, 90, "H", label="east line, south line to the courtyard wall", ring=R, walls=True)
-    d.fill(8.35, 8.75, 3.1, 8.75, 0, "H", label="east cap into House_Small_02", ring=R)
+    inner(d, "H", "T3 ring", HB1)
 
     d.tier()  # T4
     R = "T4 ring"
-    d.fill(-12.05, -14.1, -4.4, -14.1, 180, "M", label="south face, west corner to the low wall", ring=R, walls=True)
-    d.fill(-4.4, -14.1, 9.9, -14.1, 180, "M", label="south face, low wall to the chamfer", ring=R, walls=True, past=0.3)
-    d.fill(9.9, -14.1, 15.35, -9.6, 140.5, "M", label="chamfer past House_Big_02's tip", ring=R, past=0.3)
-    d.fill(15.35, 11.33, 3.1, 11.33, 0, "M", label="north-east cap across the corridor into House_Small_02", ring=R)
-    d.fill(14.8, -9.9, 14.8, 11.33, 90, "M", label="east line through the courtyard's opening", ring=R, past=0.6)
-    d.fill(-11.5, -14.1, -11.5, 13.15, 270, "M", label="west line at the scaffolding's foot", ring=R, past=0.3)
-    d.fill(-11.5, 12.6, -5.0, 12.6, 0, "M", label="across the lane north into House_Small_02", ring=R)
+    d.run(-17.0, -13.0, 23.45, -13.0, 180, "M", R, "south face, House_Small_01 to the shop", past=0.3)
+    d.fill(22.9, -13.0, 15.2, -7.45, 35.8, "M", label="along the shop's south-west face", ring=R, past=0.3)
+    d.fill(15.2, -7.45, 22.35, 2.4, 126.0, "M", label="along the shop's north-west face to the slanting wall", ring=R, walls=True, past=0.6)
+    d.fill(22.55, 11.33, 3.1, 11.33, 0, "M", label="cap across the corridor into House_Small_02", ring=R)
+    d.fill(22.0, 11.33, 22.0, 3.3, 90, "M", label="down to the courtyard's slanting wall", ring=R, walls=True, past=0.6)
+    d.run(-16.0, -13.0, -16.0, -0.8, 270, "M", R, "west lot's mouth, House_Small_01 to the scaffolding")
+    d.fill(-13.0, 12.0, -5.0, 12.0, 0, "M", label="across the lane north into House_Small_02", ring=R)
 
     d.tier()  # T5
-    R = "T5 ring"
-    d.fill(-9.25, -12.45, -4.42, -12.45, 180, "M", label="south line, west corner to the low wall", ring=R, walls=True)
-    d.fill(-4.42, -12.45, 10.15, -12.45, 180, "M", label="south line, low wall to the east corner", ring=R, walls=True)
-    d.fill(-9.6, 10.6, -5.0, 10.6, 0, "M", label="west cap into House_Small_02", ring=R)
-    d.fill(-8.7, -12.45, -8.7, 10.6, 270, "M", label="west line", ring=R, past=0.6)
-    d.fill(10.15, 10.2, 3.1, 10.2, 0, "M", label="east cap into House_Small_02", ring=R)
-    d.fill(9.6, -12.45, 9.6, 7.25, 90, "M", label="east line, south line to the courtyard wall", ring=R, walls=True)
-    d.fill(9.6, 7.25, 9.6, 10.2, 90, "M", label="east line, courtyard wall to the cap", ring=R, walls=True)
+    raise_inner(d, inner)
 
 
 def zaros(d):
@@ -1190,48 +1189,46 @@ def zaros(d):
     hard behind it (x -4.8..5.3, y 7.7..16, solid to its box) and the shop hard against its front: its real walls
     x -5..6.7, y -7.5..-16, but its box runs to x -8..12.3, y -7..-16.6, and the box's margin is open ground (the
     main road starts at x 11). The main door opens against the shop's wall; the way out is the veranda's open west
-    side. West, the yard walled by low city walls (Addon_02 in it); east, the strip to the road and a low-walled
-    garden (x 4..8, y 8.2..15.1); north, beyond Addon_03, House_Big_02 and Shop_01. None of the walls is a barrier.
-    T3: H-barriers hugging the house, x -6.6 and x 8.9, capped into its west and east faces at both ends (y -6.4
-    on the shop's edge, y 4.6 and 6.25 at the back).
-    T4: Mil walls round the whole block, the shop in it: y -18 (behind the shop), x 13 on the main road's shoulder
-    (the shop's box leaves no room off it), x -11.6 through the yard, capped into Addon_03's west and east faces
-    (y 12.5, 10.6), crossing the low walls at junctions.
-    T5: a second line of Mil walls hugging T3: x -8.3 and x 10.65 from the shop's box edge, capped into the house
-    (y 6.2) and across the garden into Addon_03 (y 9.4). At the shop its two ends stand 0.3 m off T3's lines: the
-    shop's open box margin can't be walled (tl.check()), so there T5 and T3 close together."""
+    side. West, the yard walled by low city walls (Addon_02 in it); south, the south ground to a low stone wall
+    (y -23.2); east, the strip to the road and a low-walled garden (x 4..8, y 8.2..15.1); north, beyond Addon_03,
+    House_Big_02 and Shop_01. None of the walls is a barrier. The house counts pieces ending into it as clips (round
+    1): the caps stop flush at its probed walls.
+    T3: H-barriers round the house, x -7 and x 8.9, capped against its west and east faces at both ends (y -6.4 on
+    the shop's edge, y 4.6 and 6.25 at the back).
+    T4: Mil walls round the whole block: the yard (x -23, outside its west wall, Addon_02 in it), the south ground
+    (y -21.5, inside the stone wall), the shop, the strip on the main road's shoulder (x 13: the shop's box leaves no
+    room off it), capped into Addon_03's east face across the garden (y 10.6) and its west face (y 12.5).
+    T5: the T3 ring raised: the same lines in Mil walls."""
     d.start = (-5.0, 2.5)  # On the veranda's open west side
     d.tier()  # T1: nothing
 
     d.tier()  # T2: bags along the veranda's open west side, at the side door and the east window
-    d.o(LONG, -5.2, -3.8, 270)
-    d.o(LONG, -5.2, -0.5, 270)
+    d.o(LONG, -5.55, -3.8, 270)
+    d.o(LONG, -5.55, -0.5, 270)
     d.o(LONG, 6.4, 3.8, 90)
     d.o(LONG, 6.3, -3.9, 90)
 
+    def inner(d, fam, R, short):
+        d.fill(-7.85, -6.4, -4.0, -6.4, 0, fam, label="south-west cap against the veranda's edge", ring=R)
+        d.fill(-7.85, 4.6, -4.0, 4.6, 0, fam, label="north-west cap against the house", ring=R)
+        d.fill(-7.0, -6.4, -7.0, 4.6, 270, fam, label="west line", ring=R, past=0.6)
+        d.fill(9.75, -6.4, 4.5, -6.4, 0, fam, label="south-east cap against the house", ring=R)
+        d.fill(9.75, 6.25, 4.5, 6.25, 0, fam, label="north-east cap against the house", ring=R)
+        d.fill(8.9, -6.4, 8.9, 6.25, 90, fam, label="east line", ring=R, past=0.6)
+
     d.tier()  # T3
-    R = "T3 ring"
-    d.fill(-7.45, -6.4, -4.0, -6.4, 0, "H", label="south-west cap into the veranda's edge", ring=R)
-    d.fill(-7.45, 4.6, -4.0, 4.6, 0, "H", label="north-west cap into the house", ring=R)
-    d.fill(-6.6, -6.4, -6.6, 4.6, 270, "H", label="west line", ring=R, past=0.6)
-    d.fill(9.75, -6.4, 4.5, -6.4, 0, "H", label="south-east cap into the house", ring=R)
-    d.fill(9.75, 6.25, 4.5, 6.25, 0, "H", label="north-east cap into the house", ring=R)
-    d.fill(8.9, -6.4, 8.9, 6.25, 90, "H", label="east line", ring=R, past=0.6)
+    inner(d, "H", "T3 ring", HB1)
 
     d.tier()  # T4
     R = "T4 ring"
-    d.run(-12.15, -18.0, 13.55, -18.0, 180, "M", R, "south face, behind the shop", road_ok=True)
-    d.run(13.0, -18.0, 13.0, 11.15, 90, "M", R, "east face, the road's shoulder", road_ok=True)
+    d.run(-23.55, -21.5, 13.55, -21.5, 180, "M", R, "south face, the south ground", road_ok=True)
+    d.run(13.0, -21.5, 13.0, 11.15, 90, "M", R, "east face, the road's shoulder", road_ok=True, past=0.6)
     d.run(13.55, 10.6, 4.8, 10.6, 0, "M", R, "north-east cap across the garden into Addon_03", road_ok=True)
-    d.run(-11.6, -18.0, -11.6, 13.05, 270, "M", R, "west face through the yard")
-    d.run(-12.15, 12.5, -4.3, 12.5, 0, "M", R, "north-west cap into Addon_03")
+    d.run(-23.0, -21.5, -23.0, 13.05, 270, "M", R, "west face, outside the yard's west wall", past=0.6)
+    d.run(-23.55, 12.5, -4.3, 12.5, 0, "M", R, "north-west cap into Addon_03")
 
     d.tier()  # T5
-    R = "T5 ring"
-    d.fill(-8.85, 6.2, -4.0, 6.2, 0, "M", label="north-west cap into the house", ring=R)
-    d.fill(-8.3, -7.6, -8.3, 6.2, 270, "M", label="west line, the shop's box edge to the cap", ring=R, past=0.6)
-    d.run(11.2, 9.4, 4.8, 9.4, 0, "M", R, "north-east cap across the garden into Addon_03")
-    d.fill(10.65, -7.6, 10.65, 9.4, 90, "M", label="east line, the shop's box edge to the cap", ring=R, past=0.6)
+    raise_inner(d, inner)
 
 
 TOWNS = {"Kavala": kavala, "Pyrgos": pyrgos, "Athira": athira, "Zaros": zaros}
