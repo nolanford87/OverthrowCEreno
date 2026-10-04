@@ -39,22 +39,50 @@ OTQA_officeTest_one = {
         format ["Office templates: %1 has no template yet, not checked", _key] call OTQA_fnc_manual;
     };
 
-    // The items: their shape, roles and classes
+    // The items: their shape, roles and classes; the doorway markers (the real entrances, for the checks) apart
     private _bad = [];
-    private _all = []; // [tier, index, item]
+    private _all = []; // [tier, index, item], the guards and objects
+    private _doorways = []; // [role, [x, y, z], outward dir, width]
     {
         private _tier = _forEachIndex + 1;
         {
-            if ((count _x) isNotEqualTo 5 || { !((_x select 0) in ["guard", "object"]) } || { !((_x select 2) isEqualType []) } || { (count (_x select 2)) isNotEqualTo 3 } || { !((_x select 3) isEqualType 0) } || { !((_x select 4) isEqualType []) }) then {
+            if ((count _x) isNotEqualTo 5 || { !((_x select 0) in ["guard", "object", "doorway"]) } || { !((_x select 2) isEqualType []) } || { (count (_x select 2)) isNotEqualTo 3 } || { !((_x select 3) isEqualType 0) } || { !((_x select 4) isEqualType []) }) then {
                 _bad pushBack [_tier, _forEachIndex, _x];
             } else {
                 if ((_x select 0) isEqualTo "guard" && { !((_x select 1) in OTQA_officeTest_roles) }) then { _bad pushBack [_tier, _forEachIndex, _x] };
                 if ((_x select 0) isEqualTo "object" && { !(isClass (configFile >> "CfgVehicles" >> (_x select 1))) }) then { _bad pushBack [_tier, _forEachIndex, _x] };
+                if ((_x select 0) isEqualTo "doorway") then {
+                    if ((_x select 1) in ["main", "back", "side"] && { (count (_x select 4)) isEqualTo 2 }) then {
+                        _doorways pushBack [_x select 1, _x select 2, _x select 3, (_x select 4) select 0];
+                    } else {
+                        _bad pushBack [_tier, _forEachIndex, _x];
+                    };
+                };
             };
-            _all pushBack [_tier, _forEachIndex, _x];
+            if ((_x select 0) in ["guard", "object"]) then { _all pushBack [_tier, _forEachIndex, _x] };
         } forEach _x;
     } forEach _tiers;
     [format ["Office templates: %1 items are [kind, class or role, pos, dir, extra] with known roles and classes", _key], _bad isEqualTo [], str _bad] call OTQA_fnc_check;
+    private _mainDoor = _doorways select { (_x select 0) isEqualTo "main" };
+    ["Office templates: %1 marks its real entrances, one of them the main one", (count _mainDoor) isEqualTo 1 && { (_doorways findIf { (_x select 3) < 0.6 || { (_x select 3) > 4.5 } }) isEqualTo -1 }, str _doorways] call OTQA_fnc_check;
+    // How far a point is off a doorway's axis (sideways, facing out of it)
+    private _offAxis = {
+        params ["_p", "_dw"];
+        _dw params ["", "_c", "_d"];
+        abs (((_p select 0) - (_c select 0)) * cos _d - ((_p select 1) - (_c select 1)) * sin _d)
+    };
+    // Rule 1: the door kits (the nest's front, the pairs, the posts' bags, the stoppers, the gate) square with an entrance
+    private _askew = [];
+    {
+        _x params ["_tier", "_index", "_item"];
+        _item params ["_kind", "_what", "_pos", "", "_extra"];
+        if (_kind isEqualTo "object" && { "axis" in _extra }) then {
+            private _best = 9;
+            { _best = _best min ([_pos, _x] call _offAxis) } forEach _doorways;
+            if (_best > 0.5) then { _askew pushBack [_tier, _index, _what, _pos, round (_best * 100) / 100] };
+        };
+    } forEach _all;
+    [format ["Office templates: %1 door defences square with an entrance (within 0.5 m of its axis)", _key], _askew isEqualTo [] && { ({ "axis" in ((_x select 2) select 4) } count _all) > 0 }, str _askew] call OTQA_fnc_check;
 
     // Guards per tier (cumulative), no fortification at tier 1
     private _counts = [];
@@ -112,9 +140,9 @@ OTQA_officeTest_one = {
     private _guardsOff = _all select {
         _x params ["", "", "_item"];
         _item params ["_kind", "", "_pos", "", "_extra"];
-        _kind isEqualTo "guard" && { !("outside" in _extra) } && { (_positions findIf { abs ((_x select 2) - (_pos select 2)) < 1 && { (_x distance2D _pos) < 0.8 } }) isEqualTo -1 }
+        _kind isEqualTo "guard" && { !("outside" in _extra) } && { !("free" in _extra) } && { (_positions findIf { abs ((_x select 2) - (_pos select 2)) < 1 && { (_x distance2D _pos) < 0.8 } }) isEqualTo -1 }
     };
-    [format ["Office templates: %1 guards inside at building positions (%2 positions)", _key, count _positions], _guardsOff isEqualTo [], str (_guardsOff apply { [_x select 0, _x select 1, (_x select 2) select 1, (_x select 2) select 2] })] call OTQA_fnc_check;
+    [format ["Office templates: %1 guards inside at building positions (%2 positions; balcony and window spots apart)", _key, count _positions], _guardsOff isEqualTo [], str (_guardsOff apply { [_x select 0, _x select 1, (_x select 2) select 1, (_x select 2) select 2] })] call OTQA_fnc_check;
 
     ([_b, 5, west, _parts] call OT_fnc_officeApplyTemplate) params ["_objects", "_guards"];
     sleep 1;
@@ -172,6 +200,42 @@ OTQA_officeTest_one = {
     [format ["Office templates: %1 everything placed where the template says, turned with the building", _key], _misplaced isEqualTo [], str _misplaced] call OTQA_fnc_check;
     [format ["Office templates: %1 everything on a floor, the ground or a table (not floating or sunk)", _key], _floating isEqualTo [], str _floating] call OTQA_fnc_check;
     [format ["Office templates: %1 no object inside a wall or under a floor", _key], _inWall isEqualTo [], str _inWall] call OTQA_fnc_check;
+
+    // Rule 4: a guard at least 0.8 m behind (or in front of) any fortification he stands at, in the piece's own
+    // coordinates: within its width, his distance from its face
+    private _tooClose = [];
+    private _forts = _objects select { private _c = toLower typeOf _x; (OTQA_officeTest_fortifications findIf { (_c find toLower _x) isEqualTo 0 }) > -1 };
+    {
+        private _g = _x;
+        private _gItem = _g call _itemOf;
+        {
+            private _f = _x;
+            if ((_f distance _g) < 4) then {
+                (boundingBoxReal _f) params ["_bmin", "_bmax"];
+                private _halfX = ((_bmax select 0) - (_bmin select 0)) / 2;
+                private _halfY = ((_bmax select 1) - (_bmin select 1)) / 2;
+                private _local = _f worldToModel (getPosATL _g);
+                if (abs (_local select 0) <= _halfX + 0.2 && { (abs (_local select 1)) - _halfY < 0.75 }) then {
+                    _tooClose pushBack [_gItem, _f call _itemOf, round (((abs (_local select 1)) - _halfY) * 100) / 100];
+                };
+            };
+        } forEach _forts;
+    } forEach _guards;
+    [format ["Office templates: %1 every guard stands at least 0.8 m from the face of his cover", _key], _tooClose isEqualTo [], str _tooClose] call OTQA_fnc_check;
+
+    // Rule 5: the perimeter's gate on the main entrance's axis, with a gate in a clear gap
+    private _gates = _objects select { "gate" in ((_x getVariable ["OT_officeItem", ["", 0, -1, ["", "", [0, 0, 0], 0, []]]]) select 3 select 4) };
+    private _gateOk = false;
+    private _gateDetail = "no gate";
+    if ((count _gates) isEqualTo 1 && { _mainDoor isNotEqualTo [] }) then {
+        private _gate = _gates select 0;
+        private _gatePos = _b worldToModel (getPosATL _gate);
+        private _off = [_gatePos, _mainDoor select 0] call _offAxis;
+        private _ring = _objects select { (toLower typeOf _x) find "land_hbarrier" isEqualTo 0 && { (_x distance _gate) < 2.8 } };
+        _gateOk = _off <= 0.5 && { _ring isEqualTo [] } && { (toLower typeOf _gate) isEqualTo "land_bargate_f" };
+        _gateDetail = format ["%1 at %2, %3 m off the main axis, %4 fence pieces within 2.8 m", typeOf _gate, _gatePos apply { round (_x * 10) / 10 }, round (_off * 100) / 100, count _ring];
+    };
+    [format ["Office templates: %1 the perimeter's gate is a bar gate on the main entrance's axis in a clear gap", _key], _gateOk, _gateDetail] call OTQA_fnc_check;
 
     // Away again: the template's things (OT_fnc_officeClearTemplate: the guards first, the rest a moment later,
     // and a hidden retry for anything that stays), then the building. A few House objects (the Offices_01

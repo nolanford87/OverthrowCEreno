@@ -9,7 +9,18 @@
         OTPROBE2|POS|class|count|[[x,y,z], ...]             (building positions)
         OTPROBE2|LEVELS|class|[z, ...]                      (floor heights, from the building positions)
         OTPROBE2|ROW|class|level z|y|row                    (1 m cells: '#' wall, '.' floor, ' ' nothing)
+        OTPROBE2|DOORGRID|class|door index|level z|j|row    (0.25 m cells round a door point: '#' wall; the
+                                                             row j is 0.25 j north of it, cell k 0.25 k east, k -14..14)
+        OTPROBE2|WINCELL|class|level z|x|y|dir|geom|view|across  (an outer wall cell: four samples 0.25 m apart
+                                                             along the wall, '1' where there is wall at sill height,
+                                                             none at window height and wall again above, i.e. a
+                                                             window, facing dir; read three ways: up the wall's centre
+                                                             line in the collision geometry, the same in the view
+                                                             geometry, and across the wall in the view geometry)
+        OTPROBE2|OPENSKY|class|level z|[[x,y], ...]         (floor cells with nothing of the building above:
+                                                             balconies, terraces, roofs)
         OTPROBE2|END|class
+    The doors are opened and the window glass broken first, so the ways through them read clear.
     Buildings made of several map objects (OTQA_probeOffices_parts: the Altis hospital's two wings)
     are read off the real one on the map first and spawned together:
         OTPROBE2|PARTS|class|[[part class, [x,y,z] in the main's coordinates, direction relative to it], ...]
@@ -110,6 +121,16 @@ OTQA_probeOffices_parts = createHashMapFromArray [
             } forEach (_layouts getOrDefault [_cls, []]);
             private _all = [_b] + _parts;
             sleep 2;
+            // The doors open and the window glass broken, so the walls read as they are with the ways
+            // through them and the windows clear (unbroken glass is in the collision geometry)
+            {
+                private _o = _x;
+                for "_i" from 1 to (getNumber ((configOf _o) >> "numberOfDoors")) do {
+                    { _o animateSource [format [_x, _i], 1, true] } forEach ["Door_%1_source", "Door_%1_sound_source"];
+                };
+                { if ("glass" in toLower _x) then { _o setHitPointDamage [_x, 1] } } forEach ((getAllHitPointsDamage _o) param [0, []]);
+            } forEach _all;
+            sleep 1;
             (boundingBoxReal _b) params ["_min", "_max"];
             {
                 private _o = _x;
@@ -152,6 +173,90 @@ OTQA_probeOffices_parts = createHashMapFromArray [
                     };
                     diag_log format ["OTPROBE2|ROW|%1|%2|%3|%4", _cls, _lz, _y, _row];
                 };
+            } forEach _levels;
+            // Whether there is wall between two heights above a model point (in the collision geometry)
+            private _wallAt = {
+                params ["_m", "_from", "_to", ["_lod", "GEOM"]];
+                private _w = _b modelToWorldWorld _m;
+                private _hits = lineIntersectsSurfaces [_w vectorAdd [0, 0, _from], _w vectorAdd [0, 0, _to], objNull, objNull, true, 1, _lod, "NONE"];
+                (_hits findIf { (_x select 2) in _all }) > -1
+            };
+            // Whether a ray across a wall (0.7 m either side of a model point, along the outward direction) at
+            // a height meets it in a geometry: the view and fire geometries are thin surfaces that a vertical
+            // ray through the cell's centre line can miss
+            private _acrossAt = {
+                params ["_m", "_h", "_dx", "_dy", "_lod"];
+                private _w = _b modelToWorldWorld (_m vectorAdd [0, 0, _h]);
+                private _hits = lineIntersectsSurfaces [_w vectorAdd [-_dx * 0.7, -_dy * 0.7, 0], _w vectorAdd [_dx * 0.7, _dy * 0.7, 0], objNull, objNull, true, 1, _lod, "NONE"];
+                (_hits findIf { (_x select 2) in _all }) > -1
+            };
+            // Round each door: a 0.25 m grid of wall at standing height, for the doorway's real centre and width
+            {
+                private _door = _x;
+                private _di = _forEachIndex;
+                private _lz = _levels select 0;
+                { if (abs (_x - ((_door select 2) - 1)) < abs (_lz - ((_door select 2) - 1))) then { _lz = _x } } forEach _levels;
+                for "_j" from 14 to -14 step -1 do {
+                    private _row = "";
+                    for "_k" from -14 to 14 do {
+                        _row = _row + (["#", " "] select !([[(_door select 0) + _k * 0.25, (_door select 1) + _j * 0.25, _lz], 0.4, 1.7] call _wallAt));
+                    };
+                    diag_log format ["OTPROBE2|DOORGRID|%1|%2|%3|%4|%5", _cls, _di, _lz, _j, _row];
+                };
+            } forEach _doors;
+            // Windows along the outer walls and floor open to the sky (balconies, terraces, roofs), per level
+            {
+                private _lz = _x;
+                private _cells = createHashMap;
+                for "_y" from (floor (_max select 1)) to (ceil (_min select 1)) step -1 do {
+                    for "_xx" from (ceil (_min select 0)) to (floor (_max select 0)) step 1 do {
+                        _cells set [[_xx, _y], call {
+                            if ([[_xx, _y, _lz], 0.4, 1.7] call _wallAt) exitWith { "#" };
+                            if ([[_xx, _y, _lz], 0.4, -0.6] call _wallAt) exitWith { "." };
+                            " "
+                        }];
+                    };
+                };
+                private _open = [];
+                {
+                    _x params ["_xx", "_y"];
+                    private _c = _cells get _x;
+                    if (_c isEqualTo ".") then {
+                        if !([[_xx, _y, _lz], 0.4, 4.5] call _wallAt) then { _open pushBack [_xx, _y] };
+                    };
+                    if (_c isEqualTo "#") then {
+                        {
+                            _x params ["_dir", "_dx", "_dy"];
+                            if ((_cells getOrDefault [[_xx + _dx, _y + _dy], " "]) isEqualTo " ") then {
+                                // A window: wall under the sill, nothing to see through at window height and wall
+                                // again above (a parapet or railing has none; a shuttered window stays solid). Read
+                                // twice: in the view geometry (what the AI sees through, but some models have none)
+                                // and in the fire geometry with the glass broken
+                                // Three readings of "nothing at window height", each catching windows the others miss
+                                // (frames and bars stop a ray across the wall, a ray up the wall's centre line slips past
+                                // them, a geometry can lack the wall altogether): the collision geometry up the line, the
+                                // view geometry up the line, the view geometry across the wall at 1.3 and 1.5 m
+                                private _flagsGeom = "";
+                                private _flagsView = "";
+                                private _flagsAcross = "";
+                                {
+                                    private _m = [_xx + _x * _dy, _y + _x * _dx, _lz]; // along the wall: across the outward direction
+                                    private _low = [_m, 0.3, 0.8] call _wallAt;
+                                    private _top = [_m, 2.2, 2.7] call _wallAt;
+                                    private _geom = [_m, 1.2, 1.6] call _wallAt;
+                                    private _view = [_m, 1.2, 1.6, "VIEW"] call _wallAt;
+                                    private _across = [_m, 1.3, _dx, _dy, "VIEW"] call _acrossAt || { [_m, 1.5, _dx, _dy, "VIEW"] call _acrossAt };
+                                    _flagsGeom = _flagsGeom + (["0", "1"] select (_low && { !_geom } && { _top }));
+                                    _flagsView = _flagsView + (["0", "1"] select (_low && { !_view } && { _top }));
+                                    _flagsAcross = _flagsAcross + (["0", "1"] select (_low && { !_across } && { _top }));
+                                } forEach [-0.375, -0.125, 0.125, 0.375];
+                                // Every outer wall cell is logged, so the readers can tell a geometry that reads open everywhere
+                                diag_log format ["OTPROBE2|WINCELL|%1|%2|%3|%4|%5|%6|%7|%8", _cls, _lz, _xx, _y, _dir, _flagsGeom, _flagsView, _flagsAcross];
+                            };
+                        } forEach [[0, 0, 1], [90, 1, 0], [180, 0, -1], [270, -1, 0]];
+                    };
+                } forEach (keys _cells);
+                diag_log format ["OTPROBE2|OPENSKY|%1|%2|%3", _cls, _lz, _open];
             } forEach _levels;
             diag_log format ["OTPROBE2|END|%1", _cls];
             { deleteVehicle _x } forEach _all;

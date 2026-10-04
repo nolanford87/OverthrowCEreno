@@ -7,72 +7,73 @@
     generator rather than this file.
 
     Returns: ARRAY - [tier 1 additions, ..., tier 5 additions], each [[kind, class or role, [x, y, z], dir, extra], ...]
+        (kind "doorway": a marker of a real entrance for the checks, nothing is spawned for it)
 */
 
 [
-    // Tier 1: guard posts
+    // Tier 1: the doorways, the office, the flag, the gendarmes
     [
-        ["object", "Flag_NATO_F", [-5.9, -7.6, -2.5], 270, ["outside", "flag"]],
-        ["object", "Land_TableDesk_F", [1.45, -1, -2.5], 270, []],
-        ["object", "Land_OfficeChair_01_F", [2.25, -1, -2.5], 270, []],
-        ["guard", "gendarme", [0.1, -3.3, -2.5], 251.57, []],
+        ["doorway", "main", [-4.65, -6.17, -2.5], 270, [3.5, 0]],
+        ["doorway", "side", [0.1, 5.3, -2.5], 0, [1.25, 2]],
+        ["object", "Land_TableDesk_F", [-2.4, 2, 1], 270, []],
+        ["object", "Land_OfficeChair_01_F", [-4, 2, 1], 270, []],
+        ["object", "Land_MapBoard_F", [-4.35, 4, 1], 90, []],
+        ["object", "Flag_NATO_F", [-5.65, -9.47, -2.5], 270, ["outside", "flag"]],
+        ["guard", "gendarme", [0.1, -3.3, -2.5], 238.82, []],
         ["guard", "gendarme", [3.5, -5.7, -2.5], 180, []]
     ],
-    // Tier 2: sandbags at the doors, a military pair
+    // Tier 2: the nest at the main door with the military pair, pairs of bags at the side doors
     [
-        ["object", "Land_BagFence_Short_F", [-5.5, -2.3, -2.5], 270, ["outside"]],
-        ["object", "Land_BagFence_Short_F", [-5.5, -6.3, -2.5], 270, ["outside"]],
-        ["object", "Land_BagFence_Short_F", [2.1, 7.9, -2.5], 0, ["outside"]],
-        ["object", "Land_BagFence_Short_F", [-1.9, 7.9, -2.5], 0, ["outside"]],
-        ["guard", "rifleman", [-5.2, -3.3, -2.5], 270, ["outside"]],
-        ["guard", "autorifleman", [-5.2, -5.3, -2.5], 270, ["outside"]]
+        ["object", "Land_BagFence_Long_F", [-7.65, -6.18, -2.5], 270, ["outside", "axis"]],
+        ["object", "Land_BagFence_Short_F", [-6.7, -7.88, -2.5], 0, ["outside"]],
+        ["object", "Land_BagFence_Short_F", [-6.7, -4.47, -2.5], 0, ["outside"]],
+        ["guard", "rifleman", [-6.52, -6.77, -2.5], 270, ["outside"]],
+        ["guard", "autorifleman", [-6.52, -5.58, -2.5], 270, ["outside"]],
+        ["object", "Land_BagFence_Short_F", [-1.9, 6.5, -2.5], 0, ["outside"]],
+        ["object", "Land_BagFence_Short_F", [2.1, 6.5, -2.5], 0, ["outside"]]
     ],
-    // Tier 3: barriers at the doors, firing positions inside, the fireteam
+    // Tier 3: the back door's post, firing posts at the side doors, window posts
     [
-        ["object", "Land_HBarrier_3_F", [-7.3, -1.9, -2.5], 270, ["outside"]],
-        ["object", "Land_HBarrier_3_F", [2.5, 9.7, -2.5], 0, ["outside"]],
-        ["guard", "rifleman", [3.3, 4.4, -2.5], 0, []],
-        ["guard", "autorifleman", [-6, -1.9, -2.5], 270, ["outside"]]
+        ["object", "Land_HBarrier_3_F", [4.3, 7.9, -2.5], 0, ["outside"]],
+        ["guard", "rifleman", [4.3, 6.4, -2.5], 0, ["outside"]],
+        ["guard", "autorifleman", [4.1, 2.88, -2.5], 90, ["free"]]
     ],
-    // Tier 4: wire, top floor positions, barricades on the approaches, the squad
+    // Tier 4: wire on the doorless sides, the stoppers on the approach, the gunner on the balcony, an upstairs post
     [
         ["object", "Land_Razorwire_F", [0.5, -9, -2.5], 180, ["outside"]],
         ["object", "Land_Razorwire_F", [8, 0.5, -2.5], 90, ["outside"]],
-        ["object", "Land_CncBarrier_stripes_F", [-8.7, -6.3, -2.5], 270, ["outside"]],
-        ["object", "Land_CncBarrier_stripes_F", [-10.5, -2.7, -2.5], 270, ["outside"]],
-        ["object", "Land_CzechHedgehog_01_F", [-12.3, -4.8, -2.5], 315, ["outside"]],
-        ["object", "Land_CncBarrier_stripes_F", [-1.9, 11.1, -2.5], 0, ["outside"]],
-        ["object", "Land_CncBarrier_stripes_F", [1.7, 12.9, -2.5], 0, ["outside"]],
-        ["guard", "mg_gunner", [-0.6, -5.3, 1], 180, []],
-        ["guard", "rifleman", [3.3, 6.3, 1], 0, []]
+        ["object", "Land_CncBarrier_stripes_F", [-17.65, -6.18, -2.5], 270, ["outside", "axis"]],
+        ["object", "Land_CzechHedgehog_01_F", [-16.85, -8.98, -2.5], 315, ["outside"]],
+        ["object", "Land_CzechHedgehog_01_F", [-16.85, -3.38, -2.5], 315, ["outside"]],
+        ["guard", "mg_gunner", [-4, -5, 1], 270, ["free"]],
+        ["guard", "rifleman", [4.2, 2.9, 1], 90, []]
     ],
-    // Tier 5: the perimeter and its gate, reinforced rooms, the marksman and AT man
+    // Tier 5: the perimeter and its gate with the AT man, the airlock, the office's cover, the marksman
     [
-        ["object", "Land_HBarrier_5_F", [-12.83, -11, -2.5], 180, ["outside"]],
-        ["object", "Land_HBarrier_5_F", [-6.69, -11, -2.5], 180, ["outside"]],
-        ["object", "Land_HBarrier_5_F", [-0.55, -11, -2.5], 180, ["outside"]],
-        ["object", "Land_HBarrier_5_F", [5.59, -11, -2.5], 180, ["outside"]],
-        ["object", "Land_HBarrier_1_F", [9.33, -11, -2.5], 180, ["outside"]],
-        ["object", "Land_HBarrier_5_F", [-12.83, 18.3, -2.5], 0, ["outside"]],
-        ["object", "Land_HBarrier_5_F", [-6.69, 18.3, -2.5], 0, ["outside"]],
-        ["object", "Land_HBarrier_5_F", [-0.55, 18.3, -2.5], 0, ["outside"]],
-        ["object", "Land_HBarrier_5_F", [5.59, 18.3, -2.5], 0, ["outside"]],
-        ["object", "Land_HBarrier_1_F", [9.33, 18.3, -2.5], 0, ["outside"]],
-        ["object", "Land_HBarrier_5_F", [10, -6.76, -2.5], 90, ["outside"]],
-        ["object", "Land_HBarrier_5_F", [10, -0.67, -2.5], 90, ["outside"]],
-        ["object", "Land_HBarrier_5_F", [10, 5.41, -2.5], 90, ["outside"]],
-        ["object", "Land_HBarrier_5_F", [10, 11.49, -2.5], 90, ["outside"]],
-        ["object", "Land_HBarrier_1_F", [10, 15.18, -2.5], 90, ["outside"]],
-        ["object", "Land_HBarrier_1_F", [10, 16.46, -2.5], 90, ["outside"]],
-        ["object", "Land_HBarrier_3_F", [-15.9, -8.05, -2.5], 270, ["outside"]],
-        ["object", "Land_HBarrier_5_F", [-15.9, 0.73, -2.5], 270, ["outside"]],
-        ["object", "Land_HBarrier_5_F", [-15.9, 6.78, -2.5], 270, ["outside"]],
-        ["object", "Land_HBarrier_5_F", [-15.9, 12.83, -2.5], 270, ["outside"]],
-        ["object", "Land_HBarrier_1_F", [-15.9, 16.48, -2.5], 270, ["outside"]],
-        ["object", "Land_CncBarrier_stripes_F", [-14.1, -1.7, -2.5], 270, ["outside"]],
-        ["object", "Land_BagFence_Short_F", [-0.7, -2.9, -2.5], 90, []],
-        ["object", "Land_BagFence_Short_F", [-0.7, -5.7, -2.5], 90, []],
-        ["guard", "marksman", [4.2, 2.9, 1], 90, []],
-        ["guard", "at", [-14.3, -5.9, -2.5], 270, ["outside"]]
+        ["object", "Land_HBarrier_5_F", [-20.65, -11, -2.5], 180, ["outside"]],
+        ["object", "Land_HBarrier_5_F", [-14.64, -11, -2.5], 180, ["outside"]],
+        ["object", "Land_HBarrier_5_F", [-8.63, -11, -2.5], 180, ["outside"]],
+        ["object", "Land_HBarrier_5_F", [-2.62, -11, -2.5], 180, ["outside"]],
+        ["object", "Land_HBarrier_5_F", [3.39, -11, -2.5], 180, ["outside"]],
+        ["object", "Land_HBarrier_3_F", [8.2, -11, -2.5], 180, ["outside"]],
+        ["object", "Land_HBarrier_5_F", [-20.65, 12, -2.5], 0, ["outside"]],
+        ["object", "Land_HBarrier_5_F", [-14.64, 12, -2.5], 0, ["outside"]],
+        ["object", "Land_HBarrier_5_F", [-8.63, 12, -2.5], 0, ["outside"]],
+        ["object", "Land_HBarrier_5_F", [-2.62, 12, -2.5], 0, ["outside"]],
+        ["object", "Land_HBarrier_5_F", [3.39, 12, -2.5], 0, ["outside"]],
+        ["object", "Land_HBarrier_3_F", [8.2, 12, -2.5], 0, ["outside"]],
+        ["object", "Land_HBarrier_5_F", [10, -6.78, -2.5], 90, ["outside"]],
+        ["object", "Land_HBarrier_5_F", [10, -0.74, -2.5], 90, ["outside"]],
+        ["object", "Land_HBarrier_5_F", [10, 5.3, -2.5], 90, ["outside"]],
+        ["object", "Land_HBarrier_1_F", [10, 8.94, -2.5], 90, ["outside"]],
+        ["object", "Land_HBarrier_1_F", [10, 10.18, -2.5], 90, ["outside"]],
+        ["object", "Land_HBarrier_1_F", [-23.65, -9.3, -2.5], 270, ["outside"]],
+        ["object", "Land_HBarrier_5_F", [-23.65, 0.27, -2.5], 270, ["outside"]],
+        ["object", "Land_HBarrier_5_F", [-23.65, 6.4, -2.5], 270, ["outside"]],
+        ["object", "Land_HBarrier_1_F", [-23.65, 10.13, -2.5], 270, ["outside"]],
+        ["object", "Land_BarGate_F", [-23.65, -5.8, -2.5], 270, ["outside", "axis", "gate"]],
+        ["object", "Land_BagFence_Long_F", [-0.2, 2, 1], 90, []],
+        ["guard", "at", [-22.15, -1.6, -2.5], 270, ["outside"]],
+        ["guard", "at", [-0.6, -5.3, 1], 180, []]
     ]
 ]

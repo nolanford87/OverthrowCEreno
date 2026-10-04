@@ -38,6 +38,7 @@ for "_t" from 1 to _tier do {
     {
         private _item = _x;
         _item params ["_kind", "_what", "_pos", "_dir", ["_extra", []]];
+        if !(_kind in ["guard", "object"]) then { continue }; // "doorway" markers are for the checks, nothing stands there
         private _world = _building modelToWorld _pos;
         private _outside = "outside" in _extra;
         if (_outside) then { _world set [2, 0] };
