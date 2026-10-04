@@ -486,8 +486,8 @@ class Drafter:
                     continue
                 sol = solve(g, ea, eb, fill)
                 if sol and CNC1 in (sol[0][0], sol[0][-1]):  # A 1 m section at a tie: its middle is its centre, so in less
-                    ca = (ea[0], min(ea[1], 0.33)) if sol[0][0] == CNC1 and ea[1] > 0 else ea
-                    cb = (eb[0], min(eb[1], 0.33)) if sol[0][-1] == CNC1 and eb[1] > 0 else eb
+                    ca = (ea[0], min(ea[1], 0.33)) if sol[0][0] == CNC1 and ea[0] < 0.33 < ea[1] else ea
+                    cb = (eb[0], min(eb[1], 0.33)) if sol[0][-1] == CNC1 and eb[0] < 0.33 < eb[1] else eb
                     sol = solve(g, ca, cb, fill) or sol
                 if sol is None:
                     errs.append(f"run {name}: no fit for a {g:.2f} m gap at s {a:.1f}")
@@ -1305,13 +1305,24 @@ def rodopoli(d, tier):
     # gap, the lane's south end (the gate, onto the south track) and its north end are closed. The way in is long:
     # through the gate, up the lane (at tier 4 two baffles make it a chicane), round the annexe into the yard and
     # onto the veranda.
-    if tier == 3:
+    if tier == 3:  # (pass 1: the wall along the east track is a low concrete wall: the lane is closed by a run up its
+        # middle (west of its tree planters), tied into runs across the lane's two ends)
         d.run("south_gap", (-15.5, -17.0), (-8.5, -17.0), ends=("tie", "tie"), out=180)
         d.run("north_gap", (-15.0, 27.0), (-7.5, 27.0), ends=("tie", "tie"), out=0)
-        d.run("lane_s", (4.5, -13.0), (16.5, -13.0), ends=("tie", "tie"), out=180)
-        d.run("lane_n", (4.5, 26.2), (16.0, 26.2), ends=("tie", "tie"), out=0)
-    if tier == 4:
-        pass  # pass 1: the outer ring (to come)
+        d.run("lane_s", (4.5, -13.0), (9.3, -13.0), ends=("tie", "corner"), out=180)
+        d.run("lane_n", (4.5, 26.2), (9.3, 26.2), ends=("tie", "corner"), out=0)
+        d.run("east", (9.3, -13.0), (9.3, 26.2), ends=("tie", "tie"), out=90)
+    if tier == 4:  # The outer ring: west of the walled yard (the big west houses and the garage, a wall across the gap
+        # between them), along the north track's verge and down the east track's verge, back across the low concrete
+        # wall (square) into the south house, and from the south annexe across to the big west house
+        W = WALL_FILL
+        d.run("o_w", (-28.5, -0.6), (-28.5, 10.1), ends=("tie", "tie"), fill=W, out=270)
+        d.run("o_n", (19.2, 31.0), (-26.0, 31.0), ends=("corner", "corner"), fill=W, out=0)
+        d.run("o_nw", (-26.0, 31.0), (-26.0, 28.2), ends=("tie", "tie"), fill=W, out=270)
+        d.run("o_e", (19.2, 31.0), (19.2, -17.5), ends=("tie", "corner"), fill=W, out=90)
+        d.run("o_s_e", (15.35, -17.5), (19.2, -17.5), ends=("fence", "tie"), fill=W, out=180)
+        d.run("o_s_w", (5.8, -17.5), (15.35, -17.5), ends=("tie", "fence"), fill=W, out=180)
+        d.run("o_sw", (-20.2, -22.0), (-10.5, -22.0), ends=("tie", "tie"), fill=W, out=180)
 
 
 @site("Sofia", entry="S", nest=(-6.2, 3.0, 270), flag=(9.0, 6.8), spare=[])
