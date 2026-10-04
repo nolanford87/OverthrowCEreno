@@ -872,6 +872,7 @@ class CfgFunctions {
             class officeClearTemplate {};
             class officeGuard {};
             class officeLayout {};
+            class officeSpawnItems {};
             class officeApplyLayout {};
         };
         // Mayor's office layouts authored in each town (tools/officegen/merge_layouts.py), one per map

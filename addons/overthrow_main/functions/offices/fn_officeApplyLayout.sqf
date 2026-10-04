@@ -34,34 +34,7 @@ if (isNull _building) then {
 };
 _tier = (round _tier) max 1 min 5;
 
-private _objects = [];
-private _guards = [];
-private _group = grpNull;
-{
-    private _item = _x;
-    _item params ["_kind", "_what", "_at", "_orient", ["_extra", []]];
-    if (_kind isEqualTo "guard") then {
-        if (isNull _group) then { _group = createGroup [_side, true] };
-        private _unit = [_what, ASLToATL _at, _orient, _group, _placeholders] call OT_fnc_officeGuard;
-        _unit setVariable ["OT_officeItem", [_town, _tier, _forEachIndex, _item]];
-        _guards pushBack _unit;
-    } else {
-        private _cls = _what;
-        if ("flag" in _extra && { !isNil "OT_flag_NATO" } && { isClass (configFile >> "CfgVehicles" >> OT_flag_NATO) }) then {
-            _cls = OT_flag_NATO;
-        };
-        if !(isClass (configFile >> "CfgVehicles" >> _cls)) then {
-            diag_log format ["Overthrow: office layout %1 tier %2 item %3: no such class %4", _town, _tier, _forEachIndex, _cls];
-            continue;
-        };
-        private _object = createVehicle [_cls, [0, 0, 0], [], 0, "CAN_COLLIDE"];
-        _object setPosASL _at;
-        _object setVectorDirAndUp _orient;
-        _object enableSimulationGlobal false;
-        _object setVariable ["OT_officeItem", [_town, _tier, _forEachIndex, _item]];
-        _objects pushBack _object;
-    };
-} forEach (_tiers param [_tier - 1, []]);
+([_tiers param [_tier - 1, []], _side, _placeholders, [_town, _tier]] call OT_fnc_officeSpawnItems) params ["_objects", "_guards"];
 
 _building setVariable ["OT_officeObjects", _objects];
 _building setVariable ["OT_officeGuards", _guards];
