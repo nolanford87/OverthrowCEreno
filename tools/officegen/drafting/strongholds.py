@@ -1,6 +1,7 @@
 """
 Mayor's office layouts, group "strongholds" (Overthrow CE): the four 5-tier towns.
-  Kavala, Pyrgos   Land_Offices_01_V1_F, the tower block on its podium (the showpieces)
+  Kavala           Land_Hospital_main_F, the hospital with its two wings (the user's choice, replacing the tower)
+  Pyrgos           Land_Offices_01_V1_F, the tower block on its podium
   Athira, Zaros    Land_House_Big_01, the two-storey house with the veranda
 Run from the repository root:
     python tools/officegen/drafting/strongholds.py [town ...] [--map N] [--audit] [--log]
@@ -1040,49 +1041,56 @@ def raise_inner(d, inner):
 
 
 def kavala(d):
-    """Kavala (model coordinates; "south" -y, the square; "east" +x, the street). The block's walls are low city
-    walls with railings and the old city wall north-west of the block (from (-36, -11) to (-4, 37), a road outside
-    it) is the same: none is a barrier, so every ring is the occupier's own, tied only into buildings: the office,
-    Addon_01 hard against its north-east (x 4.4..13.5, y 8.5..21.5) and Addon_02 at the north end (x 1..13,
-    y 22..34).
-    T3: H-barriers round the office: the south line (y -14.5) in front of the window bags, the west side (x -19)
-    with a chamfer parallel to the old wall at the north-west corner, the north line (y 11.4) into Addon_01; on the
-    east a line hugging the office's blank east face (x 14.4) from the south line, crossing the forecourt's low
-    wall (a junction), capped against the office; a plug between the office and Addon_01.
-    T4: Mil walls round the whole block, the west yard, the north yard and a forward yard out in the square: the
-    forward yard's face (y -30.5, x -10..21) and its west side (x -10, along House_Big_01's end) back to the square
-    face (y -21) west of it, the street face on the street's edge (x 20.6, bending out to 23 at the north end), the
-    north side into Addon_02, Addon_02, and outside the old city wall (1.7 m out) from the square face to Addon_02.
+    """Kavala: the hospital (Land_Hospital_main_F, model coordinates; "south" -y, the road; "east" +x, the cliff).
+    The main block (its probed floor x -3..16, y -22..19, joined on its south-west to side2's floor) has two wings
+    with no probed plan, solid to their boxes: side2 west (x -44.9..-11.1, y -22.6..2.5) and side1 north
+    (x -8..17.5, y 20.8..44.4). The wings' far ends lie 45 m out, the probe's edge (tl.check() holds every piece
+    within 46 m), so the rings wrap the main block and tie into the wings, which are the complex's west and north
+    sides. East: a yard of tanks and containers against the cliff (the rock's box, x 23..29); south: the road
+    (y -30); west: an inner courtyard between the wings (low garden walls in it), open to the west road.
+    T2: sandbags across each door that opens outside, 2 m out, and along the main block's faces onto the
+    courtyard strip (x -9.6) and the south front (y -22.7).
+    T3: H-barriers round the main block: the south line (y -24.2) from a cap into side2's south face (x -14.4) to the
+    east line (x 18.2, the main block's east side), which runs on along side1's east face; on the courtyard side a
+    line (x -11.8) from side2's north face, capped into side1's west face (y 24): the courtyard strip by the main door
+    inside.
+    T4: Mil walls round the grounds: the south line on the road's shoulder (y -25.9) from a cap into side2's south
+    face (x -36) to the cliff, a cap from side1's east face to the yard's north tank (y 32), and round the courtyard:
+    x -28 from side2's north face to y 33.5, then east into side1's west face, across the garden walls.
     T5: the T3 ring raised: the same lines in Mil walls."""
+    d.start = (-10.0, 10.0)  # In the courtyard strip by the main block's west face
     d.tier()  # T1: nothing
-    tower_t2(d)
+
+    d.tier()  # T2: a long bag 2 m out of every door that opens outside
+    for dr in d.t.doors:
+        m = d.t.to_model(dr["pos"])
+        md = (dr["dir"] - d.t.dir) % 360
+        if not d.t.on_office(*off(m[0], m[1], md, 1.5), 0.1, 0.1):
+            d.o(LONG, *off(m[0], m[1], md, 2.0), md, nudge=0.5)
+    for y in (6.0, 12.0, 16.5):                               # Along the main block's face onto the courtyard strip
+        d.o(LONG, -9.6, y, 270)
+    for x in (-1.0, 3.5, 8.0, 12.5):                          # Along its south front
+        d.o(LONG, x, -22.7, 180)
 
     def inner(d, fam, R, short):
-        d.fill(-19.9, -14.5, 15.3, -14.5, 180, fam, label="south line, west corner to east corner", ring=R)
-        d.fill(-19.0, -14.5, -19.0, 8.35, 270, fam, label="west line, south line to the chamfer", ring=R, past=0.3)
-        d.fill(-19.0, 8.35, -16.9, 11.4, 304.6, fam, label="north-west chamfer", ring=R, past=0.6)
-        d.fill(-16.9, 11.4, 4.4, 11.4, 0, fam, label="north line, chamfer to Addon_01", ring=R)
-        d.fill(14.4, -14.5, 14.4, -11.2, 90, fam, label="east line, south line to the forecourt wall", ring=R, walls=True)
-        d.fill(14.4, -11.2, 14.4, -6.6, 90, fam, label="east line along the office, wall to the cap", ring=R, walls=True, past=0.0)
-        d.piece(short, 14.25, -6.6, 0, R)                    # The cap, its west end against the office's east face
-        d.piece(short, 14.4, 8.5, 90, R)                     # The plug between the office and Addon_01
+        # (The H-barrier and the Mil lines a few cm apart where the pieces' lengths need it)
+        ys, xc = (-24.2, -11.8) if fam == "H" else (-23.8, -12.1)
+        d.fill(18.7, ys, -15.0, ys, 180, fam, label="south line, the east corner to side2", ring=R, past=0.3, road_ok=True)
+        d.fill(-14.4, ys, -14.4, -22.3, 270, fam, label="cap into side2's south face", ring=R, past=0.6)
+        d.run(18.2, ys, 18.2, 23.0, 90, fam, R, "east line, along the main block and side1", past=0.3)
+        d.fill(xc, 1.0, xc, 24.55, 270, fam, label="courtyard line, side2's north face to the cap", ring=R, past=0.6)
+        d.fill(xc, 24.0, -7.0, 24.0, 0, fam, label="cap into side1's west face", ring=R)
 
     d.tier()  # T3
     inner(d, "H", "T3 ring", HB1)
 
     d.tier()  # T4
     R = "T4 ring"
-    d.fill(21.75, -30.5, -10.55, -30.5, 180, "M", road_ok=True, label="forward yard's face, street to its west corner", ring=R, past=0.3)
-    d.fill(-10.0, -30.5, -10.0, -21.0, 270, "M", label="forward yard's west side, along House_Big_01's end", ring=R, past=0.6)
-    d.fill(-9.45, -21.0, -38.2, -21.0, 180, "M", label="square face, forward yard to the west corner", ring=R)
-    d.fill(-37.6, -21.0, -37.6, -11.4, 270, "M", label="west face, square face to the old wall", ring=R, past=0.6)
-    # Outside the old city wall, 1.7 m off its line (its damaged stretch's box is 2 m thick), to its north end
-    d.fill(-37.6, -11.6, -10.6, 30.45, 303.4, "M", label="outside the old city wall, west corner to the north", ring=R, past=0.6)
-    d.fill(-11.2, 30.45, -7.95, 30.45, 0, "M", label="across the old city wall", ring=R, walls=True, past=0.6)
-    d.fill(-7.95, 30.45, 3.0, 30.45, 0, "M", label="old city wall to Addon_02", ring=R, walls=True)
-    d.fill(11.3, 26.4, 22.3, 26.4, 0, "M", label="north side, Addon_02 to the low wall (the street face beyond)", ring=R, walls=True)
-    d.fill(23.3, 27.4, 20.6, 8.8, 98, "M", road_ok=True, label="street face, north corner to the bend", ring=R, past=0.6)
-    d.fill(20.6, 9.6, 20.6, -30.5, 90, "M", road_ok=True, label="street face, bend to the forward yard", ring=R, past=0.6)
+    d.run(-36.55, -25.9, 23.6, -25.9, 180, "M", R, "south line, the road's shoulder to the cliff", road_ok=True, past=0.0)
+    d.fill(-36.0, -25.9, -36.0, -22.3, 270, "M", label="cap into side2's south face", ring=R, road_ok=True, past=0.6)
+    d.fill(16.0, 32.0, 28.0, 32.0, 0, "M", label="cap from side1's east face to the yard's north tank", ring=R)
+    d.run(-29.1, 33.5, -6.0, 33.5, 0, "M", R, "courtyard's north line into side1's west face")
+    d.run(-28.0, 1.0, -28.0, 33.5, 270, "M", R, "courtyard's west line, side2 to the north line", past=0.6)
 
     d.tier()  # T5
     raise_inner(d, inner)

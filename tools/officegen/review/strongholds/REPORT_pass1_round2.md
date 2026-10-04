@@ -8,7 +8,7 @@ tier N.
 
 | Town | T1 | T2 | T3 | T4 | T5 |
 |---|---|---|---|---|---|
-| Kavala | 0 / 0 / 0 | 9 / 0 / 0 | 32 / 0 / 0 | 93 / 0 / 0 | 100 / 0 / 0 |
+| Kavala (hospital) | 0 / 0 / 0 | 9 / 0 / 0 | 30 / 0 / 0 | 72 / 0 / 0 | 83 / 0 / 0 |
 | Pyrgos | 0 / 0 / 0 | 11 / 0 / 0 | 35 / 0 / 0 | 96 / 0 / 0 | 106 / 0 / 0 |
 | Athira | 0 / 0 / 0 | 5 / 0 / 0 | 20 / 0 / 0 | 49 / 0 / 0 | 54 / 0 / 0 |
 | Zaros | 0 / 0 / 0 | 4 / 0 / 0 | 16 / 0 / 0 | 53 / 0 / 0 | 56 / 0 / 0 |
@@ -21,14 +21,49 @@ Materials:
   high-walled rings, the raised inner ring and the T4 outer ring, with the yards between them. That is why T5 has
   only a few more things than T4.
 
-## What changed (the critique's points)
+## Kavala: the hospital (KAVALA_HOSPITAL.md)
+
+Kavala is redone from scratch round the hospital: `Land_Hospital_main_F`, with side2 west and side1 north. The
+probe gives the main block a floor plan, which runs on into side2's south-west part. The wings have no probed plan,
+so they count as solid to their boxes.
+
+The wings' far ends lie 45 m out. That is the probe's edge, and `tl.check()` holds every piece within 46 m. So no
+ring can pass outside the wings' west end (x -44.9) or side1's north end (y 44.4). Instead, the rings wrap the main
+block, and **the wings form the complex's west and north sides**: each ring ties into them. The other sides:
+- **east:** a yard of tanks and containers backing onto the cliff (the rock's box, from x 23-29);
+- **south:** the road (y -30);
+- **west:** an inner courtyard between the two wings, open to the west road, with low garden walls in it.
+
+- **T2:**
+  - A long bag 2 m out from each door that opens outside: the south door at (-11.3, -21) and the north-east door
+    at (12.2, 19.8).
+  - Bags along the main block's face onto the courtyard strip at x -9.6. The probe's floor swallows the main
+    door's doorway, so these hold that side.
+  - Bags along the south front at y -22.7.
+- **T3, H-barriers wrapping the main block:**
+  - The south line at y -24.2, from a cap into side2's south face (x -14.4) to the east corner.
+  - The east line at x 18.2. It crosses the net fence at a junction and runs on along side1's east face.
+  - On the courtyard side, a line at x -11.8 from side2's north face, capped into side1's west face at y 24. This
+    keeps the courtyard strip by the main door inside.
+- **T4, Mil walls round the grounds:**
+  - The south line on the road's shoulder at y -25.9, from a cap into side2's south face (x -36) to the cliff.
+  - The cliff itself as the east side.
+  - A cap from side1's east face to the yard's north tank (y 32), which closes the yard.
+  - Round the courtyard: x -28 from side2's north face to y 33.5, then east into side1's west face. This line
+    crosses the garden walls at junctions.
+- **T5:** the T3 ring raised in place, in Mil walls.
+- **Closure (my check):** every tier closes, and each ring closes on its own; T1 and T2 come out open.
+  - **Start:** (-10, 10), in the courtyard strip. The main door's own doorway lies inside the probed floor, so the
+    check can't start there.
+  - **Treated as solid:** the wings to their boxes, and the cliff's rock box. If the game finds a way through a
+    wing or round the rock's real shape, that's where it will be.
+  - **The probe's edge:** the flood counts a man 44 m out as "out", so a corner pushed further out reads as a way
+    out. That is why T4's north-west corner stands at (-28, 33.5).
+
+## What changed for the other three towns (the critique's points)
 
 - **The rings no longer hug the building.** T3 is the tight ring, T4 goes back out round the compound like round 6's
   lines but in high walls, and T5 raises T3 in place:
-  - **Kavala:** a forward yard walled out into the square: face at y -30.5 (x -10..21), west side at x -10 along
-    House_Big_01's end, then the square face at y -21 west of it. With it, the west yard and the north yard to
-    Addon_02 (outside the old city wall), and the street face. There is now 16 m of ground in front of the inner
-    ring.
   - **Pyrgos:** round the west lot, the lane north and the square's north half: x -32..24, y -27..21.5. That is
     6-12 m outside the inner ring all round, crossing the square's path fences, the lot's fences and the low walls
     at junctions.
@@ -66,49 +101,48 @@ My check floods a 0.2 m grid outward from the door to 44 m out:
 - **Neighbours' box margins:** open ground.
 
 Results, for every tier from 3 up, with everything standing and with each ring on its own:
-- Kavala, Pyrgos and Athira: every tier closed, and every ring closed on its own.
+- Kavala (the hospital), Pyrgos and Athira: every tier closed, and every ring closed on its own.
 - Zaros: every tier closed, and every ring closed on its own. Its T5 ring is now the raised T3 ring, so it no
   longer relies on T3 at the shop front.
 
-For Kavala and Pyrgos, which the game can't check, the line audits below carry closure. Every run's two ends are
+For Pyrgos, which the game can't check, the line audit below carries closure. The hospital should start fine in
+the game. Every run's two ends are
 named: a building, a low wall at a junction, or a corner with the next run.
 
 ## Line audit per ring
 
 T5's ring is T3's lines redrawn in Mil walls, so its runs are listed under T5 with the same names. "Already shut"
-means the neighbouring pieces overlap, so no piece was needed. A "box" end is a neighbour's bounding box: Addon_01,
-Addon_02, Addon_03, House_Small_01, House_Small_02 and the scaffolding have no probed plan and are solid to their
-box.
+means the neighbouring pieces overlap, so no piece was needed. A "box" end is a neighbour's bounding box: the
+hospital's wings, Addon_03, House_Small_01, House_Small_02, the scaffolding and the tanks have no probed plan and
+are solid to their box.
 
 
 ### Kavala
 
+In the hospital's T3 and T5 rings, the east line's north end is "FREE" because it runs alongside side1's east face for its last 2 m. The two overlap by 0.15 m, side to side, which closes it; no piece's end runs into side1 there.
+
 | Ring | Run | Gap (m) | Run (m) | Pieces | Ends into (m) | End A | End B |
 |---|---|---|---|---|---|---|---|
-| T3 | south line, west corner to east corner | 35.2 | 36.0 | 6 HB5 + 1 HB3 | 0.40, 0.40 | corner, HB5 | corner, HB1 |
-| T3 | west line, south line to the chamfer | 22.0 | 22.3 | 4 HB5 | 0.30, -0.00 | piece HB5 | corner, HB3 |
-| T3 | north-west chamfer | 3.4 | 3.6 | 1 HB3 | 0.30, -0.08 | piece HB5 | corner, HB5 |
-| T3 | north line, chamfer to Addon_01 | 20.8 | 21.7 | 4 HB5 | 0.50, 0.38 | piece HB3 | u_Addon_01_V1 (box) |
-| T3 | east line, south line to the forecourt wall | 2.1 | 3.1 | 3 HB1 | 0.53, 0.53 | piece HB3 | low wall city_4m (box) |
-| T3 | east line along the office, wall to the cap | 4.3 | 4.7 | 1 HB3 + 1 HB1 | 0.30, 0.07 | piece HB1 | corner, HB1 |
-| T4 | forward yard's face, street to its west corner | 32.3 | 33.2 | 9 Mil | 0.46, 0.46 | corner, Mil | corner, Mil |
-| T4 | forward yard's west side, along House_Big_01's end | 9.0 | 9.0 | 2 Mil + 1 Cnc1 | 0.30, -0.27 | piece Mil | corner, Mil |
-| T4 | square face, forward yard to the west corner | 27.7 | 28.8 | 8 Mil | 0.57, 0.57 | piece Mil | corner, Mil |
-| T4 | west face, square face to the old wall | 9.1 | 9.8 | 2 Mil + 2 Cnc1 | 0.39, 0.39 | piece Mil | corner, Mil |
-| T4 | outside the old city wall, west corner to the north | 49.3 | 49.7 | 13 Mil | 0.30, 0.14 | piece Mil | corner, CncWall1 |
-| T4 | across the old city wall | 1.8 | 2.4 | 2 Cnc1 | 0.39, 0.22 | piece Mil | low wall city_8m (box) |
-| T4 | old city wall to Addon_02 | 10.4 | 11.3 | 3 Mil | 0.52, 0.38 | low wall city_8m (box) | i_Addon_02_V1 (box) |
-| T4 | north side, Addon_02 to the low wall (the street face beyond) | 10.6 | 11.4 | 3 Mil | 0.38, 0.46 | i_Addon_02_V1 (box) | low wall city_8m (box) |
-| T4 | street face, north corner to the bend | 18.8 | 19.3 | 5 Mil | 0.25, 0.25 | corner, Mil | corner, Mil |
-| T4 | street face, bend to the forward yard | 38.4 | 39.5 | 11 Mil | 0.56, 0.56 | piece Mil | piece Mil |
-| T5 | south line, west corner to east corner | 35.2 | 36.3 | 10 Mil | 0.53, 0.53 | corner, Mil | corner, CncWall1 |
-| T5 | west line, south line to the chamfer | 22.3 | 23.0 | 6 Mil | 0.33, 0.33 | piece Mil | corner, Mil |
-| T5 | north-west chamfer | 3.2 | 4.1 | 1 Mil | 0.44, 0.44 | piece Mil | corner, Mil |
-| T5 | north line, chamfer to Addon_01 | 20.7 | 21.7 | 6 Mil | 0.59, 0.38 | piece Mil | u_Addon_01_V1 (box) |
-| T5 | east line, south line to the forecourt wall | 2.4 | 3.2 | 3 Cnc1 | 0.51, 0.22 | piece Mil | low wall city_4m (box) |
-| T5 | east line along the office, wall to the cap | 4.4 | 5.1 | 1 Mil + 1 Cnc1 | 0.38, 0.38 | low wall city_4m (box) | corner, CncWall1 |
+| T3 | south line, the east corner to side2 | 33.7 | 33.3 | 6 HB5 | -0.20, -0.20 | corner, HB3 | corner, HB1 |
+| T3 | cap into side2's south face | 0.8 | 1.4 | 1 HB1 | 0.32, 0.32 | piece HB5 | part:Hospital_side2 (box) |
+| T3 | east line, along the main block and side1 (1/2) | 2.8 | 3.6 | 1 HB3 | 0.40, 0.40 | piece HB5 | low wall net_fence_4m (box) |
+| T3 | east line, along the main block and side1 (2/2) | 43.1 | 43.9 | 8 HB5 | 0.36, 0.36 | piece HB3 | FREE |
+| T3 | courtyard line, side2's north face to the cap | 22.1 | 22.3 | 4 HB5 | 0.30, -0.05 | part:Hospital_side2 (box) | corner, HB3 |
+| T3 | cap into side1's west face | 2.9 | 3.6 | 1 HB3 | 0.35, 0.35 | piece HB5 | part:Hospital_side1 (box) |
+| T4 | south line, the road's shoulder to the cliff | 60.1 | 60.8 | 16 Mil | 0.32, 0.32 | corner, CncWall1 | FREE |
+| T4 | cap into side2's south face | 2.7 | 3.4 | 3 Cnc1 | 0.41, 0.22 | piece Mil | part:Hospital_side2 (box) |
+| T4 | cap from side1's east face to the yard's north tank | 8.8 | 9.6 | 2 Mil + 2 Cnc1 | 0.38, 0.38 | part:Hospital_side1 (box) | tank_rust (box) |
+| T4 | courtyard's north line into side1's west face (1/3) | 5.8 | 6.3 | 1 Mil + 2 Cnc1 | 0.28, 0.22 | corner, Mil | low wall concrete_smallwall_8m (box) |
+| T4 | courtyard's north line into side1's west face (2/3) | 5.5 | 6.1 | 1 Mil + 2 Cnc1 | 0.38, 0.22 | low wall concrete_smallwall_8m (box) | low wall concrete_smallwall_8m (box) |
+| T4 | courtyard's north line into side1's west face (3/3) | 8.6 | 9.5 | 2 Mil + 2 Cnc1 | 0.49, 0.38 | low wall concrete_smallwall_8m (box) | part:Hospital_side1 (box) |
+| T4 | courtyard's west line, side2 to the north line | 30.5 | 31.2 | 8 Mil + 1 Cnc1 | 0.37, 0.37 | part:Hospital_side2 (box) | piece Mil |
+| T5 | south line, the east corner to side2 | 33.7 | 34.3 | 9 Mil | 0.32, 0.32 | corner, CncWall1 | corner, CncWall1 |
+| T5 | cap into side2's south face | 0.7 | 1.4 | 1 Cnc1 | 0.53, 0.22 | piece Mil | part:Hospital_side2 (box) |
+| T5 | east line, along the main block and side1 (1/2) | 2.7 | 3.3 | 3 Cnc1 | 0.43, 0.22 | piece Mil | low wall net_fence_4m (box) |
+| T5 | east line, along the main block and side1 (2/2) | 43.3 | 44.2 | 12 Mil | 0.45, 0.45 | low wall net_fence_4m (box) | FREE |
+| T5 | courtyard line, side2's north face to the cap | 22.1 | 22.8 | 6 Mil | 0.36, 0.36 | part:Hospital_side2 (box) | corner, Mil |
+| T5 | cap into side1's west face | 3.5 | 4.1 | 1 Mil | 0.30, 0.30 | piece Mil | part:Hospital_side1 (box) |
 
-T3 and T5 also each hold two pieces placed by hand: an `HB1` at T3 (a `CncWall1` at T5). One is the cap at (14.25, -6.6), its west end against the office's east face; the other is the plug at (14.4, 8.5) where the office meets Addon_01.
 
 ### Pyrgos
 
@@ -188,7 +222,8 @@ T3 and T5 also each hold two pieces placed by hand: an `HB1` at T3 (a `CncWall1`
    is T3-T5 still closed?
 2. **Athira, closure from the walk's start (6.7, -1.5):** T3-T5. Also the T4 corner where the south face and the
    lining meet at the shop's south corner (22.9, -13).
-3. **Kavala and Pyrgos, from the screenshots:** the forward yard's face (y -30.5) and the T4 rings' junctions with
-   the low walls and pipe fences.
-4. **The road shoulders:** Kavala's street face (x 20.6) and Zaros' east face (x 13).
+3. **Kavala (the hospital), closure:** a man inside the main block or in the courtyard strip. Are the wings and
+   the cliff solid, as I assumed? Where would he get round?
+4. **Pyrgos, from the screenshots:** T4's junctions with the pipe fences and the low walls.
+5. **The road shoulders:** the hospital's T4 south line (y -25.9) and Zaros' east face (x 13).
 
