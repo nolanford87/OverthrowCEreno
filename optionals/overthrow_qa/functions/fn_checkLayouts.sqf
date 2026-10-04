@@ -15,7 +15,7 @@
             views: the guards' median clear view in metres
         OTCLASS|class|[length, depth, height] the real size of every class the layouts use (once)
     and two screenshots per tier (the profile's Screenshots folder): OTL_<town>_T<tier>_top.png from 60 m
-    above, OTL_<town>_T<tier>_street.png from 40 m out along the office's way to the street, 18 m up.
+    above, OTL_<town>_T<tier>_street.png from 35 m out on the street side, 20 m up (the first bearing with a clear view).
     run-qa.ps1 -Suite layoutcheck -Only "town,..." checks those towns (else every town with a layout);
     OTQA_layoutShots = false skips the screenshots.
 
@@ -34,7 +34,9 @@
 
         // Daylight and a clear sky for the pictures; the host out of them and out of harm's way
         skipTime ((12.5 - daytime + 24) % 24);
-        0 setOvercast 0; 0 setRain 0; 0 setFog 0; forceWeatherChange;
+        0 setOvercast 0; 0 setRain 0; 0 setFog [0, 0, 0]; 0 setLightnings 0; forceWeatherChange;
+        999999 setOvercast 0; 999999 setRain 0; 999999 setFog 0; // And it stays so
+        sleep 3;
         player allowDamage false;
         player setCaptive true;
         player hideObjectGlobal true;
@@ -70,9 +72,9 @@
             (_layout select 0) params ["_class", "_pos", "_dir", ["_spawned", false]];
             player setPosASL ((_pos vectorAdd [0, 0, 0]) getPos [60, 0]);
             sleep 2; // The area streamed in
-            private _cap = [_town] call OTQA_townLayout_cap;
+            // Every tier the layout has (a town's highest tier in play follows its population, which a new game changes)
             private _b = objNull;
-            for "_tier" from 1 to _cap do {
+            for "_tier" from 1 to 5 do {
                 private _items = (_layout select 1) param [_tier - 1, []];
                 if (_items isEqualTo []) then { continue };
                 ([_town, _tier, west, true] call OT_fnc_officeApplyLayout) params ["_office", "_objects", "_guards"];
@@ -152,17 +154,29 @@
                     private _name = (_town splitString " ") joinString "_";
                     private _c = getPosASL _b;
                     _cam camPrepareTarget (ASLToAGL (_c vectorAdd [0, 0.5, 0]));
-                    _cam camPreparePos (ASLToAGL (_c vectorAdd [0, 0, 60]));
+                    // 48 m above the ground, or 40 m above the roof of a tall office (the Offices_01 tower)
+                    (boundingBoxReal _b) params ["", "_top"];
+                    _cam camPreparePos (ASLToAGL (_c vectorAdd [0, 0, 48 max ((_top select 2) + 40)]));
                     _cam camPrepareFOV 0.75;
                     _cam camCommitPrepared 0;
                     sleep 1.5;
                     screenshot format ["OTL_%1_T%2_top.png", _name, _tier];
                     sleep 0.5;
+                    // From the street side, 35 m out and 20 m up: the first bearing (from the way to the street round
+                    // both ways) with a clear view of the office (nothing but the office in the way)
                     ([_b, _parts, _town] call OTQA_townLayout_front) params ["_stand"];
-                    private _out = _b getDir _stand;
-                    private _eye = (_c getPos [40, _out]);
+                    private _front = _b getDir _stand;
+                    private _aim = _c vectorAdd [0, 0, 3];
+                    private _eye = [];
+                    {
+                        private _p = _c getPos [35, _front + _x];
+                        private _e = [_p select 0, _p select 1, ((getTerrainHeightASL _p) max (_c select 2)) + 20];
+                        private _hits = lineIntersectsSurfaces [_e, _aim, objNull, objNull, true, 1, "VIEW", "FIRE"];
+                        if (_hits isEqualTo [] || { (((_hits select 0) select 2) isEqualTo _b) || { ((_hits select 0) select 3) isEqualTo _b } }) exitWith { _eye = _e };
+                    } forEach [0, 30, -30, 60, -60, 90, -90, 135, -135, 180];
+                    if (_eye isEqualTo []) then { private _p = _c getPos [35, _front]; _eye = [_p select 0, _p select 1, ((getTerrainHeightASL _p) max (_c select 2)) + 26] };
                     _cam camPrepareTarget (ASLToAGL _c);
-                    _cam camPreparePos [_eye select 0, _eye select 1, ((getTerrainHeightASL _eye) max (_c select 2)) - (getTerrainHeightASL _eye) + 18];
+                    _cam camPreparePos (ASLToAGL _eye);
                     _cam camPrepareFOV 0.7;
                     _cam camCommitPrepared 0;
                     sleep 1.5;
