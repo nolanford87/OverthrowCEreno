@@ -52,12 +52,15 @@ MEASURED_MORE = {"Land_BagBunker_Tower_F": (6.4, 9.8), "Land_BagBunker_Small_F":
 # window, measured blind); flag_a (the flag at least this far out from the door, measured cutting into the house's
 # steps nearer); avoid ([(x, y, r)]: no gun there, measured blocked in the game); tower "gate" (the tower beside the gate, not at a corner);
 # tower_at ([(x, y)]: the tower's own posts, tried first, where no corner of the gate's line has room for it); gun_gap
-# (the least distance between the two guns' posts, strict and eased; default 9 and 6 m).
+# (the least distance between the two guns' posts, strict and eased; default 9 and 6 m); porch_y (the porch gendarme's
+# post off the house, default -5.8; measured pushed off it where the porch is narrower); gun_bags False (the guns stand
+# 1.6 m inside an unbroken line instead of in round bags set into it: a yard too small for gaps in its only wall);
+# ties ([(class, x, y, dir)]: short pieces tying the tower to the house's corner).
 TOWNS = {
-    "Alikampos": {"flag_a": 2.4, "ring": (-10, 8, -10, 12), "nest_a": 2.0, "tall": ("back", "right", "front"),
+    "Alikampos": {"ties": [("Land_HBarrier_1_F", 6.0, -7.6, 55)], "flag_a": 2.4, "ring": (-10, 8, -10, 12), "nest_a": 2.0, "tall": ("back", "right", "front"),
                   "statics": [("hmg", [("right", -6, 30), ("right", -2, 45), ("back", 5, -30)]),
                               ("gmg", [("back", -8, 30), ("front", -6, -30), ("left", 10, -30)])]},
-    "Dorida": {"entry": "front", "ring": (-19, 17, -11, 9.9), "nest_a": 2.4, "tall": ("front", "right", "left"),
+    "Dorida": {"avoid": [(12.6, 9.4, 2.5)], "entry": "front", "ring": (-19, 17, -11, 9.9), "nest_a": 2.4, "tall": ("front", "right", "left"),
                "statics": [("hmg", [("front", 8, 30), ("front", 10, 0), ("right", 7, 0)]),
                            ("gmg", [("right", -6, 30), ("right", -8, 60), ("back", 8, -30), ("back", -4, 0)])]},
     "Gravia": {"ring": (-9, 9, -13, 11.2), "tall": ("back", "front"),
@@ -65,18 +68,18 @@ TOWNS = {
                            ("gmg", [("front", -4, -30), ("front", -2, -15), ("left", 9, -30)])]},
     "Kore": {"mg_posts": "back", "avoid": [(16.7, -9.5, 2.5), (-15.5, 0.5, 3.0)], "ring": (-16, 17.5, -14, 12), "tall": ("back", "front", "left", "right"),
              "statics": [("hmg", [("back", -6, 30), ("back", 5, -30)]), ("gmg", [("back", -10, 0), ("back", -12, 0), ("left", -6, 0), ("front", -5, -30)])]},
-    "Lakka": {"ring": (-10, 10, -14, 12), "tall": ("back", "right", "left", "front"),
+    "Lakka": {"avoid": [(2.5, -12.5, 2.5)], "ring": (-10, 10, -14, 12), "tall": ("back", "right", "left", "front"),
               "statics": [("hmg", [("back", 6, -30), ("right", -10, 30)]), ("gmg", [("front", -6, -30), ("left", 6, -30)])]},
-    "Neri": {"ring": (-10, 10, -12.5, 12), "gate_at": -3.2, "tall": ("back", "left"),
+    "Neri": {"tower_at": [(9.0, -12.0), (9.0, -11.5)], "porch_y": -5.3, "ring": (-10, 10, -12.5, 12), "gate_at": -3.2, "tall": ("back", "left"),
              "statics": [("hmg", [("back", -7, 30), ("left", -8, -30), ("back", 6, -30), ("back", 4, 0)]),
                          ("gmg", [("left", 8, 30), ("left", 4, 0)])]},
     "Poliakko": {"no_window": True, "door_posts": [(3.2, -2.6, 0), (3.2, 2.6, 0), (3.2, -2.6, 330), (3.6, -3.0, 0)], "ring": (-18, 7.3, -13, 12), "tall": ("right", "back", "left"),
                  "statics": [("hmg", [("right", -8, 30), ("right", -5, 45)]), ("gmg", [("right", 8, -30), ("right", 5, -45)])]},
     "Selakano": {"avoid": [(14.7, 1.8, 2.0)], "ring": (-17.5, 15.5, -9.6, 12), "tower": "gate", "nest_a": 1.9, "nest_side": -1, "tall": ("back", "left", "right", "front"),
                  "statics": [("hmg", [("back", -8, 30), ("left", -6, -30)]), ("gmg", [("front", -6, -30), ("left", 8, 30)])]},
-    "Stavros": {"gun_gap": (4.5, 4.0), "tower_at": [(-9.0, -5.5), (-9.0, -5.0)], "avoid": [(-7.5, 7.5, 3.5)], "entry": "front", "ring": (-8, 5.5, -7.5, 12), "tall": ("back", "left", "front"),
-                "statics": [("hmg", [("left", -2, -30), ("left", -1, -45)]), ("gmg", [("left", 4.0, 0), ("left", 4.0, 15)])]},
-    "Telos": {"tower_at": [(8.0, 2.0), (8.0, 1.0), (8.5, 1.5), (7.8, 0.0)], "nest_side": -1, "ring": (-21, 10, -14, 7.6), "tall": ("front", "back", "right", "left"),
+    "Stavros": {"gun_bags": False, "porch_y": -5.3, "gun_gap": (4.5, 4.0), "tower_at": [(-9.0, -5.5), (-9.0, -5.0)], "avoid": [(-7.5, 7.5, 3.5), (-7.3, 0.9, 3.0)], "entry": "front", "ring": (-8, 5.5, -7.5, 12), "tall": ("back", "left", "front"),
+                "statics": [("hmg", [("back", -2, 0), ("back", 0, -30), ("back", 2, -30)]), ("gmg", [("left", 2.0, 0), ("left", 3.0, 0)])]},
+    "Telos": {"tower_at": [(9.5, 2.0), (9.5, 1.5), (10.0, 2.0)], "nest_side": -1, "ring": (-21, 10, -14, 7.6), "tall": ("front", "back", "right", "left"),
               "statics": [("hmg", [("right", 4, 0), ("right", 0, 30), ("front", 7, 30)]), ("gmg", [("back", -6, 30), ("back", 5, -30)])]},
     "Abdera": {},
     "Agios Konstantinos": {},
@@ -207,6 +210,7 @@ class Site:
 
     OFFICE = [(-5.4, -6.7), (-5.4, 7.0), (5.4, -6.7), (5.4, 7.0)]  # The house, its porch and front steps
     WALLS = [(-5.3, -5.0), (-5.3, 5.8), (5.3, -5.0), (5.3, 5.8)]  # Its walls (the back porch, y -5 to -6.5, left out)
+    CLOSES = [(-5.4, -5.0), (-5.4, 7.0), (5.4, -5.0), (5.4, 7.0)]  # What of it closes a line: not the open back porch
 
     def game_rays(self, it):
         """The in-game clip test (fn_checkLayouts): two rays across the diagonals of a ground thing's footprint at its
@@ -232,9 +236,9 @@ class Site:
         office = [(x + (0.03 if x > 0 else -0.03), y + (0.03 if y > 0 else -0.03)) for x, y in self.OFFICE]  # A margin
         if it[1] == "Land_BagBunker_Tower_F":
             # Its 6.4 x 9.8 box takes in more than the sandbags: round 4 clipped no wall or building beyond 2 m of a
-            # tower's centre, but the office from 1.8 m off it (and not from 2.8 m): its centre 2.5 m clear of the house
+            # tower's centre, but the office from 1.8 and 2.6 m off it (not from 2.8 m): its centre 2.7 m clear of the house
             ix = iy = 2.0
-            if poly_dist(m[:2], [office[0], office[1], office[3], office[2]]) < 2.5:
+            if poly_dist(m[:2], [office[0], office[1], office[3], office[2]]) < 2.7:
                 out.append(("office", (0.0, 0.1)))
         for kind, r in self.rects + ([] if out else [("office", office)]):
             if kind == "tree":
@@ -493,7 +497,7 @@ def tier1(s):
              if a >= s.cfg.get("flag_a", 0)], "flag")
     # Gendarme at the way in: on the porch at its mouth, or outside the front door beside it
     if s.entry == "porch_s":
-        s.first([s.G("gendarme", x, -5.8, d, f0) for x in (-1.9, -0.9, -3.9) for d in (180, 200, 160)], "porch gendarme", see=8)
+        s.first([s.G("gendarme", x, s.cfg.get("porch_y", -5.8), d, f0) for x in (-1.9, -0.9, -3.9) for d in (180, 200, 160)], "porch gendarme", see=8)
     else:
         s.first([s.G("gendarme", *s.ef(a, l), d) for a, l in ((1.0, 1.6), (1.0, -1.6), (0.8, 2.2)) for d in (0, 20, 340)],
                 "front gendarme", see=8)
@@ -504,7 +508,7 @@ def tier1(s):
         if not s.first([s.G("gendarme", 4.1, 2.9, 90, f0)], "", see=6, fallback=False):
             s.first([s.G("gendarme", x, -5.8, d, f0) for x in (1.5, 3.0, 0.5, -0.9, -3.9) for d in (180, 150, 210, 120, 240)], "second gendarme", see=8)
     elif d2 == 180:
-        s.first([s.G("gendarme", x, -5.8, d, f0) for x in (-1.9, -0.9, 1.0) for d in (180, 200, 160)], "second gendarme")
+        s.first([s.G("gendarme", x, s.cfg.get("porch_y", -5.8), d, f0) for x in (-1.9, -0.9, 1.0) for d in (180, 200, 160)], "second gendarme")
     else:
         a = s.cfg.get("screen_a", 2.3) - 1.3
         posts = s.cfg.get("door_posts") or [(max(a, 1.0), l, d) for l in (-1.2, 1.2, -1.6, 1.6, -2.2, 2.2) for d in (0, 340, 20)]
@@ -549,8 +553,9 @@ def tier2(s):
         # No ground for it (a road right off the porch): the nest on the porch's edge, under the balcony, its flank
         # shielded by an H-barrier on the ground beside the porch
         s.skipped.pop()
-        s.nest_side = -1 if s.group([s.O("Land_BagFence_Long_F", 1.4, -5.8, 180, f0),
-                                      s.G("rifleman", 0.8, -4.8, 180, f0), s.G("autorifleman", 2.0, -4.8, 180, f0)]) else None
+        # (x 0.9: at x 1.4 it measured into the house at y -6.3 and -5.8 alike, so something stands at its east end)
+        s.nest_side = -1 if s.group([s.O("Land_BagFence_Long_F", 0.9, -5.8, 180, f0),
+                                      s.G("rifleman", 0.3, -4.8, 180, f0), s.G("autorifleman", 1.5, -4.8, 180, f0)]) else None
         s.first([s.O("Land_HBarrier_3_F", x, y, 90) for x, y in ((6.3, -7.0), (6.3, -7.6), (5.0, -8.2))], "porch blast wall")
     else:
         s.nest_side = None
@@ -571,10 +576,11 @@ def tier2(s):
     s.tier()
 
 
-def ring_side(s, side, gate=None, tall=False):
+def ring_side(s, side, gate=None, tall=False, phase="fill"):
     """Barrier pieces along one side of the ring, overlapping so the line is unbroken. Where tall, first the 2-high
     pieces, wherever one fits clear of the low stretches (the gate, the guns, the men firing over the line), each
-    stepping in up to 1.2 m to clear an old wall; then 1-high pieces fill what is still open, each starting 0.3 m
+    stepping in up to 1.2 m to clear an old wall (phase "tall", run for every side first); then (phase "fill")
+    1-high pieces fill what is still open, each starting 0.3 m
     into what is before it. The gate (lateral coordinate) leaves its 5 m gap. Returns the pieces placed."""
     x0, x1, y0, y1 = s.cfg["ring"]
     if side in ("back", "front"):
@@ -586,7 +592,7 @@ def ring_side(s, side, gate=None, tall=False):
         pt = lambda u: (fixed, u)
         cut = lambda u, w: ((fixed - w, u), (fixed + w, u))
     inward = {"back": (0, 1), "front": (0, -1), "left": (1, 0), "right": (-1, 0)}[side]
-    old = [r for kind, r in s.rects if kind in ("wall", "building", "rock")] + [s.OFFICE]
+    old = [r for kind, r in s.rects if kind in ("wall", "building", "rock")] + [s.CLOSES]
 
     def covered(u):
         """The line closed at u: a barrier piece, the tower or a gun's bags across it (within 1 m), or an old wall,
@@ -599,7 +605,7 @@ def ring_side(s, side, gate=None, tall=False):
         if any(seg_rect(p, q, r) for r in old):
             return True
         p, q = cut(u, 1.0)
-        return seg_rect(p, q, s.OFFICE)  # The house's own wall (and its door, held since tier 1) closes the line there
+        return seg_rect(p, q, s.CLOSES)  # The house's own wall (and its door, held since tier 1) closes the line there
 
     placed = []
     segs = [(a, c)] if gate is None else [(a, gate - 2.5), (gate + 2.5, c)]
@@ -609,7 +615,7 @@ def ring_side(s, side, gate=None, tall=False):
         # Tile from the gate's edge outward (the segment's inner end); without a gate from the start
         start, step = (q, -1) if (gate is not None and k == 0) else (p, 1)
         end = p if step < 0 else q
-        if tall:
+        if tall and phase == "tall":
             u = start + step * 0.3
             while (end - u) * step > 3.0:
                 centre = u + step * (8.4 / 2 - 0.3)
@@ -626,6 +632,8 @@ def ring_side(s, side, gate=None, tall=False):
                     u += step * (8.4 - 0.6)
                 else:
                     u += step * 0.25
+        if phase != "fill":
+            continue
         u = start + step * 0.3  # Into the gate's post a little
         while (end - u) * step > 0.0:
             if covered(u + step * 0.35):
@@ -636,15 +644,21 @@ def ring_side(s, side, gate=None, tall=False):
             for cls, ln in (("Land_HBarrier_5_F", 6.0), ("Land_HBarrier_3_F", 3.6), ("Land_HBarrier_1_F", 1.56), ("Land_CncBarrier_F", 1.6)):
                 if ln > room + 1.2 and ln > 1.6:
                     continue
-                it = s.O(cls, *pt(u - step * 0.3 + step * ln / 2), mdir)
-                if s.add(it):
-                    got = it
+                # On the line, or stepped in up to 0.8 m (off a road's edge, round a tree trunk) so a longer piece fits;
+                # slid back up to 0.6 m over the piece before when what is ahead (a gun's bags) leaves only a slot
+                for back, inset in [(b, i) for b in (0.0, 0.3, 0.6) for i in (0.0, 0.4, 0.8)]:
+                    x, y = pt(u - step * (0.3 + back) + step * ln / 2)
+                    it = s.O(cls, x + inward[0] * inset, y + inward[1] * inset, mdir)
+                    if s.add(it):
+                        got = it
+                        break
+                if got:
                     break
             if got:
                 placed.append(got)
                 u += step * (ln - 0.6)  # The next piece overlaps this one
             else:
-                u += step * 0.5  # Blocked here (a neighbour, a wall, a road, a gun post): a bit further on
+                u += step * 0.2  # Blocked here (a neighbour, a wall, a road, a gun post): a bit further on
     return placed
 
 
@@ -754,9 +768,13 @@ def static_post(s, role, prefs, gate_side, gate_at):
                     if abs(((d - OUT[side]) + 180) % 360 - 180) > 60:
                         continue
                     fx, fy = uv(d)
-                    bag = s.O("Land_BagFence_Round_F", lx + ox * 0.2, ly + oy * 0.2, d + 180)
-                    gun = s.S(role, lx + ox * 0.2 - fx * 1.0, ly + oy * 0.2 - fy * 1.0, d)
-                    gx, gy = lx + ox * 0.2 - fx * 1.0, ly + oy * 0.2 - fy * 1.0
+                    if s.cfg.get("gun_bags", True):
+                        bag = s.O("Land_BagFence_Round_F", lx + ox * 0.2, ly + oy * 0.2, d + 180)
+                        gx, gy = lx + ox * 0.2 - fx * 1.0, ly + oy * 0.2 - fy * 1.0
+                    else:
+                        # No bags in the line: the line runs on unbroken (1-high) in front, the gun 1.6 m inside it
+                        bag, gx, gy = None, lx - ox * 1.6, ly - oy * 1.6
+                    gun = s.S(role, gx, gy, d)
                     hs = [s.t.ground_model(gx + ex * 1.3, gy + ey * 1.3) for ex, ey in ((1, 0), (-1, 0), (0, 1), (0, -1), (0, 0))]
                     slope = max(hs) - min(hs)
                     if any(it[1] == "Land_BagBunker_Tower_F" and math.dist((gx, gy), s.t.to_model(it[2])[:2]) < (5.0, 3.2)[level] for it in s.placed):
@@ -770,14 +788,14 @@ def static_post(s, role, prefs, gate_side, gate_at):
                     gw = s.t.to_world(gx, gy, 0)
                     if [h for h in s.t.hits(gw[0], gw[1], 3.5, 3.5, 0, 0) if h[0] == "wall"]:
                         continue  # Clear of old walls and buildings all round (the gun swings, its crew climbs on)
-                    if slope > (0.25, 0.4)[level] or not s.ok(bag) or not s.ok(gun):
+                    if slope > (0.25, 0.4)[level] or (bag and not s.ok(bag)) or not s.ok(gun):
                         continue
                     n = len(s.cur)
-                    s.cur += [bag, gun]
+                    s.cur += [it for it in (bag, gun) if it]
                     fire = s.ray(gx, gy, d, start=2.2, low=True)
                     del s.cur[n:]
                     if best is None or fire > best[0]:
-                        best = (fire, bag, gun)
+                        best = (fire, bag, gun, (lx, ly))
                     if fire >= 30:
                         break
                 if best and best[0] >= 30:
@@ -787,9 +805,9 @@ def static_post(s, role, prefs, gate_side, gate_at):
     if best is None:
         s.skipped.append(f"static {role}")
         return None
-    s.cur += [best[1], best[2]]
-    s.low_spots.append((tuple(s.t.to_model(best[1][2])[:2]), 1.8, 3.0, None))
-    s.guns.append(tuple(s.t.to_model(best[1][2])[:2]))
+    s.cur += [it for it in best[1:3] if it]
+    s.low_spots.append((best[3], 1.8, 3.0, None))
+    s.guns.append(best[3])
     if best[0] < 30:
         s.skipped.append(f"static {role}: field of fire only {best[0]} m")
     return best[0]
@@ -889,6 +907,15 @@ def tier3(s):
         s.cur += [best[1], best[2]]
     else:
         s.skipped.append("tower")
+    for cls, x, y, d in s.cfg.get("ties", ()):
+        s.add(s.O(cls, x, y, d), f"tie {cls}")  # A short line from the tower to the house's corner
+    # The gate pair: either side of the gap behind where the line will run (placed first, so it stays 1-high in front of them)
+    for role, sgn in (("rifleman", 1), ("at", -1)):
+        men = [t.to_model(g[2])[:2] for g in s.placed if g[0] == "guard"]
+        s.first([g for g in (s.G(role, *s.ef(gate_dist - 1.9 - b, k * l), s.d + dd) for k in (sgn, -sgn)
+                             for l in (3.6, 4.4, 5.2, 6.0, 7.0, 8.0, 9.0, 10.0) for b in (0, 0.5, 1.0) for dd in (0, k * 20))
+                 if all(math.dist(t.to_model(g[2])[:2], q) >= 0.9 for q in men)],  # Not shoulder to shoulder
+                f"gate {role}", see=8)
     # The statics, each where its field of fire is longest; the lines stay 1-high round them and the second door
     # The men on the ground outside (the second door's, the nest's) look out over the line in front of them: it
     # stays 1-high across their line of sight (1.5 m either side of it)
@@ -902,18 +929,15 @@ def tier3(s):
     tall = s.cfg.get("tall", ())
     lines = {}
     for side in ("back", "front", "left", "right"):
-        lines[side] = ring_side(s, side, gate_at if side == gate_side else None, side in tall)
+        lines[side] = ring_side(s, side, gate_at if side == gate_side else None, side in tall, "tall")
+    for side in ("back", "front", "left", "right"):
+        lines[side] += ring_side(s, side, gate_at if side == gate_side else None, side in tall, "fill")
     s.filled = fill_holes(s)
     # The chicane: a barrier inside the gate, offset so the way in dog-legs round it under the nest's guns
     off = -ns * 1.6
     if gate_dist >= 6.0:
         s.first([s.O("Land_HBarrier_3_F", *s.ef(gate_dist - a, off * k), s.d) for a in (3.0, 3.5, 2.6) for k in (1, 1.3)],
                 "chicane", lane_ok=True)
-    # The gate pair: behind the 1-high line either side of the gap, facing out
-    for role, sgn in (("rifleman", 1), ("at", -1)):
-        s.first([s.G(role, *s.ef(gate_dist - 1.9 - b, k * l), s.d + dd) for k in (sgn, -sgn) for b in (0, 0.5, 1.0)
-                 for l in (3.6, 4.4, 5.2, 6.0, 7.0, 8.0) for dd in (0, k * 20)],
-                f"gate {role}", see=8)
     # Upstairs: the MG on the other balcony, the officer in the office
     s.upstairs("mg_gunner", {"back": BACK_BALCONY}.get(s.cfg.get("mg_posts"), FRONT_BALCONY + BACK_BALCONY + WINDOW), "mg_gunner")
     s.cur.append(s.G("officer", 0.3, 4.5, 270, f1))
@@ -981,7 +1005,7 @@ def line_audit(s, step=0.1, band=1.2):
     x0, x1, y0, y1 = s.cfg["ring"]
     items = [it for it in s.snapshots()[-1] if it[0] == "object" and "ground" in it[4] and
              (barrierish(it[1]) or "Bunker" in it[1]) and it[1] != "Land_Razorwire_F"]
-    old = [r for kind, r in s.rects if kind in ("wall", "building", "rock")] + [s.OFFICE]
+    old = [r for kind, r in s.rects if kind in ("wall", "building", "rock")] + [s.CLOSES]
 
     def kind_of(cls):
         if cls in TALL:
@@ -1058,7 +1082,7 @@ def closed_audit(s, cell=0.25, man=0.2, reach=40.0):
     n = int(2 * reach / cell)
     idx = lambda v: int(round((v + reach) / cell))
     blocked = bytearray(n * n)
-    shapes = [r for k, r in s.rects if k in ("wall", "building", "rock")] + [s.OFFICE]
+    shapes = [r for k, r in s.rects if k in ("wall", "building", "rock")] + [s.CLOSES]
     for it in s.snapshots()[-1]:
         if it[0] == "object" and "ground" in it[4] and (barrierish(it[1]) or "Bunker" in it[1]):
             shapes.append(s.corners(it))

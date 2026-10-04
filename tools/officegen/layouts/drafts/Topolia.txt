@@ -15,8 +15,8 @@ OTLAYOUT|Altis|Topolia|ITEM|2|object|Flag_NATO_F|[7417.342,15413.404,56.836]|[[-
 OTLAYOUT|Altis|Topolia|ITEM|2|guard|gendarme|[7419.222,15411.479,57.460]|3.7|
 OTLAYOUT|Altis|Topolia|ITEM|2|guard|gendarme|[7417.602,15398.857,56.731]|163.7|ground
 OTLAYOUT|Altis|Topolia|ITEM|2|guard|gendarme|[7417.892,15411.064,60.900]|3.7|
-OTLAYOUT|Altis|Topolia|ITEM|2|object|Land_BagFence_Long_F|[7415.929,15411.692,57.460]|[[0.0647,0.9979,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Topolia|ITEM|2|guard|rifleman|[7416.463,15410.656,57.460]|3.7|
-OTLAYOUT|Altis|Topolia|ITEM|2|guard|autorifleman|[7415.265,15410.733,57.460]|3.7|
+OTLAYOUT|Altis|Topolia|ITEM|2|object|Land_BagFence_Long_F|[7416.428,15411.660,57.460]|[[0.0647,0.9979,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Topolia|ITEM|2|guard|rifleman|[7416.962,15410.623,57.460]|3.7|
+OTLAYOUT|Altis|Topolia|ITEM|2|guard|autorifleman|[7415.764,15410.701,57.460]|3.7|
 OTLAYOUT|Altis|Topolia|ITEM|2|object|Land_BagFence_Long_F|[7416.320,15397.637,56.694]|[[-0.0647,-0.9979,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Topolia|ITEM|2|guard|marksman|[7420.686,15410.883,60.900]|48.7|
