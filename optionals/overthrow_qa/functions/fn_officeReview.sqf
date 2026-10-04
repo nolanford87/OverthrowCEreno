@@ -16,10 +16,25 @@
     logged. Buildings without a template yet are left out. run-qa.ps1 -Only limits it to the classes
     named. The vote, issue, tier and site code paths are checked by OTQA_fnc_testsOfficeTemplates.
 
+    The real town step ("Review: see it in a real town"): the current building's real instance on the
+    map, inside a town (OTQA_officeReview_realFind: the towns whose population bracket the building is
+    meant for first, then any town; the instance nearest its town's centre), the host put down outside
+    it and the template applied to the REAL building at tier 1 with placeholders, logged as
+        OTFEEDBACK|REALTOWN|key|town|building class|pos
+    The real building and, for the hospital, its real wings are never deleted or hidden: only the
+    template's own things are taken off it again (OT_fnc_officeClearTemplate deletes what it put there
+    and nothing else; a pass over the review's own lists catches anything it left). There, "Real town:
+    next tier" / "previous tier" cycle the tiers (the tier in a hint and in the label over the building),
+    "Real town: mark Tier N reviewed" logs OTFEEDBACK|REALTIERDONE|key|town|tier, "Real town: back to the
+    airport" clears and returns to the row (same building) and "Real town: next building" clears, returns
+    and moves on. The issue actions work the same there and log, with the town:
+        OTFEEDBACK|REAL|town|key|tier|index|class or role|[x, y, z] model pos|issue|note
+    "Review: finished" clears the real town too. Checked by OTQA_fnc_testsOfficeReviewTown.
+
     Returns: ARRAY - [[name, code, seconds]] (one test, so the QA runner can run it as a suite)
 */
 
-OTQA_officeReview = createHashMap; // The review's state: keys, the building shown, its copies, the votes, the tiers done, the site
+OTQA_officeReview = createHashMap; // The review's state: keys, the building shown, its copies, the votes, the tiers done, the site, the real town
 
 // The office classes with a template, as keys (the ones asked for, else all of them)
 OTQA_officeReview_keys = {
@@ -59,23 +74,38 @@ OTQA_officeReview_isReported = {
     _id isNotEqualTo "" && { _id in (OTQA_officeReview getOrDefault ["reported", createHashMap]) }
 };
 
-// A vote on a thing: logged for the author (the line logged is returned), counted, confirmed
+// The town a thing placed by the review stands in: the real town's, when it's one of the things on the
+// real building, "" for the airport row
+OTQA_officeReview_townOf = {
+    params [["_obj", objNull, [objNull]]];
+    private _real = OTQA_officeReview get "real";
+    if (isNil "_real" || { isNull _obj }) exitWith { "" };
+    if (_obj in ((_real get "objects") + (_real get "guards"))) then { _real get "town" } else { "" }
+};
+
+// A vote on a thing: logged for the author (the line logged is returned), counted, confirmed. A thing on the
+// real building logs the town with it (OTFEEDBACK|REAL|town|...), the airport row's line is unchanged
 OTQA_officeReview_vote = {
     params ["_obj", "_vote", ["_note", ""]];
     private _item = [_obj] call OTQA_officeReview_itemOf;
     if (_item isEqualTo []) exitWith { hint "Office review: that isn't one of the template's things"; "" };
     _item params ["_key", "_tier", "_index", "_what", "_pos"];
-    private _line = format ["OTFEEDBACK|%1|%2|%3|%4|%5|%6|%7", _key, _tier, _index, _what, _pos, _vote, _note];
+    private _town = [_obj] call OTQA_officeReview_townOf;
+    private _line = if (_town isEqualTo "") then {
+        format ["OTFEEDBACK|%1|%2|%3|%4|%5|%6|%7", _key, _tier, _index, _what, _pos, _vote, _note]
+    } else {
+        format ["OTFEEDBACK|REAL|%1|%2|%3|%4|%5|%6|%7|%8", _town, _key, _tier, _index, _what, _pos, _vote, _note]
+    };
     diag_log _line;
     private _votes = OTQA_officeReview getOrDefault ["votes", []];
-    _votes pushBack [_key, _tier, _index, _what, _vote, _note];
+    _votes pushBack ([_key, _tier, _index, _what, _vote, _note] + ([[], [_town]] select (_town isNotEqualTo "")));
     OTQA_officeReview set ["votes", _votes];
     if (_vote isEqualTo "issue") then {
         private _reported = OTQA_officeReview getOrDefault ["reported", createHashMap];
         _reported set [format ["%1|%2|%3", _key, _tier, _index], _note];
         OTQA_officeReview set ["reported", _reported];
     };
-    hint format ["ISSUE: %1\ntier %2, item %3 at %4%5\n\nCounts for tiers %2-5 (every copy that has it).\n%6 issues so far on %7", _what, _tier, _index, _pos, ["", format ["\n%1", _note]] select (_note isNotEqualTo ""), { (_x select 0) isEqualTo _key } count _votes, _key];
+    hint format ["ISSUE%8: %1\ntier %2, item %3 at %4%5\n\nCounts for tiers %2-5 (every copy that has it).\n%6 issues so far on %7", _what, _tier, _index, _pos, ["", format ["\n%1", _note]] select (_note isNotEqualTo ""), { (_x select 0) isEqualTo _key } count _votes, _key, ["", format [" in %1", _town]] select (_town isNotEqualTo "")];
     _line
 };
 
@@ -261,7 +291,7 @@ OTQA_officeReview_show = {
     if (_stand isEqualTo []) then { _stand = _base getPos [_width / 2 + 6, _rowDir + 180] };
     player setPosATL [_stand select 0, _stand select 1, 0];
     private _keys = OTQA_officeReview get "keys";
-    hint format ["Office review: %1 (%2 of %3)\nTier 1 to 5 along the row, %4 m apart.\nLook at anything placed for its Good / Bad / Issue actions; at each copy, mark its tier reviewed. Your own actions move to the next or previous building, list the votes and finish the review.", _key, (_keys find _key) + 1, count _keys, round _width];
+    hint format ["Office review: %1 (%2 of %3)\nTier 1 to 5 along the row, %4 m apart.\nLook at anything placed for its Good / Bad / Issue actions; at each copy, mark its tier reviewed. Your own actions move to the next or previous building, see it in a real town, list the votes and finish the review.", _key, (_keys find _key) + 1, count _keys, round _width];
 };
 
 OTQA_officeReview_step = {
@@ -280,20 +310,258 @@ OTQA_officeReview_step = {
 OTQA_officeReview_list = {
     private _votes = OTQA_officeReview getOrDefault ["votes", []];
     private _done = OTQA_officeReview getOrDefault ["done", []];
-    private _text = format ["<t size='1.2'>Office review: %1 issues, %2 tiers reviewed</t>", count _votes, count _done];
+    private _realDone = OTQA_officeReview getOrDefault ["realDone", []];
+    private _text = format ["<t size='1.2'>Office review: %1 issues, %2 tiers reviewed, %3 in real towns</t>", count _votes, count _done, count _realDone];
     {
         private _key = _x;
         private _mine = _votes select { (_x select 0) isEqualTo _key };
         private _tiers = (_done select { (_x select 0) isEqualTo _key }) apply { _x select 1 };
         _tiers sort true;
-        if (_mine isNotEqualTo [] || { _tiers isNotEqualTo [] }) then {
-            _text = _text + format ["<br/>%1: %2 issues; tiers reviewed: %3", _key, count _mine, ["none", _tiers joinString " "] select (_tiers isNotEqualTo [])];
+        private _real = (_realDone select { (_x select 0) isEqualTo _key }) apply { format ["%1 in %2", _x select 2, _x select 1] };
+        if (_mine isNotEqualTo [] || { _tiers isNotEqualTo [] } || { _real isNotEqualTo [] }) then {
+            _text = _text + format ["<br/>%1: %2 issues; tiers reviewed: %3%4", _key, count _mine, ["none", _tiers joinString " "] select (_tiers isNotEqualTo []), ["", format ["; real town: %1", _real joinString ", "]] select (_real isNotEqualTo [])];
         };
     } forEach (OTQA_officeReview getOrDefault ["keys", []]);
     hint parseText _text;
     {
-        systemChat format ["%1 T%2 #%3 %4: %5", _x select 0, _x select 1, _x select 2, _x select 3, _x select 5];
+        systemChat format ["%1 T%2 #%3 %4: %5%6", _x select 0, _x select 1, _x select 2, _x select 3, _x select 5, ["", format [" (in %1)", _x param [6, ""]]] select ((count _x) > 6)];
     } forEach _votes;
+};
+
+// ----- The real town step -----
+
+// The population brackets each building is meant for (the mayor's office design: B1 under 50, B2 50-99,
+// B3 100-199, B4 200-399, B5 400 and more; a key not listed takes any town), a population's bracket, and
+// a town's spread (OT_fnc_isInTown's: 350 m from the centre, 1000 m for capitals and sprawling towns)
+OTQA_officeReview_brackets = createHashMapFromArray [
+    ["i_Stone_HouseBig_V1_F", [1]], ["i_House_Big_02_V1_F", [1, 2]], ["i_Shop_01_V1_F", [1, 2, 3]],
+    ["i_House_Big_01_V1_F", [2, 3, 4]], ["i_Shop_02_V1_F", [3, 4]], ["Research_HQ_F", [4, 5]],
+    ["Offices_01_V1_F", [5]], ["Hospital_main_F", [5]]
+];
+OTQA_officeReview_bracket = {
+    params ["_population"];
+    if (_population < 50) exitWith { 1 };
+    if (_population < 100) exitWith { 2 };
+    if (_population < 200) exitWith { 3 };
+    if (_population < 400) exitWith { 4 };
+    5
+};
+OTQA_officeReview_townRadius = {
+    params ["_town"];
+    [350, 1000] select (_town in (OT_capitals + OT_sprawling))
+};
+
+// The real instance of a building nearest its town's centre among these towns: any class the key covers (the
+// variants too, OT_fnc_officeTemplateKey), inside the town's spread with this town the nearest, standing (no
+// ruin) and not hidden. [distance from the centre, building, town], [] with none
+OTQA_officeReview_realNearest = {
+    params ["_key", "_towns"];
+    private _best = [];
+    {
+        private _town = _x;
+        private _centre = server getVariable [_town, []];
+        if (_centre isNotEqualTo []) then {
+            {
+                if (([_x] call OT_fnc_officeTemplateKey) isEqualTo _key && { alive _x } && { !isObjectHidden _x } && { ((getPos _x) call OT_fnc_nearestTown) isEqualTo _town }) then {
+                    private _d = _x distance2D _centre;
+                    if (_best isEqualTo [] || { _d < (_best select 0) }) then { _best = [_d, _x, _town] };
+                };
+            } forEach (nearestObjects [_centre, ["House", "Building"], [_town] call OTQA_officeReview_townRadius]);
+        };
+    } forEach _towns;
+    _best
+};
+
+// A multi-piece building's real other pieces (the hospital's wings), found by it on the map as the office probe does
+OTQA_officeReview_realParts = {
+    params ["_key", "_b"];
+    private _classes = ([_key] call OT_fnc_officeParts) apply { _x select 0 };
+    if (_classes isEqualTo []) exitWith { [] };
+    private _near = nearestObjects [_b, [], 80];
+    private _parts = [];
+    {
+        private _class = _x;
+        private _part = (_near select { (typeOf _x) isEqualTo _class }) param [0, objNull];
+        if (!isNull _part) then { _parts pushBack _part };
+    } forEach _classes;
+    _parts
+};
+
+// A real instance of a building on the map, inside a town: first in the towns whose population bracket the
+// building is meant for, then in any, the instance nearest its town's centre. [building, town, its real other
+// pieces], [] when none stands in a town; remembered per key (the search reads every town's buildings)
+OTQA_officeReview_realFind = {
+    params ["_key"];
+    private _found = OTQA_officeReview getOrDefault ["realFound", createHashMap];
+    if (_key in _found && { !isNull ((_found get _key) select 0) }) exitWith { _found get _key };
+    private _wanted = OTQA_officeReview_brackets getOrDefault [_key, [1, 2, 3, 4, 5]];
+    private _fits = OT_allTowns select { ([server getVariable [format ["population%1", _x], 0]] call OTQA_officeReview_bracket) in _wanted };
+    private _best = [_key, _fits] call OTQA_officeReview_realNearest;
+    if (_best isEqualTo []) then { _best = [_key, OT_allTowns - _fits] call OTQA_officeReview_realNearest };
+    if (_best isEqualTo []) exitWith { [] };
+    _best params ["_d", "_b", "_town"];
+    private _result = [_b, _town, [_key, _b] call OTQA_officeReview_realParts];
+    _found set [_key, _result];
+    OTQA_officeReview set ["realFound", _found];
+    diag_log format ["OT_QA office review: real %1 in %2 (population %3, bracket %4, meant for %5): %6 at %7, %8 m from the centre, %9 other pieces", _key, _town, server getVariable [format ["population%1", _town], 0], [server getVariable [format ["population%1", _town], 0]] call OTQA_officeReview_bracket, _wanted, typeOf _b, (getPosATL _b) apply { round _x }, round _d, count (_result select 2)];
+    _result
+};
+
+// Somewhere for the host to stand outside a real building: beyond its pieces' corners plus 8 m, towards the
+// town's centre first then round the compass, on land where a man fits
+OTQA_officeReview_realStand = {
+    params ["_b", "_parts", "_centre"];
+    private _r = 0;
+    {
+        private _o = _x;
+        (boundingBoxReal _o) params ["_min", "_max"];
+        {
+            _r = _r max (_b distance2D (_o modelToWorld _x));
+        } forEach [_min, _max, [_min select 0, _max select 1, 0], [_max select 0, _min select 1, 0]];
+    } forEach ([_b] + _parts);
+    _r = _r + 8;
+    private _dir = _b getDir _centre;
+    private _stand = [];
+    {
+        if (_stand isEqualTo []) then {
+            private _p = _b getPos [_r, _dir + _x];
+            if (!surfaceIsWater _p) then {
+                private _empty = _p findEmptyPosition [0, 8, "CAManBase"];
+                if (_empty isNotEqualTo []) then { _stand = _empty };
+            };
+        };
+    } forEach [0, 45, -45, 90, -90, 135, -135, 180];
+    if (_stand isEqualTo []) then { _stand = _b getPos [_r, _dir] };
+    [_stand select 0, _stand select 1, 0]
+};
+
+// Real-town mode: whether it's on, and whether one of its scheduled steps is still running
+OTQA_officeReview_realActive = { !isNil { OTQA_officeReview get "real" } };
+OTQA_officeReview_realBusy = { !isNil { OTQA_officeReview get "realBusy" } && { !scriptDone (OTQA_officeReview get "realBusy") } };
+
+// The template's things off the real building: OT_fnc_officeClearTemplate deletes only the guards and objects it
+// put there (the building's OT_officeGuards and OT_officeObjects), then a pass over the review's own lists for
+// anything it left; the real building and its pieces are never touched. Scheduled
+OTQA_officeReview_realStrip = {
+    private _real = OTQA_officeReview get "real";
+    if (isNil "_real") exitWith {};
+    private _things = (_real get "objects") + (_real get "guards");
+    _real set ["objects", []];
+    _real set ["guards", []];
+    [_real get "building"] call OT_fnc_officeClearTemplate;
+    if (_things isNotEqualTo []) then {
+        sleep 1;
+        { if (!isNull _x) then { _x hideObjectGlobal true; deleteVehicle _x } } forEach _things;
+    };
+};
+
+// The template on the real building at a tier (whatever was on it taken off first), the placeholders and props
+// with the issue actions, the tier in a hint and the label over the building. Scheduled
+OTQA_officeReview_realApply = {
+    params ["_tier"];
+    private _real = OTQA_officeReview get "real";
+    if (isNil "_real") exitWith {};
+    call OTQA_officeReview_realStrip;
+    sleep 1;
+    private _b = _real get "building";
+    ([_b, _tier, west, _real get "parts", true] call OT_fnc_officeApplyTemplate) params ["_objects", "_guards"];
+    { _x enableSimulationGlobal true; [_x] call OTQA_officeReview_actions } forEach _objects; // No actions on a thing without simulation
+    { [_x] call OTQA_officeReview_actions } forEach _guards;
+    _real set ["objects", _objects];
+    _real set ["guards", _guards];
+    _real set ["tier", _tier];
+    hint format ["Real town: %1 in %2\nTier %3 on the real building (%4 things, %5 guards).\nLook at anything placed for its Issue action; your own actions change the tier, mark it reviewed, go back to the airport or on to the next building.", _real get "key", _real get "town", _tier, count _objects, count _guards];
+};
+
+// Off to a real town with the current building: its real instance found, the host outside it, tier 1 on it;
+// logged as OTFEEDBACK|REALTOWN|key|town|class|pos. False when none stands in a town. Scheduled
+OTQA_officeReview_realStart = {
+    params ["_key"];
+    if (call OTQA_officeReview_realActive || { _key isEqualTo "" }) exitWith { false };
+    private _found = [_key] call OTQA_officeReview_realFind;
+    if (_found isEqualTo []) exitWith {
+        diag_log format ["OT_QA office review: no real %1 stands in a town on %2", _key, worldName];
+        hint format ["Office review: no real Land_%1 stands in a town on %2", _key, worldName];
+        false
+    };
+    _found params ["_b", "_town", "_parts"];
+    private _centre = server getVariable [_town, getPosATL _b];
+    (boundingBoxReal _b) params ["", "_max"];
+    private _real = createHashMap;
+    _real set ["key", _key];
+    _real set ["town", _town];
+    _real set ["building", _b];
+    _real set ["parts", _parts];
+    _real set ["tier", 0];
+    _real set ["objects", []];
+    _real set ["guards", []];
+    _real set ["airport", getPosASL player];
+    _real set ["label", [(getPosATL _b) select 0, (getPosATL _b) select 1, ((getPosATL _b) select 2) + (_max select 2) + 4]];
+    private _line = format ["OTFEEDBACK|REALTOWN|%1|%2|%3|%4", _key, _town, typeOf _b, (getPosATL _b) apply { round (_x * 10) / 10 }];
+    _real set ["logged", _line];
+    OTQA_officeReview set ["real", _real];
+    diag_log _line;
+    player setPosATL ([_b, _parts, _centre] call OTQA_officeReview_realStand);
+    [1] call OTQA_officeReview_realApply;
+    true
+};
+
+// The next or previous tier on the real building (round from 5 to 1). Scheduled
+OTQA_officeReview_realStep = {
+    params ["_by"];
+    private _real = OTQA_officeReview get "real";
+    if (isNil "_real") exitWith {};
+    [(((_real get "tier") - 1 + _by + 5) mod 5) + 1] call OTQA_officeReview_realApply;
+};
+
+// Back from the real town: the template off the real building (it stays as it was), the host where they stood
+// at the airport. Scheduled
+OTQA_officeReview_realEnd = {
+    private _real = OTQA_officeReview get "real";
+    if (isNil "_real") exitWith {};
+    call OTQA_officeReview_realStrip;
+    (_real get "building") setVariable ["OT_officeParts", nil];
+    OTQA_officeReview deleteAt "real";
+    player setPosASL (_real get "airport");
+};
+
+// Tiers marked reviewed in a real town: whether the current one is, marking it (logged, the line returned),
+// the player's actions' condition (the tier shown, not yet marked)
+OTQA_officeReview_realTierIsDone = {
+    params ["_tier"];
+    private _real = OTQA_officeReview get "real";
+    if (isNil "_real") exitWith { false };
+    [_real get "key", _real get "town", _tier] in (OTQA_officeReview getOrDefault ["realDone", []])
+};
+OTQA_officeReview_realTierDone = {
+    params ["_tier"];
+    private _real = OTQA_officeReview get "real";
+    if (isNil "_real" || { [_tier] call OTQA_officeReview_realTierIsDone }) exitWith { "" };
+    private _done = OTQA_officeReview getOrDefault ["realDone", []];
+    _done pushBack [_real get "key", _real get "town", _tier];
+    OTQA_officeReview set ["realDone", _done];
+    private _line = format ["OTFEEDBACK|REALTIERDONE|%1|%2|%3", _real get "key", _real get "town", _tier];
+    diag_log _line;
+    hint format ["Tier %1 of %2 in %3 marked reviewed", _tier, _real get "key", _real get "town"];
+    _line
+};
+OTQA_officeReview_realAtTier = {
+    params ["_tier"];
+    private _real = OTQA_officeReview get "real";
+    !isNil "_real" && { (_real get "tier") isEqualTo _tier } && { !(call OTQA_officeReview_realBusy) } && { !([_tier] call OTQA_officeReview_realTierIsDone) }
+};
+OTQA_officeReview_realTierAction = {
+    params ["_target", "_caller", "_actionId", ["_arguments", [], [[]]]];
+    [_arguments param [0, 1]] call OTQA_officeReview_realTierDone
+};
+
+// The player's actions' conditions: at the airport row with a building shown and nothing being set up, and in a
+// real town with no step running
+OTQA_officeReview_atAirport = {
+    !(call OTQA_officeReview_realActive) && { !(call OTQA_officeReview_realBusy) } && { (OTQA_officeReview getOrDefault ["key", ""]) isNotEqualTo "" } && { isNil { OTQA_officeReview get "showing" } || { scriptDone (OTQA_officeReview get "showing") } }
+};
+OTQA_officeReview_inTown = {
+    (call OTQA_officeReview_realActive) && { !(call OTQA_officeReview_realBusy) }
 };
 
 [
@@ -303,19 +571,26 @@ OTQA_officeReview_list = {
         OTQA_officeReview set ["keys", _keys];
         OTQA_officeReview set ["votes", []];
         OTQA_officeReview set ["done", []];
+        OTQA_officeReview set ["realDone", []];
         OTQA_officeReview set ["finished", false];
         OTQA_officeReview set ["home", getPosASL player];
         if (!isNull objectParent player) then { moveOut player; sleep 1 };
         player allowDamage false;
         player setCaptive true;
         private _actions = [
-            player addAction ["<t color='#80c0ff'>Review: next building</t>", { [1] call OTQA_officeReview_step }, nil, 2, false, true, "", "true"],
-            player addAction ["<t color='#80c0ff'>Review: previous building</t>", { [-1] call OTQA_officeReview_step }, nil, 1.9, false, true, "", "true"],
+            player addAction ["<t color='#80c0ff'>Review: next building</t>", { [1] call OTQA_officeReview_step }, nil, 2, false, true, "", "!(call OTQA_officeReview_realActive) && { !(call OTQA_officeReview_realBusy) }"],
+            player addAction ["<t color='#80c0ff'>Review: previous building</t>", { [-1] call OTQA_officeReview_step }, nil, 1.9, false, true, "", "!(call OTQA_officeReview_realActive) && { !(call OTQA_officeReview_realBusy) }"],
+            player addAction ["<t color='#c0c0ff'>Review: see it in a real town</t>", { OTQA_officeReview set ["realBusy", [OTQA_officeReview getOrDefault ["key", ""]] spawn OTQA_officeReview_realStart] }, nil, 1.85, false, true, "", "call OTQA_officeReview_atAirport"],
             player addAction ["Review: list votes so far", { call OTQA_officeReview_list }, nil, 1.8, false, true, "", "true"],
-            player addAction ["<t color='#ffc080'>Review: finished</t>", { OTQA_officeReview set ["finished", true] }, nil, 1.7, false, true, "", "true"]
+            player addAction ["<t color='#ffc080'>Review: finished</t>", { OTQA_officeReview set ["finished", true] }, nil, 1.7, false, true, "", "true"],
+            player addAction ["<t color='#c0c0ff'>Real town: next tier</t>", { OTQA_officeReview set ["realBusy", [1] spawn OTQA_officeReview_realStep] }, nil, 2, false, true, "", "call OTQA_officeReview_inTown"],
+            player addAction ["<t color='#c0c0ff'>Real town: previous tier</t>", { OTQA_officeReview set ["realBusy", [-1] spawn OTQA_officeReview_realStep] }, nil, 1.9, false, true, "", "call OTQA_officeReview_inTown"],
+            player addAction ["<t color='#80c0ff'>Real town: back to the airport</t>", { OTQA_officeReview set ["realBusy", [] spawn OTQA_officeReview_realEnd] }, nil, 1.75, false, true, "", "call OTQA_officeReview_inTown"],
+            player addAction ["<t color='#80c0ff'>Real town: next building</t>", { OTQA_officeReview set ["realBusy", [] spawn { call OTQA_officeReview_realEnd; [1] call OTQA_officeReview_step }] }, nil, 1.74, false, true, "", "call OTQA_officeReview_inTown"]
         ];
         for "_t" from 1 to 5 do {
-            _actions pushBack (player addAction [format ["<t color='#c0ffc0'>Review: mark Tier %1 reviewed</t>", _t], { _this call OTQA_officeReview_tierAction }, [_t], 1.65, false, true, "", format ["[%1] call OTQA_officeReview_atTier", _t]]);
+            _actions pushBack (player addAction [format ["<t color='#c0ffc0'>Review: mark Tier %1 reviewed</t>", _t], { _this call OTQA_officeReview_tierAction }, [_t], 1.65, false, true, "", format ["!(call OTQA_officeReview_realActive) && { [%1] call OTQA_officeReview_atTier }", _t]]);
+            _actions pushBack (player addAction [format ["<t color='#c0ffc0'>Real town: mark Tier %1 reviewed</t>", _t], { _this call OTQA_officeReview_realTierAction }, [_t], 1.65, false, true, "", format ["[%1] call OTQA_officeReview_realAtTier", _t]]);
         };
         private _draw = addMissionEventHandler ["Draw3D", {
             {
@@ -323,6 +598,12 @@ OTQA_officeReview_list = {
                 private _done = [_tier] call OTQA_officeReview_tierIsDone;
                 drawIcon3D ["", [[1, 1, 1, 1], [0.5, 1, 0.5, 1]] select _done, [_pos select 0, _pos select 1, _height], 0, 0, 0, format ["Land_%1 - Tier %2%3", OTQA_officeReview get "key", _tier, ["", " - reviewed"] select _done], 2, 0.04, "PuristaMedium", "center"];
             } forEach (OTQA_officeReview getOrDefault ["copies", []]);
+            private _real = OTQA_officeReview get "real";
+            if (!isNil "_real") then {
+                private _tier = _real get "tier";
+                private _done = [_tier] call OTQA_officeReview_realTierIsDone;
+                drawIcon3D ["", [[1, 1, 1, 1], [0.5, 1, 0.5, 1]] select _done, _real get "label", 0, 0, 0, format ["Land_%1 - Tier %2 - %3%4", _real get "key", _tier, _real get "town", ["", " - reviewed"] select _done], 2, 0.04, "PuristaMedium", "center"];
+            };
         }];
         diag_log format ["OT_QA office review: %1 buildings: %2", count _keys, _keys];
         [_keys select 0] call OTQA_officeReview_show;
@@ -331,6 +612,9 @@ OTQA_officeReview_list = {
 
         private _showing = OTQA_officeReview getOrDefault ["showing", scriptNull];
         if (!isNull _showing) then { waitUntil { sleep 0.5; scriptDone _showing } };
+        private _busy = OTQA_officeReview getOrDefault ["realBusy", scriptNull];
+        if (!isNull _busy) then { waitUntil { sleep 0.5; scriptDone _busy } };
+        if (call OTQA_officeReview_realActive) then { call OTQA_officeReview_realEnd };
         call OTQA_officeReview_clear;
         { player removeAction _x } forEach _actions;
         removeMissionEventHandler ["Draw3D", _draw];
@@ -338,7 +622,8 @@ OTQA_officeReview_list = {
         player allowDamage true;
         private _votes = OTQA_officeReview get "votes";
         private _done = OTQA_officeReview get "done";
-        diag_log format ["OTFEEDBACK|END|%1 votes, %2 tiers reviewed", count _votes, count _done];
-        ["Office review: finished by the reviewer", true, format ["%1 buildings, %2 votes, %3 tiers reviewed (OTFEEDBACK lines in the RPT)", count _keys, count _votes, count _done]] call OTQA_fnc_check;
+        private _realDone = OTQA_officeReview get "realDone";
+        diag_log format ["OTFEEDBACK|END|%1 votes, %2 tiers reviewed, %3 in real towns", count _votes, count _done, count _realDone];
+        ["Office review: finished by the reviewer", true, format ["%1 buildings, %2 votes, %3 tiers reviewed, %4 in real towns (OTFEEDBACK lines in the RPT)", count _keys, count _votes, count _done, count _realDone]] call OTQA_fnc_check;
     }, 86400]
 ]

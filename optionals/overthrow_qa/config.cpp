@@ -55,6 +55,7 @@ class CfgFunctions {
             class officeReview {};
             class officeSpawn {};
             class testsOfficeTemplates {};
+            class testsOfficeReviewTown {}; // The review's real town step
             // Bug fix QA tests: the suite, and the tests for each fix batch it's made of
             class testsBugFixes {};
             class testsCommon {};
