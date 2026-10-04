@@ -1325,7 +1325,7 @@ def rodopoli(d, tier):
         d.run("o_sw", (-20.2, -22.0), (-10.5, -22.0), ends=("tie", "tie"), fill=W, out=180)
 
 
-@site("Sofia", entry="S", nest=(-6.2, 3.0, 270), flag=(9.0, 6.8), spare=[])
+@site("Sofia", entry="S", nest=(-6.2, 3.0, 270), flag=(9.0, 6.8), spare=[], shared=("west",))
 def sofia(d, tier):
     # On a corner: the main road runs north-south 9 m west of the house and a track east-west 11 m south of it; a
     # big house abuts the north side, another the east side's southern half; a yard east of the house is closed
@@ -1338,8 +1338,14 @@ def sofia(d, tier):
         d.run("south", (-8.6, -11.5), (5.5, -11.5), ends=("tie", "corner"))
         d.run("se", (5.5, -11.5), (5.5, -7.5), ends=("tie", "tie"))
         d.run("east_gap", (18.5, -1.5), (18.5, 4.5), ends=("tie", "tie"), out=90)
-    if tier == 4:
-        pass  # pass 1: the outer ring (to come)
+    if tier == 4:  # The outer ring: the main road leaves no room west, so the inner ring's west face is the outer line
+        # there too (stacked 2-high) and runs on south along the verge; south across the track, east up to the east
+        # annexe; the big houses north and east close the rest
+        W = WALL_FILL
+        d.stack("west")
+        d.run("o_w", (-8.6, -12.4), (-8.6, -20.0), ends=("tie", "corner"), fill=W, out=270)
+        d.run("o_s", (-8.6, -20.0), (30.0, -20.0), ends=("tie", "corner"), fill=W, out=180)
+        d.run("o_e", (30.0, -20.0), (30.0, 9.0), ends=("tie", "tie"), fill=W, out=90)
 
 
 @site("Therisa", entry="S", nest=(1.6, -10.5, 180), flag=(-1.0, 9.5), spare=[])
