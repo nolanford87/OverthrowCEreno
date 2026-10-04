@@ -184,20 +184,27 @@ class Template:
         self.guards = []    # (x, y, z)
 
     # -- items ---------------------------------------------------------------------------------
-    def guard(self, tier, role, pos, d, snap=True):
-        """A guard at a probe building position (snap=False: a free position, e.g. the gate)."""
+    def guard(self, tier, role, pos, d, snap=True, extra=None):
+        """A guard at a probe building position (snap=False: a free spot on the ground outside, e.g.
+        the gate, flagged "outside" so the framework stands him on the terrain)."""
         if snap:
             q = self.probe.nearest_position(pos)
             dist = math.dist(q, pos)
             if dist > 0.05:
                 raise ValueError(f"{self.probe.cls}: guard {pos} is {dist:.2f} m from the nearest building position {q}")
             pos = q
-        self.tiers[tier - 1].append(["guard", role, pos, norm(d), []])
+        if extra is None:
+            extra = [] if snap else ["outside"]
+        self.tiers[tier - 1].append(["guard", role, pos, norm(d), list(extra)])
         self.guards.append(pos)
 
     def obj(self, tier, cls, pos, d, extra=None, inside=False):
-        """An object; inside=True checks it stands on a floor cell of its level."""
+        """An object; inside=True checks it stands on a floor cell of its level. One at ground level
+        that is not inside stands on the terrain and is flagged "outside" (the framework snaps it to
+        the ground, which may rise or fall away from the building's origin)."""
         x, y, z = pos
+        if extra is None and not inside and abs(z - min(self.probe.levels)) < 0.01:
+            extra = ["outside"]
         self.tiers[tier - 1].append(["object", cls, (x, y, z), norm(d), list(extra or [])])
         if inside:
             lvl = self.probe.level_of(z)
@@ -448,7 +455,7 @@ def offices_01(p):
     t.window_bags(3, (5.6, -7.1, G), 180, offset=0.9)   # ground floor has room to the glass
     t.obj(3, "Land_BagFence_Short_F", (5.35, -7.4, L1), 180, inside=True)   # between the two L1 guards
     t.obj(3, "Land_BagFence_Short_F", (3.4, -7.4, L2), 180, inside=True)    # either side of the autorifleman
-    t.obj(3, "Land_BagFence_Short_F", (-0.2, -7.4, L2), 180, inside=True)
+    t.obj(3, "Land_BagFence_Short_F", (-0.3, -7.05, L2), 180, inside=True)  # a sill runs 0.8 m up the facade west of x 3, so this one stands off it
     t.obj(3, "Land_BagFence_Short_F", (12.45, -1.8, L3), 90, inside=True)   # east window south of the guard
     t.obj(3, "Land_BagFence_Short_F", (11.9, -7.4, L3), 180, inside=True)   # the officer's window bay
     # radio room: the small top-floor room north of the office (x 4..7, y 1..4), door at (6.2,0.1)
@@ -482,7 +489,7 @@ def offices_01(p):
     # reinforced rooms: sandbag lines along the windows of the hall, lobby, 1st floor and office
     t.obj(5, "Land_BagFence_Long_F", (2.0, -8.0, G), 180, inside=True)
     t.obj(5, "Land_BagFence_Long_F", (-9.0, 8.1, G), 0, inside=True)
-    t.obj(5, "Land_BagFence_Long_F", (0.7, -7.4, L1), 180, inside=True)
+    t.obj(5, "Land_BagFence_Long_F", (1.2, -7.05, L1), 180, inside=True)  # off the facade's sill (see tier 3)
     t.obj(5, "Land_BagFence_Short_F", (12.45, -3.6, L3), 90, inside=True)
     t.obj(5, "Land_BagFence_Short_F", (12.45, -5.5, L3), 90, inside=True)
     t.obj(5, "Land_BagFence_Corner_F", (4.6, -3.9, G), 45, inside=True)   # cover at the stair foot
@@ -549,7 +556,8 @@ def hospital(p):
     # ---- Tier 2: military pair, nests at every door -----------------------------------------
     t.guard(2, "rifleman", (-15.7, -9.1, G), 180)       # west end of the bay, door E side
     t.guard(2, "autorifleman", (2.6, 14.5, R1), 270)    # terrace strip right above the entrance
-    for door in (A, B, C, D, E):
+    t.nests(2, A, z=G, sides=(1,))       # west of door A's lane only: the entrance steps are east of it
+    for door in (B, C, D, E):
         t.nests(2, door, z=G)
     t.obj(2, "Land_OfficeCabinet_01_F", (-7.6, 15.0, G), 90, inside=True)
     t.obj(2, "Land_OfficeCabinet_01_F", (-7.6, 16.0, G), 90, inside=True)
@@ -581,7 +589,7 @@ def hospital(p):
     t.obj(3, FLAG, (-11.5, 3.0, G), 0)                   # on the forecourt, south of the lane
 
     # ---- Tier 4: squad; wire on the open sides, roof nests, approach barricades ---------------
-    t.guard(4, "mg_gunner", (-5.3, -6.9, R1), 0)        # terrace over the bay, covers the forecourt
+    t.guard(4, "mg_gunner", (-5.3, -6.9, R1), 270)      # terrace over the bay (the block's wall is right north of him), covers the forecourt
     t.guard(4, "rifleman", (13.3, -0.7, R1), 90)        # east terrace strip
     # razorwire either side of the entrance lane (forecourt edge) and along the bay's south edge
     t.obj(4, "Land_Razorwire_F", (-9.8, 1.0, G), 270)
@@ -599,11 +607,11 @@ def hospital(p):
     t.obj(4, "Land_CncBarrier_stripes_F", (-22.0, 13.6, G), 240)
     # roof nests: manned ones plus the terrace corners
     t.window_bags(4, (2.6, 14.5, R1), 270, offset=0.85)
-    t.obj(4, "Land_BagFence_Round_F", (-5.3, -5.6, R1), 0)
+    t.obj(4, "Land_BagFence_Round_F", (-6.6, -6.9, R1), 270)     # in front of the gunner, out on the terrace
     t.window_bags(4, (13.3, -0.7, R1), 90, offset=1.0)
     t.window_bags(4, (-2.6, -19.9, R1), 180, offset=1.0)
     t.obj(4, "Land_BagFence_Short_F", (13.9, 24.8, R1), 90)
-    t.obj(4, "Land_Ammobox_rounds_F", (-6.8, -7.4, R1), 0)
+    t.obj(4, "Land_Ammobox_rounds_F", (-4.0, -7.4, R1), 0)
     t.obj(4, "Land_Camping_Light_F", (-5.6, -1.4, G), 0, inside=True)
 
     # ---- Tier 5: marksman on side2's roof, AT at the gate, reinforced rooms, the compound -----
@@ -664,7 +672,7 @@ def main(argv):
         notes = t.check()
         key = cls[len("Land_"):]
         path = os.path.join(OUT_DIR, f"fn_officeTpl_{key}.sqf")
-        with open(path, "w", encoding="utf-8", newline="\n") as f:
+        with open(path, "w", encoding="utf-8", newline="\r\n") as f:   # CRLF like the rest of the mod
             f.write(t.sqf(title, lines))
         counts = ", ".join(f"T{i + 1} {g}g/{o}o" for i, (g, o) in enumerate(t.counts()))
         print(f"{cls}: {os.path.relpath(path, ROOT)}  ({counts})")

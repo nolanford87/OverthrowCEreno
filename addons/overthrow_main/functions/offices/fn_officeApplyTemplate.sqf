@@ -3,8 +3,10 @@
     Puts a mayor's office defence template on a building: the fortifications and props of every tier
     up to the one asked for, and the guards at their posts (OT_fnc_officeTemplate, placed with
     modelToWorld so the building can stand anywhere, facing any way). Items flagged "outside" stand
-    on the ground, everything else at the template's floor height. Props and fortifications have no
-    simulation. Each thing made remembers its item (variable "OT_officeItem": [key, tier, index in
+    on the ground; everything else goes at the template's floor height and is then let down onto
+    whatever is under it (the floor, the ground floor's terrain, a table: the probe's floor heights
+    are the building positions', up to half a metre above the floor). Props and fortifications have
+    no simulation. Each thing made remembers its item (variable "OT_officeItem": [key, tier, index in
     the tier, item]) and the building remembers them all ("OT_officeObjects", "OT_officeGuards",
     "OT_officeTier"). Server.
 
@@ -69,12 +71,25 @@ for "_t" from 1 to _tier do {
             };
             private _object = createVehicle [_class, [0, 0, 0], [], 0, "CAN_COLLIDE"];
             _object setDir _d;
-            if (_outside) then {
-                _object setVectorUp (surfaceNormal _world);
+            if (_class isKindOf "FlagCarrier") then {
+                _object setVectorUp [0, 0, 1]; // A flag pole stands straight whatever the ground does
             } else {
-                _object setVectorUp (vectorUp _building);
+                if (_outside) then {
+                    _object setVectorUp (surfaceNormal _world);
+                } else {
+                    _object setVectorUp (vectorUp _building);
+                };
             };
             _object setPosATL _world;
+            if (!_outside) then {
+                // Down onto what's under it (the floor, the ground floor's terrain, a table): the
+                // template's floor height is the building positions', up to half a metre above the floor
+                private _asl = getPosASL _object;
+                private _hits = lineIntersectsSurfaces [_asl vectorAdd [0, 0, 0.5], _asl vectorAdd [0, 0, -1.2], _object, objNull, true, 1, "GEOM", "NONE"];
+                if (_hits isNotEqualTo []) then {
+                    _object setPosASL [_asl select 0, _asl select 1, ((_hits select 0) select 0) select 2];
+                };
+            };
             _object enableSimulationGlobal false;
             _object setVariable ["OT_officeItem", [_key, _t, _forEachIndex, _item]];
             _objects pushBack _object;

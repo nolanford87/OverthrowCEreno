@@ -869,6 +869,7 @@ class CfgFunctions {
             class officeParts {};
             class officeGuardClass {};
             class officeApplyTemplate {};
+            class officeClearTemplate {};
         };
         /*
          * Mod integration

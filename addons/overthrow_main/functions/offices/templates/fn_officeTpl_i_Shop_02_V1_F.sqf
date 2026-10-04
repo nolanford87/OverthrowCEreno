@@ -27,7 +27,6 @@
     // Tier 3: barriers at the doors, firing positions inside, the fireteam
     [
         ["object", "Land_CncBarrier_stripes_F", [-8.5, -0.3, -2.6], 270, ["outside"]],
-        ["object", "Land_BagFence_Short_F", [-2.2, 4.5, -2.6], 0, []],
         ["guard", "rifleman", [-2.2, 3.9, -2.6], 0, []],
         ["object", "Land_BagFence_Short_F", [-5.4, -2.9, 1.3], 270, []],
         ["guard", "mg_gunner", [-4.8, -2.9, 1.3], 270, []]
@@ -36,8 +35,8 @@
     [
         ["object", "Land_Razorwire_F", [0, 7.4, -2.6], 0, ["outside"]],
         ["object", "Land_Razorwire_F", [0, -7.4, -2.6], 180, ["outside"]],
+        ["object", "Land_Razorwire_F", [10.6, 0, -2.6], 90, ["outside"]],
         ["object", "Land_CncBarrier_stripes_F", [-9.9, -5.2, -2.6], 270, ["outside"]],
-        ["object", "Land_BagFence_Short_F", [5.2, -3.7, 1.3], 90, []],
         ["guard", "rifleman", [4.6, -3.7, 1.3], 90, []],
         ["guard", "officer", [-1.2, 2, 1.3], 270, []]
     ],
@@ -64,7 +63,7 @@
         ["guard", "at", [-11, -4.8, -2.6], 270, ["outside"]],
         ["object", "Land_BagFence_Long_F", [-3.2, -1.6, -2.6], 270, []],
         ["object", "Land_BagFence_Short_F", [0.5, 2, 1.3], 270, []],
-        ["object", "Land_BagFence_Short_F", [-0.8, -4.9, 1.3], 180, []],
+        ["object", "Land_BagFence_Short_F", [-0.8, -4.4, 1.3], 180, []],
         ["guard", "marksman", [-0.8, -3.8, 1.3], 180, []]
     ]
 ]

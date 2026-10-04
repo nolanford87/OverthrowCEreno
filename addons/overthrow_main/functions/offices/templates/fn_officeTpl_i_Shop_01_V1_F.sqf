@@ -41,7 +41,6 @@
         ["object", "Land_CzechHedgehog_01_F", [2.65, -9.9, -2.7], 225, ["outside"]],
         ["object", "Land_CzechHedgehog_01_F", [0.1, 12.45, -2.7], 45, ["outside"]],
         ["object", "Land_CzechHedgehog_01_F", [4.5, 12.45, -2.7], 45, ["outside"]],
-        ["object", "Land_BagFence_Short_F", [-1.2, -4.1, 1.2], 180, []],
         ["guard", "rifleman", [-1.2, -3.5, 1.2], 180, []],
         ["guard", "officer", [1.6, 2.1, 1.2], 180, []]
     ],

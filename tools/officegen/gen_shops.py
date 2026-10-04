@@ -250,10 +250,13 @@ def wire(plan, tier, limit=3):
 
 def post(plan, tier, role, p, d, gap=0.6, lateral=0.0, cls=SHORT):
     """A sandbagged post: a guard at a building position looking d, a bag fence `gap` in front of it
-    (`lateral` to its right, to keep clear of a wall or the stairs)."""
-    q = og.offset(p, d, gap, lateral)
+    (`lateral` to its right, to keep clear of a wall or the stairs); gap None for a position right at
+    the wall or the floor's edge, where the wall itself is the cover."""
     z = p[2]
-    ok = plan.add_object(tier, cls, q, d, z)
+    ok = False
+    if gap is not None:
+        q = og.offset(p, d, gap, lateral)
+        ok = plan.add_object(tier, cls, q, d, z)
     if not plan.add_guard(tier, role, p, d, z):
         if ok:
             plan.undo(tier)
@@ -306,7 +309,7 @@ def plan_i_shop_01(b, plan, dws):
     wire(plan, 4)
     approach(plan, 4, front)
     back_hedgehogs(plan, 4, back)
-    post(plan, 4, "rifleman", (-1.2, -3.5, u), S)                # balcony, west end
+    post(plan, 4, "rifleman", (-1.2, -3.5, u), S, gap=0.0, lateral=-1.0)   # balcony, west end: it is too shallow for a bag in front, so one beside him
     man(plan, 4, "officer", (1.6, 2.1, u), S)                    # the flat's living room
     # T5
     plan.add_object(5, LONG, (0.0, 1.5), S, g)                   # shop floor: a cover wall facing the door
@@ -333,17 +336,17 @@ def plan_i_shop_02(b, plan, dws):
     perimeter_and_gate(plan, 5)
     # T3
     line_extensions(plan, 3, west)
-    post(plan, 3, "rifleman", (-2.2, 3.9, g), N)                 # back wall window
+    post(plan, 3, "rifleman", (-2.2, 3.9, g), N, gap=None)       # back wall window (right at the wall)
     post(plan, 3, "mg_gunner", (-4.8, -2.9, u), W)               # upstairs window over the entrance
     # T4
     wire(plan, 4)
     approach(plan, 4, west)
-    post(plan, 4, "rifleman", (4.6, -3.7, u), E)                 # upstairs over the shopfront bay
+    post(plan, 4, "rifleman", (4.6, -3.7, u), E, gap=None)       # upstairs over the shopfront bay (at the floor's east edge)
     man(plan, 4, "officer", (-1.2, 2.0, u), W)                   # the flat's north room
     # T5
     plan.add_object(5, LONG, (-3.2, -1.6), W, g)                 # shop floor: a cover wall facing the door
     plan.add_object(5, SHORT, (0.5, 2.0), W, u)                  # the flat: cover by the stair opening
-    post(plan, 5, "marksman", (-0.8, -3.8, u), S, gap=1.1)       # the terrace, over the south windows
+    post(plan, 5, "marksman", (-0.8, -3.8, u), S, gap=0.6)       # the terrace, over the south windows (its edge is 1.7 m off)
 
 
 def plan_research_hq(b, plan, dws):
