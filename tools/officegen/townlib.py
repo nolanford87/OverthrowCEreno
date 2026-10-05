@@ -103,6 +103,7 @@ class Town:
     def __init__(self, name):
         self.name = name
         self.doors, self.bpos, self.objs, self.roads, self.rows = [], [], [], [], {}
+        self.reach = 45  # How far round the office the probe reached (more round a big office: REACH)
 
     # ---- set up from the probe
     def finish(self):
@@ -143,11 +144,13 @@ class Town:
         return [dx, dy, p[2] - self.origin[2]]
 
     def ground(self, wx, wy):
-        """The terrain's height (ASL) at a world point, from the probe's 2 m grid (the edge beyond 44 m)."""
-        fi = (wx - self.pos[0]) / 2 + 22
-        fj = (wy - self.pos[1]) / 2 + 22
-        fi, fj = min(max(fi, 0), 44), min(max(fj, 0), 44)
-        i0, j0 = min(int(fi), 43), min(int(fj), 43)
+        """The terrain's height (ASL) at a world point, from the probe's 2 m grid (its edge beyond the reach)."""
+        n = len(self.grid)
+        half = (n - 1) // 2
+        fi = (wx - self.pos[0]) / 2 + half
+        fj = (wy - self.pos[1]) / 2 + half
+        fi, fj = min(max(fi, 0), n - 1), min(max(fj, 0), n - 1)
+        i0, j0 = min(int(fi), n - 2), min(int(fj), n - 2)
         ti, tj = fi - i0, fj - j0
         g = self.grid
         a = g[j0][i0] * (1 - ti) + g[j0][i0 + 1] * ti
@@ -269,6 +272,8 @@ def load(world="Altis"):
             t.spawned, t.population, t.bracket, t.cap = f[7] == "true", int(f[8]), int(f[9]), int(f[10])
         elif what == "BOX":
             t.box = _vec(f[3])
+        elif what == "REACH":
+            t.reach = float(f[3])
         elif what == "DOOR":
             t.doors.append({"role": f[3], "pos": _vec(f[4]), "dir": float(f[5]), "width": float(f[6])})
         elif what == "BPOS":
@@ -349,8 +354,8 @@ def check(town, tiers):
             kind, what, p, o, extra = it
             m = town.to_model(p)
             dist = math.hypot(m[0], m[1])
-            if dist > 46:
-                problems.append(f"tier {n}: {what} {dist:.0f} m out (the probe reaches 45 m)")
+            if dist > town.reach + 1:
+                problems.append(f"tier {n}: {what} {dist:.0f} m out (the probe reaches {town.reach:.0f} m)")
             on_tower = kind == "guard" and any(t[0] == "object" and ("Tower" in t[1] or "Cargo" in t[1]) and math.hypot(t[2][0] - p[0], t[2][1] - p[1]) < 2.5 for t in items)
             if kind == "guard" and "ground" not in extra and not on_tower and not town.inside_office(m[0], m[1], 1.0):
                 problems.append(f"tier {n}: guard {what} off the ground outside the office at {[round(v, 1) for v in m]}")
@@ -360,8 +365,11 @@ def check(town, tiers):
             if kind == "object" and is_barrier(what):
                 size = (max(size[0] - 2 * BARRIER_OVERLAP, 0.2), max(size[1] * 0.5, 0.2))
             yaw = (o if kind == "guard" else math.degrees(math.atan2(o[0][0], o[0][1]))) % 360
-            hit = [h for h in town.hits(p[0], p[1], size[0], size[1], yaw) if h[0] in ("building", "part", "rock") or (h[0] == "wall" and kind != "object")]
-            if town.on_office(m[0], m[1], size[0], size[1], (yaw - town.dir) % 360):
+            # An office of several pieces (Kavala's hospital): its parts' boxes and its plan reach well past the real
+            # building (open ground under the helipad block), so the in-game clip check judges pieces near it
+            composite = any(o["kind"] == "part" for o in town.objs)
+            hit = [h for h in town.hits(p[0], p[1], size[0], size[1], yaw) if h[0] in (("building", "rock") if composite else ("building", "part", "rock")) or (h[0] == "wall" and kind != "object")]
+            if not composite and town.on_office(m[0], m[1], size[0], size[1], (yaw - town.dir) % 360):
                 hit.append(("office", town.cls, 0))
             if hit:
                 problems.append(f"tier {n}: {kind} {what} at model {[round(v, 1) for v in m[:2]]} overlaps {hit[:2]}")
