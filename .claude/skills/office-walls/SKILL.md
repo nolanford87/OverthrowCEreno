@@ -78,7 +78,8 @@ Read first: `CLAUDE.md`, `tools/officegen/DESIGN_BRIEF.md` (its passes section),
    - print an audit per ring: each gap's width, the run that closes it, the pieces, the joints, and what each end
      ties into.
 4. Check closure yourself before handing in: a flood fill from inside the office for a 0.5 m man, treating only
-   real barriers as blocking. Worked versions to reuse, each written against the game's results:
+   real barriers as blocking. Worked versions to reuse (on the `layouts/towns`, `layouts/villages` and
+   `layouts/strongholds` branches), each written against the game's results:
    - `closure()` and the line-fitting `fill()` method in `drafting/strongholds.py`;
    - `closed_audit()` in `drafting/villages.py`;
    - `Site.game_rays()` in `drafting/villages.py`, a copy of the game's clip test.
