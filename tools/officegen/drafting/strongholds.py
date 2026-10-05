@@ -776,7 +776,11 @@ def site_grid(t):
     if t.name in _SITE_GRID:
         return _SITE_GRID[t.name]
     site, out = Site(t), set()
-    b = t.box
+    b = list(t.box)
+    pl = t.plan()
+    if pl is not None:  # The plan can reach past the office's box (the hospital's runs under its wings)
+        rows = pl.rows[min(pl.levels)]
+        b = [min(b[0], pl.x0 - 1), min(b[1], min(rows) - 1), max(b[2], pl.x0 + max(len(r) for r in rows.values()) + 1), max(b[3], max(rows) + 1)]
     for i, j in _cells([(b[0], b[1]), (b[2], b[3])]):
         if "office" not in SOFT.get(t.name, ()) and t.on_office(i * GRID, j * GRID, 0.1, 0.1):
             out.add((i, j))
@@ -1071,7 +1075,8 @@ def kavala(d):
     main strip and north of the south block, the service yard (tanks, containers) between the strip and the cliff.
     T2: sandbags 2 m out of each door that opens outside, along the main strip's forecourt face and the south front.
     T3: H-barriers 1.5-2 m round the whole complex: south (y -24.3), east (x 20; the Mil walls at T5 x 18.2, round side1's north end at
-    y 45.3, standing into a low wall there), the forecourt side (x -10.5 down to the south block, y -2 along its north face), west (x -40; the Mil walls at T5 x -39.5).
+    y 45.3, standing into a low wall there), the forecourt side (x -10.5 down to the south block, y -2 along its north face), at the block's west end two stubs into its north and south faces (x -36),
+    its west wall between them (the Mil walls at T5 run along it, x -39.5).
     T4: Mil walls along the road edges into the cliff: the south road's edge (y -26) from the west road to the
     rocks, the west road's east edge (x -41.6, then north-east along the road to (-26.3, 50)), and the north side
     (y 50-61) along the line of tall canal walls at the forecourt's north end into the cliff: the forecourt and the service yard inside.
@@ -1094,14 +1099,23 @@ def kavala(d):
         hw = 0.85 if fam == "H" else 0.55
         xe = 20.0 if fam == "H" else 18.2  # (Round 4: two H-barriers at x 18.2 cut the main block; the Mil walls didn't;
         # x 20 also clears the net fence ending at x 18.9)
-        xw = -40.0 if fam == "H" else -39.5  # (Round 5: two H-barriers at x -39.5 cut the helipad block's west face)
+        # The helipad block's west end: T3's H-barriers tie into its west wall (rounds 5-6: run alongside it at
+        # x -39.5 and -40 they cut it: the wall reaches past the probe), two short stubs ending 0.3 m into its north
+        # face (y -5.5) and its south face (y -21.5) at x -36 (the probed plan's walls at its corners), the block's west
+        # wall between them; T5's Mil line
+        # along it at x -39.5 never clipped
+        xw = -36.0 if fam == "H" else -39.5
         d.run(xw - 0.2, -24.3, xe + hw, -24.3, 180, fam, R, "south line", road_ok=True, past=0.0)  # (Its west end and the
         # next line's stop short of T4's west line beside them: a free end runs on up to 0.6 m)
         d.run(xe + hw, 45.3, -10.5 - hw, 45.3, 0, fam, R, "north line, round side1's north end (into the low wall)", past=0.0, upgrade=True)
         d.run(xe, -24.3, xe, 45.3, 90, fam, R, "east line, along the main strip and side1", past=0.6)
         d.run(-10.5, 45.3, -10.5, -2.0 - hw, 270, fam, R, "forecourt line, side1 down to the south block", past=0.6)
         d.run(-10.5, -2.0, xw - 0.2, -2.0, 0, fam, R, "along the south block's north face", road_ok=True, past=0.0)
-        d.run(xw, -2.0, xw, -24.3, 270, fam, R, "west line, along the south block's west end", road_ok=True, past=0.6)
+        if fam == "H":
+            d.piece(HB3, xw, -4.0, 270, R)                     # Into the north face, y -2.2 .. -5.8
+            d.piece(HB3, xw, -23.0, 270, R)                    # Into the south face, y -24.8 .. -21.2
+        else:
+            d.run(xw, -2.0, xw, -24.3, 270, fam, R, "west line, along the south block's west end", road_ok=True, past=0.6)
 
     d.tier()  # T3
     inner(d, "H", "T3 ring", HB1)
