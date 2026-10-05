@@ -108,15 +108,20 @@ _tests pushBack ["Office: the tier by population bracket, capped", {
     ["Tier: by the population without a locked bracket", _byPop isEqualTo 4, format ["500 people: %1", _byPop]] call OTQA_fnc_check;
     ["Tier: every layout has its bracket locked", (values OT_officeLayouts) findIf { (_x param [3, 0]) isEqualTo 0 } isEqualTo -1, str ((keys OT_officeLayouts) select { ((OT_officeLayouts get _x) param [3, 0]) isEqualTo 0 })] call OTQA_fnc_check;
     // A layout's top tier caps it too
-    private _small = ([true] call OTQA_og_towns) select { count ((([_x] call OT_fnc_officeLayout) select 1) select { _x isNotEqualTo [] }) isEqualTo 2 };
-    if (_small isEqualTo []) exitWith { ["Tier: a two-tier layout to cap", false, "none"] call OTQA_fnc_check };
+    // (its highest tier with anything in it: tier 1 may be empty)
+    private _authored = { private _n = 0; { if (_x isNotEqualTo []) then { _n = _forEachIndex + 1 } } forEach ((OT_officeLayouts get _this) select 1); _n };
+    private _small = ([true] call OTQA_og_towns) select { (_x call _authored) < 5 };
+    if (_small isEqualTo []) exitWith { ["Tier: a layout under 5 tiers to cap", false, "none"] call OTQA_fnc_check };
     private _t = _small select 0;
     private _l = OT_officeLayouts get _t;
     private _b = _l param [3, 0];
+    private _keepT = server getVariable [format ["officetier%1", _t], 0];
     _l set [3, 5];
+    server setVariable [format ["officetier%1", _t], 5];
     private _top = [_t] call OT_fnc_officeTier;
     _l set [3, _b];
-    ["Tier: never above the layout's top tier", _top isEqualTo 2, format ["%1 at bracket 5: %2", _t, _top]] call OTQA_fnc_check;
+    server setVariable [format ["officetier%1", _t], [_keepT, nil] select (_keepT isEqualTo 0)];
+    ["Tier: never above the layout's top tier", _top isEqualTo (_t call _authored), format ["%1 at bracket 5, tier 5: %2 (layout to %3)", _t, _top, _t call _authored]] call OTQA_fnc_check;
 }, 10];
 
 _tests pushBack ["Office: the spawner, guards only while it's the occupier's", {
