@@ -80,16 +80,17 @@ CUTS = {
         "faces": "the track behind the house (y -17..-22), before the back porch",
     },
     # The user's own layout: the smallest cut. The only track is the one along the front (y 20). Behind the front
-    # line's west 2-high piece stands a full city wall (y 11.1, x -11.6..-4.6), and the addon before the front door
-    # (its walls x -2.4..4.3) fills the middle: the one way into the yard from the front is the 2.2 m slot between
-    # them, at the two 2-high pieces' joint. The west 2-high piece gives way to an HBarrier_5 from the corner; the
-    # opening (x -5.1..-2.9) lines up with that slot, which leads into the yard on the house's west side and to the
-    # main door. No wider: past 2.2 m it opens only onto the city wall's face
+    # line's west 2-high piece stood a full city wall (city_8m, y 11.1, x -11.6..-4.6) leaving only a 2.2 m slot to the
+    # addon (its walls x -2.4..4.3), too narrow for the game's path finding. The user's call (round 2): that city wall
+    # is hidden from tier 3 (tiers 1 and 2 keep it). The west 2-high piece gives way to an HBarrier_3 from the corner;
+    # the opening (x -7.1..-2.9) leads straight into the yard on the house's west side and to the main door, clear of
+    # the addon and of the palm at (-8.8, 10.8)
     "Neri": {
         "remove": [("Land_HBarrier_Big_F", -6.7, 13.2)],
-        "add": [("Land_HBarrier_5_F", -8.0, 13.2, 0)],
-        "gates": [(-4.0, 13.2, 2.2, 90)],
-        "faces": "the track along the front (y 20); lined up with the slot between the city wall and the addon, the only way into the yard from the front",
+        "add": [("Land_HBarrier_3_F", -8.9, 13.2, 0)],
+        "hide": [(-8.1, 11.1)],
+        "gates": [(-5.0, 13.2, 4.2, 90)],
+        "faces": "the track along the front (y 20); into the yard on the house's west side (the city wall behind the line hidden)",
     },
     # The track down the right side (x 12.5) runs along the right line's outer face. The line beside the house leaves
     # only a 2 m strip, so the opening goes in behind the house: the right line's back 2-high piece comes out, an
@@ -149,7 +150,8 @@ def cut(t, items, cfg):
         removed.append(near[0])
     added = [tl.obj(t, cls, x, y, None, d) for cls, x, y, d in cfg["add"]]
     gates = [tl.gate(t, x, y, w, d) for x, y, w, d in cfg["gates"]]
-    return items + added + gates, removed, added, gates
+    hides = [tl.hide(t, x, y, ("wall",)) for x, y in cfg.get("hide", ())]
+    return items + added + hides + gates, removed, added, gates
 
 
 def site(t, items):
@@ -274,6 +276,8 @@ def audit(t, tiers, out, removed, added, cfg):
     for it in added:
         m = model(t, it)
         lines.append(f"   added   {it[1][5:-2]} at ({m[0]:.2f}, {m[1]:.2f}) dir {mdir(t, it):.0f}")
+    for x, y in cfg.get("hide", ()):
+        lines.append(f"   hidden  the map wall nearest ({x}, {y})")
     for x, y, w, d in cfg["gates"]:
         lines.append(f"   gate at ({x}, {y}), {w} m, line along {d}: {cfg['faces']}")
     s = site(t, items)
