@@ -302,7 +302,30 @@ _tests pushBack ["Office: a tier removes map objects, others bring them back", {
     [_office] call OT_fnc_officeClearTemplate;
     _layout set [1, _keep];
     [_town, [_town] call OT_fnc_officeTier] call OT_fnc_officeHide;
-    ["Hide: a tier put up hides its map objects, nothing made for them", _hidden && { _made isEqualTo count ((_keep select 0) select { (_x select 0) isNotEqualTo "hide" }) } && { !isObjectHidden _a }, format ["hidden %1, %2 things made, back after %3", _hidden, _made, !isObjectHidden _a]] call OTQA_fnc_check;
+    // A removal holds at the tiers above it: _a removed at tier 1 only stays hidden at tier 3
+    _tiers = +_keep;
+    _tiers set [0, (_tiers select 0) + [_a call _item]];
+    _layout set [1, _tiers];
+    [_town, 3] call OT_fnc_officeHide;
+    private _up = isObjectHidden _a;
+    _layout set [1, _keep];
+    [_town, [_town] call OT_fnc_officeTier] call OT_fnc_officeHide;
+    ["Hide: a map object removed at a tier stays removed above it", _up && { !isObjectHidden _a }, format ["hidden at tier 3 %1, back after %2", _up, !isObjectHidden _a]] call OTQA_fnc_check;
+    ["Hide: a tier put up hides its map objects, nothing made for them", _hidden && { _made isEqualTo count ((_keep select 0) select { !((_x select 0) in ["hide", "gate"]) }) } && { !isObjectHidden _a }, format ["hidden %1, %2 things made, back after %3", _hidden, _made, !isObjectHidden _a]] call OTQA_fnc_check;
+}, 20];
+
+_tests pushBack ["Office: a gate stands open", {
+    private _pos = (((call OTQA_og_towns) select 0) call OTQA_og_officePos) vectorAdd [0, 60, 0];
+    private _made = [[
+        ["object", "Land_NetFence_01_m_gate_F", AGLToASL _pos, [[0, 1, 0], [0, 0, 1]], ["ground", "open"]],
+        ["object", "Land_Net_Fence_Gate_F", AGLToASL (_pos vectorAdd [10, 0, 0]), [[0, 1, 0], [0, 0, 1]], ["ground", "open"]],
+        ["gate", "4.0", AGLToASL (_pos vectorAdd [20, 0, 0]), [[0, 1, 0], [0, 0, 1]], []]
+    ], west, true] call OT_fnc_officeSpawnItems;
+    sleep 1;
+    private _objects = _made select 0;
+    private _phases = _objects apply { [_x animationSourcePhase "Door_1_sound_source", _x animationSourcePhase "Door_2_sound_source"] };
+    { deleteVehicle _x } forEach _objects;
+    ["Gate: both gates made open, nothing made for a gate marker", (count _objects) isEqualTo 2 && { (_phases findIf { (_x select 0) < 0.9 || { (_x select 1) < 0.9 } }) isEqualTo -1 }, format ["%1 made, door phases %2", count _objects, _phases]] call OTQA_fnc_check;
 }, 20];
 
 _tests
