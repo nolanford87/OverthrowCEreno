@@ -77,11 +77,14 @@ TOWNS = {
     "Kore": {"ring": (-16, 17.5, -14, 12), "tall": ("back", "front", "left", "right")},
     "Lakka": {"trust_buildings": True, "ring": (-10, 10, -14, 12), "tall": ("back", "right", "left", "front")},
     # The shop on its right is walked through (rounds 2-4: in by its south side, out by its front door and down its front
-    # steps, a landing 1.4 m up at x 9, to about y 17): no barrier, and the ring takes it in whole. Its dropped pieces
-    # never held (rounds 2, 4, 5: the route crossed at each), so the front line stands past the shop's probe box, all
-    # on the ground (y 20.2, on the street's middle, as Selakano's and Stavros' notches on their roads, which closed)
-    "Neri": {"road_margin": 0.0, "window": False, "steps": (-6.0, 4.0, 1.0), "walls": [("Land_u_Shop_01_V1_F", None, (5.6, 13.8, 0.5, 12.2)), ("Land_i_Addon_04_V1_F", (-2.4, 4.3, 5.5, 11.8))],
-             "poly": [(-10, -10.5), (9.6, -10.5), (9.6, -7.8), (15.3, -7.8), (15.3, 20.2), (-10, 20.2)], "tall": True},
+    # steps, a landing 1.4 m up at x 9, to about y 17). Every crossing in rounds 4-6 (the front line at y 15-20, its
+    # pieces 2-high, on the ground or dropped) was on the probe's track (centre y 20, 10 m wide): the game walks a man
+    # through pieces on it, as at Kore. So nothing stands on it: the front line runs at y 13.2 (its outer face at 14.5)
+    # from the left line to the shop's front corner, and the shop stays outside, its south side shut off by a line
+    # from the house's east wall (the 0.3 m between the house, the shop and that line's end is too narrow for a man)
+    "Neri": {"road_margin": 0.0, "window": False, "steps": (-6.0, 4.0, 1.0), "plug": False,
+             "walls": [("Land_u_Shop_01_V1_F", (5.6, 13.8, 0.5, 12.2), (5.6, 13.8, 0.5, 12.2)), ("Land_i_Addon_04_V1_F", (-2.4, 4.3, 5.5, 11.8))],
+             "poly": [(-10, -10.5), (9.6, -10.5), (9.6, -7.8), (15.3, -7.8), (15.3, -0.85), (5.5, -0.85), (5.5, 13.2), (-10, 13.2)], "tall": True},
     "Poliakko": {"poly": [(-18, -13), (7.3, -13), (7.3, 9.6), (-10.6, 9.6), (-10.6, 6.9), (-18, 6.9)], "tall": True},
     "Selakano": {"exit_back": True, "road_margin": 0.0, "poly": [(-17.5, -10.3), (-5.4, -10.3), (-5.4, -13.5), (4.4, -13.5), (4.4, -10.3), (15.5, -10.3), (15.5, 12), (-17.5, 12)],
                  "tall": True},
