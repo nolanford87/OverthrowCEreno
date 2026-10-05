@@ -331,8 +331,8 @@ def static(town, role, x, y, z=None, mdir=0.0):
 
 def hide(town, x, y, kinds=("wall", "tree", "rock", "building")):
     """A map object removed at the tier (a fence, a low wall, a shed, a tree in the way): the probed object of those
-    kinds nearest model (x, y), within 2 m. The game hides it (OT_fnc_officeHide); check() treats it as gone. Keep
-    it in every later tier that should keep it removed (snapshots are full)."""
+    kinds nearest model (x, y), within 2 m. The game hides it (OT_fnc_officeHide); check() treats it as gone. It stays
+    removed at every tier above this one too (OT_fnc_officeHide)."""
     w = town.to_world(x, y, 0)
     near = sorted((o for o in town.objs if o["kind"] in kinds), key=lambda o: math.hypot(o["pos"][0] - w[0], o["pos"][1] - w[1]))
     assert near and math.hypot(near[0]["pos"][0] - w[0], near[0]["pos"][1] - w[1]) <= 2.0, f"no map object within 2 m of model {(x, y)}"
@@ -398,8 +398,8 @@ def check(town, tiers):
         guards = sum(1 for it in items if it[0] == "guard")
         if garrisoned and guards < MIN_GUARDS:
             problems.append(f"tier {n}: {guards} guards")
-        removed = town.removed_objs(items)
-        if sum(1 for it in items if it[0] == "hide") != len(removed):
+        removed = town.removed_objs([it for lower in tiers[:n] for it in lower])  # A tier's removals hold above it too
+        if sum(1 for it in items if it[0] == "hide") > len(town.removed_objs(items)):
             problems.append(f"tier {n}: {sum(1 for it in items if it[0] == 'hide') - len(removed)} hide items with no probed object within a metre")
         for it in items:
             kind, what, p, o, extra = it
