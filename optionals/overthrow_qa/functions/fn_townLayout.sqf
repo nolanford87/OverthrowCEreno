@@ -389,7 +389,9 @@ OTQA_townLayout_show = {
 // Progress kept in the host's Arma profile (it lasts when the game is closed): every saved town's layout, and
 // the towns confirmed in the review. Read at the start for towns the mod has no layout for; per map. The tests keep out of it
 OTQA_townLayout_profileVar = { format ["OTQA_townLayouts_%1", worldName] };
-OTQA_townLayout_confirmedVar = { format ["OTQA_townLayoutsConfirmed_%1", worldName] };
+// Confirmations count per review pass (each pass is reviewed afresh): set the pass when starting a new review
+OTQA_townLayout_pass = "pass2a";
+OTQA_townLayout_confirmedVar = { format ["OTQA_townLayoutsConfirmed_%1_%2", worldName, OTQA_townLayout_pass] };
 OTQA_townLayout_loadProfile = {
     [""] call OT_fnc_officeLayout; // The mod's layouts read first (OT_officeLayouts)
     // Only for towns the mod has no layout for: every save is merged from the RPT into the mod's layouts, which
@@ -409,11 +411,9 @@ OTQA_townLayout_storeProfile = {
     profileNamespace setVariable [_var, _all];
     saveProfileNamespace;
 };
-// The towns confirmed: in the profile, or confirmed in the mod's layouts (merged from an earlier run's RPT)
+// The towns confirmed in this review pass (in the profile)
 OTQA_townLayout_confirmed = {
-    private _done = +(profileNamespace getVariable [call OTQA_townLayout_confirmedVar, []]);
-    { if ((_y param [2, false]) isEqualTo true) then { _done pushBackUnique _x } } forEach (missionNamespace getVariable ["OT_officeLayouts", createHashMap]);
-    _done
+    +(profileNamespace getVariable [call OTQA_townLayout_confirmedVar, []])
 };
 
 // The review's confirm: the town marked done (in the profile) and on to the next town not confirmed yet. Scheduled
