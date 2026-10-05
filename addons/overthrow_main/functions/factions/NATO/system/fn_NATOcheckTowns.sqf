@@ -29,6 +29,11 @@ private _popControl = call OT_fnc_getControlledPopulation;
     private _pos = server getVariable [_town, [0, 0, 0]];
     private _stability = server getVariable [format ["stability%1", _town], 0];
     private _population = server getVariable [format ["population%1", _town], 100];
+    // A town with a mayor's office is taken there instead (its own task, then the QRF for the office)
+    if (_stability isEqualTo 0 && { ([_town] call OT_fnc_officeLayout) isNotEqualTo [] }) then {
+        [_town] spawn OT_fnc_officeCapture; // Once per town at a time
+        continue;
+    };
     // Limit towns checked to those within range of players
     if ([_pos] call OT_fnc_inSpawnDistance) then {
         // Send QRF to Town with > 100 population

@@ -37,8 +37,10 @@ uiNamespace setVariable ["OTQA_autoOnly", []];
     // The occupier set up and the player in the game
     _timeout = time + 600;
     waitUntil { sleep 1; (!isNil "OT_NATOInitDone" && { player getVariable ["OT_loaded", false] }) || { time > _timeout } };
-    while { dialog } do { closeDialog 0; sleep 0.2 };
-    sleep 10; // Let the world settle (spawners, the first loops)
+    // Let the world settle (spawners, the first loops); the tutorial's question comes up once the camera is at the
+    // player's house, so dialogs are closed through it
+    private _settled = time + 20;
+    waitUntil { while { dialog } do { closeDialog 0; sleep 0.2 }; sleep 0.5; time > _settled };
     diag_log format ["OT_QA AUTORUN: running '%1' (NATO ready %2, player loaded %3)", _suite, !isNil "OT_NATOInitDone", player getVariable ["OT_loaded", false]];
     [_suite] call OTQA_fnc_run;
     diag_log "OT_QA AUTORUN: finished";

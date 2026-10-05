@@ -24,6 +24,7 @@ private _group = grpNull;
 {
     private _item = _x;
     _item params ["_kind", "_what", "_at", "_orient", ["_extra", []]];
+    if (_kind in ["hide", "gate"]) then { continue }; // A map object removed (OT_fnc_officeHide), a gate's opening (a marker)
     if (_kind isEqualTo "guard") then {
         if (isNull _group) then { _group = createGroup [_side, true] };
         private _p = ASLToATL _at;
