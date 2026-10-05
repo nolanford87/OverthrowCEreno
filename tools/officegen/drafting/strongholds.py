@@ -1071,9 +1071,9 @@ def kavala(d):
     main strip and north of the south block, the service yard (tanks, containers) between the strip and the cliff.
     T2: sandbags 2 m out of each door that opens outside, along the main strip's forecourt face and the south front.
     T3: H-barriers 1.5-2 m round the whole complex: south (y -24.3), east (x 20; the Mil walls at T5 x 18.2, round side1's north end at
-    y 45.3, standing into a low wall there), the forecourt side (x -10.5 down to the south block, y -2 along its north face), west (x -39.5).
+    y 45.3, standing into a low wall there), the forecourt side (x -10.5 down to the south block, y -2 along its north face), west (x -40; the Mil walls at T5 x -39.5).
     T4: Mil walls along the road edges into the cliff: the south road's edge (y -26) from the west road to the
-    rocks, the west road's east edge (x -41.3, then north-east along the road to (-26.3, 50)), and the north side
+    rocks, the west road's east edge (x -41.6, then north-east along the road to (-26.3, 50)), and the north side
     (y 50-61) along the line of tall canal walls at the forecourt's north end into the cliff: the forecourt and the service yard inside.
     T5: the T3 ring in Mil walls."""
     d.start = (13.1, -6.1)  # The in-game walk's start (between the main strip and the service yard)
@@ -1094,21 +1094,23 @@ def kavala(d):
         hw = 0.85 if fam == "H" else 0.55
         xe = 20.0 if fam == "H" else 18.2  # (Round 4: two H-barriers at x 18.2 cut the main block; the Mil walls didn't;
         # x 20 also clears the net fence ending at x 18.9)
-        d.run(-39.5 - hw, -24.3, xe + hw, -24.3, 180, fam, R, "south line", road_ok=True, past=0.0)
+        xw = -40.0 if fam == "H" else -39.5  # (Round 5: two H-barriers at x -39.5 cut the helipad block's west face)
+        d.run(xw - 0.2, -24.3, xe + hw, -24.3, 180, fam, R, "south line", road_ok=True, past=0.0)  # (Its west end and the
+        # next line's stop short of T4's west line beside them: a free end runs on up to 0.6 m)
         d.run(xe + hw, 45.3, -10.5 - hw, 45.3, 0, fam, R, "north line, round side1's north end (into the low wall)", past=0.0, upgrade=True)
         d.run(xe, -24.3, xe, 45.3, 90, fam, R, "east line, along the main strip and side1", past=0.6)
         d.run(-10.5, 45.3, -10.5, -2.0 - hw, 270, fam, R, "forecourt line, side1 down to the south block", past=0.6)
-        d.run(-10.5, -2.0, -39.5 - hw, -2.0, 0, fam, R, "along the south block's north face", past=0.0)
-        d.run(-39.5, -2.0, -39.5, -24.3, 270, fam, R, "west line, along the south block's west end", road_ok=True, past=0.6)
+        d.run(-10.5, -2.0, xw - 0.2, -2.0, 0, fam, R, "along the south block's north face", road_ok=True, past=0.0)
+        d.run(xw, -2.0, xw, -24.3, 270, fam, R, "west line, along the south block's west end", road_ok=True, past=0.6)
 
     d.tier()  # T3
     inner(d, "H", "T3 ring", HB1)
 
     d.tier()  # T4
     R = "T4 ring"
-    d.run(-41.85, -26.0, 24.5, -26.0, 180, "M", R, "south road's edge to the cliff", road_ok=True, past=0.6)
-    d.run(-41.3, -26.0, -41.3, 14.0, 270, "M", R, "west road's edge", road_ok=True, past=0.6)
-    pts = [(-41.3, 14.0), (-36.0, 30.0), (-26.3, 50.0), (-20.9, 60.5)]  # The west road's edge, ~5.5 m off its middle
+    d.run(-42.15, -26.0, 24.5, -26.0, 180, "M", R, "south road's edge to the cliff", road_ok=True, past=0.6)
+    d.run(-41.6, -26.55, -41.6, 14.6, 270, "M", R, "west road's edge", road_ok=True, past=0.6)
+    pts = [(-41.6, 14.0), (-36.0, 30.0), (-26.3, 50.0), (-20.9, 60.5)]  # The west road's edge, ~5.5 m off its middle
     for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
         d.run(x0, y0, x1, y1, bearing(x0, y0, x1, y1) - 90, "M", R, "west road's edge, turning north-east", road_ok=True, past=0.6)
     # The north side: a line of tall canal walls (5.5 m, real barriers) runs from (-12, 61) to the cliff; the run
