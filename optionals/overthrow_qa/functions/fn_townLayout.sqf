@@ -471,7 +471,9 @@ OTQA_townLayout_save = {
         } else {
             private _static = [_x] call OT_fnc_officeStatic;
             if (_static isNotEqualTo "") exitWith { ["static", _static, getPosASL _x, [vectorDir _x, vectorUp _x], []] };
-            ["object", typeOf _x, getPosASL _x, [vectorDir _x, vectorUp _x], [[], ["flag"]] select (_x isKindOf "FlagCarrier")]
+            private _extra = [[], ["flag"]] select (_x isKindOf "FlagCarrier");
+            if ("open" in (((_x getVariable ["OT_officeItem", []]) param [3, []]) param [4, []]) || { "_gate" in toLower typeOf _x }) then { _extra pushBack "open" }; // A gate stays open
+            ["object", typeOf _x, getPosASL _x, [vectorDir _x, vectorUp _x], _extra]
         }
     };
     // The map objects removed here (OT_fnc_officeHide's, the ones removed since included)
