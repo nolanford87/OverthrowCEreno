@@ -23,6 +23,7 @@ private _index = _abandoned find _town;
 if (_index > -1) then { _abandoned deleteAt _index };
 server setVariable ["NATOabandoned", _abandoned, true];
 server setVariable [format ["NATOpatrolsent%1", _town], false];
+server setVariable [format ["officeheld%1", _town], nil, true]; // Its mayor's office is theirs again
 
 [_town, -_supportLoss] call OT_fnc_support;
 [_town, _stability - (server getVariable [format ["stability%1", _town], 0])] call OT_fnc_stability;

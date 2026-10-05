@@ -68,18 +68,30 @@ def watch():
 def main(argv):
     if "--watch" in argv:
         return watch()
-    args = [a for a in argv if not a.startswith("--")]
+    only = argv[argv.index("--group") + 1] if "--group" in argv else None
+    args = [a for a in argv if not a.startswith("--") and a != only]
     rnd = int(args[0])
     rpt = args[1] if len(args) > 1 else max(glob.glob(os.path.join(os.environ["LOCALAPPDATA"], "Arma 3", "*.rpt")), key=os.path.getmtime)
-    only = argv[argv.index("--group") + 1] if "--group" in argv else None
     groups = json.load(open(os.path.join(REVIEW, "groups.json"), encoding="utf-8"))
-    checks, classes = {}, {}
+    checks, classes, bpos, paths, starts = {}, {}, {}, {}, {}
     for line in open(rpt, encoding="utf-8", errors="replace"):
-        m = re.search(r'"(OT(CHECK|CLASS)\|.*)"\s*$', line)
+        m = re.search(r'"(OT(CHECK|CLASS|BPOS|PATH|PATHSTART)\|.*)"\s*$', line)
         if not m:
             continue
         f = m.group(1).replace('""', '"').split("|")
-        if f[0] == "OTCHECK":
+        if f[0] == "OTPATHSTART":
+            starts[f[1]] = f[2]
+        elif f[0] == "OTPATH" and (len(f) in (6, 7) or f[3] == "closed" or f[3].startswith("unknown")):
+            ways = paths.setdefault(f[1], {}).setdefault(int(f[2]), [])
+            if f[3].startswith("unknown"):
+                ways.append(f"closure {f[3]}: the check couldn't start, not a pass")
+            elif f[3] != "closed":
+                via = f[6] if len(f) == 7 else "none"
+                ways.append(f"bearing {f[3]}: " + (f"through the gate at {via} (meant)" if via != "none" else "NOT through a gate")
+                            + f", gap {f[4]}, route {f[5]}")
+        elif f[0] == "OTBPOS":
+            bpos[f[1]] = f[2]
+        elif f[0] == "OTCHECK":
             checks.setdefault(f[1], {})[int(f[2])] = f[3:]
         else:
             classes[f[1]] = f[2]
@@ -96,13 +108,20 @@ def main(argv):
               "Per tier: items in the layout / guards / props / statics / items not made (class missing); then the problems found.",
               "clips = a building, wall, rock or the office's walls runs through it; floating = gap under it (m); moved = a guard pushed",
               "more than 1 m off his post (stuck in geometry); blind = a guard's view ends within 4 m (facing a wall); blocked = a",
-              "static's field of fire ends within 15 m; view = the guards' median clear view (m). Screenshots beside this file:",
-              "<town>_T<tier>_top.jpg (from 48 m above, north up) and <town>_T<tier>_street.jpg (from 35 m out on the street side, 20 m up).", ""]
+              "static's field of fire ends within 15 m; view = the guards' median clear view (m). A flagged item's [x, y] is where",
+              "it stood in the office's model coordinates (your drafts' own). Screenshots beside this file:",
+              "<town>_T<tier>_top.jpg (from 55 m above the ground or the roof, north up) and <town>_T<tier>_street.jpg (from 35 m out on the street side, 20 m up).", ""]
         for town in mine:
             md.append(f"## {town}")
+            if town in starts:
+                md.append(f"Closure routes start at {starts[town]} (office model; found on the bare site, 'none': not checked)")
             for tier in sorted(checks[town]):
                 items, guards, props, statics, missing, clips, floating, moved, blind, blocked, view = checks[town][tier]
                 md.append(f"- **Tier {tier}**: {items} items / {guards} guards / {props} props / {statics} statics / {missing} missing; median view {view} m")
+                way = paths.get(town, {}).get(tier)
+                if way is not None:
+                    md.append("  - closed: no way out" if not way else "  - ways out (bearing from the office's front; the gap: where the route last passes within 3 m of a fortification):")
+                    md += [f"    - {w}" for w in way]
                 for name, val in (("clips", clips), ("floating", floating), ("moved", moved), ("blind", blind), ("blocked", blocked)):
                     if val not in ("[]", ""):
                         md.append(f"  - {name}: {val}")
@@ -122,6 +141,10 @@ def main(argv):
             md.append("")
         used = sorted(c for c in classes)
         md += ["## Real sizes of the classes used ([length, depth, height] m, boundingBoxReal)", ""] + [f"- {c}: {classes[c]}" for c in used]
+        if bpos:
+            md += ["", "## Where a man stands on a placed object (its building positions, MODEL coordinates [x, y, z] from its origin)",
+                   "Put a tower's or bunker's guard exactly there (turned with the object) instead of guessing a height.", ""]
+            md += [f"- {c}: {bpos[c]}" for c in sorted(bpos)]
         open(os.path.join(out, "measurements.md"), "w", encoding="utf-8", newline="\n").write("\n".join(md) + "\n")
         print(f"{group}: {len(mine)} towns -> {os.path.relpath(out, ROOT)}")
 

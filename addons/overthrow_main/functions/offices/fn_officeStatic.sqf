@@ -21,10 +21,10 @@ if (_what isEqualType objNull) then { _what = typeOf _what };
 
 private _i = _roles find _what;
 if (_i < 0) exitWith {
-    // A class: its role
-    private _j = _bases findIf { _what isKindOf _x };
-    if (_j < 0) exitWith { "" };
-    _roles select _j
+    // A class: its role (the machine gun last: the AT and other statics are kinds of StaticMGWeapon too)
+    private _j = [2, 3, 1, 4, 0] select { _what isKindOf (_bases select _x) };
+    if (_j isEqualTo []) exitWith { "" };
+    _roles select (_j select 0)
 };
 
 if (_what isEqualTo "mortar") exitWith { missionNamespace getVariable ["OT_NATO_Mortar", "B_Mortar_01_F"] };

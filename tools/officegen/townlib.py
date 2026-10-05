@@ -43,6 +43,7 @@ CLASSES = {
     "Land_CncBarrier_F": (1.6, 0.6), "Land_CncBarrier_stripes_F": (2.6, 0.6), "Land_CncBarrierMedium_F": (4.0, 0.6),
     "Land_CncBarrierMedium4_F": (8.0, 0.6),
     "Land_Mil_WallBig_4m_F": (4.0, 0.6), "Land_Mil_WallBig_Corner_F": (1.0, 1.0),
+    "Land_CncWall4_F": (4.0, 1.0), "Land_CncWall1_F": (1.4, 1.0),  # CncWall4 a guess; CncWall1 measured (pass 1)
     "Land_WallCity_01_gate_grey_F": (5.0, 0.6), "Land_BarGate_F": (5.0, 0.6),
     "Land_PipeFence_03_m_gate_r_F": (4.0, 0.3), "Land_GameProofFence_01_l_gate_F": (4.0, 0.3),  # The gates used at Aggelochori
     "Land_BagBunker_Small_F": (3.2, 3.0), "Land_BagBunker_Tower_F": (3.5, 3.5),
@@ -72,6 +73,8 @@ BARRIER_OVERLAP = 0.6
 
 def is_barrier(cls):
     return any(b in cls for b in BARRIERS)
+# Fewest guards a tier may hold once a draft has any (the walls and gates passes have none)
+MIN_GUARDS = 2
 GUARD_ROLES = ("gendarme", "rifleman", "autorifleman", "marksman", "at", "mg_gunner", "officer")
 
 
@@ -206,18 +209,32 @@ class Town:
                 self._fp.append((o, b))
         return self._fp
 
-    def hits(self, wx, wy, length=0.6, depth=0.6, yaw=0.0, pad=0.1):
+    def hits(self, wx, wy, length=0.6, depth=0.6, yaw=0.0, pad=0.1, removed=()):
         """The probed things (buildings, walls, trees, rocks, the office's other pieces) a footprint of this size,
-        centred on a world point and turned to a world yaw, overlaps: [(kind, model name, distance)]."""
+        centred on a world point and turned to a world yaw, overlaps: [(kind, model name, distance)]. Not the ones
+        in removed (map objects a tier hides: removed_objs)."""
         out = []
         cx, cy = rot(1, 0, yaw), rot(0, 1, yaw)
         corners = [(wx + sx * length / 2 * cx[0] + sy * depth / 2 * cy[0], wy + sx * length / 2 * cx[1] + sy * depth / 2 * cy[1]) for sx in (-1, 1) for sy in (-1, 1)] + [(wx, wy)]
         for o, b in self._footprints():
+            if any(o is r for r in removed):
+                continue
             for px, py in corners:
                 lx, ly = rot(px - o["pos"][0], py - o["pos"][1], -o["dir"])
                 if b[0] - pad <= lx <= b[2] + pad and b[1] - pad <= ly <= b[3] + pad:
                     out.append((o["kind"], o["model"], round(math.hypot(wx - o["pos"][0], wy - o["pos"][1]), 1)))
                     break
+        return out
+
+    def removed_objs(self, items):
+        """The probed objects a tier's "hide" items remove (the nearest within a metre of each)."""
+        out = []
+        for it in items:
+            if it[0] != "hide":
+                continue
+            near = sorted(self.objs, key=lambda o: math.hypot(o["pos"][0] - it[2][0], o["pos"][1] - it[2][1]))
+            if near and math.hypot(near[0]["pos"][0] - it[2][0], near[0]["pos"][1] - it[2][1]) <= 1.0:
+                out.append(near[0])
         return out
 
     def roads_near(self, wx, wy, r=60):
@@ -312,6 +329,42 @@ def static(town, role, x, y, z=None, mdir=0.0):
     return ["static", role, town.to_world(x, y, z), _up_dir((town.dir + mdir) % 360), ["ground"] if z is None else []]
 
 
+def hide(town, x, y, kinds=("wall", "tree", "rock", "building")):
+    """A map object removed at the tier (a fence, a low wall, a shed, a tree in the way): the probed object of those
+    kinds nearest model (x, y), within 2 m. The game hides it (OT_fnc_officeHide); check() treats it as gone. Keep
+    it in every later tier that should keep it removed (snapshots are full)."""
+    w = town.to_world(x, y, 0)
+    near = sorted((o for o in town.objs if o["kind"] in kinds), key=lambda o: math.hypot(o["pos"][0] - w[0], o["pos"][1] - w[1]))
+    assert near and math.hypot(near[0]["pos"][0] - w[0], near[0]["pos"][1] - w[1]) <= 2.0, f"no map object within 2 m of model {(x, y)}"
+    o = near[0]
+    return ["hide", o["model"], list(o["pos"]), _up_dir(o["dir"]), []]
+
+
+def gate(town, x, y, width, mdir=0.0):
+    """A gate's opening in the walls at model (x, y), width metres across, the line it's cut in running along model
+    direction mdir. A marker: nothing stands for it in the game (pass 2b gives the gate its look); the in-game check
+    counts a way out through it as meant and any other as a gap. Cut the gap itself by leaving the pieces out."""
+    return ["gate", f"{width:.1f}", town.to_world(x, y, 0), _up_dir((town.dir + mdir) % 360), []]
+
+
+def baseline(town, world="Altis"):
+    """The town's reviewed layout (tools/officegen/layouts/<world>.txt, as the user left it in the editor): its
+    tiers as full snapshots, [tier 1 items, ...] up to its highest saved tier, each item [kind, what, [x, y, z] ASL,
+    orientation, extra] like the drafting helpers' (guard orientation a direction, others [vectorDir, vectorUp]).
+    Build the next pass on these; never regenerate what the user reviewed."""
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import merge_layouts
+    t = merge_layouts.load_saved(world)[town.name if hasattr(town, "name") else town]
+    top = max(t["tiers"]) if t["tiers"] else 0
+    out = []
+    for n in range(1, top + 1):
+        items = []
+        for kind, what, p, o, extra in t["tiers"].get(n, []):
+            items.append([kind, what, _vec(p), float(o) if kind == "guard" else ast.literal_eval(o), [e for e in extra.split(",") if e]])
+        out.append(items)
+    return out
+
+
 def from_template(town, tier):
     """The generated template's additions for a tier on this office (doorway markers left out): outside things on
     the ground, inside ones on their floor."""
@@ -343,10 +396,15 @@ def check(town, tiers):
     garrisoned = any(it[0] == "guard" for items in tiers for it in items)  # Pass 1 (walls) has no guards at all
     for n, items in enumerate(tiers, 1):
         guards = sum(1 for it in items if it[0] == "guard")
-        if garrisoned and guards < 2:
+        if garrisoned and guards < MIN_GUARDS:
             problems.append(f"tier {n}: {guards} guards")
+        removed = town.removed_objs(items)
+        if sum(1 for it in items if it[0] == "hide") != len(removed):
+            problems.append(f"tier {n}: {sum(1 for it in items if it[0] == 'hide') - len(removed)} hide items with no probed object within a metre")
         for it in items:
             kind, what, p, o, extra = it
+            if kind in ("hide", "gate"):
+                continue
             m = town.to_model(p)
             dist = math.hypot(m[0], m[1])
             if dist > town.reach + 1:
@@ -363,7 +421,7 @@ def check(town, tiers):
             # An office of several pieces (Kavala's hospital): its parts' boxes and its plan reach well past the real
             # building (open ground under the helipad block), so the in-game clip check judges pieces near it
             composite = any(o["kind"] == "part" for o in town.objs)
-            hit = [h for h in town.hits(p[0], p[1], size[0], size[1], yaw) if h[0] in (("building", "rock") if composite else ("building", "part", "rock")) or (h[0] == "wall" and kind != "object")]
+            hit = [h for h in town.hits(p[0], p[1], size[0], size[1], yaw, removed=removed) if h[0] in (("building", "rock") if composite else ("building", "part", "rock")) or (h[0] == "wall" and kind != "object")]
             if not composite and town.on_office(m[0], m[1], size[0], size[1], (yaw - town.dir) % 360):
                 hit.append(("office", town.cls, 0))
             if hit:
@@ -418,12 +476,13 @@ def reference(world="Altis", town="Aggelochori"):
 
 def ascii_map(town, items=(), r=40, step=2):
     """A top-down map in model coordinates (up = the office's front, +y): O office, # building, = wall, t tree,
-    : road, and the items' first letters."""
+    : road, and the items' first letters (x a map object removed, shown gone)."""
     rows = []
     marks = {}
     for kind, what, p, o, extra in items:
         m = town.to_model(p)
-        marks[(round(m[0] / step), round(m[1] / step))] = {"guard": "g", "static": "S"}.get(kind, "o")
+        marks[(round(m[0] / step), round(m[1] / step))] = {"guard": "g", "static": "S", "hide": "x", "gate": "G"}.get(kind, "o")
+    removed = town.removed_objs(items)
     for j in range(r // step, -r // step - 1, -1):
         row = ""
         for i in range(-r // step, r // step + 1):
@@ -432,7 +491,7 @@ def ascii_map(town, items=(), r=40, step=2):
             c = "."
             if town.on_road(w[0], w[1]):
                 c = ":"
-            hit = town.hits(w[0], w[1], 0.2, 0.2, 0, 0)
+            hit = town.hits(w[0], w[1], 0.2, 0.2, 0, 0, removed=removed)
             if hit:
                 c = {"building": "#", "wall": "=", "tree": "t", "rock": "r", "part": "O"}.get(hit[0][0], "?")
             if town.inside_office(x, y):

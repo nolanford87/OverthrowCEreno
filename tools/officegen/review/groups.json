@@ -1,7 +1,8 @@
 {
-    "strongholds": ["Kavala", "Pyrgos", "Athira", "Zaros"],
-    "towns": ["Agios Dionysios", "Chalkeia", "Charkia", "Kalochori", "Molos", "Neochori", "Panochori", "Paros", "Rodopoli", "Sofia", "Therisa"],
+    "strongholds": ["Kavala", "Athira", "Zaros"],
+    "towns": ["Agios Dionysios", "Chalkeia", "Charkia", "Kalochori", "Neochori", "Panochori", "Paros", "Rodopoli", "Sofia", "Therisa"],
     "villages": ["Alikampos", "Dorida", "Gravia", "Kore", "Lakka", "Neri", "Poliakko", "Selakano", "Stavros", "Telos", "Abdera", "Agios Konstantinos", "Galati", "Nifi", "Topolia"],
     "hamlets": ["Agia Triada", "Agios Petros", "Anthrakia", "Athanos", "Delfinaki", "Ekali", "Feres", "Frini", "Ifestiona", "Ioannina", "Kalithea", "Katalaki", "Koroni", "Negades", "Oreokastro", "Orino", "Panagia", "Syrta"],
-    "user": ["Aggelochori"]
+    "user": ["Aggelochori"],
+    "later": ["Molos", "Pyrgos"]
 }

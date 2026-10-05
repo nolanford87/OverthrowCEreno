@@ -9,7 +9,7 @@
         OTTOWN|town|DOOR|main/back/side|[x,y,z]|outward direction|width (the template's doorway markers)
         OTTOWN|town|BPOS|[[x,y,z],...] the office's building positions (floors), ten to a line
         OTTOWN|town|OBJ|building/wall/tree/rock/part|model|[x,y,z]|direction|[min x,min y,max x,max y,min z,max z]
-            every terrain object of those kinds within 45 m of the office (a part: the office's other pieces)
+            every terrain object of those kinds within 45 m of the office (more round a big one: OTTOWN|town|REACH|m) (a part: the office's other pieces)
         OTTOWN|town|ROAD|type|width|[begin x,y,z]|[end x,y,z]  every road segment within 60 m
         OTTOWN|town|H|row|[height,...] the ground (ASL) every 2 m from -44 to 44 m round the office (world axes:
             row j is y = office y + 2 * (j - 22), the values x = office x + 2 * (i - 22))
@@ -62,6 +62,10 @@
             diag_log format ["OTTOWN|%1|HEAD|%2|%3|%4|%5|%6|%7|%8|%9", _town, _key, typeOf _b, [_pos, 3] call _n, (getDir _b) toFixed 2, _spawned,
                 server getVariable [format ["population%1", _town], 0], [_town] call OTQA_townLayout_bracket, [_town] call OTQA_townLayout_cap];
             diag_log format ["OTTOWN|%1|BOX|%2", _town, [_b] call _box];
+            // How far out: 45 m round a house, more round a big office (Kavala's hospital), by its radius
+            private _reach = 45 max (45 * ([_town] call OT_fnc_officeRadius) / 30);
+            private _half = ceil (_reach / 2);
+            diag_log format ["OTTOWN|%1|REACH|%2", _town, round _reach];
             {
                 {
                     if ((_x select 0) isEqualTo "doorway") then {
@@ -82,16 +86,16 @@
                         private _model = (getModelInfo _x) select 0;
                         diag_log format ["OTTOWN|%1|OBJ|%2|%3|%4|%5|%6", _town, _label, [typeOf _x, _model] select ((typeOf _x) isEqualTo ""), [getPosASL _x, 2] call _n, (getDir _x) toFixed 1, [_x] call _box];
                     };
-                } forEach (nearestTerrainObjects [_pos, _types, 45, false, true]);
+                } forEach (nearestTerrainObjects [_pos, _types, _reach, false, true]);
             } forEach _kinds;
             {
                 (getRoadInfo _x) params ["_type", "_width", "", "", "", "", "_beg", "_end"];
                 diag_log format ["OTTOWN|%1|ROAD|%2|%3|%4|%5", _town, _type, _width toFixed 1, [_beg, 2] call _n, [_end, 2] call _n];
-            } forEach (_pos nearRoads 60);
-            for "_j" from 0 to 44 do {
+            } forEach (_pos nearRoads (_reach + 15));
+            for "_j" from 0 to 2 * _half do {
                 private _row = [];
-                for "_i" from 0 to 44 do {
-                    _row pushBack ((getTerrainHeightASL [(_pos select 0) + 2 * (_i - 22), (_pos select 1) + 2 * (_j - 22)]) toFixed 2);
+                for "_i" from 0 to 2 * _half do {
+                    _row pushBack ((getTerrainHeightASL [(_pos select 0) + 2 * (_i - _half), (_pos select 1) + 2 * (_j - _half)]) toFixed 2);
                 };
                 diag_log format ["OTTOWN|%1|H|%2|[%3]", _town, _j, _row joinString ","];
             };

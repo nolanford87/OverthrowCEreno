@@ -22,15 +22,21 @@ Read first: `CLAUDE.md`, `tools/officegen/DESIGN_BRIEF.md` (its passes section),
 | 4 | A **sizeable outer perimeter of high walls** round the whole compound (its yards and the cluster of buildings round the office). Keep the T3 ring as the inner line. A hard take for the player. | `Land_Mil_WallBig_4m_F` (+ corner), `Land_HBarrierWall4_F` `Wall6_F` `Wall_corner_F`, `Land_CncWall4_F` `CncWall1_F`; H-barriers to fill |
 | 5 | An absolute walled garden, a Fort Knox: T4 plus the T3 ring raised to high walls too, so there are two complete high-walled rings with ground between them. | as T4 |
 
-- A town only goes up to its own top tier (its population bracket + 1), **but author one tier above that cap**.
-  Populations change from game to game, so a town can cross into the next bracket (Neri: 85 at the probe, over 100 in
-  a later game), and its office stops at the highest tier its layout has. Villages get a T4, towns a T5.
+- A town only goes up to its own top tier: its population bracket + 1, as the probe gives it
+  (`OTTOWN|town|HEAD|...|population|bracket|cap`). Populations are rolled anew each game, so the bracket is
+  **locked at the probe's** (`merge_layouts.py` writes it into the data, `OT_fnc_officeBracket` reads it): author up
+  to the probe's cap, no further.
 - **At T4 every wall is upgraded to high walls**: the perimeter, and the existing walls the ring ties into (raised or
   lined with high walls), not only the new outer line. (The user's rule, set after Altis.)
 - Snapshots are full, but a tier **may drop pieces of the one below** (e.g. T2's door bags where the T3 ring stands).
   `tl.check()` allows it.
 
 ## The rules
+- **Room to move inside the walls.** From T3 to T5, don't hug the building: take up space so the defenders (and
+  the player who breaks in) can move round inside the rings easily. A tight ring that leaves only narrow slots is
+  worse than a wider one. (The user, after reviewing Altis.)
+- **A wall reads as one line to the eye.** Closed isn't enough: a ring the path check passes can still look
+  disjointed (a large visible gap covered only by something behind it). Close the line visibly.
 - **Closed means closed in the game.** The lead's check walks a man (the engine's own path finding) from inside the
   office to 8 points 60 m out. Every tier 3+ must come back "closed: no way out".
 - **Only real barriers close a line.** These count:
@@ -47,6 +53,11 @@ Read first: `CLAUDE.md`, `tools/officegen/DESIGN_BRIEF.md` (its passes section),
 - **Pieces overlap only at their ends**: 0.3-0.6 m into each other, a wall or a building. Never mid-piece. The one
   exception is upgrading an existing wall (T3+): H-barriers may stand along or on a real wall to reinforce it. Say
   which pieces do that in the audit.
+- **A map object in the way can be removed** (a fence, a low or ruined wall, a shed, a tree, junk):
+  `tl.hide(town, x, y)` makes a "hide" item for the probed object nearest model (x, y). The game hides it while
+  the tier stands, and `tl.check()` and the in-game checks treat it as gone. Keep the item in each later tier that
+  should keep it removed. Don't remove buildings people live in, and say why in the audit. The user's own
+  layouts may already remove some (their "hide" items): those objects are gone, so don't tie a line into them.
 - **Every door of the office must open inside the ring.** A line may end on the office's own wall only on a face with
   no door, or the man walks in one door and out another.
 - **Don't close a main road.** A line may stand on a road's edge or cross a track or a dead-end lane.

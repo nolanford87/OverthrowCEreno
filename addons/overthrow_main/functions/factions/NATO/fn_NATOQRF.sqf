@@ -1,4 +1,4 @@
-params ["_pos", "_strength", "_success", "_fail", "_params", "_garrison"];
+params ["_pos", "_strength", "_success", "_fail", "_params", "_garrison", ["_hold", 0]];
 private _numPlayers = count (allPlayers - (entities "HeadlessClient_F"));
 private _popControl = call OT_fnc_getControlledPopulation;
 
@@ -190,4 +190,4 @@ if (_isCoastal && !(OT_NATO_Navy_HQ in _abandoned) && (random 100) > 70) then {
         _delay = _delay + 20;
     };
 };
-[_pos, _strength, _success, _fail, _params, _garrison] call OT_fnc_NATOQRFfight;
+[_pos, _strength, _success, _fail, _params, _garrison, _hold] call OT_fnc_NATOQRFfight;
