@@ -32,6 +32,10 @@ Read first: `CLAUDE.md`, `tools/officegen/DESIGN_BRIEF.md` (its passes section),
   `tl.check()` allows it.
 
 ## The rules
+- **Later passes change only what they're for (the user, after pass 2a).** A pass on top of reviewed walls (gates,
+  towers) removes, shortens or moves only the pieces right at its feature: the opening and the piece either side,
+  within about 6 m. Never re-lay a run "evenly", move a wall over, or tidy joints elsewhere. A way out found later is
+  closed by adding pieces only, tied into the user's.
 - **Room to move inside the walls.** From T3 to T5, don't hug the building: take up space so the defenders (and
   the player who breaks in) can move round inside the rings easily. A tight ring that leaves only narrow slots is
   worse than a wider one. (The user, after reviewing Altis.)
