@@ -387,17 +387,16 @@ OTQA_townLayout_show = {
 };
 
 // Progress kept in the host's Arma profile (it lasts when the game is closed): every saved town's layout, and
-// the towns confirmed in the review. Read at the start over the mod's own layouts; per map. The tests keep out of it
+// the towns confirmed in the review. Read at the start for towns the mod has no layout for; per map. The tests keep out of it
 OTQA_townLayout_profileVar = { format ["OTQA_townLayouts_%1", worldName] };
 OTQA_townLayout_confirmedVar = { format ["OTQA_townLayoutsConfirmed_%1", worldName] };
 OTQA_townLayout_loadProfile = {
     [""] call OT_fnc_officeLayout; // The mod's layouts read first (OT_officeLayouts)
-    // The mod's locked bracket kept over the profile's (saved before brackets were locked, or from that game's population)
+    // Only for towns the mod has no layout for: every save is merged from the RPT into the mod's layouts, which
+    // move on (the agents' later passes); a profile copy of an older save would hide them
     {
         _x params ["_town", "_layout"];
-        private _locked = ([_town] call OT_fnc_officeLayout) param [3, 0];
-        _layout = +_layout;
-        if (_locked > 0) then { _layout set [3, _locked] };
+        if (([_town] call OT_fnc_officeLayout) isNotEqualTo []) then { continue };
         OT_officeLayouts set [_town, _layout];
     } forEach (profileNamespace getVariable [call OTQA_townLayout_profileVar, []]);
 };
