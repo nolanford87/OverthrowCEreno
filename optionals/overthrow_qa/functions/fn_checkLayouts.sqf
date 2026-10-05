@@ -143,7 +143,7 @@
                 _b = _office;
                 sleep 3; // Settled
                 private _parts = [[_b] call OT_fnc_officeTemplateKey, _b] call OTQA_officeReview_realParts;
-                private _terrain = (nearestTerrainObjects [getPosATL _b, _terrainTypes, 70, false, true]) - _parts;
+                private _terrain = ((nearestTerrainObjects [getPosATL _b, _terrainTypes, 70, false, true]) - _parts) select { !isObjectHidden _x }; // Not the ones the tier removes
                 private _statics = _objects select { _x isKindOf "StaticWeapon" };
                 private _props = _objects - _statics;
 
@@ -314,6 +314,7 @@
                 [_b] call OT_fnc_officeClearTemplate;
                 sleep 1.5;
             };
+            [_town, [_town] call OT_fnc_officeTier] call OT_fnc_officeHide; // The map objects back as its tier in play has them
             if (_spawned && { !isNull _b }) then { deleteVehicle _b };
         } forEach _towns;
 

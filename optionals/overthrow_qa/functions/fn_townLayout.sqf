@@ -21,6 +21,8 @@
         OTLAYOUT|world|town|TIER|n|item count
         OTLAYOUT|world|town|ITEM|n|guard|role|[x,y,z] ASL|direction|
         OTLAYOUT|world|town|ITEM|n|object|class|[x,y,z] ASL|[vectorDir,vectorUp]|flag (a flag pole) or nothing
+        OTLAYOUT|world|town|ITEM|n|hide|model|[x,y,z] ASL|[vectorDir,vectorUp]|    a map object removed
+    ("Layout: remove the map object you look at", "bring back the removed object where you look"),
     and kept for the rest of the run (OT_officeLayouts) for the review and the next tiers.
     tools/officegen/merge_layouts.py merges the saves from the RPT into the mod's layouts (after a rebuild, a
     town's saved tiers come back here). Also "Layout: make the building you look at the office", "Layout: skip to
@@ -167,6 +169,9 @@ OTQA_townLayout_clearThings = {
 // The town left as it was: its things off, a spawned office gone, the map's buildings untouched. Scheduled
 OTQA_townLayout_clear = {
     call OTQA_townLayout_clearThings;
+    // The map objects back as the town's tier in play has them (removals not saved undone)
+    private _left = OTQA_townLayout getOrDefault ["town", ""];
+    if (_left isNotEqualTo "") then { [_left, [_left] call OT_fnc_officeTier] call OT_fnc_officeHide };
     private _b = OTQA_townLayout getOrDefault ["building", objNull];
     if (OTQA_townLayout getOrDefault ["spawned", false]) then {
         { deleteVehicle _x } forEach ([_b] + (OTQA_townLayout getOrDefault ["parts", []]));
@@ -231,7 +236,7 @@ OTQA_townLayout_moveItems = {
     private _toPos = getPosASL _b;
     private _toDir = getDir _b;
     (boundingBoxReal _b) params ["_min", "_max"];
-    _items apply {
+    (_items select { (_x select 0) isNotEqualTo "hide" }) apply { // Another town's removed map objects aren't here
         _x params ["_kind", "_what", "_at", "_orient", ["_extra", []]];
         private _local = [_at vectorDiff _fromPos, -_fromDir] call OTQA_townLayout_turn;
         private _p = _toPos vectorAdd ([_local, _toDir] call OTQA_townLayout_turn);
@@ -470,6 +475,8 @@ OTQA_townLayout_save = {
             ["object", typeOf _x, getPosASL _x, [vectorDir _x, vectorUp _x], [[], ["flag"]] select (_x isKindOf "FlagCarrier")]
         }
     };
+    // The map objects removed here (OT_fnc_officeHide's, the ones removed since included)
+    _items append ((OT_officeHidden getOrDefault [_town, []]) select { !isNull _x } apply { ["hide", (getModelInfo _x) select 0, getPosASL _x, [vectorDir _x, vectorUp _x], []] });
     private _lines = [
         format ["OTLAYOUT|%1|%2|OFFICE|%3|%4|%5|%6", worldName, _town, typeOf _b, [getPosASL _b] call OTQA_townLayout_vec, (getDir _b) toFixed 2, _spawned],
         format ["OTLAYOUT|%1|%2|TIER|%3|%4", worldName, _town, _tier, count _items]
@@ -532,6 +539,35 @@ OTQA_townLayout_saveAndGo = {
     _lines
 };
 
+// The map object looked at (a fence, wall, shed, tree) removed for the tier shown: hidden, and saved with the tier
+// as a "hide" item (OT_fnc_officeHide)
+OTQA_townLayout_remove = {
+    private _o = cursorObject;
+    private _town = OTQA_townLayout get "town";
+    private _mine = (call OTQA_townLayout_live) + [OTQA_townLayout get "building"] + (OTQA_townLayout get "parts");
+    if (isNull _o || { _o in _mine } || { !(_o in (nearestTerrainObjects [getPosATL _o, [], 3, false, true])) }) exitWith {
+        hint "Layout: look at a map object (a fence, wall, shed, tree) to remove it"
+    };
+    _o hideObjectGlobal true;
+    private _hidden = OT_officeHidden getOrDefault [_town, []];
+    _hidden pushBackUnique _o;
+    OT_officeHidden set [_town, _hidden];
+    hint format ["Layout: removed %1 from %2 tier %3\nSaved with the tier (and the tiers after it, unless brought back there).", (getModelInfo _o) select 0, _town, OTQA_townLayout get "tier"];
+};
+// The removed map object nearest where the host looks (within 10 m) brought back
+OTQA_townLayout_bringBack = {
+    private _town = OTQA_townLayout get "town";
+    private _aim = screenToWorld [0.5, 0.5];
+    private _hidden = (OT_officeHidden getOrDefault [_town, []]) select { !isNull _x };
+    private _near = (_hidden apply { [_x distance2D _aim, _x] }) select { (_x select 0) < 10 };
+    if (_near isEqualTo []) exitWith { hint "Layout: no removed map object within 10 m of where you look" };
+    _near sort true;
+    private _o = (_near select 0) select 1;
+    _o hideObjectGlobal false;
+    OT_officeHidden set [_town, _hidden - [_o]];
+    hint format ["Layout: brought back %1 (save the tier to keep it)", (getModelInfo _o) select 0];
+};
+
 // The building looked at made the office (a spawned one taken away); the things stay
 OTQA_townLayout_setOffice = {
     private _o = cursorObject;
@@ -572,7 +608,7 @@ OTQA_townLayout_run = {
         if (_towns isEqualTo []) exitWith { ["Layout: towns to lay out", false, "none"] call OTQA_fnc_check };
         OTQA_townLayout set ["towns", _towns];
         // Every office at tier 1 (OT_fnc_spawnOffice's), so the game's own office doesn't stand among the tier shown
-        { server setVariable [format ["officetier%1", _x], 1, true] } forEach OT_allTowns;
+        { server setVariable [format ["officetier%1", _x], 1, true]; [_x, 1] call OT_fnc_officeHide } forEach OT_allTowns;
         call OTQA_townLayout_loadProfile; // Saved progress first: start at the first town not confirmed yet
         private _confirmed = call OTQA_townLayout_confirmed;
         OTQA_townLayout set ["index", 0 max (_towns findIf { !(_x in _confirmed) })];
@@ -604,6 +640,8 @@ OTQA_townLayout_run = {
             player addAction ["<t color='#c0ffc0'>Layout: save tier</t>", { [OTQA_townLayout_saveAndGo] call OTQA_townLayout_run }, nil, 2, false, true, "", _inTown],
             player addAction ["<t color='#80ff80'>Review: confirm this town, next town</t>", { [OTQA_townLayout_confirm] call OTQA_townLayout_run }, nil, 1.97, false, true, "", _inTown + " && { OTQA_townLayout get 'review' }"],
             player addAction ["<t color='#ffc080'>Layout: make the building you look at the office</t>", { call OTQA_townLayout_setOffice }, nil, 1.9, false, true, "", _inTown + " && { cursorObject isKindOf 'House' } && { cursorObject isNotEqualTo (OTQA_townLayout get 'building') } && { (player distance cursorObject) < 80 }"],
+            player addAction ["<t color='#ff8080'>Layout: remove the map object you look at</t>", { call OTQA_townLayout_remove }, nil, 1.89, false, true, "", _inTown + " && { !isNull cursorObject } && { (player distance cursorObject) < 80 }"],
+            player addAction ["<t color='#ffb0b0'>Layout: bring back the removed object where you look</t>", { call OTQA_townLayout_bringBack }, nil, 1.88, false, true, "", _inTown + " && { (OT_officeHidden getOrDefault [OTQA_townLayout get 'town', []]) isNotEqualTo [] }"],
             player addAction ["<t color='#80c0ff'>Layout: skip to the next town</t>", { [OTQA_townLayout_step, [1]] call OTQA_townLayout_run }, nil, 1.8, false, true, "", "!(call OTQA_townLayout_busy)"],
             player addAction ["<t color='#80c0ff'>Layout: back to the previous town</t>", { [OTQA_townLayout_step, [-1]] call OTQA_townLayout_run }, nil, 1.79, false, true, "", "!(call OTQA_townLayout_busy)"],
             player addAction ["<t color='#ffc080'>Layout: finished</t>", { OTQA_townLayout set ["finished", true] }, nil, 1.7, false, true, "", "true"]

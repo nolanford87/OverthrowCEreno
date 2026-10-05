@@ -878,6 +878,7 @@ class CfgFunctions {
             class officeApplyLayout {};
             class officeTier {};
             class officeBracket {};
+            class officeHide {};
             class officeCapture {};
             class officeRadius {};
         };

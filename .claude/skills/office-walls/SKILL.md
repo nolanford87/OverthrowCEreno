@@ -48,6 +48,11 @@ Read first: `CLAUDE.md`, `tools/officegen/DESIGN_BRIEF.md` (its passes section),
 - **Pieces overlap only at their ends**: 0.3-0.6 m into each other, a wall or a building. Never mid-piece. The one
   exception is upgrading an existing wall (T3+): H-barriers may stand along or on a real wall to reinforce it. Say
   which pieces do that in the audit.
+- **A map object in the way can be removed** (a fence, a low or ruined wall, a shed, a tree, junk):
+  `tl.hide(town, x, y)` makes a "hide" item for the probed object nearest model (x, y). The game hides it while
+  the tier stands, and `tl.check()` and the in-game checks treat it as gone. Keep the item in each later tier that
+  should keep it removed. Don't remove buildings people live in, and say why in the audit. The user's own
+  layouts may already remove some (their "hide" items): those objects are gone, so don't tie a line into them.
 - **Every door of the office must open inside the ring.** A line may end on the office's own wall only on a face with
   no door, or the man walks in one door and out another.
 - **Don't close a main road.** A line may stand on a road's edge or cross a track or a dead-end lane.

@@ -73,6 +73,7 @@ diag_log format ["Overthrow: %1 towns virtualized", count OT_allTowns];
     private _marker = createMarker [format ["%1-office", _x], ASLToAGL ((_layout select 0) select 1)];
     _marker setMarkerTypeLocal "loc_Bunker";
     _marker setMarkerColor "ColorBlack";
+    [_x, [_x] call OT_fnc_officeTier] call OT_fnc_officeHide; // The map objects its tier removes, gone from the start
 } forEach (OT_allTowns);
 
 //Start Virtualization Loop

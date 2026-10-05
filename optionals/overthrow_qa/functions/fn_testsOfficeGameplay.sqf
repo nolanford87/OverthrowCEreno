@@ -274,4 +274,35 @@ _tests pushBack ["Office: the occupier holding it wins the fight", {
     [_town, _saved] call OTQA_og_restore;
 }, 60];
 
+_tests pushBack ["Office: a tier removes map objects, others bring them back", {
+    private _town = (call OTQA_og_towns) select 0;
+    private _pos = _town call OTQA_og_officePos;
+    // Two map walls or fences near the office, one removed from tier 2 on, the other at tier 3 only
+    private _walls = (nearestTerrainObjects [_pos, ["WALL", "FENCE"], 60, true, true]) select { !isObjectHidden _x };
+    if ((count _walls) < 2) exitWith { ["Hide: two map walls near the office", false, format ["%1: %2", _town, count _walls]] call OTQA_fnc_check };
+    _walls params ["_a", "_b"];
+    private _item = { ["hide", (getModelInfo _this) select 0, getPosASL _this, [vectorDir _this, vectorUp _this], []] };
+    private _layout = OT_officeLayouts get _town;
+    private _keep = +(_layout select 1);
+    private _tiers = +_keep;
+    _tiers set [1, (_tiers select 1) + [_a call _item]];
+    _tiers set [2, (_tiers select 2) + [_a call _item, _b call _item]];
+    _layout set [1, _tiers];
+    private _seen = [1, 2, 3, 2, 0] apply { [_town, _x] call OT_fnc_officeHide; [isObjectHidden _a, isObjectHidden _b] };
+    _layout set [1, _keep];
+    [_town, [_town] call OT_fnc_officeTier] call OT_fnc_officeHide;
+    ["Hide: tier 1 none, 2 one, 3 both, back to 2 one, none with no tier", _seen isEqualTo [[false, false], [true, false], [true, true], [true, false], [false, false]], format ["%1: %2", _town, _seen]] call OTQA_fnc_check;
+    // A tier put up hides its own (OT_fnc_officeApplyLayout), and spawns nothing for them
+    _tiers = +_keep;
+    _tiers set [0, (_tiers select 0) + [_a call _item]];
+    _layout set [1, _tiers];
+    ([_town, 1, west, true] call OT_fnc_officeApplyLayout) params ["_office", "_objects", "_guards"];
+    private _hidden = isObjectHidden _a;
+    private _made = count (_objects + _guards);
+    [_office] call OT_fnc_officeClearTemplate;
+    _layout set [1, _keep];
+    [_town, [_town] call OT_fnc_officeTier] call OT_fnc_officeHide;
+    ["Hide: a tier put up hides its map objects, nothing made for them", _hidden && { _made isEqualTo count ((_keep select 0) select { (_x select 0) isNotEqualTo "hide" }) } && { !isObjectHidden _a }, format ["hidden %1, %2 things made, back after %3", _hidden, _made, !isObjectHidden _a]] call OTQA_fnc_check;
+}, 20];
+
 _tests
