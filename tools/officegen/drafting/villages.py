@@ -76,9 +76,11 @@ TOWNS = {
     # see the reports
     "Kore": {"ring": (-16, 17.5, -14, 12), "tall": ("back", "front", "left", "right")},
     "Lakka": {"trust_buildings": True, "ring": (-10, 10, -14, 12), "tall": ("back", "right", "left", "front")},
-    # The "shop" on its right is open underneath (the game walked a man through it, round 2): no barrier, its box only
-    "Neri": {"window": False, "steps": (-6.0, 4.0, 1.0), "walls": [("Land_u_Shop_01_V1_F", None, (5.6, 13.8, 0.5, 12.2)), ("Land_i_Addon_04_V1_F", (-2.4, 4.3, 5.5, 11.8))],
-             "poly": [(-10, -10.5), (9.6, -10.5), (9.6, -7.8), (15.3, -7.8), (15.3, 14.6), (-10, 14.6)], "tall": True},
+    # The shop on its right is walked through (rounds 2-4: in by its south side, out by its front door and down its front
+    # steps, a landing 1.4 m up at x 9, to about y 17): no barrier, and the ring takes it in whole, the front line
+    # past the foot of its steps (y 19, on the street's near half, as Selakano's back notch, which closed)
+    "Neri": {"road_margin": 0.5, "window": False, "steps": (-6.0, 4.0, 1.0), "walls": [("Land_u_Shop_01_V1_F", None, (5.6, 13.8, 0.5, 12.2)), ("Land_i_Addon_04_V1_F", (-2.4, 4.3, 5.5, 11.8))],
+             "poly": [(-10, -10.5), (9.6, -10.5), (9.6, -7.8), (15.3, -7.8), (15.3, 19.0), (-10, 19.0)], "tall": True},
     "Poliakko": {"poly": [(-18, -13), (7.3, -13), (7.3, 9.6), (-10.6, 9.6), (-10.6, 6.9), (-18, 6.9)], "tall": True},
     "Selakano": {"exit_back": True, "road_margin": 0.0, "poly": [(-17.5, -10.3), (-5.4, -10.3), (-5.4, -13.5), (4.4, -13.5), (4.4, -10.3), (15.5, -10.3), (15.5, 12), (-17.5, 12)],
                  "tall": True},
