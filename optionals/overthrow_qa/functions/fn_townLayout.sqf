@@ -477,6 +477,11 @@ OTQA_townLayout_save = {
     };
     // The map objects removed here (OT_fnc_officeHide's, the ones removed since included)
     _items append ((OT_officeHidden getOrDefault [_town, []]) select { !isNull _x } apply { ["hide", (getModelInfo _x) select 0, getPosASL _x, [vectorDir _x, vectorUp _x], []] });
+    // The gates' markers (nothing stands for them): this tier's as saved, else the tier below's
+    private _saved = ([_town] call OT_fnc_officeLayout) param [1, []];
+    private _gates = ((_saved param [_tier - 1, []]) select { (_x select 0) isEqualTo "gate" });
+    if (_gates isEqualTo [] && { _tier > 1 }) then { _gates = (_saved param [_tier - 2, []]) select { (_x select 0) isEqualTo "gate" } };
+    _items append _gates;
     private _lines = [
         format ["OTLAYOUT|%1|%2|OFFICE|%3|%4|%5|%6", worldName, _town, typeOf _b, [getPosASL _b] call OTQA_townLayout_vec, (getDir _b) toFixed 2, _spawned],
         format ["OTLAYOUT|%1|%2|TIER|%3|%4", worldName, _town, _tier, count _items]

@@ -17,7 +17,8 @@
         snapshot: [[kind, what, position ASL, orientation, extra], ...], [] for a tier not authored;
             kind "guard" (what: a role, OT_fnc_officeGuardClass; orientation: direction) or "object"
             (what: a class; orientation: [vectorDir, vectorUp]); extra flags: "flag" (gets the occupier's flag);
-            or "hide": a map object removed at that tier (what: its model, getModelInfo's name, or its class; OT_fnc_officeHide)
+            or "hide": a map object removed at that tier (what: its model, getModelInfo's name, or its class; OT_fnc_officeHide);
+            or "gate": a gate's opening in the walls, a marker with nothing made (what: its width in metres, a string)
 */
 
 params [["_town", "", [""]]];

@@ -81,12 +81,14 @@ def main(argv):
         f = m.group(1).replace('""', '"').split("|")
         if f[0] == "OTPATHSTART":
             starts[f[1]] = f[2]
-        elif f[0] == "OTPATH" and (len(f) == 6 or f[3] == "closed" or f[3].startswith("unknown")):
+        elif f[0] == "OTPATH" and (len(f) in (6, 7) or f[3] == "closed" or f[3].startswith("unknown")):
             ways = paths.setdefault(f[1], {}).setdefault(int(f[2]), [])
             if f[3].startswith("unknown"):
                 ways.append(f"closure {f[3]}: the check couldn't start, not a pass")
             elif f[3] != "closed":
-                ways.append(f"bearing {f[3]}: gap {f[4]}, route {f[5]}")
+                via = f[6] if len(f) == 7 else "none"
+                ways.append(f"bearing {f[3]}: " + (f"through the gate at {via} (meant)" if via != "none" else "NOT through a gate")
+                            + f", gap {f[4]}, route {f[5]}")
         elif f[0] == "OTBPOS":
             bpos[f[1]] = f[2]
         elif f[0] == "OTCHECK":

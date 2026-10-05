@@ -15,7 +15,9 @@
             views: the guards' median clear view in metres
         OTPATH|town|tier|bearing|[x, y]|[[x, y], ...] a way out: a man's route (the engine's path finding) from the
             office's door to a point 60 m out at that bearing from the office's front, [x, y] where it last passes
-            within 3 m of a fortification (the gap), and the route every ~5 m out to 45 m; OTPATH|town|tier|closed
+            within 3 m of a fortification (the gap), and the route every ~5 m out to 45 m, then |gate [x, y] when it
+            goes out through one of the tier's gates (a "gate" item, within its half width + 1 m), else |none (a gap
+            the layout didn't mean); OTPATH|town|tier|closed
             when every route was computed and none gets out, "unknown (...)" when some weren't computed
         OTCLASS|class|[length, depth, height] the real size of every class the layouts use (once)
     and two screenshots per tier (the profile's Screenshots folder): OTL_<town>_T<tier>_top.png from 60 m
@@ -239,6 +241,7 @@
                 private _exit = +_start;
                 private _none = 0; // Routes the engine didn't compute at all (a bad start), not "closed"
                 private _ways = [];
+                private _gates = (_items select { (_x select 0) isEqualTo "gate" }) apply { [ASLToAGL (_x select 2), parseNumber (_x select 1)] };
                 {
                     private _to = (getPosATL _b) getPos [60, (getDir _b) + _x];
                     private _road = (_to nearRoads 25) param [0, objNull];
@@ -268,11 +271,16 @@
                             };
                         } forEach _path;
                         private _model = { ((_b worldToModel _this) select [0, 2]) apply { _x call _r1 } };
-                        _ways pushBack [_x, if (_gap isEqualTo []) then { [] } else { _gap call _model }, _trace apply { _x call _model }];
+                        // Through one of the tier's gates (its opening, OT_fnc_officeLayout's "gate" items)?
+                        private _via = _gates findIf {
+                            _x params ["_g", "_w"];
+                            (_path findIf { (_x distance2D _b) < 45 && { (_x distance2D _g) <= (_w / 2 + 1) } }) > -1
+                        };
+                        _ways pushBack [_x, if (_gap isEqualTo []) then { [] } else { _gap call _model }, _trace apply { _x call _model }, if (_via < 0) then { "none" } else { str (((_gates select _via) select 0) call _model) }];
                     };
                 } forEach [0, 45, 90, 135, 180, 225, 270, 315];
                 // One line per way out (an RPT line is cut at about 1 KB)
-                { diag_log format ["OTPATH|%1|%2|%3|%4|%5", _town, _tier, _x select 0, _x select 1, _x select 2] } forEach _ways;
+                { diag_log format ["OTPATH|%1|%2|%3|%4|%5|%6", _town, _tier, _x select 0, _x select 1, _x select 2, _x select 3] } forEach _ways;
                 if (_ways isEqualTo []) then { diag_log format ["OTPATH|%1|%2|%3", _town, _tier, ["closed", format ["unknown (%1 of 8 routes not computed)", _none]] select (_none > 0)] };
 
                 // The pictures: from above, and from out along the way to the street

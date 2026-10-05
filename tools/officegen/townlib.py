@@ -337,6 +337,31 @@ def hide(town, x, y, kinds=("wall", "tree", "rock", "building")):
     return ["hide", o["model"], list(o["pos"]), _up_dir(o["dir"]), []]
 
 
+def gate(town, x, y, width, mdir=0.0):
+    """A gate's opening in the walls at model (x, y), width metres across, the line it's cut in running along model
+    direction mdir. A marker: nothing stands for it in the game (pass 2b gives the gate its look); the in-game check
+    counts a way out through it as meant and any other as a gap. Cut the gap itself by leaving the pieces out."""
+    return ["gate", f"{width:.1f}", town.to_world(x, y, 0), _up_dir((town.dir + mdir) % 360), []]
+
+
+def baseline(town, world="Altis"):
+    """The town's reviewed layout (tools/officegen/layouts/<world>.txt, as the user left it in the editor): its
+    tiers as full snapshots, [tier 1 items, ...] up to its highest saved tier, each item [kind, what, [x, y, z] ASL,
+    orientation, extra] like the drafting helpers' (guard orientation a direction, others [vectorDir, vectorUp]).
+    Build the next pass on these; never regenerate what the user reviewed."""
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import merge_layouts
+    t = merge_layouts.load_saved(world)[town.name if hasattr(town, "name") else town]
+    top = max(t["tiers"]) if t["tiers"] else 0
+    out = []
+    for n in range(1, top + 1):
+        items = []
+        for kind, what, p, o, extra in t["tiers"].get(n, []):
+            items.append([kind, what, _vec(p), float(o) if kind == "guard" else ast.literal_eval(o), [e for e in extra.split(",") if e]])
+        out.append(items)
+    return out
+
+
 def from_template(town, tier):
     """The generated template's additions for a tier on this office (doorway markers left out): outside things on
     the ground, inside ones on their floor."""
@@ -375,7 +400,7 @@ def check(town, tiers):
             problems.append(f"tier {n}: {sum(1 for it in items if it[0] == 'hide') - len(removed)} hide items with no probed object within a metre")
         for it in items:
             kind, what, p, o, extra = it
-            if kind == "hide":
+            if kind in ("hide", "gate"):
                 continue
             m = town.to_model(p)
             dist = math.hypot(m[0], m[1])
@@ -453,7 +478,7 @@ def ascii_map(town, items=(), r=40, step=2):
     marks = {}
     for kind, what, p, o, extra in items:
         m = town.to_model(p)
-        marks[(round(m[0] / step), round(m[1] / step))] = {"guard": "g", "static": "S", "hide": "x"}.get(kind, "o")
+        marks[(round(m[0] / step), round(m[1] / step))] = {"guard": "g", "static": "S", "hide": "x", "gate": "G"}.get(kind, "o")
     removed = town.removed_objs(items)
     for j in range(r // step, -r // step - 1, -1):
         row = ""
