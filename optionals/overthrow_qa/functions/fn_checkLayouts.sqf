@@ -5,7 +5,7 @@
     critique (tools/qa/layout-review.py turns the lines and screenshots into the review):
         OTCHECK|town|tier|items|guards|objects|statics|missing|clips|floating|moved|blind|blocked|views
             items: in the layout; missing: items not made (a class that doesn't exist)
-            clips: [[class, what it cuts into], ...] a prop or fortification with a building, wall, rock or the
+            clips: [[class, what it cuts into, [x, y]], ...] a prop or fortification with a building, wall, rock or the
                 office's own walls running through it (two rays across its footprint)
             floating: [[class, gap m, [x, y]], ...] standing more than 0.3 m above whatever is under it
             moved: [[role, m, [x, y]], ...] guards more than 1 m from their post after settling (pushed out of geometry)
@@ -96,7 +96,7 @@
             private _site = (nearestObjects [ASLToAGL _pos, [_class], 3, true]) param [0, objNull];
             // Where the search lands outside the rings (behind the house, inside a neighbour's box), a fixed start by
             // the main door (office model [x, y], the designers' word)
-            private _fixed = (createHashMapFromArray [["Athira", [-3.3, -8.8]], ["Zaros", [-5, 2.5]]]) getOrDefault [_town, []];
+            private _fixed = (createHashMapFromArray [["Athira", [-3.3, -8.8]], ["Zaros", [-5, 2.5]], ["Neochori", [-0.7, -0.5]], ["Kavala", [13.1, -6.1]]]) getOrDefault [_town, []];
             if (!isNull _site && { _fixed isNotEqualTo [] }) then {
                 _start = _site modelToWorld (_fixed + [0]);
                 _start set [2, 0];
@@ -144,6 +144,9 @@
                 private _statics = _objects select { _x isKindOf "StaticWeapon" };
                 private _props = _objects - _statics;
 
+                // Where a flagged thing stands: [x, y] in the office's model coordinates (the drafts' own)
+                private _at = { ((_b worldToModel (ASLToAGL (getPosASL _this))) select [0, 2]) apply { _x call _r1 } };
+
                 // Clipping: a building, wall, rock or the office's walls through a thing's footprint
                 private _clips = [];
                 {
@@ -165,13 +168,10 @@
                         private _bad = _hits select { private _h = _x call _of; !isNull _h && { (_h in _terrain) || { _h isEqualTo _b } || { _h in _parts } } };
                         if (_bad isNotEqualTo []) exitWith {
                             private _h = (_bad select 0) call _of;
-                            _clips pushBack [typeOf _o, [(getModelInfo _h) select 0, "office"] select (_h isEqualTo _b || { _h in _parts })];
+                            _clips pushBack [typeOf _o, [(getModelInfo _h) select 0, "office"] select (_h isEqualTo _b || { _h in _parts }), _o call _at];
                         };
                     } forEach [[[-1, -1], [1, 1]], [[-1, 1], [1, -1]]];
                 } forEach (_props + _statics);
-
-                // Where a flagged thing stands: [x, y] in the office's model coordinates (the drafts' own)
-                private _at = { ((_b worldToModel (ASLToAGL (getPosASL _this))) select [0, 2]) apply { _x call _r1 } };
 
                 // Floating: the gap under a thing's base
                 private _floating = [];
