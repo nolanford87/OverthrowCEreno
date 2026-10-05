@@ -1075,7 +1075,7 @@ def kavala(d):
     main strip and north of the south block, the service yard (tanks, containers) between the strip and the cliff.
     T2: sandbags 2 m out of each door that opens outside, along the main strip's forecourt face and the south front.
     T3: H-barriers 1.5-2 m round the whole complex: south (y -24.3), east (x 20; the Mil walls at T5 x 18.2, round side1's north end at
-    y 45.3, standing into a low wall there), the forecourt side (x -10.5 down to the south block, y -2 along its north face), at the block's west end two stubs into its north and south faces (x -36),
+    y 45.3, standing into a low wall there), the forecourt side (x -11.4 down to the south block, y -2 along its north face), at the block's west end two stubs into its north and south faces (x -36),
     its west wall between them (the Mil walls at T5 run along it, x -39.5).
     T4: Mil walls along the road edges into the cliff: the south road's edge (y -26) from the west road to the
     rocks, the west road's east edge (x -41.6, then north-east along the road to (-26.3, 50)), and the north side
@@ -1105,12 +1105,15 @@ def kavala(d):
         # wall between them; T5's Mil line
         # along it at x -39.5 never clipped
         xw = -36.0 if fam == "H" else -39.5
+        # The forecourt line: at x -10.5 its south end cut the hospital where side2 joins the main block (round 7: the
+        # step at x -10..-8, y -4..-1); at x -11.4 both families stand clear of it
+        xf = -11.4
         d.run(xw - 0.2, -24.3, xe + hw, -24.3, 180, fam, R, "south line", road_ok=True, past=0.0)  # (Its west end and the
         # next line's stop short of T4's west line beside them: a free end runs on up to 0.6 m)
-        d.run(xe + hw, 45.3, -10.5 - hw, 45.3, 0, fam, R, "north line, round side1's north end (into the low wall)", past=0.0, upgrade=True)
+        d.run(xe + hw, 45.3, xf - hw, 45.3, 0, fam, R, "north line, round side1's north end (into the low wall)", past=0.0, upgrade=True)
         d.run(xe, -24.3, xe, 45.3, 90, fam, R, "east line, along the main strip and side1", past=0.6)
-        d.run(-10.5, 45.3, -10.5, -2.0 - hw, 270, fam, R, "forecourt line, side1 down to the south block", past=0.6)
-        d.run(-10.5, -2.0, xw - 0.2, -2.0, 0, fam, R, "along the south block's north face", road_ok=True, past=0.0)
+        d.run(xf, 45.3, xf, -2.0 - hw, 270, fam, R, "forecourt line, side1 down to the south block", past=0.6)
+        d.run(xf, -2.0, xw - 0.2, -2.0, 0, fam, R, "along the south block's north face", road_ok=True, past=0.0)
         if fam == "H":
             d.piece(HB3, xw, -4.0, 270, R)                     # Into the north face, y -2.2 .. -5.8
             d.piece(HB3, xw, -23.0, 270, R)                    # Into the south face, y -24.8 .. -21.2
