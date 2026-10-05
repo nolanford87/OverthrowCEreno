@@ -96,7 +96,7 @@
             private _site = (nearestObjects [ASLToAGL _pos, [_class], 3, true]) param [0, objNull];
             // Where the search lands outside the rings (behind the house, inside a neighbour's box), a fixed start by
             // the main door (office model [x, y], the designers' word)
-            private _fixed = (createHashMapFromArray [["Athira", [-3.3, -8.8]], ["Zaros", [-5, 2.5]], ["Neochori", [-0.7, -0.5]], ["Kavala", [13.1, -6.1]]]) getOrDefault [_town, []];
+            private _fixed = (createHashMapFromArray [["Athira", [-3.3, -8.8]], ["Zaros", [-5, 2.5]], ["Neochori", [-0.7, -0.5]], ["Kavala", [13.1, -6.1]], ["Paros", [0.7, 5.8]]]) getOrDefault [_town, []];
             if (!isNull _site && { _fixed isNotEqualTo [] }) then {
                 _start = _site modelToWorld (_fixed + [0]);
                 _start set [2, 0];
@@ -123,11 +123,14 @@
                     [_a, getPosATL _road] select (!isNull _road)
                 };
                 diag_log format ["OTPATHSPOTS|%1|%2 spots (%3 by the real walls)", _town, count _spots, _wallSpots];
-                {
+                // Every spot that gets out, then the one nearest the office's centre (the same from run to run: the
+                // first that happened to work wandered, landing outside a ring behind the house)
+                private _ok = _spots select {
                     private _from = _x;
                     if ((_from select 2) < 0.5) then { _from set [2, 0] };
-                    if ((_aways findIf { private _p = [_from, _x] call _route; _p isNotEqualTo [] && { ((_p select -1) distance2D _x) < 4 } }) > -1) exitWith { _start = _from };
-                } forEach _spots;
+                    (_aways findIf { private _p = [_from, _x] call _route; _p isNotEqualTo [] && { ((_p select -1) distance2D _x) < 4 } }) > -1
+                };
+                if (_ok isNotEqualTo []) then { _start = ([_ok, [], { _x distance2D _site }, "ASCEND"] call BIS_fnc_sortBy) select 0 };
             };
             diag_log format ["OTPATHSTART|%1|%2", _town, if (_start isEqualTo [] || { isNull _site }) then { "none" } else { ((_site worldToModel _start) select [0, 2]) apply { _x call _r1 } }];
 
