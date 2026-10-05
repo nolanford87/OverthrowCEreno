@@ -571,6 +571,8 @@ OTQA_townLayout_run = {
         _towns = _towns select { _x in OT_allTowns };
         if (_towns isEqualTo []) exitWith { ["Layout: towns to lay out", false, "none"] call OTQA_fnc_check };
         OTQA_townLayout set ["towns", _towns];
+        // Every office at tier 1 (OT_fnc_spawnOffice's), so the game's own office doesn't stand among the tier shown
+        { server setVariable [format ["officetier%1", _x], 1, true] } forEach OT_allTowns;
         call OTQA_townLayout_loadProfile; // Saved progress first: start at the first town not confirmed yet
         private _confirmed = call OTQA_townLayout_confirmed;
         OTQA_townLayout set ["index", 0 max (_towns findIf { !(_x in _confirmed) })];
