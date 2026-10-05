@@ -50,7 +50,8 @@ MEASURED_MORE = {"Land_BagBunker_Tower_F": (6.4, 9.8), "Land_BagBunker_Small_F":
 LENGTH = {c: min(tl.CLASSES[c][0], tl.MEASURED.get(c, MEASURED_MORE.get(c, (99,)))[0]) for c in HBARRIERS + TALL}
 
 # Per town (see also steps (x0, x1, more): the porch steps' zone, default (-6, 4, 1.6); plug False: no gap plugging,
-# so a ring the game passed stays as it was): ring (the tier 3 yard: model x0, x1, y0, y1) or poly (its corners in order, every side along x or y); tall
+# so a ring the game passed stays as it was; exit_back: no line nearer the back door than y -12.6 over x -4.5..3.5;
+# keep [(x0, x1, y0, y1)]: areas no piece may enter; window False: no T2 bag under the east window): ring (the tier 3 yard: model x0, x1, y0, y1) or poly (its corners in order, every side along x or y); tall
 # (the sides laid 2-high first: their names, or True for all); ties (models that close a line here though
 # real_barrier() leaves them out: a damaged city wall that crosses a line, the pieces butting into it from both
 # sides); trust (neighbours whose probe box closes a line: their ties held in the game) and trust_buildings (every
@@ -61,27 +62,32 @@ LENGTH = {c: min(tl.CLASSES[c][0], tl.MEASURED.get(c, MEASURED_MORE.get(c, (99,)
 TOWNS = {
     # Round 1 in the game: the man walked round a line's end on a neighbour's box (its walls stand well inside it):
     # the ring takes in the neighbours it touched and closes on itself. Round 2: he walked over the back line where
-    # it stood at the foot of the porch's steps: the back lines stand clear of them (the steps zone)
-    "Alikampos": {"road_margin": 3.0, "poly": [(-31, -8.9), (-6.9, -8.9), (-6.9, -11.5), (4.9, -11.5), (4.9, -8.9), (8, -8.9), (8, 12), (-31, 12)], "tall": True},
+    # it stood at the foot of the porch's steps: the back lines stand clear of them (the steps zone). Round 3: the way
+    # out of the back door started at about (-0.3, -12.2), the house model's box: exit_back keeps lines beyond it
+    "Alikampos": {"exit_back": True, "road_margin": 1.5, "poly": [(-31, -8.9), (-6.9, -8.9), (-6.9, -13.5), (4.9, -13.5), (4.9, -8.9), (8, -8.9), (8, 12), (-31, 12)], "tall": True},
     "Dorida": {"poly": [(-13.5, 10.7), (-13.5, -9.0), (-8.3, -9.0), (-8.3, -14.6), (17, -14.6), (17, 10.7)], "tall": True},
     # Its right-hand neighbour stands against the office and is boxed in by others, and the game walked a man through
-    # it (round 2): the right line runs down the corridor between them (into its probe box, so with drop), leaving it
-    # outside; the left side's ties held in the game
-    "Gravia": {"trust": ("Land_i_House_Big_01_V2_F", "Land_i_Shop_01_V3_F", "Land_u_House_Small_02_V1_F"), "ties": ("city_8md_f.p3d",),
-               "walls": [("Land_i_House_Big_01_V3_F", (7.2, 20.5, -6.4, 6.4))], "ring": (-9, 6.3, -13, 11.2), "tall": ("back", "front", "right")},
+    # it (round 2). The corridor between them is too narrow for a line (round 3 clipped it): the right line seals its
+    # two mouths against the office's corners (into the neighbour's probe box, so with drop), leaving the corridor and
+    # the neighbour outside; the left side's ties held in the game
+    "Gravia": {"window": False, "keep": [(5.3, 7.3, -5.5, 5.4)], "trust": ("Land_i_House_Big_01_V2_F", "Land_i_Shop_01_V3_F", "Land_u_House_Small_02_V1_F"), "ties": ("city_8md_f.p3d",),
+               "walls": [("Land_i_House_Big_01_V3_F", (6.7, 20.5, -6.4, 6.4))], "ring": (-9, 6.3, -13, 11.2), "tall": ("back", "front", "right")},
     # Its back porch opens onto a road (missing from the probe), and the game walks a man through pieces on a road:
     # see the reports
     "Kore": {"ring": (-16, 17.5, -14, 12), "tall": ("back", "front", "left", "right")},
     "Lakka": {"trust_buildings": True, "ring": (-10, 10, -14, 12), "tall": ("back", "right", "left", "front")},
     # The "shop" on its right is open underneath (the game walked a man through it, round 2): no barrier, its box only
-    "Neri": {"steps": (-6.0, 4.0, 1.0), "walls": [("Land_u_Shop_01_V1_F", None, (5.6, 13.8, 0.5, 12.2)), ("Land_i_Addon_04_V1_F", (-2.4, 4.3, 5.5, 11.8))],
+    "Neri": {"window": False, "steps": (-6.0, 4.0, 1.0), "walls": [("Land_u_Shop_01_V1_F", None, (5.6, 13.8, 0.5, 12.2)), ("Land_i_Addon_04_V1_F", (-2.4, 4.3, 5.5, 11.8))],
              "poly": [(-10, -10.5), (9.6, -10.5), (9.6, -7.8), (15.3, -7.8), (15.3, 14.6), (-10, 14.6)], "tall": True},
     "Poliakko": {"poly": [(-18, -13), (7.3, -13), (7.3, 9.6), (-10.6, 9.6), (-10.6, 6.9), (-18, 6.9)], "tall": True},
-    "Selakano": {"road_margin": 2.8, "ring": (-17.5, 15.5, -10.3, 12), "tall": ("back", "left", "right", "front")},
-    # Its right side, the two neighbours, held in the game, and round 2 closed: left as it was
-    "Stavros": {"plug": False, "steps": (-3.0, 4.0, 0.6), "road_margin": 3.0, "trust": ("Land_u_House_Big_01_V1_F", "Land_i_House_Small_02_V3_F"),
-                "poly": [(-8, 12), (-8, -7.8), (-4, -7.8), (-4, -9.6), (5.5, -9.6), (5.5, 12)], "tall": True},
-    "Telos": {"walls": [("Land_u_House_Small_01_V1_F", (-13.6, -4.3, -5.6, 5.1))], "ring": (-21, 10.8, -14, 7.6), "tall": True},
+    "Selakano": {"exit_back": True, "road_margin": 0.0, "poly": [(-17.5, -10.3), (-5.4, -10.3), (-5.4, -13.5), (4.4, -13.5), (4.4, -10.3), (15.5, -10.3), (15.5, 12), (-17.5, 12)],
+                 "tall": True},
+    # Its right side, the two neighbours, held in the game. Round 3: the way out of the back door started at about
+    # (-0.1, -12), beyond the back line: the back line steps out past it (on the plaza's road)
+    "Stavros": {"exit_back": True, "steps": (-3.0, 4.0, 0.6), "road_margin": 0.0, "trust": ("Land_u_House_Big_01_V1_F", "Land_i_House_Small_02_V3_F"),
+                "poly": [(-8, 12), (-8, -7.8), (-5.4, -7.8), (-5.4, -13.5), (4.4, -13.5), (4.4, -9.6), (5.5, -9.6), (5.5, 12)], "tall": True},
+    # Round 3: dropped pieces across the neighbour's front hung in the air; the front line stands clear of its box
+    "Telos": {"road_margin": 3.0, "ring": (-21, 10.8, -14, 8.7), "tall": True},
     "Abdera": {},
     "Agios Konstantinos": {"porch_west_x": (-4.4,)},  # At -4.9 it floated 1.5 m: off the porch's west end
     "Galati": {},
@@ -169,7 +175,13 @@ class Site:
         rise = max(self.f0 - t.ground_model(x, -7.0) for x in (-4.0, -1.0, 2.0, 4.0))
         # The whole porch: round 2 in the game walked men out over pieces at x -4 to 0, 1 m beyond this estimate
         x0, x1, more = cfg.get("steps", (-6.0, 4.0, 1.6))
-        self.steps = [(x, y) for x in (x0, x1) for y in (-6.5 - 1.4 * max(rise, 0.0) - more, -6.5)]
+        self.keep = [[(x, y) for x in (x0, x1) for y in (-6.5 - 1.4 * max(rise, 0.0) - more, -6.5)]]
+        for x0, x1, y0, y1 in cfg.get("keep", ()):  # A town's own keep-out areas (Gravia's corridor)
+            self.keep.append([(x, y) for x in (x0, x1) for y in (y0, y1)])
+        if cfg.get("exit_back"):
+            # Round 3: the game's route out of the back door started at about (-0.3, -12.2), the house model's box
+            # (its path down the steps), beyond a back line standing nearer: none in front of the porch nearer than -12.6
+            self.keep.append([(x, y) for x in (-4.5, 3.5) for y in (-12.6, -6.5)])
         self.rects, self.names, self.walls = [], [], []
         for o in t.objs:
             if o["kind"] not in ("wall", "building", "rock", "tree"):
@@ -340,8 +352,8 @@ class Site:
                 return False  # Into an old wall, a building or a trunk (the middle of the piece)
             if self.sat(self.corners(it), self.OFFICE, 0.35):
                 return False  # Into the house itself (its whole footprint, beyond the 0.3 m the box is padded by)
-            if is_piece(it) and self.sat(self.corners(it), self.steps, 0.0):
-                return False  # Over the back porch's steps
+            if is_piece(it) and any(self.sat(self.corners(it), k, 0.0) for k in self.keep):
+                return False  # Over the back porch's steps, or nearer than where the way out of the back door ends
             if it[1] != "Land_BagBunker_Tower_F" and self.sat(self.corners(it, real=True), self.WALLS, 0.05):
                 return False  # Its real (measured) footprint into the house's walls
         for b in self.placed:
@@ -360,10 +372,7 @@ class Site:
             if self.overlap(it, b):
                 return False
         if drop:
-            # Dropped from 1.5 m up, so it lands on whatever stands there (a terrace, a forecourt), not under it
-            m = t.to_model(it[2])
-            it[2] = t.to_world(m[0], m[1], t.ground_model(m[0], m[1]) + 1.5)
-            it[4] = ["drop"]
+            it[4] = ["drop"]  # At the terrain's height (round 3: dropped from 1.5 m up, they hung there)
         return True
 
     def add(self, it, note=""):
