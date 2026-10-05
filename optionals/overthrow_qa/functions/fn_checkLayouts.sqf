@@ -98,7 +98,7 @@
             private _site = (nearestObjects [ASLToAGL _pos, [_class], 3, true]) param [0, objNull];
             // Where the search lands outside the rings (behind the house, inside a neighbour's box), a fixed start by
             // the main door (office model [x, y], the designers' word)
-            private _fixed = (createHashMapFromArray [["Athira", [-3.3, -8.8]], ["Zaros", [-5, 2.5]], ["Neochori", [-0.7, -0.5]], ["Kavala", [13.1, -6.1]], ["Paros", [0.7, 5.8]]]) getOrDefault [_town, []];
+            private _fixed = (createHashMapFromArray [["Athira", [-3.3, -8.8]], ["Zaros", [-5, 2.5]], ["Neochori", [-0.7, -0.5]], ["Kavala", [-9.85, 9.0]], ["Paros", [0.7, 5.8]]]) getOrDefault [_town, []];
             if (!isNull _site && { _fixed isNotEqualTo [] }) then {
                 _start = _site modelToWorld (_fixed + [0]);
                 _start set [2, 0];
@@ -274,7 +274,7 @@
                         // Through one of the tier's gates (its opening, OT_fnc_officeLayout's "gate" items)?
                         private _via = _gates findIf {
                             _x params ["_g", "_w"];
-                            (_path findIf { (_x distance2D _b) < 45 && { (_x distance2D _g) <= (_w / 2 + 1) } }) > -1
+                            (_path findIf { (_x distance2D _g) <= (_w / 2 + 1) }) > -1
                         };
                         _ways pushBack [_x, if (_gap isEqualTo []) then { [] } else { _gap call _model }, _trace apply { _x call _model }, if (_via < 0) then { "none" } else { str (((_gates select _via) select 0) call _model) }];
                     };
