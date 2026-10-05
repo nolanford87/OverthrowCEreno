@@ -51,11 +51,17 @@ OTQA_townLayout_cap = {
     (([_town] call OTQA_townLayout_bracket) + 1) min 5
 };
 
+// A layout's highest tier with anything in it, 0 for none: the tiers under it count as saved even when empty (tier 1's no cover)
+OTQA_townLayout_top = {
+    params ["_layout"];
+    private _top = 0;
+    { if (_x isNotEqualTo []) then { _top = _forEachIndex + 1 } } forEach (_layout param [1, []]);
+    _top
+};
 // Whether a town has tiers up to its highest left to save
 OTQA_townLayout_unfinished = {
     params ["_town"];
-    private _layout = [_town] call OT_fnc_officeLayout;
-    _layout isEqualTo [] || { (((_layout select 1) select [0, [_town] call OTQA_townLayout_cap]) findIf { _x isEqualTo [] }) > -1 }
+    ([[_town] call OT_fnc_officeLayout] call OTQA_townLayout_top) < ([_town] call OTQA_townLayout_cap)
 };
 
 // A guess at a town's office: [building, its real other pieces, spawned]
@@ -195,7 +201,7 @@ OTQA_townLayout_baseline = {
     private _fits = {
         params ["_t"];
         private _l = OT_officeLayouts getOrDefault [_t, []];
-        _t isNotEqualTo _town && { _l isNotEqualTo [] } && { ([(_l select 0) select 0] call OT_fnc_officeTemplateKey) isEqualTo _key } && { ((_l select 1) select 0) isNotEqualTo [] }
+        _t isNotEqualTo _town && { _l isNotEqualTo [] } && { ([(_l select 0) select 0] call OT_fnc_officeTemplateKey) isEqualTo _key } && { ([_l] call OTQA_townLayout_top) > 0 }
     };
     private _recent = +(OTQA_townLayout getOrDefault ["recent", []]);
     reverse _recent;
@@ -297,13 +303,9 @@ OTQA_townLayout_show = {
     private _parts = [];
     private _spawned = false;
     private _things = [];
-    // A town part done picks up at its last saved tier (the next one's additions go on top below), a done one at 1
-    private _from = 1;
-    if (_layout isNotEqualTo [] && { [_town] call OTQA_townLayout_unfinished }) then {
-        _from = 0;
-        while { _from < 5 && { ((_layout select 1) select _from) isNotEqualTo [] } } do { _from = _from + 1 };
-        _from = _from max 1;
-    };
+    // A town part done picks up at its last saved tier (the next one's additions go on top below), a done one's
+    // review opens at its top tier (tier 1 is often empty)
+    private _from = (([_layout] call OTQA_townLayout_top) min ([_town] call OTQA_townLayout_cap)) max 1;
     if (_layout isNotEqualTo []) then {
         ([_town, _from, west, true] call OT_fnc_officeApplyLayout) params ["_office", "_objects", "_guards"];
         _b = _office;
