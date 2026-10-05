@@ -110,7 +110,7 @@
             // Where the search lands outside the rings (behind the house, inside a neighbour's box), fixed starts by
             // the main door (office model [x, y], the designers' word): the first that gets out on the bare site
             private _fixed = (createHashMapFromArray [
-                ["Athira", [[6.5, -0.4], [6.5, 1.0], [7.0, -1.5], [-3.3, -8.8]]], ["Zaros", [[-5, 2.5]]], ["Neochori", [[-0.7, -0.5]]],
+                ["Athira", [[-5.5, -6.6]]], ["Zaros", [[-5, 2.5]]], ["Neochori", [[-0.7, -0.5]]],
                 ["Kavala", [[-9.85, 9.0]]], ["Paros", [[0.7, 5.8]]]
             ]) getOrDefault [_town, []];
             if (!isNull _site) then {
