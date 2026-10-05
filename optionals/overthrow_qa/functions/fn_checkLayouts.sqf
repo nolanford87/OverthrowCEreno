@@ -98,7 +98,7 @@
             private _site = (nearestObjects [ASLToAGL _pos, [_class], 3, true]) param [0, objNull];
             // Where the search lands outside the rings (behind the house, inside a neighbour's box), a fixed start by
             // the main door (office model [x, y], the designers' word)
-            private _fixed = (createHashMapFromArray [["Athira", [-3.3, -8.8]], ["Zaros", [-5, 2.5]], ["Neochori", [-0.7, -0.5]], ["Kavala", [-9.85, 9.0]], ["Paros", [0.7, 5.8]]]) getOrDefault [_town, []];
+            private _fixed = (createHashMapFromArray [["Athira", [6.5, -0.4]], ["Zaros", [-5, 2.5]], ["Neochori", [-0.7, -0.5]], ["Kavala", [-9.85, 9.0]], ["Paros", [0.7, 5.8]]]) getOrDefault [_town, []];
             if (!isNull _site && { _fixed isNotEqualTo [] }) then {
                 _start = _site modelToWorld (_fixed + [0]);
                 _start set [2, 0];
