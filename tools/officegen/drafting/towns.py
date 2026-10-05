@@ -1348,7 +1348,7 @@ def panochori(d, tier):
 @site("Paros", entry="W", nest=(0.5, -10.0, 260), flag=(-7.0, 11.0), spare=[],
       trims=[("Land_i_House_Big_02_V2_F", (-11.0, 21.0), 5.0), ("Land_i_House_Big_02_V2_F", (13.0, 23.0), 5.7),
              ("Land_i_House_Small_01_V1_F", (10.0, 5.0), 1.5), ("Land_i_House_Small_02_V1_F", (-6.5, -16.5), 2.4),
-             ("Land_i_House_Small_01_V1_F", (10.0, -10.4), 2.4), ("Land_i_House_Big_02_V1_F", (17.0, -12.3), 6.0)], side_bags=SHORT, shared=("cx", "cs"))  # Round 1's screenshot: the big north house's box runs 5-6 m past both its ends, the east house's 1.5 m, the south house's 2.4 m; round 5's: the east house's south wall is 2.4 m inside its box, and the south-east house's north part is open ground (round 5's routes crossed it)
+             ("Land_i_House_Small_01_V1_F", (10.0, -10.4), 0.15), ("Land_i_House_Big_02_V1_F", (17.0, -12.3), 6.0)], side_bags=SHORT, shared=("cx", "cs"))  # Round 1's screenshot: the big north house's box runs 5-6 m past both its ends, the east house's 1.5 m, the south house's 2.4 m; round 7: the east house's south wall at x 13.8 is at its box (round 6's 2.4 m trim put cx's middle into it): 0.15 m in, so cx ends 0.3 m into the house; round 5's: the south-east house's north part is open ground (round 5's routes crossed it)
 def paros(d, tier):
     # A track runs north-south 7 m west of the veranda; houses abut the east side and close the south; a big house
     # closes the north beyond a yard that opens east; an old city wall runs from the house's north-west corner to
@@ -1370,7 +1370,7 @@ def paros(d, tier):
         # south porch (x 9.5-12.5) and out of the ring at x 15-30, with a way south at x 11-17; the east house is a
         # way through, so its porch stays inside: a run across the alley and the lane east of the porch, from the
         # east house's real south wall, and one west from it into the south house)
-        d.run("cx", (13.8, -8.0), (13.8, -15.0), ends=("tie", "corner"), out=90)
+        d.run("cx", (13.8, -10.0), (13.8, -15.0), ends=("tie", "corner"), out=90)
         d.run("cs", (13.8, -15.0), (4.0, -15.0), ends=("tie", "tie"), out=180)
         d.run("north", (-9.5, 8.8), (12.5, 8.8), ends=("tie", "corner"), out=0)
         # (round 5: the east house's door steps (x 5.6-7.2, y 3.5-4.0 on round 1's screenshot) open into the corner by
