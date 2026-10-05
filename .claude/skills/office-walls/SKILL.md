@@ -32,6 +32,11 @@ Read first: `CLAUDE.md`, `tools/officegen/DESIGN_BRIEF.md` (its passes section),
   `tl.check()` allows it.
 
 ## The rules
+- **Room to move inside the walls.** From T3 to T5, don't hug the building: take up space so the defenders (and
+  the player who breaks in) can move round inside the rings easily. A tight ring that leaves only narrow slots is
+  worse than a wider one. (The user, after reviewing Altis.)
+- **A wall reads as one line to the eye.** Closed isn't enough: a ring the path check passes can still look
+  disjointed (a large visible gap covered only by something behind it). Close the line visibly.
 - **Closed means closed in the game.** The lead's check walks a man (the engine's own path finding) from inside the
   office to 8 points 60 m out. Every tier 3+ must come back "closed: no way out".
 - **Only real barriers close a line.** These count:
