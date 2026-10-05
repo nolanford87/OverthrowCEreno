@@ -96,12 +96,30 @@
             // where a spot by a door may be outside a line run tight across the front), then its exits and sides
             private _start = [];
             private _site = (nearestObjects [ASLToAGL _pos, [_class], 3, true]) param [0, objNull];
-            // Where the search lands outside the rings (behind the house, inside a neighbour's box), a fixed start by
-            // the main door (office model [x, y], the designers' word)
-            private _fixed = (createHashMapFromArray [["Athira", [-3.3, -8.8]], ["Zaros", [-5, 2.5]], ["Neochori", [-0.7, -0.5]], ["Kavala", [13.1, -6.1]], ["Paros", [0.7, 5.8]]]) getOrDefault [_town, []];
-            if (!isNull _site && { _fixed isNotEqualTo [] }) then {
-                _start = _site modelToWorld (_fixed + [0]);
-                _start set [2, 0];
+            // Out to any of 8 points 60 m away (one may be unreachable: the sea, a walled lot)
+            private _aways = if (isNull _site) then { [] } else { [0, 45, 90, 135, 180, 225, 270, 315] apply {
+                private _a = (getPosATL _site) getPos [60, (getDir _site) + _x];
+                private _road = (_a nearRoads 25) param [0, objNull];
+                [_a, getPosATL _road] select (!isNull _road)
+            } };
+            private _getsOut = {
+                private _from = +_this;
+                if ((_from select 2) < 0.5) then { _from set [2, 0] };
+                (_aways findIf { private _p = [_from, _x] call _route; _p isNotEqualTo [] && { ((_p select -1) distance2D _x) < 4 } }) > -1
+            };
+            // Where the search lands outside the rings (behind the house, inside a neighbour's box), fixed starts by
+            // the main door (office model [x, y], the designers' word): the first that gets out on the bare site
+            private _fixed = (createHashMapFromArray [
+                ["Athira", [[-5.5, -6.6]]], ["Zaros", [[-5, 2.5]]], ["Neochori", [[-0.7, -0.5]]],
+                ["Kavala", [[-9.85, 9.0]]], ["Paros", [[0.7, 5.8]]]
+            ]) getOrDefault [_town, []];
+            if (!isNull _site) then {
+                {
+                    private _p = _site modelToWorld (_x + [0]);
+                    _p set [2, 0];
+                    if (_p call _getsOut) exitWith { _start = _p };
+                    diag_log format ["OTPATHSTART|%1|fixed %2 doesn't get out on the bare site", _town, _x];
+                } forEach _fixed;
             };
             if (!isNull _site && { _start isEqualTo [] }) then {
                 (boundingBoxReal _site) params ["_mn", "_mx"];
@@ -118,20 +136,10 @@
                     if (_hit isNotEqualTo []) then { _wallSpots = _wallSpots + 1; _spots pushBack (ASLToATL (((_hit select 0) select 0) vectorAdd ((vectorNormalized (_out vectorDiff _in)) vectorMultiply 1.5))) };
                 } forEach [[0, 1, 0], [0, -1, 0], [1, 0, 0], [-1, 0, 0]];
                 { _spots pushBack (_site modelToWorld _x) } forEach [[0, (_mx select 1) + 2, 0], [0, (_mn select 1) - 2, 0], [(_mx select 0) + 2, 0, 0], [(_mn select 0) - 2, 0, 0]];
-                // Out to any of 8 points 60 m away (one may be unreachable: the sea, a walled lot)
-                private _aways = [0, 45, 90, 135, 180, 225, 270, 315] apply {
-                    private _a = (getPosATL _site) getPos [60, (getDir _site) + _x];
-                    private _road = (_a nearRoads 25) param [0, objNull];
-                    [_a, getPosATL _road] select (!isNull _road)
-                };
                 diag_log format ["OTPATHSPOTS|%1|%2 spots (%3 by the real walls)", _town, count _spots, _wallSpots];
                 // Every spot that gets out, then the one nearest the office's centre (the same from run to run: the
                 // first that happened to work wandered, landing outside a ring behind the house)
-                private _ok = _spots select {
-                    private _from = _x;
-                    if ((_from select 2) < 0.5) then { _from set [2, 0] };
-                    (_aways findIf { private _p = [_from, _x] call _route; _p isNotEqualTo [] && { ((_p select -1) distance2D _x) < 4 } }) > -1
-                };
+                private _ok = _spots select { _x call _getsOut };
                 if (_ok isNotEqualTo []) then { _start = ([_ok, [], { _x distance2D _site }, "ASCEND"] call BIS_fnc_sortBy) select 0 };
             };
             diag_log format ["OTPATHSTART|%1|%2", _town, if (_start isEqualTo [] || { isNull _site }) then { "none" } else { ((_site worldToModel _start) select [0, 2]) apply { _x call _r1 } }];
@@ -232,7 +240,8 @@
                 } forEach _statics;
 
                 diag_log format ["OTCHECK|%1|%2|%3|%4|%5|%6|%7|%8|%9|%10|%11|%12|%13", _town, _tier, count _items, count _guards, count _props, count _statics,
-                    (count _items) - (count _objects) - (count _guards), _clips, _floating, _moved, _blind, _blocked, (_views param [floor ((count _views) / 2), 0]) call _r1];
+                    ({ !((_x select 0) in ["hide", "gate"]) } count _items) - (count _objects) - (count _guards), // Markers make nothing
+                    _clips, _floating, _moved, _blind, _blocked, (_views param [floor ((count _views) / 2), 0]) call _r1];
 
                 // Closure: can a man walk out? The engine's own route from the office's door to 8 points 60 m out
                 // (on a road where there's one). A route that gets there is a way out; where it passes closest to the
@@ -274,7 +283,7 @@
                         // Through one of the tier's gates (its opening, OT_fnc_officeLayout's "gate" items)?
                         private _via = _gates findIf {
                             _x params ["_g", "_w"];
-                            (_path findIf { (_x distance2D _b) < 45 && { (_x distance2D _g) <= (_w / 2 + 1) } }) > -1
+                            (_path findIf { (_x distance2D _g) <= (_w / 2 + 1) }) > -1
                         };
                         _ways pushBack [_x, if (_gap isEqualTo []) then { [] } else { _gap call _model }, _trace apply { _x call _model }, if (_via < 0) then { "none" } else { str (((_gates select _via) select 0) call _model) }];
                     };

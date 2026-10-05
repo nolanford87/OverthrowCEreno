@@ -2,7 +2,7 @@
     Description:
     Makes a mayor's office layout's things (OT_fnc_officeLayout's item format) exactly where they're given:
     guards at their posts (OT_fnc_officeGuard), props and fortifications with no simulation, a flag pole
-    with the occupier's flag. Each thing remembers its item ("OT_officeItem": tag + [index, item]).
+    with the occupier's flag, a gate ("open") with its doors open. Each thing remembers its item ("OT_officeItem": tag + [index, item]).
     OT_fnc_officeApplyLayout uses it; so does the layout editor for a layout moved from another town. Server.
 
     Parameters:
@@ -67,7 +67,12 @@ private _group = grpNull;
             private _hits = lineIntersectsSurfaces [_at vectorAdd [0, 0, 0.6], _at vectorAdd [0, 0, -1.5], _object, objNull, true, 1, "GEOM", "NONE"];
             if (_hits isNotEqualTo []) then { _object setPosASL [_at select 0, _at select 1, ((_hits select 0) select 0) select 2] };
         };
-        _object enableSimulationGlobal false;
+        // "open": a gate's doors swung open (and simulated, so they stay so), for the AI's men and vehicles
+        if ("open" in _extra) then {
+            { if ("sound_source" in toLower _x) then { _object animateSource [_x, 1, true] } } forEach (("true" configClasses (configOf _object >> "AnimationSources")) apply { configName _x });
+        } else {
+            _object enableSimulationGlobal false;
+        };
         _object setVariable ["OT_officeItem", _tag + [_forEachIndex, _item]];
         _objects pushBack _object;
     };
