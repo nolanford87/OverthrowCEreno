@@ -61,6 +61,11 @@ def fwd(d):
     return math.sin(r), math.cos(r)
 
 
+def bearing(x0, y0, x1, y1):
+    """The model direction from (x0, y0) to (x1, y1) (0 = +y, 90 = +x)."""
+    return math.degrees(math.atan2(x1 - x0, y1 - y0)) % 360
+
+
 def off(x, y, d, f, lat=0.0):
     """(x, y) moved f metres along model direction d and lat metres to its right."""
     a, b = fwd(d), fwd(d + 90)
@@ -102,10 +107,13 @@ def length(cls):
 
 
 _RECTS = {}
+TALL_WALLS = ("canal_wall",)  # Probed walls that are real barriers (5.5 m canal walls by Kavala's cliff)
 UPGRADE = [False]  # Set while a run upgrades a low wall (stands on and into it along its length: the brief allows it)
 # Neighbours the in-game walk crosses although the probe gives them a box only (not solid to it): closure() treats
 # them as open ground; tl.check() still keeps pieces out of their boxes
-SOFT = {"Athira": ("Land_i_House_Small_02_V1_F",)}
+SOFT = {"Athira": ("Land_i_House_Small_02_V1_F",),
+        "Kavala": ("Land_Hospital_side1_F", "Land_Hospital_side2_F", "office")}  # The hospital: the walk crosses its
+# probed ground floor and its wings' boxes (round 2), so the rings close on themselves
 
 
 def site_rects(t):
@@ -150,8 +158,11 @@ def clips(t, it):
     poly = corners(t, it, core)
     if it[1] == TOWER:  # Its measured box (6.4 x 9.8) takes in more than it stands on
         poly = _rect(t, it, *TOWER_SITE)
-    if any(_sat(poly, r) for k, mdl, r in site_rects(t) if not (UPGRADE[0] and k == "wall")):
+    composite = any(o["kind"] == "part" for o in t.objs)
+    if any(_sat(poly, r) for k, mdl, r in site_rects(t) if not (UPGRADE[0] and k == "wall") and not (composite and k == "part")):
         return True
+    if composite:  # An office of several pieces: tl.check() leaves pieces near it to the in-game clips
+        return False
     m = t.to_model(it[2])
     L, D = size(it)
     if core:
@@ -262,7 +273,7 @@ class Site:
 
     def __init__(self, t):
         self.t = t
-        self.objs = [(o, plan_of(o["model"]) if o["kind"] != "wall" else None) for o in t.objs if o["kind"] in ("building", "part", "wall")]
+        self.objs = [(o, plan_of(o["model"]) if o["kind"] not in ("wall", "rock") else None) for o in t.objs if o["kind"] in ("building", "part", "wall", "rock")]
 
     def at(self, x, y, any_box=False, walls=False):
         """(kind, model, how) of what's solid at model (x, y): how "plan" (its real walls) or "box" (a neighbour
@@ -270,11 +281,12 @@ class Site:
         middle may not go there: tl.check()); walls: the probe's walls too (none of the four towns' walls is a real
         barrier: low city walls with railings, garden, stone and pipe fences, so a line never ends on one unless it
         is a junction where two runs both end into it); None."""
-        if self.t.on_office(x, y, 0.1, 0.1):
+        soft = SOFT.get(self.t.name, ())
+        if "office" not in soft and self.t.on_office(x, y, 0.1, 0.1):
             return ("office", self.t.cls, "plan")
         w = self.t.to_world(x, y, 0)
         for o, p in self.objs:
-            if o["kind"] == "wall" and not walls:
+            if (o["kind"] == "wall" and not walls and not o["model"].startswith(TALL_WALLS)) or o["model"] in soft:
                 continue
             lx, ly = tl.rot(w[0] - o["pos"][0], w[1] - o["pos"][1], -o["dir"])
             b = o["box"]
@@ -568,7 +580,7 @@ class Draft:
                 out.append(t_ * L)
         return sorted(out)
 
-    def run(self, x0, y0, x1, y1, face, family, ring, label, road_ok=False, past=1.5):
+    def run(self, x0, y0, x1, y1, face, family, ring, label, road_ok=False, past=1.5, upgrade=False):
         """A run split at every probed wall it crosses (each a junction: the pieces either side end into the low
         wall), each part filled (fill())."""
         L = math.hypot(x1 - x0, y1 - y0)
@@ -579,7 +591,7 @@ class Draft:
             a, b = pts[k], pts[k + 1]
             part = label if len(pts) == 2 else f"{label} ({k + 1}/{len(pts) - 1})"
             self.fill(x0 + ux * a, y0 + uy * a, x0 + ux * b, y0 + uy * b, face, family, road_ok=road_ok,
-                      label=part, past=past if k in (0, len(pts) - 2) else 0.3, walls=len(pts) > 2, ring=ring)
+                      label=part, past=past if k in (0, len(pts) - 2) else 0.3, walls=len(pts) > 2, ring=ring, upgrade=upgrade)
 
     def piece(self, cls, x, y, d, ring, nudge=0.0, road_ok=False):
         """One piece by hand (a sandbag, a corner), counted in a ring for closure()."""
@@ -766,20 +778,20 @@ def site_grid(t):
     site, out = Site(t), set()
     b = t.box
     for i, j in _cells([(b[0], b[1]), (b[2], b[3])]):
-        if t.on_office(i * GRID, j * GRID, 0.1, 0.1):
+        if "office" not in SOFT.get(t.name, ()) and t.on_office(i * GRID, j * GRID, 0.1, 0.1):
             out.add((i, j))
     for kind, mdl, poly in site_rects(t):
-        if kind == "wall" or mdl in SOFT.get(t.name, ()):
+        if (kind == "wall" and not mdl.startswith(TALL_WALLS)) or mdl in SOFT.get(t.name, ()):
             continue
         for i, j in _cells(poly):
             x, y = i * GRID, j * GRID
             if (i, j) in out or not _in_poly(poly, x, y):
                 continue
-            if kind == "rock":
+            if kind in ("rock", "wall"):  # (The walls here: the tall ones only)
                 out.add((i, j))
                 continue
             h = site.at(x, y)
-            if h and h[0] in ("building", "part"):
+            if h and h[0] in ("building", "part") and h[1] not in SOFT.get(t.name, ()):
                 out.add((i, j))
     _SITE_GRID[t.name] = out
     return out
@@ -830,7 +842,7 @@ def closure(t, items, start=None):
         d = t.door("main")
         start = off(d["model"][0], d["model"][1], d["mdir"], 1.5)
     s0 = (int(round(start[0] / GRID)), int(round(start[1] / GRID)))
-    n = int(REACH / GRID)
+    n = int((t.reach - 1.0) / GRID)
     prev, todo = {s0: None}, [s0]
     end = None
     while todo and end is None:
@@ -1049,24 +1061,22 @@ def raise_inner(d, inner):
 
 
 def kavala(d):
-    """Kavala: the hospital (Land_Hospital_main_F, model coordinates; "south" -y, the road; "east" +x, the cliff).
-    The main block (its probed floor x -3..16, y -22..19, joined on its south-west to side2's floor) has two wings
-    with no probed plan, solid to their boxes: side2 west (x -44.9..-11.1, y -22.6..2.5) and side1 north
-    (x -8..17.5, y 20.8..44.4). The wings' far ends lie 45 m out, the probe's edge (tl.check() holds every piece
-    within 46 m), so the rings wrap the main block and tie into the wings, which are the complex's west and north
-    sides. East: a yard of tanks and containers against the cliff (the rock's box, x 23..29); south: the road
-    (y -30); west: an inner courtyard between the wings (low garden walls in it), open to the west road.
-    T2: sandbags across each door that opens outside, 2 m out, and along the main block's faces onto the
-    courtyard strip (x -9.6) and the south front (y -22.7).
-    T3: H-barriers round the main block: the south line (y -24.2) from a cap into side2's south face (x -14.4) to the
-    east line (x 18.2, the main block's east side), which runs on along side1's east face; on the courtyard side a
-    line (x -11.8) from side2's north face, capped into side1's west face (y 24): the courtyard strip by the main door
-    inside.
-    T4: Mil walls round the grounds: the south line on the road's shoulder (y -25.9) from a cap into side2's south
-    face (x -36) to the cliff, a cap from side1's east face to the yard's north tank (y 32), and round the courtyard:
-    x -28 from side2's north face to y 33.5, then east into side1's west face, across the garden walls.
-    T5: the T3 ring raised: the same lines in Mil walls."""
-    d.start = (-10.0, 10.0)  # In the courtyard strip by the main block's west face
+    """Kavala: the hospital (Land_Hospital_main_F; model coordinates, "south" -y, "east" +x). Probed to 72 m. The
+    complex: the south block (the helipad; its ground floor open: the in-game walk crossed it at y -17 and side2's
+    box at y -1; real walls about x -38..16, y -22..-5), the main strip north of it (x about -3..16) and side1 at its
+    north end (box x -8..17.5, y 20.8..44.4). The wings' boxes and the plan stand for the real building only roughly,
+    so tl.check() leaves pieces near it to the in-game clips, and closure() treats them as open ground: every ring
+    closes on itself. Round it: the west road (x -45, turning north-east from y 14 to (-23, 70)), the south road
+    (y -30), the cliff east (the rocks from x 24-28), the forecourt (a planter, low walls at x -23..-17) west of the
+    main strip and north of the south block, the service yard (tanks, containers) between the strip and the cliff.
+    T2: sandbags 2 m out of each door that opens outside, along the main strip's forecourt face and the south front.
+    T3: H-barriers 1.5-2 m round the whole complex: south (y -24.3), east (x 18.2, round side1's north end at
+    y 45.3, standing into a low wall there), the forecourt side (x -10.5 down to the south block, y -2 along its north face), west (x -39.5).
+    T4: Mil walls along the road edges into the cliff: the south road's edge (y -26) from the west road to the
+    rocks, the west road's east edge (x -41.3, then north-east along the road to (-26.3, 50)), and the north side
+    (y 50-61) along the line of tall canal walls at the forecourt's north end into the cliff: the forecourt and the service yard inside.
+    T5: the T3 ring in Mil walls."""
+    d.start = (13.1, -6.1)  # The in-game walk's start (between the main strip and the service yard)
     d.tier()  # T1: nothing
 
     d.tier()  # T2: a long bag 2 m out of every door that opens outside
@@ -1075,30 +1085,35 @@ def kavala(d):
         md = (dr["dir"] - d.t.dir) % 360
         if not d.t.on_office(*off(m[0], m[1], md, 1.5), 0.1, 0.1):
             d.o(LONG, *off(m[0], m[1], md, 2.0), md, nudge=0.5)
-    for y in (6.0, 12.0, 16.5):                               # Along the main block's face onto the courtyard strip
-        d.o(LONG, -9.6, y, 270)
+    for y in (6.0, 12.0, 16.5):                               # Along the main strip's face onto the forecourt
+        d.o(LONG, -8.9, y, 270)
     for x in (-1.0, 3.5, 8.0, 12.5):                          # Along its south front
         d.o(LONG, x, -22.7, 180)
 
     def inner(d, fam, R, short):
-        # (The H-barrier and the Mil lines a few cm apart where the pieces' lengths need it)
-        ys, xc = (-24.2, -11.8) if fam == "H" else (-23.8, -12.1)
-        d.fill(18.7, ys, -15.0, ys, 180, fam, label="south line, the east corner to side2", ring=R, past=0.3, road_ok=True)
-        d.fill(-14.4, ys, -14.4, -22.3, 270, fam, label="cap into side2's south face", ring=R, past=0.6)
-        d.run(18.2, ys, 18.2, 23.0, 90, fam, R, "east line, along the main block and side1", past=0.3)
-        d.fill(xc, 1.0, xc, 24.55, 270, fam, label="courtyard line, side2's north face to the cap", ring=R, past=0.6)
-        d.fill(xc, 24.0, -7.0, 24.0, 0, fam, label="cap into side1's west face", ring=R)
+        hw = 0.85 if fam == "H" else 0.55
+        d.run(-39.5 - hw, -24.3, 18.2 + hw, -24.3, 180, fam, R, "south line", road_ok=True, past=0.0)
+        d.run(18.2 + hw, 45.3, -10.5 - hw, 45.3, 0, fam, R, "north line, round side1's north end (into the low wall)", past=0.0, upgrade=True)
+        d.run(18.2, -24.3, 18.2, 45.3, 90, fam, R, "east line, along the main strip and side1", past=0.6)
+        d.run(-10.5, 45.3, -10.5, -2.0 - hw, 270, fam, R, "forecourt line, side1 down to the south block", past=0.6)
+        d.run(-10.5, -2.0, -39.5 - hw, -2.0, 0, fam, R, "along the south block's north face", past=0.0)
+        d.run(-39.5, -2.0, -39.5, -24.3, 270, fam, R, "west line, along the south block's west end", road_ok=True, past=0.6)
 
     d.tier()  # T3
     inner(d, "H", "T3 ring", HB1)
 
     d.tier()  # T4
     R = "T4 ring"
-    d.run(-36.55, -25.9, 23.6, -25.9, 180, "M", R, "south line, the road's shoulder to the cliff", road_ok=True, past=0.0)
-    d.fill(-36.0, -25.9, -36.0, -22.3, 270, "M", label="cap into side2's south face", ring=R, road_ok=True, past=0.6)
-    d.fill(16.0, 32.0, 28.0, 32.0, 0, "M", label="cap from side1's east face to the yard's north tank", ring=R)
-    d.run(-29.1, 33.5, -6.0, 33.5, 0, "M", R, "courtyard's north line into side1's west face")
-    d.run(-28.0, 1.0, -28.0, 33.5, 270, "M", R, "courtyard's west line, side2 to the north line", past=0.6)
+    d.run(-41.85, -26.0, 24.5, -26.0, 180, "M", R, "south road's edge to the cliff", road_ok=True, past=0.6)
+    d.run(-41.3, -26.0, -41.3, 14.0, 270, "M", R, "west road's edge", road_ok=True, past=0.6)
+    pts = [(-41.3, 14.0), (-36.0, 30.0), (-26.3, 50.0), (-20.9, 60.5)]  # The west road's edge, ~5.5 m off its middle
+    for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
+        d.run(x0, y0, x1, y1, bearing(x0, y0, x1, y1) - 90, "M", R, "west road's edge, turning north-east", road_ok=True, past=0.6)
+    # The north side: a line of tall canal walls (5.5 m, real barriers) runs from (-12, 61) to the cliff; the run
+    # into the first and the gaps between them filled
+    d.run(-21.45, 60.5, -10.5, 60.5, 0, "M", R, "north side into the first canal wall", road_ok=True, past=0.6)
+    for (x0, y0), (x1, y1) in (((-1.8, 58.4), (5.1, 56.35)), ((14.8, 53.45), (21.7, 51.3))):
+        d.fill(x0, y0, x1, y1, bearing(x0, y0, x1, y1) - 90, "M", label="north side, between the canal walls", ring=R, past=0.6)
 
     d.tier()  # T5
     raise_inner(d, inner)
@@ -1213,44 +1228,45 @@ def zaros(d):
     main road starts at x 11). The main door opens against the shop's wall; the way out is the veranda's open west
     side. West, the yard walled by low city walls (Addon_02 in it); south, the south ground to a low stone wall
     (y -23.2); east, the strip to the road and a low-walled garden (x 4..8, y 8.2..15.1); north, beyond Addon_03,
-    House_Big_02 and Shop_01. None of the walls is a barrier. The house counts pieces ending into it as clips (round
-    1): the caps stop flush at its probed walls.
-    T3: H-barriers round the house, x -7.6 and x 9.4, capped against its west and east faces at both ends (y -6.4
-    on the shop's edge, y 4.6 and 6.25 at the back), the caps stopping 0.2-0.35 m short of its probed walls.
+    House_Big_02 and Shop_01. None of the walls is a barrier. Pieces near the house clip it even 1.6 m off its probed
+    walls (rounds 1-3), and a ring capped against it leaked round its ends past the shop's open box margin (round 3):
+    so no ring touches the house.
+    T3: H-barriers round the house and the shop together: behind the shop (y -18), x -8.6 along the shop's and the
+    house's west side (standing into the yard's low walls where it meets them), the east side on the main road's
+    shoulder (x 13.2), capped into Addon_03's west face (y 9.5) and, across the garden, its east face (y 9.2).
     T4: Mil walls round the whole block: the yard (x -23, outside its west wall, Addon_02 in it), the south ground
-    (y -21.5, inside the stone wall), the shop, the strip on the main road's shoulder (x 13: the shop's box leaves no
-    room off it), capped into Addon_03's east face across the garden (y 10.6) and its west face (y 12.5).
-    T5: the T3 ring raised: its lines in Mil walls (the west one out at x -8.5, outside the house's box), its caps
-    against the house kept as H-barriers."""
+    (y -21.5, inside the stone wall), the strip on the main road (x 15: 2.5 m into its 10 m width), capped into
+    Addon_03's east face across the garden (y 10.6) and its west face (y 12.5).
+    T5: the T3 ring in Mil walls."""
     d.start = (-5.0, 2.5)  # On the veranda's open west side
     d.tier()  # T1: nothing
 
     d.tier()  # T2: bags along the veranda's open west side, at the side door and the east window
-    d.o(LONG, -6.1, -3.8, 270)                               # (1.6 m off the probed wall: at 0.8-1.05 they clipped)
-    d.o(LONG, -6.1, -0.5, 270)
+    d.o(LONG, -6.6, -3.8, 270)                               # (2.1 m off the probed wall: at 0.8-1.6 they clipped)
+    d.o(LONG, -6.6, -0.5, 270)
     d.o(LONG, 6.4, 3.8, 90)
     d.o(LONG, 6.3, -3.9, 90)
 
     def inner(d, fam, R, short):
-        # The caps against the house stay H-barriers at T5 (a Mil wall there cuts its eaves, round 2); the lines stand
-        # 1-1.5 m further out than round 2's, the Mil ones outside the house's box (x -7.9..7.9)
-        xw, xe = (-7.6, 9.4) if fam == "H" else (-8.5, 9.4)
+        # Round the house and the shop hard against its front (the shop's box margin is open ground: a ring stopping
+        # at it leaks, round 3), tied into Addon_03 behind; standing into the yard's and the garden's low walls where
+        # it meets them (upgrading them); the east side on the main road's shoulder (the shop's box reaches x 12.3)
         hw = 0.85 if fam == "H" else 0.55
-        d.fill(xw - hw, -6.4, -4.0, -6.4, 0, "H", label="south-west cap against the veranda's edge", ring=R)
-        d.fill(xw - hw, 4.6, -4.0, 4.6, 0, "H", label="north-west cap against the house", ring=R)
-        d.fill(xw, -6.4, xw, 4.6, 270, fam, label="west line", ring=R, past=0.6)
-        d.fill(xe + hw, -6.4, 4.5, -6.4, 0, "H", label="south-east cap against the house", ring=R)
-        d.fill(xe + hw, 6.25, 4.5, 6.25, 0, "H", label="north-east cap against the house", ring=R)
-        d.fill(xe, -6.4, xe, 6.25, 90, fam, label="east line", ring=R, past=0.6)
+        xe = 13.2 if fam == "H" else 13.0
+        d.run(-8.6 - hw, -18.0, xe + hw, -18.0, 180, fam, R, "south line, behind the shop", road_ok=True, past=0.0)
+        d.run(-8.6 - hw, 9.5, -4.3, 9.5, 0, fam, R, "north-west cap into Addon_03", upgrade=True, past=0.0)
+        d.run(xe + hw, 9.2, 4.8, 9.2, 0, fam, R, "north-east cap across the garden into Addon_03", road_ok=True, upgrade=True, past=0.0)
+        d.run(-8.6, -18.0, -8.6, 9.5, 270, fam, R, "west line, along the shop and the house", past=0.6, upgrade=True)
+        d.run(xe, -18.0, xe, 9.2, 90, fam, R, "east line, the road's shoulder", road_ok=True, past=0.6)
 
     d.tier()  # T3
     inner(d, "H", "T3 ring", HB1)
 
     d.tier()  # T4
     R = "T4 ring"
-    d.run(-23.55, -21.5, 13.55, -21.5, 180, "M", R, "south face, the south ground", road_ok=True)
-    d.run(13.0, -21.5, 13.0, 11.15, 90, "M", R, "east face, the road's shoulder", road_ok=True, past=0.6)
-    d.run(13.55, 10.6, 4.8, 10.6, 0, "M", R, "north-east cap across the garden into Addon_03", road_ok=True)
+    d.run(-23.55, -21.5, 15.55, -21.5, 180, "M", R, "south face, the south ground", road_ok=True)
+    d.run(15.0, -21.5, 15.0, 11.15, 90, "M", R, "east face, on the road", road_ok=True, past=0.6)
+    d.run(15.55, 10.6, 4.8, 10.6, 0, "M", R, "north-east cap across the garden into Addon_03", road_ok=True)
     d.run(-23.0, -21.5, -23.0, 13.05, 270, "M", R, "west face, outside the yard's west wall", past=0.6)
     d.run(-23.55, 12.5, -4.3, 12.5, 0, "M", R, "north-west cap into Addon_03")
 
