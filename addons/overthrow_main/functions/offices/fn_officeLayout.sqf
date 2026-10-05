@@ -11,11 +11,14 @@
 
     Usage: ([_town] call OT_fnc_officeLayout) params ["_office", "_tiers"];
 
-    Returns: ARRAY - [office, [tier 1 snapshot, ..., tier 5 snapshot]], [] for a town without one
+    Returns: ARRAY - [office, [tier 1 snapshot, ..., tier 5 snapshot], confirmed, bracket], [] for a town
+        without one; bracket: the population bracket it was authored for (OT_fnc_officeBracket), 0 for none
         office: [class, position ASL, direction, spawned (not a map building)]
         snapshot: [[kind, what, position ASL, orientation, extra], ...], [] for a tier not authored;
             kind "guard" (what: a role, OT_fnc_officeGuardClass; orientation: direction) or "object"
-            (what: a class; orientation: [vectorDir, vectorUp]); extra flags: "flag" (gets the occupier's flag)
+            (what: a class; orientation: [vectorDir, vectorUp]); extra flags: "flag" (gets the occupier's flag);
+            or "hide": a map object removed at that tier (what: its model, getModelInfo's name, or its class; OT_fnc_officeHide);
+            or "gate": a gate's opening in the walls, a marker with nothing made (what: its width in metres, a string)
 */
 
 params [["_town", "", [""]]];

@@ -2,8 +2,8 @@
     Description:
     Puts a town's authored mayor's office layout (OT_fnc_officeLayout) up at a defence tier: the
     office building found where the layout says (made there when it's a spawned one, or gone) and
-    everything of that tier's snapshot exactly where it was saved. Props and fortifications have no
-    simulation. Each thing made remembers its item ("OT_officeItem": [town, tier, index, item]) and the
+    everything of that tier's snapshot exactly where it was saved, and the map objects it removes hidden
+    (OT_fnc_officeHide). Props and fortifications have no simulation. Each thing made remembers its item ("OT_officeItem": [town, tier, index, item]) and the
     building remembers them ("OT_officeObjects", "OT_officeGuards", "OT_officeTier"), so
     OT_fnc_officeClearTemplate takes them off again. Server.
 
@@ -35,6 +35,7 @@ if (isNull _building) then {
 _tier = (round _tier) max 1 min 5;
 
 ([_tiers param [_tier - 1, []], _side, _placeholders, [_town, _tier]] call OT_fnc_officeSpawnItems) params ["_objects", "_guards"];
+[_town, _tier] call OT_fnc_officeHide; // The map objects the tier removes
 
 _building setVariable ["OT_officeObjects", _objects];
 _building setVariable ["OT_officeGuards", _guards];
