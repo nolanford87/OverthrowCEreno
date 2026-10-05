@@ -1347,7 +1347,8 @@ def panochori(d, tier):
 
 @site("Paros", entry="W", nest=(0.5, -10.0, 260), flag=(-7.0, 11.0), spare=[],
       trims=[("Land_i_House_Big_02_V2_F", (-11.0, 21.0), 5.0), ("Land_i_House_Big_02_V2_F", (13.0, 23.0), 5.7),
-             ("Land_i_House_Small_01_V1_F", (10.0, 5.0), 1.5), ("Land_i_House_Small_02_V1_F", (-6.5, -16.5), 2.4)], side_bags=SHORT)  # Round 1's screenshot: the big north house's box runs 5-6 m past both its ends, the east house's 1.5 m, the south house's 2.4 m
+             ("Land_i_House_Small_01_V1_F", (10.0, 5.0), 1.5), ("Land_i_House_Small_02_V1_F", (-6.5, -16.5), 2.4),
+             ("Land_i_House_Small_01_V1_F", (10.0, -10.4), 2.4), ("Land_i_House_Big_02_V1_F", (17.0, -12.3), 6.0)], side_bags=SHORT, shared=("cx", "cs"))  # Round 1's screenshot: the big north house's box runs 5-6 m past both its ends, the east house's 1.5 m, the south house's 2.4 m; round 5's: the east house's south wall is 2.4 m inside its box, and the south-east house's north part is open ground (round 5's routes crossed it)
 def paros(d, tier):
     # A track runs north-south 7 m west of the veranda; houses abut the east side and close the south; a big house
     # closes the north beyond a yard that opens east; an old city wall runs from the house's north-west corner to
@@ -1365,6 +1366,12 @@ def paros(d, tier):
         # outside, and a run along the east house's north wall shuts its door off from the side door's yard)
         d.run("west", (-9.5, -13.0), (-9.5, 8.8), ends=("corner", "corner"))
         d.run("sw", (-9.5, -13.0), (-5.5, -13.0), ends=("tie", "tie"))
+        # (round 6: the ground in front of the office runs on east as an alley and a lane, past the east house's
+        # south porch (x 9.5-12.5) and out of the ring at x 15-30, with a way south at x 11-17; the east house is a
+        # way through, so its porch stays inside: a run across the alley and the lane east of the porch, from the
+        # east house's real south wall, and one west from it into the south house)
+        d.run("cx", (13.8, -8.0), (13.8, -15.0), ends=("tie", "corner"), out=90)
+        d.run("cs", (13.8, -15.0), (4.0, -15.0), ends=("tie", "tie"), out=180)
         d.run("north", (-9.5, 8.8), (12.5, 8.8), ends=("tie", "corner"), out=0)
         # (round 5: the east house's door steps (x 5.6-7.2, y 3.5-4.0 on round 1's screenshot) open into the corner by
         # the office's side door, and a whole HBarrier_5 standing over them (round 4) didn't stop the route down
@@ -1377,6 +1384,8 @@ def paros(d, tier):
         # and the south house; north and east the big houses, the shed, the garage, the old city walls and the shops
         # close it, with a wall in the one gap in the old city wall east
         W = WALL_FILL
+        d.stack("cx", "cs")  # (round 6: the alley and the lane run on east past every outer line: the inner ring's
+        # south-east runs are the outer line there too, stacked 2-high)
         d.run("o_s", (-18.0, -15.8), (-6.35, -15.8), ends=("corner", "tie"), fill=W, out=180)
         d.run("o_w", (-18.0, -15.8), (-18.0, 23.0), ends=("tie", "corner"), fill=W, out=270)
         d.run("o_n", (-18.0, 23.0), (-5.5, 23.0), ends=("tie", "tie"), fill=W, out=0)
