@@ -43,6 +43,7 @@ CLASSES = {
     "Land_CncBarrier_F": (1.6, 0.6), "Land_CncBarrier_stripes_F": (2.6, 0.6), "Land_CncBarrierMedium_F": (4.0, 0.6),
     "Land_CncBarrierMedium4_F": (8.0, 0.6),
     "Land_Mil_WallBig_4m_F": (4.0, 0.6), "Land_Mil_WallBig_Corner_F": (1.0, 1.0),
+    "Land_CncWall4_F": (4.0, 1.0), "Land_CncWall1_F": (1.4, 1.0),  # CncWall4 a guess; CncWall1 measured (pass 1)
     "Land_WallCity_01_gate_grey_F": (5.0, 0.6), "Land_BarGate_F": (5.0, 0.6),
     "Land_PipeFence_03_m_gate_r_F": (4.0, 0.3), "Land_GameProofFence_01_l_gate_F": (4.0, 0.3),  # The gates used at Aggelochori
     "Land_BagBunker_Small_F": (3.2, 3.0), "Land_BagBunker_Tower_F": (3.5, 3.5),
@@ -72,6 +73,8 @@ BARRIER_OVERLAP = 0.6
 
 def is_barrier(cls):
     return any(b in cls for b in BARRIERS)
+# Fewest guards a tier may hold once a draft has any (the walls and gates passes have none)
+MIN_GUARDS = 2
 GUARD_ROLES = ("gendarme", "rifleman", "autorifleman", "marksman", "at", "mg_gunner", "officer")
 
 
@@ -393,7 +396,7 @@ def check(town, tiers):
     garrisoned = any(it[0] == "guard" for items in tiers for it in items)  # Pass 1 (walls) has no guards at all
     for n, items in enumerate(tiers, 1):
         guards = sum(1 for it in items if it[0] == "guard")
-        if garrisoned and guards < 2:
+        if garrisoned and guards < MIN_GUARDS:
             problems.append(f"tier {n}: {guards} guards")
         removed = town.removed_objs(items)
         if sum(1 for it in items if it[0] == "hide") != len(removed):
