@@ -1070,7 +1070,7 @@ def kavala(d):
     (y -30), the cliff east (the rocks from x 24-28), the forecourt (a planter, low walls at x -23..-17) west of the
     main strip and north of the south block, the service yard (tanks, containers) between the strip and the cliff.
     T2: sandbags 2 m out of each door that opens outside, along the main strip's forecourt face and the south front.
-    T3: H-barriers 1.5-2 m round the whole complex: south (y -24.3), east (x 18.2, round side1's north end at
+    T3: H-barriers 1.5-2 m round the whole complex: south (y -24.3), east (x 20; the Mil walls at T5 x 18.2, round side1's north end at
     y 45.3, standing into a low wall there), the forecourt side (x -10.5 down to the south block, y -2 along its north face), west (x -39.5).
     T4: Mil walls along the road edges into the cliff: the south road's edge (y -26) from the west road to the
     rocks, the west road's east edge (x -41.3, then north-east along the road to (-26.3, 50)), and the north side
@@ -1092,9 +1092,11 @@ def kavala(d):
 
     def inner(d, fam, R, short):
         hw = 0.85 if fam == "H" else 0.55
-        d.run(-39.5 - hw, -24.3, 18.2 + hw, -24.3, 180, fam, R, "south line", road_ok=True, past=0.0)
-        d.run(18.2 + hw, 45.3, -10.5 - hw, 45.3, 0, fam, R, "north line, round side1's north end (into the low wall)", past=0.0, upgrade=True)
-        d.run(18.2, -24.3, 18.2, 45.3, 90, fam, R, "east line, along the main strip and side1", past=0.6)
+        xe = 20.0 if fam == "H" else 18.2  # (Round 4: two H-barriers at x 18.2 cut the main block; the Mil walls didn't;
+        # x 20 also clears the net fence ending at x 18.9)
+        d.run(-39.5 - hw, -24.3, xe + hw, -24.3, 180, fam, R, "south line", road_ok=True, past=0.0)
+        d.run(xe + hw, 45.3, -10.5 - hw, 45.3, 0, fam, R, "north line, round side1's north end (into the low wall)", past=0.0, upgrade=True)
+        d.run(xe, -24.3, xe, 45.3, 90, fam, R, "east line, along the main strip and side1", past=0.6)
         d.run(-10.5, 45.3, -10.5, -2.0 - hw, 270, fam, R, "forecourt line, side1 down to the south block", past=0.6)
         d.run(-10.5, -2.0, -39.5 - hw, -2.0, 0, fam, R, "along the south block's north face", past=0.0)
         d.run(-39.5, -2.0, -39.5, -24.3, 270, fam, R, "west line, along the south block's west end", road_ok=True, past=0.6)
@@ -1242,8 +1244,8 @@ def zaros(d):
     d.tier()  # T1: nothing
 
     d.tier()  # T2: bags along the veranda's open west side, at the side door and the east window
-    d.o(LONG, -6.6, -3.8, 270)                               # (2.1 m off the probed wall: at 0.8-1.6 they clipped)
-    d.o(LONG, -6.6, -0.5, 270)
+    veranda = [d.o(LONG, -7.6, -3.8, 270), d.o(LONG, -7.6, -0.5, 270)]  # (3.1 m off the probed wall: at 0.8-2.1 m
+    # they clipped)
     d.o(LONG, 6.4, 3.8, 90)
     d.o(LONG, 6.3, -3.9, 90)
 
@@ -1259,7 +1261,8 @@ def zaros(d):
         d.run(-8.6, -18.0, -8.6, 9.5, 270, fam, R, "west line, along the shop and the house", past=0.6, upgrade=True)
         d.run(xe, -18.0, xe, 9.2, 90, fam, R, "east line, the road's shoulder", road_ok=True, past=0.6)
 
-    d.tier()  # T3
+    d.tier()  # T3: the veranda's bags dropped (the ring stands just outside them)
+    d.cur[:] = [it for it in d.cur if not any(it is v for v in veranda)]
     inner(d, "H", "T3 ring", HB1)
 
     d.tier()  # T4
