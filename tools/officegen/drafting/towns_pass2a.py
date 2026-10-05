@@ -574,6 +574,12 @@ def paros(d):
     d.fixes = {4: [f"T4 (round 2): a wall up the track's east side, x -7.3 from y 8.4 into the north wall (y 23.4): {len(a1)} walls, joints {j1:.2f} m: {a1}",
                    f"T4 (round 2): a wall on the T3 north face's line, y 8.8 from x -7.7 to 16.2: {len(a2)} walls, joints {j2:.2f} m: {a2}",
                    f"T4 (round 2): a wall from there down along the east house's east wall, x 16.2 from y 9.2 to 2.3: {len(a3)} walls, joints {j3:.2f} m: {a3}"]}
+    # Round 3: T4 still got out north, straight up the track and through the north wall where the track meets it:
+    # the track runs on north (the path finding walks through walls on a road, as at Chalkeia). A second gate there,
+    # the road's width, its east edge the round 2 wall up the track's east side (the second gate's reason: the
+    # track is a through road the occupier's vehicles use, and a wall across it doesn't stop them)
+    d.gate(4, "outer", -10.6, 23.0, 5.8, slack=0.5, relay="auto", bare=((40.0, 23.0),),
+           what="north wall, across the track where it runs on north (the road's width): the second gate")
 
 
 def relay_line(t, items, olds, p0, p1_, cls=WALL, out=None):
@@ -717,6 +723,17 @@ def sofia(d):
     d.mark(3, "inner", -8.6, -4.815, 4.45, 0.0, removed=[(-8.6, -4.82)],
            what="west face, onto the main road, square in front of the veranda's west steps (the H-barrier there out whole)")
     d.gate(4, "outer", -8.6, -16.0, GATE, slack=1.0, relay="auto", what="west wall, across the track's mouth on the main road (3.6 m or more, round 2)")
+    # Round 3, T4's ways out east (both in the baseline; round 1's check had no route that way):
+    # - from the side door's yard east through the big east house (a way through): the user's T3 closes the yard with
+    #   four H-barriers, which the user's T4 drops. They go back at T4 as they stand at T3.
+    t = d.t
+    yard = [it for it in d.tiers[2] if it[0] == "object" and "HBarrier_5" in it[1] and Piece(t, it).x > 7.0 and Piece(t, it).y > -2.0]
+    assert len(yard) == 4, pieces(t, yard)
+    d.tiers[3] = d.tiers[3] + [list(it) for it in yard]
+    d.fixes = {4: [f"T4 (round 3): the user's T3 east-yard runs back, as at T3: {pieces(t, yard)}"]}
+    # - along the track inside the walls and out of its east end, through the east wall where the track crosses it
+    #   (walls on a road): a second gate there, the road's width (the track is the occupier's road through the town)
+    d.gate(4, "outer", 30.0, -10.5, 7.0, slack=0.5, relay="auto", what="east wall, across the track where it runs on east (the road's width): the second gate")
 
 
 @site("Therisa")
