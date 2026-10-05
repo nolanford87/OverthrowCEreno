@@ -1366,7 +1366,7 @@ def paros(d, tier):
         d.run("west", (-9.5, -13.0), (-9.5, 8.8), ends=("corner", "corner"))
         d.run("sw", (-9.5, -13.0), (-5.5, -13.0), ends=("tie", "tie"))
         d.run("north", (-9.5, 8.8), (12.5, 8.8), ends=("tie", "corner"), out=0)
-        d.run("eh", (13.3, 4.4), (5.7, 4.4), ends=("corner", "free"), out=180)  # (its free end 0.4 m off the office, beside the side door)
+        d.run("eh", (13.3, 4.4), (5.7, 4.4), ends=("corner", "free"), out=180)  # (its free end 0.2 m off the office, below the side door)
         d.run("ne1", (12.5, 8.8), (12.5, 4.4), ends=("tie", "tie"), out=90)
     if tier == 4:  # The outer ring: west of the track (clear of the main road south-west), into the big north house
         # and the south house; north and east the big houses, the shed, the garage, the old city walls and the shops
