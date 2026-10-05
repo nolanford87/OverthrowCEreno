@@ -1,0 +1,35 @@
+# villages: round 7 measurements (in-game, Altis)
+
+Per tier: items in the layout / guards / props / statics / items not made (class missing); then the problems found.
+clips = a building, wall, rock or the office's walls runs through it; floating = gap under it (m); moved = a guard pushed
+more than 1 m off his post (stuck in geometry); blind = a guard's view ends within 4 m (facing a wall); blocked = a
+static's field of fire ends within 15 m; view = the guards' median clear view (m). A flagged item's [x, y] is where
+it stood in the office's model coordinates (your drafts' own). Screenshots beside this file:
+<town>_T<tier>_top.jpg (from 55 m above the ground or the roof, north up) and <town>_T<tier>_street.jpg (from 35 m out on the street side, 20 m up).
+
+## Neri
+Closure routes start at [3.6,-5.7] (office model; found on the bare site, 'none': not checked)
+- **Tier 2**: 2 items / 0 guards / 2 props / 0 statics / 0 missing; median view 0 m
+  - ways out (bearing from the office's front; the gap: where the route last passes within 3 m of a fortification):
+    - bearing 0: gap [0.2,-8.2], route [[3.5,-5.6],[8.8,-5.4],[12.7,-0.8],[15.9,3.9],[15.5,9.4],[16.5,14.5],[16.4,20],[17.7,25],[18.7,30.3],[18.3,36.1]]
+    - bearing 45: gap [0.2,-8.2], route [[3.5,-5.6],[8.6,-5.6],[12.3,-1.3],[15.3,3.1],[14.9,8.7],[16.6,13.6],[21.3,15.3],[25.6,18.3],[29.4,22.7],[33.3,27.1]]
+    - bearing 90: gap [0.2,-8.2], route [[3.5,-5.6],[8.9,-7.5],[14.7,-7.1],[18.9,-10.4],[22.9,-6.8],[28.5,-7.9],[33.8,-8.2],[38.3,-11.4]]
+    - bearing 135: gap [0.2,-8.2], route [[3.5,-5.6],[8.9,-7.5],[14.7,-7.1],[18.9,-10.4],[22.9,-6.8],[28.5,-7.9],[33.8,-8.2],[35.1,-13.7],[33,-19.1]]
+    - bearing 180: gap [-7.3,-6.7], route [[3.5,-5.6],[-1.2,-8.3],[-6.6,-7.3],[-12.1,-7],[-17.9,-7.5],[-19.5,-12.2],[-17.8,-17.3],[-17.4,-23.1],[-17,-29],[-16.6,-34.8],[-16.1,-40.6]]
+    - bearing 225: gap [-7.3,-6.7], route [[3.5,-5.6],[-1.2,-8.3],[-6.6,-7.3],[-12.2,-7.1],[-18.2,-7.5],[-23.8,-8.6],[-27.6,-13],[-31.4,-17.4],[-35.2,-21.8]]
+    - bearing 270: gap [], route []
+    - bearing 315: gap [-6.8,-3.5], route [[3.5,-5.6],[-0.5,-8.9],[-5.8,-7.9],[-6.9,-2.6],[-7.3,3.1],[-9.6,7.8],[-13.2,12.1],[-17.5,15.8],[-23,16.8],[-28.9,17.1],[-34.8,17.4],[-40.4,17.4]]
+- **Tier 3**: 29 items / 0 guards / 29 props / 0 statics / 0 missing; median view 0 m
+  - ways out (bearing from the office's front; the gap: where the route last passes within 3 m of a fortification):
+    - bearing 180: gap [-7.8,-12.7], route [[-0.9,-12.2],[-6.8,-12.7],[-12.3,-11],[-16.5,-7.4],[-21.8,-7.7],[-19.5,-12.2],[-17.8,-17.3],[-17.4,-23.1],[-17,-29],[-16.6,-34.8],[-16.1,-40.6]]
+
+## Real sizes of the classes used ([length, depth, height] m, boundingBoxReal)
+
+- Land_BagFence_Long_F: [3.1,0.5,0.9]
+- Land_BagFence_Short_F: [2,0.5,0.9]
+- Land_CncWall1_F: [1.4,1,3.7]
+- Land_HBarrier_1_F: [1.4,1.7,1.5]
+- Land_HBarrier_3_F: [3.6,1.8,1.6]
+- Land_HBarrier_5_F: [5.8,1.7,1.6]
+- Land_HBarrier_Big_F: [9,2.6,2.6]
+- Land_Mil_WallBig_4m_F: [4.1,1.1,4.7]
