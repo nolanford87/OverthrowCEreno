@@ -32,6 +32,12 @@ Read first: `CLAUDE.md`, `tools/officegen/DESIGN_BRIEF.md` (its passes section),
   `tl.check()` allows it.
 
 ## The rules
+- **Gates (pass 2) on future maps: agents choose, a script cuts.** On Altis the towns agent re-laid whole wall runs
+  round its gates and the user's reviewed layouts had to be rolled back. So the agent only places `tl.gate()`
+  markers (where, how wide, why), and the lead cuts them with `tools/officegen/cut_gates.py` (it takes out only the
+  pieces across each opening and refills their leftover length with same-kind pieces), then `add_gates.py` puts in
+  the open gates. Ways out the in-game check still finds are marked for the user with a red arrow
+  (`Sign_Arrow_Large_F`) in that tier, not fixed by moving their walls.
 - **Later passes change only what they're for (the user, after pass 2a).** A pass on top of reviewed walls (gates,
   towers) removes, shortens or moves only the pieces right at its feature: the opening and the piece either side,
   within about 6 m. Never re-lay a run "evenly", move a wall over, or tidy joints elsewhere. A way out found later is
