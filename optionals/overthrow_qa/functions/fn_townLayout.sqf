@@ -345,6 +345,26 @@ OTQA_townLayout_show = {
     ([_b, _parts, _town] call OTQA_townLayout_front) params ["_stand", "_look"];
     player setPosATL _stand;
     player setDir (_stand getDir _look);
+    // The Zeus camera comes along: now if Zeus is open, else the next time it's opened (once per town, so it
+    // doesn't pull the camera back while flying round)
+    OTQA_townLayout set ["camTo", [_stand, _look]];
+    if (isNil "OTQA_townLayout_camLoop") then {
+        OTQA_townLayout_camLoop = [] spawn {
+            while { true } do {
+                sleep 0.5;
+                private _to = OTQA_townLayout getOrDefault ["camTo", []];
+                if (_to isNotEqualTo [] && { !isNull curatorCamera }) then {
+                    _to params ["_stand", "_look"];
+                    private _eye = (AGLToASL _stand) vectorAdd [0, 0, 18];
+                    _eye = _eye vectorAdd ((((AGLToASL _stand) vectorDiff (AGLToASL _look)) vectorMultiply [1, 1, 0]) vectorMultiply (12 / (((_stand distance2D _look) max 1))));
+                    curatorCamera setPosASL _eye;
+                    private _dir = vectorNormalized ((AGLToASL _look) vectorDiff _eye);
+                    curatorCamera setVectorDirAndUp [_dir, (_dir vectorCrossProduct [0, 0, 1]) vectorCrossProduct _dir];
+                    OTQA_townLayout set ["camTo", []];
+                };
+            };
+        };
+    };
     call OTQA_townLayout_actionText;
     call OTQA_townLayout_marker;
     if !([_town] call OTQA_townLayout_unfinished) exitWith { call OTQA_townLayout_startReview };
