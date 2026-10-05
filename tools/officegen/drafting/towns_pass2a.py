@@ -39,8 +39,9 @@ LONG, SHORT = "Land_BagFence_Long_F", "Land_BagFence_Short_F"
 # smaller, the stricter); an opening's width is measured between the solid ends either side of it.
 SIZE = {HB5: (5.4, 1.76), HB3: (3.2, 1.76), HB1: (1.1, 1.7), WALL: (3.7, 0.8), CNC1: (1.0, 0.6),
         LONG: (3.0, 0.5), SHORT: (1.8, 0.5)}
-MAN = 1.5      # A man's opening (m): 1.3-1.7 where the pieces fit better
-VEHICLE = 3.6  # A vehicle's opening, facing a road: 3.4-4.0 where the pieces fit better
+# Round 2 (the in-game check): every gate at least 3.5 m wide, a man's gate too: the engine's path finding (the
+# defenders', the QRF's) doesn't get through narrower openings (1.5, 2.0 and 2.2 m gates came back closed)
+GATE = 3.6     # An opening's width (m): 3.6-4.2 where the pieces fit better
 
 
 def vec(mdir):
@@ -418,7 +419,7 @@ class Draft:
     def gate(self, n, ring, x, y, width, high=(False,), relay=(), bare=(), fill=None, slack=0.0, what=""):
         """A gate `width` m wide cut at model (x, y) in tier n's line there (each layer in `high`), marked."""
         t = self.t
-        if slack:
+        if slack or relay == "auto":
             # The opening moved along its line by up to `slack` m to where the pieces either side fit best
             near, _ = line_of(t, self.tiers[n - 1], x, y, False)
             a = vec(near.mdir + 90)
@@ -428,7 +429,7 @@ class Draft:
             a0 = vec(near0.mdir + 90)
             ends = [(x - a0[0] * 50, y - a0[1] * 50), (x + a0[0] * 50, y + a0[1] * 50)]
             for rl in ([(), (ends[0],), (ends[1],), (ends[0], ends[1])] if relay == "auto" else [relay]):
-                for w in [w0 + 0.1 * k for k in range(-2, 5)] if w0 >= VEHICLE else [w0 + 0.1 * k for k in range(-2, 3)]:
+                for w in [w0 + 0.1 * k for k in range(0, 7)]:
                     for k in range(-int(slack * 10), int(slack * 10) + 1):
                         sx, sy = x + a[0] * k * 0.1, y + a[1] * k * 0.1
                         try:
@@ -536,7 +537,7 @@ def neochori(d):
     # it. T3: the gate in the west face square in front of the bay, a vehicle's width onto the road. T4: the user's
     # T4 keeps only the west face of the T3 ring (stacked 2-high as the outer line along the road), so it is one ring
     # and keeps the same gate, cut through both layers.
-    d.gate(3, "inner", -7.0, -4.6, VEHICLE, relay=((-7.0, -20.0),), bare=((-7.0, 10.0),),
+    d.gate(3, "inner", -7.0, -4.6, GATE, relay=((-7.0, -20.0),), bare=((-7.0, 10.0),),
            what="west face, onto the main road, square in front of the veranda's door bay")
     d.keep(4, 3)
     # (The user's two angled walls at the north-east end (8.96, 27.40)-(10.96, 24.29) tie into the north shop's real
@@ -552,8 +553,27 @@ def paros(d):
     # T4 drops the T3 ring's west and north faces (one ring: the high walls west of the track, the old houses and city
     # walls, and the T3 ring's south-east runs stacked): its gate is in the south wall where the track comes up from
     # the main road, a vehicle's width, the track then running up inside the walls to the office.
-    d.gate(3, "inner", -9.5, -5.6, VEHICLE, slack=1.5, what="west face, onto the track, in front of the veranda's door bay")
-    d.gate(4, "outer", -12.75, -15.8, VEHICLE, slack=1.0, what="south wall, across the track's mouth on the main road")
+    d.gate(3, "inner", -9.5, -4.6, GATE, what="west face, onto the track, in front of the veranda's door bay")
+    d.gate(4, "outer", -12.75, -15.8, GATE, slack=1.0, what="south wall, across the track's mouth on the main road")
+    # Round 2: T4 got out east (the side door's yard and the north yard open east onto open ground, and the big
+    # houses beyond don't close it) and north (round the big north house's end, which is a way through: the north
+    # yard side has a door). Both were in the baseline: pass 1's T4 relied on the T3 ring inside it, which the
+    # user's T4 takes out. Closed on the T3 north face's own line (y 8.8, game-checked closed at T3), raised to high
+    # walls: from the track's east side (x -7.3, where a wall runs up into the north wall) across the north of the
+    # house to x 16.2, and down along the east house's east wall past its north-east corner. The north yard and the big north house are
+    # outside; the track, the veranda, the side door's yard and the alley stay in.
+    t = d.t
+    items = d.tiers[3]
+    items, _, a1 = add_line(t, items, (-7.3, 8.4), (-7.3, 23.4), out=90.0)
+    j1 = relay_line.joint
+    items, _, a2 = add_line(t, items, (-7.7, 8.8), (16.2, 8.8), out=0.0)
+    j2 = relay_line.joint
+    items, _, a3 = add_line(t, items, (16.2, 9.2), (16.2, 2.3), out=90.0)
+    j3 = relay_line.joint
+    d.tiers[3] = items
+    d.fixes = {4: [f"T4 (round 2): a wall up the track's east side, x -7.3 from y 8.4 into the north wall (y 23.4): {len(a1)} walls, joints {j1:.2f} m: {a1}",
+                   f"T4 (round 2): a wall on the T3 north face's line, y 8.8 from x -7.7 to 16.2: {len(a2)} walls, joints {j2:.2f} m: {a2}",
+                   f"T4 (round 2): a wall from there down along the east house's east wall, x 16.2 from y 9.2 to 2.3: {len(a3)} walls, joints {j3:.2f} m: {a3}"]}
 
 
 def relay_line(t, items, olds, p0, p1_, cls=WALL, out=None):
@@ -565,8 +585,6 @@ def relay_line(t, items, olds, p0, p1_, cls=WALL, out=None):
     u = ((p1_[0] - p0[0]) / L, (p1_[1] - p0[1]) / L)
     ln = p1.SIZE[cls][0]
     n = max(1, math.ceil((L - JOINT[0]) / (ln - JOINT[0])))
-    while n > 1 and (n * ln - L) / (n - 1) > JOINT[1] + 0.2:
-        n -= 1
     j = (n * ln - L) / (n - 1) if n > 1 else 0.0
     face = out if out is not None else (math.degrees(math.atan2(u[0], u[1])) - 90) % 360
     added = []
@@ -577,12 +595,17 @@ def relay_line(t, items, olds, p0, p1_, cls=WALL, out=None):
     return [it for it in items if not any(it is g for g in gone)] + added, [Piece(t, g) for g in gone], [Piece(t, a) for a in added]
 
 
+def add_line(t, items, p0, p1_, cls=WALL, out=None):
+    """A new straight line of `cls` from model point p0 to p1_, evenly jointed (relay_line with nothing replaced)."""
+    return relay_line(t, items, [], p0, p1_, cls, out)
+
+
 @site("Agios Dionysios")
 def agios_dionysios(d):
     # No road within the probe's 60 m: open ground round the compound, the town's middle 50 m west-south-west. The
-    # veranda's door bay opens west. T3: the gate in the west face in front of the door bay, a man's width (no road).
-    # T4 (one ring: the user's T4 drops the T3 ring): the gate in the west wall, a man's width, in line with the
-    # door bay.
+    # veranda's door bay opens west. T3: the gate in the west face in front of the door bay. T4 (one ring: the user's
+    # T4 drops the T3 ring): the gate in the west wall, in line with the door bay. (Round 1 cut them a man's width,
+    # 1.5 m: the game's path finding doesn't get through; now 3.6 m like every gate.)
     # The user's review: "a large gap in the wall" at T4's north-west corner, where pass 1 left the line to the big
     # shed's probed faces: pass 1's top view (pass1_check3) shows open ground there, the shed's box running some 6 m
     # past the building on that side (trimmed 4 m here, as pass 1 trimmed the other overstated boxes). The user's
@@ -604,8 +627,8 @@ def agios_dionysios(d):
     d.fixes = {4: [f"T4: the north-west corner wall re-laid on the user's line from ({p0[0]:.2f}, {p0[1]:.2f}) on the west "
                    f"wall's line to ({p1_[0]:.2f}, {p1_[1]:.2f}) on the north wall's: {len(added)} walls (were 4), joints "
                    f"{relay_line.joint:.2f} m; removed {gone}; added {added}"]}
-    d.gate(3, "inner", -13.0, -5.6, MAN, slack=1.0, relay="auto", what="west face, in front of the veranda's door bay (no road: a man's width)")
-    d.gate(4, "outer", -20.0, -5.6, MAN, slack=1.0, relay="auto", what="west wall, in line with the door bay, towards the town (no road: a man's width)")
+    d.gate(3, "inner", -13.0, -5.6, GATE, slack=1.0, relay="auto", what="west face, in front of the veranda's door bay, towards the town")
+    d.gate(4, "outer", -20.0, -5.6, GATE, slack=1.0, relay="auto", what="west wall, in line with the door bay, towards the town")
 
 
 @site("Charkia")
@@ -616,9 +639,9 @@ def charkia(d):
     # (the T3 ring stands); the outer gate is in the south wall where the south-west track crosses it, a vehicle's
     # width, 17 m round the corner from the inner gate: through it, a man crosses the ground between the rings under
     # the inner ring's west face to reach the inner gate.
-    d.gate(3, "inner", -12.5, -5.6, VEHICLE, slack=1.0, relay="auto", what="west face, onto the track junction, in front of the veranda's door bay")
+    d.gate(3, "inner", -12.5, -5.6, GATE, slack=1.0, relay="auto", what="west face, onto the track junction, in front of the veranda's door bay")
     d.keep(4, 3)
-    d.gate(4, "outer", -10.5, -22.5, VEHICLE, slack=1.5, relay="auto", what="south wall, where the track from the town's middle crosses it")
+    d.gate(4, "outer", -10.5, -22.5, GATE, slack=1.5, relay="auto", what="south wall, where the track from the town's middle crosses it")
 
 
 @site("Kalochori")
@@ -636,7 +659,7 @@ def kalochori(d):
     d.held[3] = d.held[4] = lane
     d.mark(3, "inner", -7.22, -14.3, 3.7, 90.0, removed=[(-8.46, -14.96), (-7.07, -14.47), (-6.05, -14.05)],
            what="the lane's mouth on the main road (the user's three 1-high blocks out), from the south face's end to the stone wall")
-    d.gate(4, "outer", -6.1, -16.4, VEHICLE, slack=0.4, relay="auto", bare=((-20.0, -16.4),), what="south wall, at the lane's mouth on the main road, from the west wall's corner")
+    d.gate(4, "outer", -6.1, -16.4, GATE, slack=0.4, relay="auto", bare=((-20.0, -16.4),), what="south wall, at the lane's mouth on the main road, from the west wall's corner")
 
 
 @site("Panochori")
@@ -647,9 +670,9 @@ def panochori(d):
     # down the west face to the veranda's door bay. It is there and not square in front of the door bay so that T4
     # can keep it: T4's outer gate is where the track leaves south-west (in line with the door bay), so anyone coming
     # in runs 13 m up the track between the two walls to reach the inner gate.
-    d.gate(3, "inner", -8.2, 4.0, VEHICLE, slack=1.0, relay="auto", what="west face's north half, onto the track")
+    d.gate(3, "inner", -8.2, 4.0, GATE, slack=1.0, relay="auto", what="west face's north half, onto the track")
     d.keep(4, 3)
-    d.gate(4, "outer", -14.0, -9.25, VEHICLE, relay=((-14.0, 20.0),), bare=((-14.0, -20.0),),
+    d.gate(4, "outer", -14.0, -9.25, GATE, relay=((-14.0, 20.0),), bare=((-14.0, -20.0),),
            what="west wall, where the track leaves south-west towards the town's middle, from the big south-west house's wall")
 
 
@@ -666,6 +689,15 @@ def rodopoli(d):
     d.mark(3, "inner", -12.05, -17.0, 3.1, 90.0, removed=[(-12.10, -17.00)],
            what="the yard's south gap (pass 1's H-barrier in it out), onto the passage to the south track")
     d.keep(4, 3)
+    # Round 2: T4 got out north-east: up the lane behind the house (the side door opens into it), out of its north
+    # end and over the north and east tracks, where the T4 walls stand on the roads (the game's path finding walks
+    # through walls on a road). In the baseline: the user's T4 takes out the T3 runs that close the lane (its east
+    # side and both ends), which pass 1's T4 relied on. They go back at T4 as they stand at T3 (game-checked there).
+    t = d.t
+    lane = [it for it in d.tiers[2] if it[0] == "object" and "HBarrier" in it[1] and
+            ((Piece(t, it).x > 4.0 and abs(Piece(t, it).y) > 12.0) or abs(Piece(t, it).x - 9.3) < 0.1)]
+    d.tiers[3] = d.tiers[3] + [list(it) for it in lane]
+    d.fixes = {4: [f"T4 (round 2): the T3 lane runs back, as at T3: {pieces(t, lane)}"]}
 
 
 @site("Sofia")
@@ -677,8 +709,14 @@ def sofia(d):
     # the T3 south face out and walls the track in (one ring); its gate is in the west wall across the track's mouth
     # on the main road, a vehicle's width: off the main road onto the track inside the walls, then north into the
     # veranda's south end.
-    d.gate(3, "inner", -3.3, -11.5, VEHICLE, slack=1.0, relay="auto", what="south face, onto the track, square in front of the veranda's south end")
-    d.gate(4, "outer", -8.6, -16.0, VEHICLE, slack=1.0, relay="auto", what="west wall, across the track's mouth on the main road")
+    # Round 2: the T3 south-face gate came back closed: every route in the game leaves the veranda down its west
+    # steps (-5.8, -6.3), not its south end (a railing), and the strip between the steps and the west face is too
+    # tight for the path finding. The gate moves to the west face, square in front of the steps, onto the main road:
+    # the H-barrier there out whole, nothing back (4.45 m). T4 doesn't keep it: its one ring already has its gate
+    # at the track's mouth (fine in the game), one way in per ring.
+    d.mark(3, "inner", -8.6, -4.815, 4.45, 0.0, removed=[(-8.6, -4.82)],
+           what="west face, onto the main road, square in front of the veranda's west steps (the H-barrier there out whole)")
+    d.gate(4, "outer", -8.6, -16.0, GATE, slack=1.0, relay="auto", what="west wall, across the track's mouth on the main road (3.6 m or more, round 2)")
 
 
 @site("Therisa")
@@ -688,8 +726,16 @@ def therisa(d):
     # T3: the gate in the south face across the plaza from the door bay's side, a vehicle's width (vehicles come over
     # the plaza from the road). T4 (one ring: the user's T4 drops the T3 ring's faces): the gate in the south wall on
     # the same line, a vehicle's width, facing the road.
-    d.gate(3, "inner", -5.0, -16.0, VEHICLE, slack=1.0, relay="auto", what="south face, across the plaza to the road, in line with the veranda's west side")
-    d.gate(4, "outer", -5.0, -24.0, VEHICLE, slack=2.0, relay="auto", what="south wall, facing the road across the plaza")
+    d.gate(3, "inner", -5.0, -16.0, GATE, slack=1.0, relay="auto", what="south face, across the plaza to the road, in line with the veranda's west side")
+    d.gate(4, "outer", -5.2, -24.0, GATE, relay="auto", what="south wall, facing the road across the plaza")
+    # Round 2: T4 got out west through the shop west of the house (doors south, onto the plaza, and north), which
+    # the user's T4 makes part of its line. In the baseline: the user's T3 west face (x -14.85) shut it out and the
+    # T4 drops it. It goes back on the same line as high walls, from beside the south-west building (y -17.6) up
+    # to the west annexe (y -5.2, its end in the annexe's wall), the shop and the passage south of it outside.
+    t = d.t
+    items, _, added = add_line(t, d.tiers[3], (-14.6, -17.6), (-14.6, -5.2), out=270.0)
+    d.tiers[3] = items
+    d.fixes = {4: [f"T4 (round 2): a wall on the user's T3 west face line, x -14.6 from y -17.6 to -5.2: {len(added)} walls, joints {relay_line.joint:.2f} m: {added}"]}
 
 
 @site("Chalkeia")
@@ -723,8 +769,27 @@ def chalkeia(d):
                    f"{len(added_w)} walls, joints {jw:.2f} m; removed {gone_w}; added {added_w}",
                    f"T4: the north wall re-laid from the new corner (x -23.4) to its east end (x -4.51): {len(added_n)} walls, "
                    f"joints {jn:.2f} m; removed {gone_n}; added {added_n}"]}
-    d.gate(3, "inner", -7.0, -5.6, VEHICLE, slack=1.0, relay="auto", what="west face, onto the track, square in front of the veranda's door bay")
-    d.gate(4, "outer", -11.2, 24.0, VEHICLE, slack=1.0, relay="auto", what="north wall, across the track where it comes in from the north")
+    # Round 2: T3's 3.6 m gate came back closed in the game (round 1 had narrowed the opening with a 1-high block
+    # beside it; the door bay's steps come down right behind it): the H-barrier in front of the door bay comes out
+    # whole and nothing goes back, a 4.25 m opening between the face's own pieces
+    d.mark(3, "inner", -7.0, -6.085, 4.25, 0.0, removed=[(-7.0, -6.09)],
+           what="west face, onto the track, square in front of the veranda's door bay (the H-barrier there out whole)")
+    # Round 2, T4's ways out:
+    # - west through the garage (doors at both ends, the east one onto the track): the T4 west wall tied into the
+    #   garage's north face, so the garage was part of the line. A wall along the track's west verge from the
+    #   garage's north-east corner down to the south wall shuts the garage and the two shops' east sides out
+    #   (they were in the baseline's line: the user's T4 took out the T3 ring that kept men away from them).
+    items, gone, added = add_line(t, d.tiers[3], (-17.7, -4.9), (-17.7, -28.4), out=270.0)
+    d.tiers[3] = items
+    d.fixes[4].append(f"T4 (round 2): a wall along the track's west verge, x -17.7 from the garage's north-east corner "
+                      f"(y -4.9) to the south wall (y -28.4), shutting the garage and the shops out: {len(added)} walls, "
+                      f"joints {relay_line.joint:.2f} m; added {added}")
+    # - north and south along the track: the track runs on through the south wall too (the top view: it doesn't end
+    #   at the probe's last point), and the game's path finding walks through walls standing on a road (pass 1,
+    #   Kore). So the T4 compound straddles a through road: a gate at each end, the road's width (the second gate's
+    #   reason: the occupier's vehicles use the road both ways, and a wall across it doesn't stop them)
+    d.gate(4, "outer", -13.0, 24.0, 6.4, slack=0.5, relay="auto", what="north wall, across the track where it comes in from the north (the road's width)")
+    d.gate(4, "outer", -10.0, -28.0, 6.0, slack=0.5, relay="auto", what="south wall, across the track where it runs on south (the road's width): the second gate")
 
 
 # ---------------------------------------------------------------- run
