@@ -94,7 +94,14 @@
             // where a spot by a door may be outside a line run tight across the front), then its exits and sides
             private _start = [];
             private _site = (nearestObjects [ASLToAGL _pos, [_class], 3, true]) param [0, objNull];
-            if (!isNull _site) then {
+            // Where the search lands outside the rings (behind the house, inside a neighbour's box), a fixed start by
+            // the main door (office model [x, y], the designers' word)
+            private _fixed = (createHashMapFromArray [["Athira", [-3.3, -8.8]], ["Zaros", [-5, 2.5]]]) getOrDefault [_town, []];
+            if (!isNull _site && { _fixed isNotEqualTo [] }) then {
+                _start = _site modelToWorld (_fixed + [0]);
+                _start set [2, 0];
+            };
+            if (!isNull _site && { _start isEqualTo [] }) then {
                 (boundingBoxReal _site) params ["_mn", "_mx"];
                 private _spots = [_site buildingPos -1, [], { _x select 2 }, "ASCEND"] call BIS_fnc_sortBy;
                 _spots = _spots select [0, 4];
