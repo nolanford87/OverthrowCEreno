@@ -11,7 +11,8 @@
 
     Usage: ([_town] call OT_fnc_officeLayout) params ["_office", "_tiers"];
 
-    Returns: ARRAY - [office, [tier 1 snapshot, ..., tier 5 snapshot]], [] for a town without one
+    Returns: ARRAY - [office, [tier 1 snapshot, ..., tier 5 snapshot], confirmed, bracket], [] for a town
+        without one; bracket: the population bracket it was authored for (OT_fnc_officeBracket), 0 for none
         office: [class, position ASL, direction, spawned (not a map building)]
         snapshot: [[kind, what, position ASL, orientation, extra], ...], [] for a tier not authored;
             kind "guard" (what: a role, OT_fnc_officeGuardClass; orientation: direction) or "object"

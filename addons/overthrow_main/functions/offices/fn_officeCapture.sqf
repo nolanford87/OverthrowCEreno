@@ -62,7 +62,7 @@ if !(server getVariable [_held, false]) then {
 };
 
 // A small town (under 100 people) is the resistance's with its office, no counter-attack
-if ((server getVariable [_held, false]) && { (server getVariable [format ["population%1", _town], 100]) < 100 } && { !(_town in (server getVariable ["NATOabandoned", []])) }) then {
+if ((server getVariable [_held, false]) && { ([_town] call OT_fnc_officeBracket) <= 2 } && { !(_town in (server getVariable ["NATOabandoned", []])) }) then {
     private _abandoned = server getVariable ["NATOabandoned", []];
     _abandoned pushBack _town;
     server setVariable ["NATOabandoned", _abandoned, true];

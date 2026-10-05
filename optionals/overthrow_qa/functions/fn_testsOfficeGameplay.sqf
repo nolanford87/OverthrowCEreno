@@ -23,10 +23,10 @@
 "Office: save while the office is held (before the QRF) and load: the guards don't come back and the QRF still comes" call OTQA_fnc_manual;
 "Office: a QRF for the office that runs out (13 minutes with none of theirs left near, or 30) is a resistance win" call OTQA_fnc_manual;
 
-// Towns with an office layout, farthest from the host first (of 100 people or more, or under 100 with _small)
+// Towns with an office layout, farthest from the host first (locked at 100 people or more, or under 100 with _small)
 OTQA_og_towns = {
     params [["_small", false]];
-    private _towns = OT_allTowns select { ([_x] call OT_fnc_officeLayout) isNotEqualTo [] && { ((server getVariable [format ["population%1", _x], 0]) < 100) isEqualTo _small } };
+    private _towns = OT_allTowns select { ([_x] call OT_fnc_officeLayout) isNotEqualTo [] && { (([_x] call OT_fnc_officeBracket) <= 2) isEqualTo _small } };
     [_towns, [], { (server getVariable [_x, [0, 0, 0]]) distance2D player }, "DESCEND"] call BIS_fnc_sortBy;
 };
 OTQA_og_officePos = { ASLToAGL ((([_this] call OT_fnc_officeLayout) select 0) select 1) };
@@ -78,31 +78,45 @@ private _tests = [];
 _tests pushBack ["Office: the tier by population bracket, capped", {
     // A town whose layout goes to tier 5
     private _town = (OT_allTowns select { count ((([_x] call OT_fnc_officeLayout) param [1, []]) select { _x isNotEqualTo [] }) isEqualTo 5 }) param [0, "Pyrgos"];
+    private _layout = OT_officeLayouts get _town;
+    private _keepBracket = _layout param [3, 0];
     private _keepPop = server getVariable [format ["population%1", _town], 0];
     private _keepTier = server getVariable [format ["officetier%1", _town], 0];
     private _got = [];
     server setVariable [format ["officetier%1", _town], nil];
     {
-        server setVariable [format ["population%1", _town], _x];
+        _layout set [3, _x];
         _got pushBack ([_town] call OT_fnc_officeTier);
-    } forEach [30, 70, 150, 300, 500];
+    } forEach [1, 2, 3, 4, 5];
+    // Locked: this game's population doesn't move it
+    _layout set [3, 2];
+    server setVariable [format ["population%1", _town], 500];
+    private _lockedTier = [_town] call OT_fnc_officeTier;
     // Raised above its bracket + 1
-    server setVariable [format ["population%1", _town], 30];
     server setVariable [format ["officetier%1", _town], 5];
     private _capped = [_town] call OT_fnc_officeTier;
+    // A layout without a locked bracket goes by the population
+    _layout set [3, 0];
+    server setVariable [format ["officetier%1", _town], nil];
+    private _byPop = [_town] call OT_fnc_officeTier;
+    _layout set [3, _keepBracket];
     server setVariable [format ["population%1", _town], _keepPop];
     server setVariable [format ["officetier%1", _town], [_keepTier, nil] select (_keepTier isEqualTo 0)];
     ["Tier: starts by bracket (1, 1, 2, 3, 4)", _got isEqualTo [1, 1, 2, 3, 4], str _got] call OTQA_fnc_check;
-    ["Tier: never above bracket + 1", _capped isEqualTo 2, str _capped] call OTQA_fnc_check;
+    ["Tier: the locked bracket, not this game's population", _lockedTier isEqualTo 1, format ["%1, bracket 2 at 500 people: %2", _town, _lockedTier]] call OTQA_fnc_check;
+    ["Tier: never above bracket + 1", _capped isEqualTo 3, str _capped] call OTQA_fnc_check;
+    ["Tier: by the population without a locked bracket", _byPop isEqualTo 4, format ["500 people: %1", _byPop]] call OTQA_fnc_check;
+    ["Tier: every layout has its bracket locked", (values OT_officeLayouts) findIf { (_x param [3, 0]) isEqualTo 0 } isEqualTo -1, str ((keys OT_officeLayouts) select { ((OT_officeLayouts get _x) param [3, 0]) isEqualTo 0 })] call OTQA_fnc_check;
     // A layout's top tier caps it too
     private _small = ([true] call OTQA_og_towns) select { count ((([_x] call OT_fnc_officeLayout) select 1) select { _x isNotEqualTo [] }) isEqualTo 2 };
     if (_small isEqualTo []) exitWith { ["Tier: a two-tier layout to cap", false, "none"] call OTQA_fnc_check };
     private _t = _small select 0;
-    private _pop = server getVariable [format ["population%1", _t], 0];
-    server setVariable [format ["population%1", _t], 500];
+    private _l = OT_officeLayouts get _t;
+    private _b = _l param [3, 0];
+    _l set [3, 5];
     private _top = [_t] call OT_fnc_officeTier;
-    server setVariable [format ["population%1", _t], _pop];
-    ["Tier: never above the layout's top tier", _top isEqualTo 2, format ["%1 at 500 people: %2", _t, _top]] call OTQA_fnc_check;
+    _l set [3, _b];
+    ["Tier: never above the layout's top tier", _top isEqualTo 2, format ["%1 at bracket 5: %2", _t, _top]] call OTQA_fnc_check;
 }, 10];
 
 _tests pushBack ["Office: the spawner, guards only while it's the occupier's", {

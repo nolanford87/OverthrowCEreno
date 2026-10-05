@@ -44,7 +44,7 @@ OTQA_townLayout_candidates = createHashMapFromArray [
 // A town's population bracket (the review's), and the highest tier its office reaches: the bracket + 1, at most 5
 OTQA_townLayout_bracket = {
     params ["_town"];
-    [server getVariable [format ["population%1", _town], 0]] call OTQA_officeReview_bracket
+    [_town] call OT_fnc_officeBracket
 };
 OTQA_townLayout_cap = {
     params ["_town"];
@@ -385,7 +385,14 @@ OTQA_townLayout_profileVar = { format ["OTQA_townLayouts_%1", worldName] };
 OTQA_townLayout_confirmedVar = { format ["OTQA_townLayoutsConfirmed_%1", worldName] };
 OTQA_townLayout_loadProfile = {
     [""] call OT_fnc_officeLayout; // The mod's layouts read first (OT_officeLayouts)
-    { _x params ["_town", "_layout"]; OT_officeLayouts set [_town, _layout] } forEach (profileNamespace getVariable [call OTQA_townLayout_profileVar, []]);
+    // The mod's locked bracket kept over the profile's (saved before brackets were locked, or from that game's population)
+    {
+        _x params ["_town", "_layout"];
+        private _locked = ([_town] call OT_fnc_officeLayout) param [3, 0];
+        _layout = +_layout;
+        if (_locked > 0) then { _layout set [3, _locked] };
+        OT_officeLayouts set [_town, _layout];
+    } forEach (profileNamespace getVariable [call OTQA_townLayout_profileVar, []]);
 };
 OTQA_townLayout_storeProfile = {
     params ["_town"];
@@ -477,7 +484,7 @@ OTQA_townLayout_save = {
     private _layout = [_town] call OT_fnc_officeLayout;
     private _tiers = if (_layout isEqualTo []) then { [[], [], [], [], []] } else { +(_layout select 1) };
     _tiers set [_tier - 1, _items];
-    OT_officeLayouts set [_town, [[typeOf _b, getPosASL _b, getDir _b, _spawned], _tiers, _layout param [2, false]]];
+    OT_officeLayouts set [_town, [[typeOf _b, getPosASL _b, getDir _b, _spawned], _tiers, _layout param [2, false], [_town] call OT_fnc_officeBracket]];
     [_town] call OTQA_townLayout_storeProfile;
     private _recent = (OTQA_townLayout getOrDefault ["recent", []]) - [_town];
     _recent pushBack _town;

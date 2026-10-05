@@ -22,9 +22,10 @@ Read first: `CLAUDE.md`, `tools/officegen/DESIGN_BRIEF.md` (its passes section),
 | 4 | A **sizeable outer perimeter of high walls** round the whole compound (its yards and the cluster of buildings round the office). Keep the T3 ring as the inner line. A hard take for the player. | `Land_Mil_WallBig_4m_F` (+ corner), `Land_HBarrierWall4_F` `Wall6_F` `Wall_corner_F`, `Land_CncWall4_F` `CncWall1_F`; H-barriers to fill |
 | 5 | An absolute walled garden, a Fort Knox: T4 plus the T3 ring raised to high walls too, so there are two complete high-walled rings with ground between them. | as T4 |
 
-- A town only goes up to its own top tier (its population bracket + 1), **but author one tier above that cap**.
-  Populations change from game to game, so a town can cross into the next bracket (Neri: 85 at the probe, over 100 in
-  a later game), and its office stops at the highest tier its layout has. Villages get a T4, towns a T5.
+- A town only goes up to its own top tier: its population bracket + 1, as the probe gives it
+  (`OTTOWN|town|HEAD|...|population|bracket|cap`). Populations are rolled anew each game, so the bracket is
+  **locked at the probe's** (`merge_layouts.py` writes it into the data, `OT_fnc_officeBracket` reads it): author up
+  to the probe's cap, no further.
 - **At T4 every wall is upgraded to high walls**: the perimeter, and the existing walls the ring ties into (raised or
   lined with high walls), not only the new outer line. (The user's rule, set after Altis.)
 - Snapshots are full, but a tier **may drop pieces of the one below** (e.g. T2's door bags where the T3 ring stands).
