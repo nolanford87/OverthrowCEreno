@@ -81,10 +81,14 @@ TOWNS = {
     # pieces 2-high, on the ground or dropped) was on the probe's track (centre y 20, 10 m wide): the game walks a man
     # through pieces on it, as at Kore. So nothing stands on it: the front line runs at y 13.2 (its outer face at 14.5)
     # from the left line to the shop's front corner, and the shop stays outside, its south side shut off by a line
-    # from the house's east wall (the 0.3 m between the house, the shop and that line's end is too narrow for a man)
+    # from the house's east wall (the 0.3 m between the house, the shop and that line's end is too narrow for a man).
+    # Round 7: the way out of the back door started at (-0.9, -12.2), beyond the back line, as at Alikampos, Selakano
+    # and Stavros: the back line steps out round it, x -5.4..0.3 to y -13.5, short of the house behind (its roof's
+    # corner at about (0.5, -13.7) in the top view; its probe box, reaching (2, -12), is no barrier)
     "Neri": {"road_margin": 0.0, "window": False, "steps": (-6.0, 4.0, 1.0), "plug": False,
-             "walls": [("Land_u_Shop_01_V1_F", (5.6, 13.8, 0.5, 12.2), (5.6, 13.8, 0.5, 12.2)), ("Land_i_Addon_04_V1_F", (-2.4, 4.3, 5.5, 11.8))],
-             "poly": [(-10, -10.5), (9.6, -10.5), (9.6, -7.8), (15.3, -7.8), (15.3, -0.85), (5.5, -0.85), (5.5, 13.2), (-10, 13.2)], "tall": True},
+             "walls": [("Land_u_Shop_01_V1_F", (5.6, 13.8, 0.5, 12.2), (5.6, 13.8, 0.5, 12.2)), ("Land_i_Addon_04_V1_F", (-2.4, 4.3, 5.5, 11.8)),
+                       ("Land_u_House_Big_01_V1_F", None, (-3, 7, -28, -18))],
+             "poly": [(-10, -10.5), (-5.4, -10.5), (-5.4, -13.5), (0.3, -13.5), (0.3, -10.5), (9.6, -10.5), (9.6, -7.8), (15.3, -7.8), (15.3, -0.85), (5.5, -0.85), (5.5, 13.2), (-10, 13.2)], "tall": True},
     "Poliakko": {"poly": [(-18, -13), (7.3, -13), (7.3, 9.6), (-10.6, 9.6), (-10.6, 6.9), (-18, 6.9)], "tall": True},
     "Selakano": {"exit_back": True, "road_margin": 0.0, "poly": [(-17.5, -10.3), (-5.4, -10.3), (-5.4, -13.5), (4.4, -13.5), (4.4, -10.3), (15.5, -10.3), (15.5, 12), (-17.5, 12)],
                  "tall": True},
@@ -198,7 +202,6 @@ class Site:
             cx, cy = (b[0] + b[2]) / 2, (b[1] + b[3]) / 2
             dx, dy = tl.rot(cx, cy, o["dir"])
             m = t.to_model([o["pos"][0] + dx, o["pos"][1] + dy, 0])
-            self.names.append(o["model"])
             md = (o["dir"] - t.dir) % 360
             hx, hy = (b[2] - b[0]) / 2, (b[3] - b[1]) / 2
             ax, ay = tl.rot(1, 0, md), tl.rot(0, 1, md)
@@ -214,8 +217,10 @@ class Site:
                 # Its real walls as the top view shows them (the probe's box takes in its eaves, porches and steps)
                 x0, x1, y0, y1 = seen
                 self.rects.append(("real building", [(x, y) for x in (x0, x1) for y in (y0, y1)]))
+                self.names.append(o["model"])
                 self.walls.append(o["model"])
                 continue
+            self.names.append(o["model"])
             self.rects.append((o["kind"] if not real else "real " + o["kind"], [(m[0] + sx * hx * ax[0] + sy * hy * ay[0], m[1] + sx * hx * ax[1] + sy * hy * ay[1])
                                           for sx in (-1, 1) for sy in (-1, 1)]))
 
