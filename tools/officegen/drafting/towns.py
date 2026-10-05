@@ -1175,7 +1175,8 @@ def agios_dionysios(d, tier):
 
 
 @site("Chalkeia", entry="W", nest=(-11.0, -2.0, 0), nest_road=True, flag=(-10.0, -9.0), spare=[], side_out=2.6,
-      trims=[("Land_u_Shop_01_V1_F", (-15.5, -16.0), 3.0), ("Land_i_Shop_02_V2_F", (-18.4, -28.0), 2.2)])  # Round 1's screenshot: the shop's box runs 3 m past its east wall at the yard's corner, the south shop's 2 m
+      trims=[("Land_u_Shop_01_V1_F", (-15.5, -16.0), 3.0), ("Land_i_Shop_02_V2_F", (-18.4, -28.0), 2.2),
+             ("Land_d_House_Small_01_V1_F", (1.5, 20.0), 5.0), ("Land_d_House_Small_01_V1_F", (12.0, 30.0), 8.0)])  # Round 1's screenshot: the shop's box runs 3 m past its east wall at the yard's corner, the south shop's 2 m; round 2's: the ruin's rubble covers x 6-18, y 10-23 of its box (round 2's routes went round its west and north sides)
 def chalkeia(d, tier):
     # A dead-end track runs down from the north just west of the veranda and stops at a shop and a garage south-
     # west; an annexe abuts the house's north side and a ruin closes the north-east; a house abuts the east side's
@@ -1184,16 +1185,17 @@ def chalkeia(d, tier):
     # to the shop, the south face from the shop across the open ground past the east house to the big rock, and
     # the east side from the annexe round the east house's yard to the rock. The
     # guns look up the track (the long field). The way in: from the open ground west, through the west gate.
-    if tier == 3:  # (pass 1: off the low stone walls; the east yard closed against the annexe, not the ruin)
-        d.run("west", (-17.0, -17.3), (-17.0, 12.0), ends=("corner", "corner"))  # (round 2: down to its own corner with the south face: the shop's box there is open yard)
-        d.run("north", (-17.0, 12.0), (-2.0, 12.0), ends=("tie", "tie"))
-        # (round 2: no line ends on the office, whose south and east walls have its doors: the ring goes round the
-        # east house (its doors pass 1's route used are all inside now): from the annexe east past the ruin's south
-        # side (the ruin is open, round 1b's tier 2 route crossed it), down to the big rock, and the south face on
-        # east, just north of the old stone wall's end, into the rock)
-        d.run("south", (-17.0, -17.3), (16.0, -17.3), ends=("tie", "tie"))
-        d.run("e_n", (5.5, 9.0), (17.2, 9.0), ends=("tie", "corner"), out=0)
-        d.run("east", (17.2, 9.0), (17.2, -4.5), ends=("tie", "tie"), out=90)
+    if tier == 3:  # (round 3: round 2's ways out: a man's route keeps to the track's lanes, 3.5-4 m off its middle,
+        # and went straight through the north and south faces where they crossed it, and from the house through the
+        # annexe (its rooms meet the house's) and out of its north door, round the ruin's rubble. The ring now
+        # keeps the track outside: the west face east of it, clear of the veranda steps' foot, the north face north
+        # of the annexe's door into the rubble's west side (the rubble and the big rock close the north-east), the
+        # east face from that rock to the one south, and the south face from the west face to the rock. No line
+        # ends on the office.)
+        d.run("west", (-7.0, -17.3), (-7.0, 17.4), ends=("corner", "corner"))
+        d.run("north", (-7.0, 17.4), (9.0, 17.4), ends=("tie", "tie"), out=0)
+        d.run("south", (-7.0, -17.3), (16.0, -17.3), ends=("tie", "tie"))
+        d.run("east", (17.2, 11.0), (17.2, -4.5), ends=("tie", "tie"), out=90)
     if tier == 4:  # The outer ring: the shops and garage west and south-west, the big house north-west, the shop, the
         # ruin and the two big rocks north-east and east; runs close the gaps between them (each tie met at 55 degrees
         # or more); the south face steps round the low stone wall's end onto the south annexe
@@ -1201,6 +1203,7 @@ def chalkeia(d, tier):
         d.run("o_w", (-24.0, -5.0), (-24.0, 15.5), ends=("tie", "tie"), fill=W, out=270)
         d.run("o_n", (-24.0, 24.0), (-5.0, 24.0), ends=("tie", "corner"), fill=W, out=0)
         d.run("o_ne", (-5.0, 24.0), (-5.0, 29.5), ends=("tie", "tie"), fill=W, out=270)
+        d.run("o_nr", (9.0, 26.0), (9.0, 23.0), ends=("tie", "tie"), fill=W, out=90)  # (round 3: from the shop down to the rubble: north of it the ruin is open)
         d.run("o_e", (19.0, 10.0), (19.0, -3.5), ends=("tie", "tie"), fill=W, out=90)  # (round 2: 1 m out, clear of T3's new east face)
         d.run("o_s_w", (-18.4, -28.0), (3.5, -28.0), ends=("tie", "corner"), fill=W, out=180)
         d.run("o_s_m", (3.5, -28.0), (3.5, -30.4), ends=("tie", "tie"), fill=W, out=90)
@@ -1271,7 +1274,7 @@ def kalochori(d, tier):
         d.run("o_n", (3.5, 14.8), (5.37, 17.38), ends=("tie", "tie"), fill=W, out=315)
 
 
-@site("Neochori", entry="W", nest=(3.8, -11.5, 180), flag=(4.0, -8.8), spare=[], shared=("west",),
+@site("Neochori", entry="W", nest=(3.8, -11.5, 180), flag=(4.0, -8.8), spare=[], shared=("west", "west_n"),
       trims=[("Land_u_Shop_01_V1_F", (13.0, 22.5), 3.5), ("Land_u_Shop_01_V1_F", (6.3, 31.3), 5.9)])  # The north shop's box runs 3.5 m past its south-west wall and 6 m past its north-west wall (round 1's screenshot)
 def neochori(d, tier):
     # The main road runs north-south right along the veranda (no room for a gate box on it); a big garage and a
@@ -1283,10 +1286,16 @@ def neochori(d, tier):
     # The guns fire south-east through the gap between the south house and the garage, and up the road north.
     if tier == 3:  # (round 2: a box of its own round the house: pass 1's ring went into the garage and out of it,
         # and round its corners)
-        d.run("west", (-6.2, -11.0), (-6.2, 14.0), ends=("corner", "corner"))
-        d.run("north", (-6.2, 14.0), (10.5, 14.0), ends=("tie", "corner"))
+        # (round 3: every round 2 route left by the main door, across the veranda and down its steps (in front of
+        # the door, y -6) to their foot at x -5.7, which stood inside the west face's band, by a joint; the face now
+        # stands clear of the steps' foot, as far out as the road's paved core allows, with a piece's middle in
+        # front of them, as Kalochori's, which held; north of the veranda it steps back to the old line, where the
+        # road bends in)
+        d.run("west", (-7.0, -11.0), (-7.0, -3.5), ends=("corner", "corner"))
+        d.run("west_n", (-6.3, -3.5), (-6.3, 14.0), ends=("tie", "corner"))
+        d.run("north", (-6.3, 14.0), (10.5, 14.0), ends=("tie", "corner"))
         d.run("east", (10.5, 14.0), (10.5, -11.0), ends=("tie", "corner"))
-        d.run("south", (10.5, -11.0), (-6.2, -11.0), ends=("tie", "tie"))
+        d.run("south", (10.5, -11.0), (-7.0, -11.0), ends=("tie", "tie"))
     if tier == 4:  # The outer ring: the main road leaves no room west, so the inner ring's west face is the outer line
         # there too (stacked 2-high), carried on south along the verge into the south house and north along it past
         # the plaza's low-walled garden; a wall from there east into the north shop's real north-west wall (its box runs
@@ -1294,13 +1303,13 @@ def neochori(d, tier):
         # a wall runs east and down past the big east house and back west north of the south-east annexe to the old
         # city wall, so the garage and the big house (whose doors pass 1's routes used) are inside
         W = WALL_FILL
-        d.stack("west")
+        d.stack("west", "west_n")
         # (round 2: round 1b's route went past o_w2's end into the south-west house's box, which runs 3 m past the
         # house's west wall: o_w2 now turns short into the old city wall, which runs on into the house)
-        d.run("o_w2", (-6.2, -11.9), (-6.2, -14.5), ends=("tie", "corner"), fill=W, out=270)
-        d.run("o_w3", (-6.2, -14.5), (-4.3, -14.5), ends=("tie", "tie"), fill=W, out=180)
-        d.run("o_wn", (-6.2, 14.9), (-6.2, 29.0), ends=("tie", "corner"), fill=W, out=270)
-        d.run("o_n", (-6.2, 29.0), (12.5, 29.0), ends=("tie", "tie"), fill=W, out=0)
+        d.run("o_w2", (-7.0, -11.9), (-7.0, -14.5), ends=("tie", "corner"), fill=W, out=270)
+        d.run("o_w3", (-7.0, -14.5), (-4.3, -14.5), ends=("tie", "tie"), fill=W, out=180)
+        d.run("o_wn", (-6.3, 14.9), (-6.3, 29.0), ends=("tie", "corner"), fill=W, out=270)
+        d.run("o_n", (-6.3, 29.0), (12.5, 29.0), ends=("tie", "tie"), fill=W, out=0)
         d.run("o_ne", (23.8, 21.0), (36.5, 21.0), ends=("tie", "corner"), fill=W, out=0)
         d.run("o_e", (36.5, 21.0), (36.5, -13.5), ends=("tie", "corner"), fill=W, out=90)
         d.run("o_s", (36.5, -13.5), (-3.8, -13.5), ends=("tie", "tie"), fill=W, out=180)
@@ -1316,9 +1325,11 @@ def panochori(d, tier):
     # out of the east yard's north end.
     if tier == 3:  # (pass 1: the east yard's walls are low stone walls: the yard is lined inside them; the south face
         # runs into the big south-west house's north-east face)
-        d.run("south", (10.6, -12.5), (-7.8, -12.5), ends=("corner", "tie"))
-        d.run("west", (-7.0, -12.5), (-7.0, 10.0), ends=("tie", "corner"))  # (0.8 m further off the veranda: round 1 measured its pieces cutting into the office)
-        d.run("nw", (-7.0, 10.0), (-1.0, 10.0), ends=("tie", "tie"))  # (1.3 m off the house: round 4 measured 1-high pieces 0.35 m off it cutting in)
+        # (round 3: two HBarrier_5 still cut into the office at x -7.0: the ground falls 1.8 m from the floor to
+        # there, baring the office's foundation, whose box reaches x -7.9; the west face now stands clear of it)
+        d.run("south", (10.6, -12.5), (-8.2, -12.5), ends=("corner", "tie"))
+        d.run("west", (-8.2, -12.5), (-8.2, 10.0), ends=("tie", "corner"))
+        d.run("nw", (-8.2, 10.0), (-1.0, 10.0), ends=("tie", "tie"))  # (1.3 m off the house: round 4 measured 1-high pieces 0.35 m off it cutting in)
         d.run("ne", (6.7, 10.5), (10.6, 10.5), ends=("tie", "corner"))
         d.run("east", (10.6, 10.5), (10.6, -12.5), ends=("tie", "tie"))
     if tier == 4:  # The outer ring: west across the track (into the big south-west house's north face), north along
@@ -1347,11 +1358,16 @@ def paros(d, tier):
     if tier == 3:  # (round 2: the big north house is 5 m shorter than its box at both ends: the west face turns into
         # its real west end, and the north yard is closed by an L from the east house up and across into its real
         # east end; the south-west run goes 2.4 m deeper, to the south house's real wall)
-        d.run("west", (-9.5, -13.0), (-9.5, 20.0), ends=("corner", "corner"))
+        # (round 3: round 2's routes went through both houses, in at one door and out at another: from the north
+        # yard into the big north house and out of its far end, and from the side door's yard into the east house
+        # and out of its south side. Neither house is part of the ring now: the north face runs just off the
+        # office's north wall (which has no door), leaving the north yard, the broken old wall and the big house
+        # outside, and a run along the east house's north wall shuts its door off from the side door's yard)
+        d.run("west", (-9.5, -13.0), (-9.5, 8.8), ends=("corner", "corner"))
         d.run("sw", (-9.5, -13.0), (-5.5, -13.0), ends=("tie", "tie"))
-        d.run("nw", (-9.5, 20.0), (-5.0, 20.0), ends=("tie", "tie"))
-        d.run("ne1", (12.5, 3.0), (12.5, 22.0), ends=("tie", "corner"))
-        d.run("ne2", (12.5, 22.0), (6.0, 22.0), ends=("tie", "tie"))
+        d.run("north", (-9.5, 8.8), (12.5, 8.8), ends=("tie", "corner"), out=0)
+        d.run("eh", (13.3, 4.4), (5.7, 4.4), ends=("corner", "free"), out=180)  # (its free end 0.4 m off the office, beside the side door)
+        d.run("ne1", (12.5, 8.8), (12.5, 4.4), ends=("tie", "tie"), out=90)
     if tier == 4:  # The outer ring: west of the track (clear of the main road south-west), into the big north house
         # and the south house; north and east the big houses, the shed, the garage, the old city walls and the shops
         # close it, with a wall in the one gap in the old city wall east
@@ -1360,6 +1376,9 @@ def paros(d, tier):
         d.run("o_w", (-18.0, -15.8), (-18.0, 23.0), ends=("tie", "corner"), fill=W, out=270)
         d.run("o_n", (-18.0, 23.0), (-5.5, 23.0), ends=("tie", "tie"), fill=W, out=0)
         d.run("o_e", (36.9, 4.6), (38.15, 8.6), ends=("tie", "tie"), fill=W, out=17)
+        # (round 3: round 2's route went out of the big north house's east end and round the old city wall's end
+        # pillar: a wall from the pillar to the next stretch of city wall)
+        d.run("o_ne", (13.0, 26.35), (18.0, 25.55), ends=("tie", "tie"), fill=W, out=0)
 
 
 @site("Rodopoli", entry="W", nest=(-9.0, -1.8, 270), flag=(-9.0, 8.0), spare=[], fit="box")
