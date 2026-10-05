@@ -1366,10 +1366,12 @@ def paros(d, tier):
         d.run("west", (-9.5, -13.0), (-9.5, 8.8), ends=("corner", "corner"))
         d.run("sw", (-9.5, -13.0), (-5.5, -13.0), ends=("tie", "tie"))
         d.run("north", (-9.5, 8.8), (12.5, 8.8), ends=("tie", "corner"), out=0)
-        # (round 4: the east house's door steps (x 5.6-7.2) sit in the corner by the office's side door, under
-        # round 3's free end, and the routes went down them: the run now starts 0.15 m off the office with a whole
-        # HBarrier_5, its middle over the steps, as Kalochori's in front of the office's own steps)
-        d.run("eh", (5.8, 4.4), (14.8, 4.4), ends=("free", "corner"), out=180)
+        # (round 5: the east house's door steps (x 5.6-7.2, y 3.5-4.0 on round 1's screenshot) open into the corner by
+        # the office's side door, and a whole HBarrier_5 standing over them (round 4) didn't stop the route down
+        # them: a long sandbag stands on the steps themselves, across them from the office's wall, dropped onto the
+        # treads in the game, and the run along the house's north wall starts east of the steps, overlapping it)
+        d.add("object", "Land_BagFence_Long_F", 7.2, 3.75, 180, z=d.t.ground_model(7.2, 3.75) + 1.4)
+        d.run("eh", (8.0, 4.4), (14.8, 4.4), ends=("free", "corner"), out=180)
         d.run("ne1", (12.5, 8.8), (12.5, 4.4), ends=("tie", "tie"), out=90)
     if tier == 4:  # The outer ring: west of the track (clear of the main road south-west), into the big north house
         # and the south house; north and east the big houses, the shed, the garage, the old city walls and the shops
