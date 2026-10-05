@@ -232,7 +232,8 @@
                 } forEach _statics;
 
                 diag_log format ["OTCHECK|%1|%2|%3|%4|%5|%6|%7|%8|%9|%10|%11|%12|%13", _town, _tier, count _items, count _guards, count _props, count _statics,
-                    ({ !((_x select 0) in ["hide", "gate"]) } count _items) - (count _objects) - (count _guards), _clips, // Markers make nothing _floating, _moved, _blind, _blocked, (_views param [floor ((count _views) / 2), 0]) call _r1];
+                    ({ !((_x select 0) in ["hide", "gate"]) } count _items) - (count _objects) - (count _guards), // Markers make nothing
+                    _clips, _floating, _moved, _blind, _blocked, (_views param [floor ((count _views) / 2), 0]) call _r1];
 
                 // Closure: can a man walk out? The engine's own route from the office's door to 8 points 60 m out
                 // (on a road where there's one). A route that gets there is a way out; where it passes closest to the
