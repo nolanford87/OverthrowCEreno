@@ -21,8 +21,8 @@ The gates (the reasons in tools/officegen/review/strongholds/REPORT_pass2a.md):
           T5 inner the same in its Mil line, 3.2 m; T4/T5 outer: the west road's edge (x -41.6) at y 5.6, facing the
           main road's junction, 3.3 m, 10 m south of the inner gate and 30 m out. The west slope (the helipad block's
           west face) left as it is: no wall, no gate.
-  Athira  (round 2) T3/T4 inner: the east line (x 8.8) onto the courtyard, 3.9 m; T4/T5 outer: the x 22 line facing
-          the east track, 4.0 m (3.6 m at T5), 13 m east and 6 m north of the inner gate.
+  Athira  (round 3) T3/T4 inner: the west line (x -6.8) onto the west lot, 3.9 m; T4/T5 outer: the south face at the
+          west lot (x -10), 3.6 m, onto the lane south: 7 m from the inner gate and at right angles to it.
   Zaros   T3: the east line on the main road (x 13.2) opposite the side door (4.9, 5.6, facing east), 4.0 m; T4/T5
           (one ring, the user's): the east face on the road (x 15) at the same place, 3.1 m.
 """
@@ -40,8 +40,8 @@ HB1, HB3, HB5, MIL, LONG = sh.HB1, sh.HB3, sh.HB5, sh.MIL, sh.LONG
 # Where the closure walk starts (inside the innermost ring): the lead's starts, but Kavala's T3 (the user's ring is the
 # forecourt strip on the hospital's west side; the lead's start (13.1, -6.1) is east of the main strip, outside it)
 STARTS = {"Kavala": {3: (-9.85, 9.0), 4: (13.1, -6.1), 5: (13.1, -6.1)},
-          "Athira": {n: (6.5, -0.4) for n in (3, 4, 5)},  # Round 2: the lead's (-3.3, -8.8) failed even at T2 (shut
-          # in by the door's screen and the low city wall); east of the house, just inside the east gate
+          "Athira": {n: (-5.5, -6.6) for n in (3, 4, 5)},  # Round 3: inside the inner west gate, by the veranda (the
+          # bare-site walk gets out from the west side only; (-3.3, -8.8) and the east side don't)
           "Zaros": {n: (-5.0, 2.5) for n in (3, 4, 5)}}
 # With the hospital taken as solid, the lead's start is shut in east of the main strip: the main door's yard instead
 SOLID_STARTS = {"Kavala": {n: (-9.85, 9.0) for n in (3, 4, 5)}}
@@ -96,27 +96,28 @@ def kavala(k):
 
 
 def athira(k):
-    # Round 2 (every gate at least 3.5 m, nothing standing behind it): the gates moved to the east side, the
-    # occupier's way in from the east track (x ~30): the outer ring's x 22 line, the strip north of the courtyard, the
-    # courtyard's opening (x 12.3..17.1), the courtyard, the inner ring's east line. Round 1's south gate (the T2
-    # screen 0.5 m behind it, the low city wall beside it) and T4's west gate (a pocket between the low wall and the
-    # veranda's bags) are gone: those lines stand as the baseline has them.
+    # Round 3: the gates where the bare-site walk gets out. In the game the east side (the courtyard, the house's
+    # east strip) is a dead end with no walls standing at all (round 2), so the way in is from the west lot, which
+    # the bare-site routes cross going west, north and south. Round 2's east gates are gone (the baseline's pieces).
     for n in (3, 4):
-        # The east line (x 8.8): the HB5 at y -0.90 (-3.80..2.00) out, an HB1 back against the HB1 at -4.11 (0.3 m into
-        # it): -3.71..-2.31; the opening -2.31..1.61 (the HB5 at 4.51 starts at 1.61), between the T2 bags at the
-        # east window (to y -3.7) and the side door (from y 2.85), 1.65 m inside the line
-        k.out(n, HB5, 8.80, -0.90, "the inner east line, the gate onto the courtyard")
-        k.add(n, HB1, 8.80, -3.01, 90, "re-fits the line's end south of the gate (0.3 m into the HB1 at y -4.11)")
-        k.gate(n, 8.80, -0.35, 3.9, 0, "the inner east line, facing the courtyard, between the side door's and the east window's bags")
+        # The inner west line (x -6.8): the HB5 at y -7.44 (-10.34..-4.54) out, an HB1 on the corner with the south
+        # line (-10.3..-8.9); the opening -8.9..-5.01 (the HB5 at -2.11 starts at -5.01), facing the west lot, onto the
+        # house's south-west corner and the veranda's open west side
+        k.out(n, HB5, -6.80, -7.44, "the inner west line, the gate onto the west lot")
+        k.add(n, HB1, -6.80, -9.60, 270, "the west line's corner piece south of the gate")
+        k.gate(n, -6.80, -6.95, 3.9, 0, "the inner west line, facing the west lot, onto the veranda's open west side")
+        # The T2 bag along the veranda's south half stands 0.65 m inside the line, across the opening's north part
+        k.out(n, LONG, -5.30, -4.20, "the T2 veranda bag 0.65 m behind the gate's north edge")
     for n in (4, 5):
-        # The outer x 22 line (Mil 7.09..11.19 and 3.39..7.49, the slanting courtyard wall meeting it at y 3.3): the
-        # southern one out, the northern one 0.4 m north (7.49..11.59, its end in the corner with the cap at y 11.33);
-        # the opening from the shop's north-west face's end (y 3.4 at T4; T5's CncWall1 on the joint to y 3.9) to 7.49
-        k.out(n, MIL, 22.00, 5.44, "the outer x 22 line, the gate facing the east track")
-        k.out(n, MIL, 22.00, 9.14, "moved 0.4 m north to widen the opening")
-        k.add(n, MIL, 22.00, 9.54, 90, "the x 22 line north of the gate, its end in the corner with the cap")
-    k.gate(4, 22.00, 5.45, 4.0, 0, "the outer x 22 line, facing the east track, into the strip north of the courtyard")
-    k.gate(5, 22.00, 5.70, 3.6, 0, "the outer x 22 line (T4's gate; the user's CncWall1 on the joint at y 3.25 stays)")
+        # The outer south face (Mil at y -13): the one at x -10.06 out, its neighbours eased apart within their joints
+        # (west one 0.1 m into the corner with the west face, east one 0.15 m: 0.62 m into the next); the opening
+        # -11.82..-8.25, onto the lane south that the bare-site walk takes
+        k.out(n, MIL, -10.06, -13.00, "the outer south face at the west lot, the gate onto the lane south")
+        k.out(n, MIL, -13.77, -13.00, "moved 0.1 m west to widen the opening")
+        k.add(n, MIL, -13.87, -13.00, 180, "the south face west of the gate, its end in the corner with the west face")
+        k.out(n, MIL, -6.35, -13.00, "moved 0.15 m east to widen the opening")
+        k.add(n, MIL, -6.20, -13.00, 180, "the south face east of the gate (0.62 m into the Mil at x -2.72)")
+        k.gate(n, -10.04, -13.00, 3.6, 90, "the outer south face at the west lot's mouth, facing the lane south to the road")
 
 
 def zaros(k):
