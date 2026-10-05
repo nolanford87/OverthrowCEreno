@@ -1,7 +1,7 @@
 /*
     Description:
     The map's own objects a town's mayor's office layout removes at a tier (its "hide" items: a fence, a low
-    wall, a shed, a tree in the way) hidden for everyone, and those the town hid before that the tier keeps
+    wall, a shed, a tree in the way, at that tier or any below it) hidden for everyone, and those the town hid before that the tier keeps
     shown again. Kept per town in OT_officeHidden. Called for every office when the game starts (at its tier),
     by OT_fnc_officeApplyLayout for the tier it puts up, and with tier 0 to bring them all back. Server.
 
@@ -17,7 +17,10 @@
 params [["_town", "", [""]], ["_tier", 0, [0]]];
 
 if (isNil "OT_officeHidden") then { OT_officeHidden = createHashMap };
-private _items = if (_tier < 1) then { [] } else { (([_town] call OT_fnc_officeLayout) param [1, []]) param [(_tier min 5) - 1, []] };
+// A map object removed at a tier stays removed at every tier above it (the user's rule): the tier's own and those below
+private _tiers = ([_town] call OT_fnc_officeLayout) param [1, []];
+private _items = [];
+for "_i" from 0 to ((_tier min 5) - 1) do { _items append (_tiers param [_i, []]) };
 private _now = [];
 {
     _x params ["_kind", "_model", "_at"];
