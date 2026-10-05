@@ -1366,7 +1366,10 @@ def paros(d, tier):
         d.run("west", (-9.5, -13.0), (-9.5, 8.8), ends=("corner", "corner"))
         d.run("sw", (-9.5, -13.0), (-5.5, -13.0), ends=("tie", "tie"))
         d.run("north", (-9.5, 8.8), (12.5, 8.8), ends=("tie", "corner"), out=0)
-        d.run("eh", (13.3, 4.4), (5.7, 4.4), ends=("corner", "free"), out=180)  # (its free end 0.2 m off the office, below the side door)
+        # (round 4: the east house's door steps (x 5.6-7.2) sit in the corner by the office's side door, under
+        # round 3's free end, and the routes went down them: the run now starts 0.15 m off the office with a whole
+        # HBarrier_5, its middle over the steps, as Kalochori's in front of the office's own steps)
+        d.run("eh", (5.8, 4.4), (14.8, 4.4), ends=("free", "corner"), out=180)
         d.run("ne1", (12.5, 8.8), (12.5, 4.4), ends=("tie", "tie"), out=90)
     if tier == 4:  # The outer ring: west of the track (clear of the main road south-west), into the big north house
         # and the south house; north and east the big houses, the shed, the garage, the old city walls and the shops
