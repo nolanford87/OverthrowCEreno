@@ -31,6 +31,19 @@ private _group = grpNull;
         private _p = ASLToATL _at;
         if ("ground" in _extra) then { _p set [2, 0] };
         private _unit = [_what, _p, _orient, _group, _placeholders] call OT_fnc_officeGuard;
+        // A post the garrison generator put (tools/officegen/garrison_gen.py) turned to its longest clear view
+        // within 90 degrees of its way: a window, the bunker's slit, over the wall
+        if ("garrison" in _extra && { !("patrol" in _extra) }) then {
+            private _eye = (getPosASL _unit) vectorAdd [0, 0, 1.6];
+            private _best = [-1, _orient];
+            for "_a" from -90 to 90 step 15 do {
+                private _d = _orient + _a;
+                private _hit = lineIntersectsSurfaces [_eye, _eye vectorAdd [100 * sin _d, 100 * cos _d, 0], _unit, objNull, true, 1, "VIEW", "FIRE"];
+                private _clear = if (_hit isEqualTo []) then { 100 } else { _eye distance ((_hit select 0) select 0) };
+                if (_clear > (_best select 0) + 0.5) then { _best = [_clear, _d] };
+            };
+            _unit setDir (_best select 1);
+        };
         _unit setVariable ["OT_officeItem", _tag + [_forEachIndex, _item]];
         _guards pushBack _unit;
     } else {

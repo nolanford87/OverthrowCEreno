@@ -484,7 +484,9 @@ OTQA_townLayout_save = {
     private _spawned = OTQA_townLayout get "spawned";
     private _items = ((call OTQA_townLayout_live) select { !(_x isKindOf "CAManBase") || { alive _x } }) apply {
         if (_x isKindOf "CAManBase") then {
-            ["guard", [_x] call OTQA_townLayout_role, getPosASL _x, getDir _x, []]
+            // The garrison generator's flags stay (tools/officegen/garrison_gen.py: "patrol", "garrison")
+            private _was = ((_x getVariable ["OT_officeItem", []]) param [3, []]) param [4, []];
+            ["guard", [_x] call OTQA_townLayout_role, getPosASL _x, getDir _x, _was select { _x in ["patrol", "garrison"] }]
         } else {
             private _static = [_x] call OT_fnc_officeStatic;
             if (_static isNotEqualTo "") exitWith { ["static", _static, getPosASL _x, [vectorDir _x, vectorUp _x], []] };
@@ -512,7 +514,7 @@ OTQA_townLayout_save = {
     {
         _x params ["_kind", "_what", "_at", "_orient", "_extra"];
         _lines pushBack (if (_kind isEqualTo "guard") then {
-            format ["OTLAYOUT|%1|%2|ITEM|%3|guard|%4|%5|%6|", worldName, _town, _tier, _what, [_at] call OTQA_townLayout_vec, _orient toFixed 1]
+            format ["OTLAYOUT|%1|%2|ITEM|%3|guard|%4|%5|%6|%7", worldName, _town, _tier, _what, [_at] call OTQA_townLayout_vec, _orient toFixed 1, _extra joinString ","]
         } else {
             format ["OTLAYOUT|%1|%2|ITEM|%3|%9|%4|%5|[%6,%7]|%8", worldName, _town, _tier, _what, [_at] call OTQA_townLayout_vec, [_orient select 0, 4] call OTQA_townLayout_vec, [_orient select 1, 4] call OTQA_townLayout_vec, _extra joinString ",", _kind]
         });
