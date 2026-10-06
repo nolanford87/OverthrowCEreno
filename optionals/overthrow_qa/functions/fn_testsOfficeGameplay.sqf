@@ -1,7 +1,8 @@
 /*
     Description:
     Taking a town by its mayor's office (OT_fnc_officeTier, OT_fnc_spawnOffice, OT_fnc_officeCapture, the
-    office mode of OT_fnc_NATOQRFfight). Part of the current QA tests.
+    office mode of OT_fnc_NATOQRFfight), and the occupier compounds' area, doors and lookouts. Part of the
+    archived QA tests (the compounds' work in progress is in OTQA_fnc_testsCompounds).
     1. Tier: a town starts by its population bracket, never above bracket + 1 or its layout's top tier
     2. Spawner: the layout with crewed guards while the office is the occupier's, without guards once
        the resistance holds it
@@ -17,10 +18,6 @@
        unlocks one; a charge breaches the doors near it and a closed gate, not those farther off
     10. Lookout towers: the trees and bushes within 10 m of Rodopoli's T3 tower cleared at T3 (not saved as the
        layout's hides), back at tier 1
-    11. Gates worked by the occupier: a closed gate opens for an occupier soldier, not for one of ours, shuts
-       10 s after; the town taken opens and unlocks it. An occupier soldier walks out of Rodopoli's T3 compound
-       and back in through its gate shut (the path finding plans no way through a shut gate: it opens for
-       one going somewhere within 40 m)
     Uses towns far from the host, so their spawners stay out of it. The hold, the QRF's set-up and the
     results are shortened or forced (OT_officeHoldTime, OT_QRFsetupTime, OT_QRFforceResult).
 
@@ -32,55 +29,7 @@
 "Office: save while the office is held (before the QRF) and load: the guards don't come back and the QRF still comes" call OTQA_fnc_manual;
 "Office: a QRF for the office that runs out (13 minutes with none of theirs left near, or 30) is a resistance win" call OTQA_fnc_manual;
 
-// Towns with an office layout, farthest from the host first (locked at 100 people or more, or under 100 with _small)
-OTQA_og_towns = {
-    params [["_small", false]];
-    private _towns = OT_allTowns select { ([_x] call OT_fnc_officeLayout) isNotEqualTo [] && { (([_x] call OT_fnc_officeBracket) <= 2) isEqualTo _small } };
-    [_towns, [], { (server getVariable [_x, [0, 0, 0]]) distance2D player }, "DESCEND"] call BIS_fnc_sortBy;
-};
-OTQA_og_officePos = { ASLToAGL ((([_this] call OT_fnc_officeLayout) select 0) select 1) };
-
-// Everything the capture tests change
-OTQA_og_save = {
-    params ["_town"];
-    OT_nextNATOTurn = time + 3600;
-    createHashMapFromArray [
-        ["abandoned", +(server getVariable ["NATOabandoned", []])],
-        ["resources", server getVariable ["NATOresources", 2000]],
-        ["grace", +(server getVariable ["NATOtownGrace", []])],
-        ["lastAttack", server getVariable ["NATOlastattack", 0]],
-        ["stability", server getVariable [format ["stability%1", _town], 50]],
-        ["garrison", server getVariable [format ["garrison%1", _town], 0]]
-    ];
-};
-OTQA_og_restore = {
-    params ["_town", "_saved"];
-    OT_officeHoldTime = nil;
-    OT_QRFsetupTime = nil;
-    OT_QRFforceResult = nil;
-    server setVariable ["NATOabandoned", _saved get "abandoned", true];
-    server setVariable ["NATOresources", _saved get "resources", true];
-    server setVariable ["NATOtownGrace", _saved get "grace", true];
-    server setVariable ["NATOlastattack", _saved get "lastAttack", true];
-    server setVariable [format ["stability%1", _town], _saved get "stability", true];
-    server setVariable [format ["garrison%1", _town], _saved get "garrison", true];
-    server setVariable [format ["officeheld%1", _town], nil, true];
-    OT_nextNATOTurn = time + 120;
-};
-OTQA_og_idle = {
-    private _timeout = time + 60;
-    waitUntil { sleep 1; (server getVariable ["NATOattacking", ""]) isEqualTo "" || { time > _timeout } };
-    (server getVariable ["NATOattacking", ""]) isEqualTo ""
-};
-// One of ours standing in the office
-OTQA_og_ours = {
-    params ["_pos"];
-    private _group = createGroup [independent, true];
-    private _unit = _group createUnit ["I_soldier_F", _pos, [], 0, "CAN_COLLIDE"];
-    _unit allowDamage false;
-    _unit disableAI "MOVE";
-    _unit
-};
+call OTQA_fnc_testsOfficeHelpers;
 
 private _tests = [];
 
@@ -348,98 +297,6 @@ _tests pushBack ["Office: trees cleared round the lookout towers", {
     [_town, [_town] call OT_fnc_officeTier] call OT_fnc_officeHide;
     ["Towers: the trees within 10 m cleared at T3, those farther off kept, apart from the layout's hides", _trees isNotEqualTo [] && _hidden && _farKept && _apart, format ["%1 trees and bushes cleared, %2 farther off kept %3, apart %4", count _trees, count _far, _farKept, _apart]] call OTQA_fnc_check;
     ["Towers: the trees back at tier 1", _back, str _back] call OTQA_fnc_check;
-}, 10];
-
-_tests pushBack ["Office: gates worked by the occupier, open once taken", {
-    private _town = "Rodopoli";
-    private _o = _town call OTQA_og_officePos;
-    private _at = AGLToASL [(_o select 0) + 400, (_o select 1) - 400, 0];
-    (([[["object", "Land_NetFence_01_m_gate_F", _at, [[0, 1, 0], [0, 0, 1]], ["ground"]]], west, false, [_town, 3]] call OT_fnc_officeSpawnItems) select 0) params ["_gate"];
-    private _phase = { _gate animationSourcePhase "Door_1_sound_source" };
-    sleep 2;
-    private _shut0 = (call _phase) < 0.1;
-    private _ours = ([ASLToAGL _at vectorAdd [0, -4, 0]] call OTQA_og_ours);
-    sleep 4;
-    private _notOurs = (call _phase) < 0.1;
-    deleteVehicle _ours;
-    private _grp = createGroup [blufor, true];
-    private _them = _grp createUnit ["B_Soldier_F", ASLToAGL _at vectorAdd [0, -4, 0], [], 0, "CAN_COLLIDE"];
-    _them disableAI "MOVE";
-    _them allowDamage false;
-    sleep 4;
-    private _opened = (call _phase) > 0.9;
-    deleteVehicle _them;
-    sleep 6;
-    private _stillOpen = (call _phase) > 0.9;
-    sleep 8;
-    private _shutAgain = (call _phase) < 0.1 && { (_gate getVariable [format ["bis_disabled_Door_%1", 1], 0]) isEqualTo 1 };
-    ["Gates: shut and locked, not opened for ours, opened for theirs, shut 10 s after", _shut0 && _notOurs && _opened && _stillOpen && _shutAgain, format ["shut %1, ours left it %2, opened %3, open 6 s after %4, shut and locked 14 s after %5", _shut0, _notOurs, _opened, _stillOpen, _shutAgain]] call OTQA_fnc_check;
-    // The town taken: the gate unlocked and swung open
-    server setVariable [format ["officeheld%1", _town], true, true];
-    [_town, 0] call OT_fnc_officeDoors;
-    sleep 2;
-    private _taken = (call _phase) > 0.9 && { (_gate getVariable [format ["bis_disabled_Door_%1", 1], 0]) isEqualTo 0 };
-    server setVariable [format ["officeheld%1", _town], nil, true];
-    [_town, [_town] call OT_fnc_officeTier] call OT_fnc_officeDoors;
-    deleteVehicle _gate;
-    ["Gates: the town taken, its gate unlocked and open", _taken, str _taken] call OTQA_fnc_check;
-}, 60];
-
-_tests pushBack ["Office: the occupier's men walk out and in through a shut gate", {
-    private _town = "Rodopoli";
-    ([_town, 3, west, true] call OT_fnc_officeApplyLayout) params ["", "_objects", "_guards"];
-    private _gate = (_objects select { "gate" in toLower typeOf _x }) param [0, objNull];
-    private _marker = ((([_town] call OT_fnc_officeLayout) select 1) select 2) select { (_x select 0) isEqualTo "gate" };
-    if (isNull _gate || { _marker isEqualTo [] }) exitWith {
-        { deleteVehicle _x } forEach (_objects + _guards);
-        ["Walk: Rodopoli's T3 gate found", false, format ["gate %1, markers %2", _gate, count _marker]] call OTQA_fnc_check;
-    };
-    // The gate shut, locked and worked by the occupier, as a closed gate is in play
-    _gate setVariable ["bis_disabled_Door_1", 1, true];
-    _gate setVariable ["bis_disabled_Door_2", 1, true];
-    _gate setVariable ["OT_officeGate", true, true];
-    _gate enableSimulationGlobal true;
-    [_gate] call OT_fnc_officeGates;
-    private _gp = ASLToAGL ((_marker select 0) select 2);
-    private _hq = _town call OTQA_og_officePos;
-    private _out = (_gp vectorDiff _hq) vectorMultiply (1 / ((_gp distance2D _hq) max 1));
-    private _in = _gp vectorAdd (_out vectorMultiply -10);
-    private _far = _gp vectorAdd (_out vectorMultiply 30);
-    _in set [2, 0];
-    _far set [2, 0];
-    private _walk = {
-        params ["_from", "_to"];
-        sleep 12; // The gate shut again behind the last
-        private _shut = (_gate animationSourcePhase "Door_1_sound_source") < 0.1;
-        private _grp = createGroup [blufor, true];
-        private _man = _grp createUnit ["B_Soldier_F", _from, [], 0, "CAN_COLLIDE"];
-        _man allowDamage false;
-        _grp setBehaviour "AWARE";
-        _man doMove _to;
-        private _t = time + 90;
-        waitUntil { sleep 1; (_man distance2D _to) < 4 || { time > _t } };
-        private _took = round (90 - (_t - time));
-        private _there = (_man distance2D _to) < 4;
-        deleteVehicle _man;
-        [_shut, _there, _took]
-    };
-    private _outward = [_in, _far] call _walk;
-    private _inward = [_far, _in] call _walk;
-    diag_log format ["OTGATEWALK|%1|out %2|in %3", _town, _outward, _inward];
-    { deleteVehicle _x } forEach (_objects + _guards);
-    [_town, [_town] call OT_fnc_officeTier] call OT_fnc_officeHide;
-    [_town, [_town] call OT_fnc_officeTier] call OT_fnc_officeDoors;
-    ["Walk: an occupier soldier gets out through the shut gate", (_outward select 0) && { _outward select 1 }, format ["gate shut first %1, out %2 in %3 s", _outward select 0, _outward select 1, _outward select 2]] call OTQA_fnc_check;
-    ["Walk: an occupier soldier gets in through the shut gate", (_inward select 0) && { _inward select 1 }, format ["gate shut first %1, in %2 in %3 s", _inward select 0, _inward select 1, _inward select 2]] call OTQA_fnc_check;
-}, 240];
-
-_tests pushBack ["Office: static weapons by role", {
-    private _hmg = ["hmg"] call OT_fnc_officeStatic;
-    private _weapon = (getArray (configFile >> "CfgVehicles" >> _hmg >> "Turrets" >> "MainTurret" >> "weapons")) param [0, ""];
-    private _mag = (getArray (configFile >> "CfgWeapons" >> _weapon >> "magazines")) param [0, ""];
-    private _sim = getText (configFile >> "CfgAmmo" >> getText (configFile >> "CfgMagazines" >> _mag >> "ammo") >> "simulation");
-    ["Statics: the hmg role is a machine gun (fires bullets)", _sim isEqualTo "shotBullet", format ["%1 fires %2", _hmg, _sim]] call OTQA_fnc_check;
-    ["Statics: the vanilla AT static reads as at, the HMG as hmg", (["B_static_AT_F"] call OT_fnc_officeStatic) isEqualTo "at" && { (["B_HMG_01_high_F"] call OT_fnc_officeStatic) isEqualTo "hmg" }, format ["AT %1, HMG %2", ["B_static_AT_F"] call OT_fnc_officeStatic, ["B_HMG_01_high_F"] call OT_fnc_officeStatic]] call OTQA_fnc_check;
 }, 10];
 
 _tests pushBack ["Office: the occupier holding it wins the fight", {

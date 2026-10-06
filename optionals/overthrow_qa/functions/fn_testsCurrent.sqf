@@ -10,7 +10,7 @@ private _tests = [];
 {
     _tests append (call _x);
 } forEach [
-    OTQA_fnc_testsOfficeGameplay
+    OTQA_fnc_testsCompounds
 ];
 
 if (_tests isEqualTo []) then {
