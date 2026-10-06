@@ -100,7 +100,7 @@ def load(world="Altis"):
     return blocks
 
 
-def svg(b, path, polygons=None, reach=90, scale=6, marks=None):
+def svg(b, path, polygons=None, reach=90, scale=6, marks=None, pieces=None):
     """A top-down map of the block (north up, the office at the middle, a 10 m grid): roads grey, buildings with
     doors (red dots; buildings nobody can enter pale), walls and fences dark, the office blue, polygons (name ->
     world [x, y] list) drawn over in colour, marks (label -> world [x, y]) as labelled dots."""
@@ -136,6 +136,34 @@ def svg(b, path, polygons=None, reach=90, scale=6, marks=None):
         for k, p in enumerate(poly):
             x, y = P(*p[:2])
             out.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="5" fill="{col}"/><text x="{x + 7:.1f}" y="{y - 7:.1f}" font-size="14" fill="{col}">{name}.{k}</text>')
+    # Layout items: walls and props as their footprints (stacked layers drawn once), gates green, hidden map
+    # objects as crosses
+    sizes = {"Land_HBarrier_5_F": (5.8, 1.7), "Land_HBarrier_3_F": (3.6, 1.7), "Land_HBarrier_1_F": (1.4, 1.5),
+             "Land_Mil_WallBig_4m_F": (4.0, 0.6), "Land_CncWall1_F": (1.4, 1.0), "Land_NetFence_01_m_gate_F": (4.1, 0.3),
+             "Land_Net_Fence_Gate_F": (6.2, 0.3), "Land_BagFence_Long_F": (2.9, 0.5), "Land_BagFence_Short_F": (1.5, 0.5)}
+    seen = set()
+    for it in (pieces or []):
+        kind, cls, pos, ori = it[0], it[1], [float(v) for v in str(it[2]).strip("[]").split(",")], it[3]
+        key = (cls, round(pos[0], 1), round(pos[1], 1))
+        if key in seen:
+            continue
+        seen.add(key)
+        if kind == "hide":
+            x, y = P(*pos[:2])
+            out.append(f'<path d="M{x - 6},{y - 6}L{x + 6},{y + 6}M{x - 6},{y + 6}L{x + 6},{y - 6}" stroke="#9b59b6" stroke-width="3"/>')
+            continue
+        if kind != "object":
+            continue
+        vd = [float(v) for v in str(ori).split("],[")[0].strip("[]").split(",")]
+        ax = (vd[1], -vd[0])
+        l, d = sizes.get(cls, (1.0, 1.0))
+        pts = []
+        for sx, sy in ((-1, -1), (1, -1), (1, 1), (-1, 1)):
+            wx = pos[0] + ax[0] * sx * l / 2 + vd[0] * sy * d / 2
+            wy = pos[1] + ax[1] * sx * l / 2 + vd[1] * sy * d / 2
+            pts.append(P(wx, wy))
+        fill = "#2ecc71" if "_gate" in cls.lower() else ("#8e7d5a" if "HBarrier" in cls else "#555")
+        out.append(f'<polygon points="{" ".join(f"{x:.1f},{y:.1f}" for x, y in pts)}" fill="{fill}" stroke="#222" stroke-width="0.6"/>')
     for label, p in (marks or {}).items():
         x, y = P(*p[:2])
         out.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="6" fill="#111"/><text x="{x + 8:.1f}" y="{y + 5:.1f}" font-size="15" font-weight="bold">{label}</text>')
