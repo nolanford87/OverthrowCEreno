@@ -37,6 +37,10 @@
             _agent addEventHandler ["PathCalculated", { OTQA_pathDone = _this select 1 }];
             private _t = time + 30;
             waitUntil { sleep 0.2; !isNil "OTQA_pathDone" || { time > _t } };
+            // The helper agent calculatePath makes goes again (left standing, hundreds of them block the routes)
+            private _group = group _agent;
+            deleteVehicle _agent;
+            if (!isNull _group) then { deleteGroup _group };
             missionNamespace getVariable ["OTQA_pathDone", []]
         };
         // A route filled in every metre
