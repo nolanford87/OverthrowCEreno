@@ -7,7 +7,9 @@ Generates a town's occupier compound walls (tools/officegen/COMPOUND_PLAN.md) fr
       its road-facing edge nearest the HQ's door;
     - a building on an edge is part of the wall; a door of it opening outside the area is barricaded;
     - the map's walls and fences along an edge are hidden (our wall goes up on their line);
-    - the rest of every edge is 2-high H-barrier (HBarrier_5/3/1, the upper layer 1.4 m up, each pair on the ground).
+    - the rest of every edge is wall: T3 2-high H-barrier (the upper layer 1.4 m up, each pair on the ground) with
+      small concrete wall for the remainders; T4+ mostly the tall military wall, small concrete wall for the
+      remainders, 2-high H-barrier where the ground slopes too much for a rigid panel.
 Writes the tiers into tools/officegen/layouts/<world>.txt and the mod's layout data, and an SVG map of each tier.
 
     python tools/officegen/compound_gen.py "Town" [--world Altis] [--dry]
@@ -24,6 +26,9 @@ import merge_layouts  # noqa: E402
 ROOT = merge_layouts.ROOT
 HB = [("Land_HBarrier_5_F", 5.8), ("Land_HBarrier_3_F", 3.6), ("Land_HBarrier_1_F", 1.4)]
 UPPER = 1.4
+MIL = ("Land_Mil_WallBig_4m_F", 4.0)   # The tall green military wall (T4+)
+MIL_JOINT = 0.1
+CNC = ("Land_CncWall1_F", 1.4)         # The small grey concrete wall (fills a run's remainder)
 JOINT = 0.3          # How far pieces run into each other
 ROAD_CLEAR = 1.0     # A wall's middle line at least this far off a road's edge
 GATE_SMALL, GATE_LARGE = "Land_NetFence_01_m_gate_F", "Land_Net_Fence_Gate_F"
@@ -185,7 +190,7 @@ class Gen:
                 t = max(4, min(L - 4, dot(sub(door, a), norm(sub(b, a)))))
                 m = add(a, mul(norm(sub(b, a)), t))
                 score = math.dist(m, door)
-                if self.on_building(m):
+                if self.on_building(m, 0):
                     continue
                 if best is None or score < best[0]:
                     best = (score, i, t, m)
@@ -195,10 +200,12 @@ class Gen:
                 self.notes.append(f"no road crosses it: a 4 m main gate on edge {i}")
         return out
 
-    def on_building(self, p):
+    def on_building(self, p, deep=2.0):
+        """The building whose footprint holds p at least deep metres in from every side of its box (a box is
+        bigger than the walls: porches, a garage's open front; an edge only grazing one gets a wall)."""
         for t in self.solid:
             lx, ly = blocklib.rot(p[0] - t.pos[0], p[1] - t.pos[1], -t.dir)
-            if t.box[0] <= lx <= t.box[2] and t.box[1] <= ly <= t.box[3]:
+            if t.box[0] + deep <= lx <= t.box[2] - deep and t.box[1] + deep <= ly <= t.box[3] - deep:
                 return t
         return None
 
@@ -269,17 +276,81 @@ class Gen:
         return self.items
 
     def lay(self, a, u, L):
-        """2-high H-barrier from a along u for L metres."""
+        """A wall from a along u for L metres in the tier's materials:
+        T3: 2-high H-barrier (HBarrier_5/3), the odd remainder in small concrete wall (CncWall1);
+        T4+: the tall military wall (Mil_WallBig_4m) panel by panel, the remainder in small concrete wall; 2-high
+        H-barrier where a rigid panel can't sit (ground falling more than 0.5 m along it) or a run is too short."""
         if L < 0.3:
+            return
+        if self.tier >= 4 and L >= MIL[1] - 0.2:
+            t, slope = 0.0, None
+            while t < L - 0.05:
+                rest = L - t
+                if rest >= MIL[1] - 0.2:
+                    p0, p1 = add(a, mul(u, t)), add(a, mul(u, min(t + MIL[1], L)))
+                    if abs(self.ground(*p0) - self.ground(*p1)) <= 0.5:
+                        if slope is not None:
+                            self.lay_hb(add(a, mul(u, slope)), u, t - slope + JOINT)
+                            slope = None
+                        mid = t + MIL[1] / 2 if rest >= MIL[1] else L - MIL[1] / 2
+                        self.piece(MIL[0], add(a, mul(u, mid)), u)
+                        t += MIL[1] - MIL_JOINT
+                        continue
+                    if slope is None:
+                        slope = t
+                    t += 1.0
+                    continue
+                if slope is not None:
+                    self.lay_hb(add(a, mul(u, slope)), u, L - slope)
+                else:
+                    self.lay_cnc(add(a, mul(u, t - MIL_JOINT)), u, rest + MIL_JOINT)
+                return
+            if slope is not None:
+                self.lay_hb(add(a, mul(u, slope)), u, L - slope)
+            return
+        self.lay_hb(a, u, L, cnc_rest=self.tier == 3)
+
+    def piece(self, cls, p, u, upper=False):
+        z = self.ground(*p)
+        self.items.append(["object", cls, f"[{p[0]:.3f},{p[1]:.3f},{z:.3f}]", orient(u), ""])
+        if upper:
+            self.items.append(["object", cls, f"[{p[0]:.3f},{p[1]:.3f},{z + UPPER:.3f}]", orient(u), ""])
+
+    def lay_hb(self, a, u, L, cnc_rest=False):
+        """2-high H-barrier along L; with cnc_rest, H-barrier 5s and 3s only and the remainder in small concrete wall."""
+        if L < 0.3:
+            return
+        if cnc_rest:
+            best = None
+            for k5 in range(int(L // 5.5) + 1):
+                for k3 in range(3):
+                    parts = [HB[0]] * k5 + [HB[1]] * k3
+                    cover = sum(l for _, l in parts) - JOINT * max(len(parts) - 1, 0) if parts else 0
+                    if cover > L + 0.05:
+                        continue
+                    key = (L - cover, len(parts))
+                    if best is None or key < best[0]:
+                        best = (key, parts, cover)
+            _, parts, cover = best
+            t = 0
+            for cls, l in parts:
+                self.piece(cls, add(a, mul(u, t + l / 2)), u, upper=True)
+                t += l - JOINT
+            if L - cover > 0.2:
+                self.lay_cnc(add(a, mul(u, max(cover - JOINT, 0))), u, L - max(cover - JOINT, 0))
             return
         t = 0
         for cls, l in fill_lengths(L):
             mid = min(t + l / 2, L - l / 2) if l < L else L / 2
-            p = add(a, mul(u, mid))
-            z = self.ground(*p)
-            self.items.append(["object", cls, f"[{p[0]:.3f},{p[1]:.3f},{z:.3f}]", orient(u), ""])
-            self.items.append(["object", cls, f"[{p[0]:.3f},{p[1]:.3f},{z + UPPER:.3f}]", orient(u), ""])
+            self.piece(cls, add(a, mul(u, mid)), u, upper=True)
             t += l - JOINT
+
+    def lay_cnc(self, a, u, L):
+        """Small concrete wall (CncWall1) panels along L."""
+        k = max(1, math.ceil((L - CNC[1]) / (CNC[1] - 0.1)) + 1) if L > CNC[1] else 1
+        for i in range(k):
+            mid = min(CNC[1] / 2 + i * (CNC[1] - 0.1), L - CNC[1] / 2) if L > CNC[1] else L / 2
+            self.piece(CNC[0], add(a, mul(u, mid)), u)
 
 
 def main(argv):
