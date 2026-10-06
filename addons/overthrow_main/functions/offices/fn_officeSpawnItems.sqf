@@ -2,7 +2,8 @@
     Description:
     Makes a mayor's office layout's things (OT_fnc_officeLayout's item format) exactly where they're given:
     guards at their posts (OT_fnc_officeGuard), props and fortifications with no simulation, a flag pole
-    with the occupier's flag, a gate ("open") with its doors open. Each thing remembers its item ("OT_officeItem": tag + [index, item]).
+    with the occupier's flag, a gate ("open") with its doors open; a closed gate locked and worked by the
+    occupier (OT_fnc_officeGates; open and unlocked once the resistance holds the town). Each thing remembers its item ("OT_officeItem": tag + [index, item]).
     OT_fnc_officeApplyLayout uses it; so does the layout editor for a layout moved from another town. Server.
 
     Parameters:
@@ -67,15 +68,22 @@ private _group = grpNull;
             private _hits = lineIntersectsSurfaces [_at vectorAdd [0, 0, 0.6], _at vectorAdd [0, 0, -1.5], _object, objNull, true, 1, "GEOM", "NONE"];
             if (_hits isNotEqualTo []) then { _object setPosASL [_at select 0, _at select 1, ((_hits select 0) select 0) select 2] };
         };
-        // "open": a gate's doors swung open (and simulated, so they stay so), for the AI's men and vehicles
-        if ("open" in _extra) then {
+        // "open": a gate's doors swung open (and simulated, so they stay so), for the AI's men and vehicles; every
+        // gate of a town the resistance holds
+        private _gate = "gate" in toLower _class;
+        private _town = _tag param [0, ""];
+        private _held = _town isNotEqualTo "" && { (server getVariable [format ["officeheld%1", _town], false]) || { _town in (server getVariable ["NATOabandoned", []]) } };
+        if ("open" in _extra || { _gate && _held }) then {
             { if ("sound_source" in toLower _x) then { _object animateSource [_x, 1, true] } } forEach (("true" configClasses (configOf _object >> "AnimationSources")) apply { configName _x });
         } else {
-            _object enableSimulationGlobal false;
-            // A closed gate locked: only a charge opens it (OT_fnc_officeBreach)
-            if ("gate" in toLower _class) then {
+            if (_gate) then {
+                // A closed gate locked, simulated so it swings: only a charge opens it for players
+                // (OT_fnc_officeBreach), the occupier's men and vehicles open it (OT_fnc_officeGates)
                 for "_d" from 1 to getNumber (configOf _object >> "numberOfDoors") do { _object setVariable [format ["bis_disabled_Door_%1", _d], 1, true] };
                 _object setVariable ["OT_officeGate", true, true];
+                if (!_placeholders) then { [_object] call OT_fnc_officeGates };
+            } else {
+                _object enableSimulationGlobal false;
             };
         };
         _object setVariable ["OT_officeItem", _tag + [_forEachIndex, _item]];

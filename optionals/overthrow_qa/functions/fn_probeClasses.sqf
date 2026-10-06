@@ -44,6 +44,24 @@
                     };
                 };
                 diag_log format ["OTFLOORS|%1|%2", _x, _floors];
+                // A gate's way through: the stretches of model x a line along y at 1 m up meets nothing, shut and
+                // swung open (its door sources at 1)
+                private _doorSources = (("true" configClasses (configOf _o >> "AnimationSources")) apply { configName _x }) select { "sound_source" in toLower _x };
+                if (_doorSources isNotEqualTo []) then {
+                    private _gaps = {
+                        private _free = [];
+                        for "_gx" from (_mn select 0) to (_mx select 0) step 0.1 do {
+                            private _a = _o modelToWorldWorld [_gx, (_mn select 1) - 1, 1];
+                            private _b = _o modelToWorldWorld [_gx, (_mx select 1) + 1, 1];
+                            if ((lineIntersectsSurfaces [_a, _b, objNull, objNull, true, 1, "GEOM", "NONE"]) isEqualTo []) then { _free pushBack ((round (_gx * 10)) / 10) };
+                        };
+                        _free
+                    };
+                    private _shut = call _gaps;
+                    { _o animateSource [_x, 1, true] } forEach _doorSources;
+                    sleep 0.5;
+                    diag_log format ["OTGATEWAY|%1|shut %2|open %3", _x, _shut, call _gaps];
+                };
             };
             deleteVehicle _o;
             _done = _done + 1;

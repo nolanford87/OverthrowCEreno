@@ -80,4 +80,8 @@ private _buildings = (_was + _now) apply { _x select 0 };
     if (!isNull _b) then { _b setVariable ["OT_lockedDoors", (_now select { (_x select 0) isEqualTo _b }) apply { _x select 1 }, true] };
 } forEach (_buildings arrayIntersect _buildings);
 OT_officeLocked set [_town, _now];
+// The town's gates unlocked and swung open once it's the resistance's (OT_fnc_officeGates)
+if (!_theirs) then {
+    { if ((((_x getVariable ["OT_officeItem", []]) param [0, ""]) isEqualTo _town) && { _x getVariable ["OT_officeGate", false] }) then { [_x, -1, true] call OT_fnc_officeUnlock } } forEach (missionNamespace getVariable ["OT_officeGates", []]);
+};
 _now
