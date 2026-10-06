@@ -1,18 +1,18 @@
 /*
     Description:
-    Occupier compound editor (the "compounds" QA suite, by hand; tools/officegen/COMPOUND_PLAN.md): each town's
+    Compound editor (the "compounds" QA suite, by hand): shaping the virtual border lines of each tier's compound area ( tools/officegen/COMPOUND_PLAN.md): each town's
     compound areas shown for the host to shape with Zeus. Every vertex is an arrow (T3 green, T4 yellow, T5 red)
     to drag; the edges are drawn between them (3D and on the map, labelled T3.0, T3.1, ... in order round the
     area). Actions (out of Zeus):
-        Compound: add a vertex where you look   (on the nearest edge of any tier)
-        Compound: delete the vertex you look at
-        Compound: save this town                (logged; tells you of a lower tier's vertex outside the next)
-        Compound: confirm this tier             (a town opens on T3 alone; each tier confirmed shows the next
+        Compound editor: add a vertex where you look   (on the nearest edge of any tier)
+        Compound editor: delete the vertex you look at
+        Compound editor: save this town                (logged; tells you of a lower tier's vertex outside the next)
+        Compound editor: confirm this tier             (a town opens on T3 alone; each tier confirmed shows the next
                                                  with the ones inside it; all confirmed shows every tier)
-        Compound: show tier N only / show the tiers for this step   (a filter; edits stay for the session)
+        Compound editor: show tier N only / show the tiers for this step   (a filter; edits stay for the session)
     The map's walls the tiers shown would replace (the generator's rule) are hidden as a preview, live as the
     arrows move: the lowest tier shown and those below it; the tiers above outline theirs in their colour.
-        Compound: confirm the town, next town / skip to the next town / back to the previous town / finished
+        Compound editor: confirm the town, next town / skip to the next town / back to the previous town / finished
     Saved lines, merged with tools/officegen/merge_compounds.py:
         OTCOMPOUND|world|town|tier|[[x,y],...]
         OTCOMPOUND|world|town|CONFIRMED
@@ -29,7 +29,7 @@ OTQA_compound_markerColours = ["ColorGreen", "ColorYellow", "ColorRed"];
 OTQA_compound_busy = { !scriptDone (OTQA_compound getOrDefault ["busy", scriptNull]) };
 OTQA_compound_run = {
     params ["_code", ["_args", []]];
-    if (call OTQA_compound_busy) exitWith { hint "Compound: wait, still setting up" };
+    if (call OTQA_compound_busy) exitWith { hint "Compound editor: wait, still setting up" };
     OTQA_compound set ["busy", _args spawn _code];
 };
 
@@ -163,7 +163,7 @@ OTQA_compound_show = {
         curatorCamera setVectorDirAndUp [[0, 0.55, -0.83], [0, 0.83, 0.55]];
     };
     private _towns = OTQA_compound get "towns";
-    hint format ["Compound: %1 (%2 of %3)\nShowing T%4. Drag the arrows with Zeus (T3 green, T4 yellow, T5 red); add or delete vertices, confirm each tier and filter with your actions (out of Zeus).", _town, (_towns find _town) + 1, count _towns, (OTQA_compound get "visible") joinString ", T"];
+    hint format ["Compound editor: %1 (%2 of %3)\nShowing T%4. Drag the arrows with Zeus (T3 green, T4 yellow, T5 red); add or delete vertices, confirm each tier and filter with your actions (out of Zeus).", _town, (_towns find _town) + 1, count _towns, (OTQA_compound get "visible") joinString ", T"];
 };
 
 // The polygon of a tier from its arrows, world [x, y]
@@ -189,10 +189,10 @@ OTQA_compound_addVertex = {
         };
     } forEach (OTQA_compound get "verts");
     _best params ["_d", "_ti", "_i"];
-    if (_ti < 0 || { _d > 15 }) exitWith { hint "Compound: look at a spot within 15 m of an edge" };
+    if (_ti < 0 || { _d > 15 }) exitWith { hint "Compound editor: look at a spot within 15 m of an edge" };
     private _arr = (OTQA_compound get "verts") select _ti;
     _arr insert [_i + 1, [[_ti + 3, _aim] call OTQA_compound_arrow]];
-    hint format ["Compound: vertex added to T%1 after T%1.%2", _ti + 3, _i];
+    hint format ["Compound editor: vertex added to T%1 after T%1.%2", _ti + 3, _i];
 };
 OTQA_compound_deleteVertex = {
     private _aim = screenToWorld [0.5, 0.5];
@@ -203,11 +203,11 @@ OTQA_compound_deleteVertex = {
         { private _d = _x distance2D _aim; if (_d < (_best select 0)) then { _best = [_d, _ti, _forEachIndex] } } forEach _x;
     } forEach (OTQA_compound get "verts");
     _best params ["_d", "_ti", "_i"];
-    if (_ti < 0 || { _d > 4 }) exitWith { hint "Compound: look at a vertex (within 4 m)" };
+    if (_ti < 0 || { _d > 4 }) exitWith { hint "Compound editor: look at a vertex (within 4 m)" };
     private _arr = (OTQA_compound get "verts") select _ti;
-    if ((count _arr) <= 3) exitWith { hint "Compound: an area needs 3 vertices at least" };
+    if ((count _arr) <= 3) exitWith { hint "Compound editor: an area needs 3 vertices at least" };
     deleteVehicle (_arr deleteAt _i);
-    hint format ["Compound: T%1 vertex deleted", _ti + 3];
+    hint format ["Compound editor: T%1 vertex deleted", _ti + 3];
 };
 OTQA_compound_save = {
     private _town = OTQA_compound get "town";
@@ -225,7 +225,7 @@ OTQA_compound_save = {
         };
     } forEach [3, 4, 5];
     call OTQA_compound_keep;
-    hint format ["Compound: %1 saved%2", _town, ["", "\n" + (_warn joinString "\n")] select (_warn isNotEqualTo [])];
+    hint format ["Compound editor: %1 saved%2", _town, ["", "\n" + (_warn joinString "\n")] select (_warn isNotEqualTo [])];
 };
 OTQA_compound_step = {
     params ["_by"];
@@ -249,10 +249,10 @@ OTQA_compound_confirmTier = {
     (OTQA_compound get "confirmed") set [_town, _done];
     [call OTQA_compound_stageTiers] call OTQA_compound_setVisible;
     private _next = call OTQA_compound_nextTier;
-    hint format ["Compound: %1 T%2 confirmed. %3", _town, _tier, ["Now T" + str _next + ", with the tiers inside it.", "Every tier confirmed: confirm the town to go on."] select (_next isEqualTo 0)];
+    hint format ["Compound editor: %1 T%2 confirmed. %3", _town, _tier, ["Now T" + str _next + ", with the tiers inside it.", "Every tier confirmed: confirm the town to go on."] select (_next isEqualTo 0)];
 };
 OTQA_compound_confirm = {
-    if ((call OTQA_compound_nextTier) isNotEqualTo 0) exitWith { hint "Compound: confirm each tier first" };
+    if ((call OTQA_compound_nextTier) isNotEqualTo 0) exitWith { hint "Compound editor: confirm each tier first" };
     call OTQA_compound_save;
     diag_log format ["OTCOMPOUND|%1|%2|CONFIRMED", worldName, OTQA_compound get "town"];
     [1] call OTQA_compound_step;
@@ -264,7 +264,7 @@ OTQA_compound_confirm = {
         private _towns = missionNamespace getVariable ["OTQA_only", []];
         if (_towns isEqualTo []) then { _towns = keys OT_officeCompounds; _towns sort true };
         _towns = _towns select { _x in OT_officeCompounds };
-        if (_towns isEqualTo []) exitWith { ["Compound: towns with an area", false, "none"] call OTQA_fnc_check };
+        if (_towns isEqualTo []) exitWith { ["Compound editor: towns with an area", false, "none"] call OTQA_fnc_check };
         OTQA_compound set ["towns", _towns];
         OTQA_compound set ["confirmed", createHashMap];
         OTQA_compound set ["finished", false];
@@ -322,24 +322,24 @@ OTQA_compound_confirm = {
 
         private _free = "!(call OTQA_compound_busy)";
         private _actions = [
-            player addAction ["<t color='#c0ffc0'>Compound: save this town</t>", { [OTQA_compound_save] call OTQA_compound_run }, nil, 2, false, true, "", _free],
-            player addAction ["<t color='#80ff80'>Compound: confirm this tier</t>", { [OTQA_compound_confirmTier] call OTQA_compound_run }, nil, 1.98, false, true, "", _free + " && { (call OTQA_compound_nextTier) > 0 }"],
-            player addAction ["<t color='#80ff80'>Compound: confirm the town, next town</t>", { [OTQA_compound_confirm] call OTQA_compound_run }, nil, 1.97, false, true, "", _free + " && { (call OTQA_compound_nextTier) isEqualTo 0 }"],
-            player addAction ["<t color='#c0c0ff'>Compound: show tier 3 only</t>", { [[3]] call OTQA_compound_setVisible }, nil, 1.85, false, true, "", _free + " && { 3 in ([OTQA_compound get 'town'] call OTQA_compound_tiers) }"],
-            player addAction ["<t color='#c0c0ff'>Compound: show tier 4 only</t>", { [[4]] call OTQA_compound_setVisible }, nil, 1.84, false, true, "", _free + " && { 4 in ([OTQA_compound get 'town'] call OTQA_compound_tiers) }"],
-            player addAction ["<t color='#c0c0ff'>Compound: show tier 5 only</t>", { [[5]] call OTQA_compound_setVisible }, nil, 1.83, false, true, "", _free + " && { 5 in ([OTQA_compound get 'town'] call OTQA_compound_tiers) }"],
-            player addAction ["<t color='#c0c0ff'>Compound: show the tiers for this step</t>", { [call OTQA_compound_stageTiers] call OTQA_compound_setVisible }, nil, 1.82, false, true, "", _free],
-            player addAction ["<t color='#ffc080'>Compound: add a vertex where you look</t>", { call OTQA_compound_addVertex }, nil, 1.9, false, true, "", _free],
-            player addAction ["<t color='#ff8080'>Compound: delete the vertex you look at</t>", { call OTQA_compound_deleteVertex }, nil, 1.89, false, true, "", _free],
-            player addAction ["<t color='#80c0ff'>Compound: skip to the next town</t>", { [OTQA_compound_step, [1]] call OTQA_compound_run }, nil, 1.8, false, true, "", _free],
-            player addAction ["<t color='#80c0ff'>Compound: back to the previous town</t>", { [OTQA_compound_step, [-1]] call OTQA_compound_run }, nil, 1.79, false, true, "", _free],
-            player addAction ["<t color='#ffc080'>Compound: finished</t>", { OTQA_compound set ["finished", true] }, nil, 1.7, false, true, "", "true"]
+            player addAction ["<t color='#c0ffc0'>Compound editor: save this town</t>", { [OTQA_compound_save] call OTQA_compound_run }, nil, 2, false, true, "", _free],
+            player addAction ["<t color='#80ff80'>Compound editor: confirm this tier</t>", { [OTQA_compound_confirmTier] call OTQA_compound_run }, nil, 1.98, false, true, "", _free + " && { (call OTQA_compound_nextTier) > 0 }"],
+            player addAction ["<t color='#80ff80'>Compound editor: confirm the town, next town</t>", { [OTQA_compound_confirm] call OTQA_compound_run }, nil, 1.97, false, true, "", _free + " && { (call OTQA_compound_nextTier) isEqualTo 0 }"],
+            player addAction ["<t color='#c0c0ff'>Compound editor: show tier 3 only</t>", { [[3]] call OTQA_compound_setVisible }, nil, 1.85, false, true, "", _free + " && { 3 in ([OTQA_compound get 'town'] call OTQA_compound_tiers) }"],
+            player addAction ["<t color='#c0c0ff'>Compound editor: show tier 4 only</t>", { [[4]] call OTQA_compound_setVisible }, nil, 1.84, false, true, "", _free + " && { 4 in ([OTQA_compound get 'town'] call OTQA_compound_tiers) }"],
+            player addAction ["<t color='#c0c0ff'>Compound editor: show tier 5 only</t>", { [[5]] call OTQA_compound_setVisible }, nil, 1.83, false, true, "", _free + " && { 5 in ([OTQA_compound get 'town'] call OTQA_compound_tiers) }"],
+            player addAction ["<t color='#c0c0ff'>Compound editor: show the tiers for this step</t>", { [call OTQA_compound_stageTiers] call OTQA_compound_setVisible }, nil, 1.82, false, true, "", _free],
+            player addAction ["<t color='#ffc080'>Compound editor: add a vertex where you look</t>", { call OTQA_compound_addVertex }, nil, 1.9, false, true, "", _free],
+            player addAction ["<t color='#ff8080'>Compound editor: delete the vertex you look at</t>", { call OTQA_compound_deleteVertex }, nil, 1.89, false, true, "", _free],
+            player addAction ["<t color='#80c0ff'>Compound editor: skip to the next town</t>", { [OTQA_compound_step, [1]] call OTQA_compound_run }, nil, 1.8, false, true, "", _free],
+            player addAction ["<t color='#80c0ff'>Compound editor: back to the previous town</t>", { [OTQA_compound_step, [-1]] call OTQA_compound_run }, nil, 1.79, false, true, "", _free],
+            player addAction ["<t color='#ffc080'>Compound editor: finished</t>", { OTQA_compound set ["finished", true] }, nil, 1.7, false, true, "", "true"]
         ];
         waitUntil { sleep 1; OTQA_compound getOrDefault ["finished", false] };
         { player removeAction _x } forEach _actions;
         removeMissionEventHandler ["Draw3D", _draw];
         call OTQA_compound_clear;
         player allowDamage true;
-        ["Compound: finished by the author", true, "OTCOMPOUND lines in the RPT (merge with tools/officegen/merge_compounds.py)"] call OTQA_fnc_check;
+        ["Compound editor: finished by the author", true, "OTCOMPOUND lines in the RPT (merge with tools/officegen/merge_compounds.py)"] call OTQA_fnc_check;
     }, 1e7]
 ]

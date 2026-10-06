@@ -4,6 +4,12 @@ The mayor's office becomes the **occupier compound**: not one building with a wa
 town (a block, its yards and buildings) the occupier has taken over and walled in. Tiers 1 and 2 are untouched by
 this. Tiers 3, 4 and 5 are compounds, and **each tier expands the compound**.
 
+## The two editors (the names used everywhere)
+- **Compound editor** (QA suite `compounds`): shaping the virtual border lines of each tier's compound area
+  (coloured arrows at the vertices, lines along the edges).
+- **Layout editor** (QA suite `townlayout`): reviewing and editing the actual objects placed at each tier (walls,
+  gates, sandbags...).
+
 ## What a compound is
 - **Its area, per tier:** a polygon of vertices (world x, y). They're nested: T3 inside T4 inside T5. A town only has
   the tiers it can reach (villages T3, towns T3-T4, strongholds T3-T5).
@@ -31,7 +37,7 @@ Dorida, Gravia, Kore, Lakka, Neri, Poliakko, Selakano, Stavros, Telos). Hamlets 
    - edges beside roads, 1-2 m off them, never on them (the AI walks through pieces on roads);
    - 6-12 vertices, on building corners, wall ends and road verges where possible;
    - the HQ, and gate candidates where roads meet an edge.
-3. **Review in Zeus (the user):** the layout editor's new "compounds" mode shows each town's polygons:
+3. **Review in the compound editor (the user):** each town's border lines:
    - each vertex an editable marker (a coloured arrow per tier: T3 green, T4 yellow, T5 red) to drag with Zeus;
    - the edges drawn as lines in the 3D view and on the map;
    - actions: add a vertex (splits the nearest edge), delete one, save the town's compounds, confirm and go on.
@@ -50,7 +56,7 @@ batches by group.
    - T1-T2 kept as they are.
 2. **Check in the game** before the user sees it: the layout check in combat, walking in and out (helper agents
    deleted, so long runs are trustworthy); every way in and out through a gate.
-3. **Review in the editor (the user):** free edits; anything a script or agent does afterwards changes only what
+3. **Review in the layout editor (the user):** free edits; anything a script or agent does afterwards changes only what
    it's for, and leaks are closed by adding pieces, never by moving the user's.
 
 Each group goes through 1-3 before the next starts.
