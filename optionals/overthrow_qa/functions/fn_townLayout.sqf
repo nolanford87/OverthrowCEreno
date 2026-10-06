@@ -656,9 +656,43 @@ OTQA_townLayout_run = {
             _actions pushBack (player addAction [format ["<t color='#c0c0ff'>Review: show tier %1</t>", _t], { [OTQA_townLayout_reviewShow, [(_this select 3) select 0]] call OTQA_townLayout_run }, [_t], 1.95 - _t / 100, false, true, "", _inTown + format [" && { OTQA_townLayout get 'review' } && { %1 <= (OTQA_townLayout get 'cap') } && { (OTQA_townLayout get 'tier') isNotEqualTo %1 }", _t]]);
         };
         OTQA_townLayout set ["saveAction", _actions select 0];
+        // The map's walls the next tier up removes (its "hide" items) outlined while a tier is shown, as in the
+        // compound editor: the tier shown hides its own (OT_fnc_officeHide), these still stand at it
+        [] spawn {
+            private _key = [];
+            while { !(OTQA_townLayout getOrDefault ["finished", false]) } do {
+                private _now = [OTQA_townLayout getOrDefault ["town", ""], OTQA_townLayout getOrDefault ["tier", 0]];
+                if (_now isNotEqualTo _key) then {
+                    _key = _now;
+                    _now params ["_town", "_tier"];
+                    private _next = ((([_town] call OT_fnc_officeLayout) param [1, []]) param [_tier, []]) select { (_x select 0) isEqualTo "hide" };
+                    private _marked = [];
+                    {
+                        _x params ["", "_model", "_at"];
+                        private _near = nearestTerrainObjects [ASLToAGL _at, [], 1, true, true];
+                        private _o = _near param [_near findIf { ((getModelInfo _x) select 0) == _model || { (typeOf _x) == _model } }, objNull];
+                        if (!isNull _o && { !isObjectHidden _o }) then { _marked pushBack _o };
+                    } forEach _next;
+                    OTQA_townLayout set ["marked", [_marked, _tier + 1]];
+                };
+                sleep 1;
+            };
+        };
         private _draw = addMissionEventHandler ["Draw3D", {
             private _town = OTQA_townLayout get "town";
             if (isNil "_town") exitWith {};
+            (OTQA_townLayout getOrDefault ["marked", [[], 0]]) params ["_marked", "_nextTier"];
+            {
+                if (isNull _x || { isObjectHidden _x }) then { continue };
+                (boundingBoxReal _x) params ["_mn", "_mx"];
+                private _my = ((_mn select 1) + (_mx select 1)) / 2;
+                private _top = (_mx select 2) + 0.3;
+                private _e1 = _x modelToWorld [_mn select 0, _my, _top];
+                private _e2 = _x modelToWorld [_mx select 0, _my, _top];
+                drawLine3D [_e1, _e2, [1, 0.85, 0, 1]];
+                drawLine3D [_e1 vectorAdd [0, 0, 0.1], _e2 vectorAdd [0, 0, 0.1], [1, 0.85, 0, 1]];
+                drawIcon3D ["", [1, 0.85, 0, 1], (_e1 vectorAdd _e2) vectorMultiply 0.5, 0, 0, 0, format ["T%1", _nextTier], 2, 0.035, "PuristaMedium"];
+            } forEach _marked;
             private _review = OTQA_townLayout get "review";
             drawIcon3D ["", [[1, 1, 1, 1], [0.5, 1, 0.5, 1]] select _review, OTQA_townLayout get "label", 0, 0, 0, format ["%1 office - tier %2 of %3%4", _town, OTQA_townLayout get "tier", OTQA_townLayout get "cap", ["", " - review"] select _review], 2, 0.04, "PuristaMedium", "center"];
         }];
