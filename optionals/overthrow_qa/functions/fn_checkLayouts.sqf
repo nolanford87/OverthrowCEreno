@@ -158,6 +158,15 @@
                 if (_items isEqualTo []) then { continue };
                 ([_town, _tier, west, true] call OT_fnc_officeApplyLayout) params ["_office", "_objects", "_guards"];
                 _b = _office;
+                // The compounds' shut gates swung open, as the occupier opens them for its own (OT_fnc_officeGates):
+                // the path finding plans no way through a shut gate
+                {
+                    private _g = _x;
+                    if ("gate" in toLower typeOf _g) then {
+                        _g enableSimulationGlobal true;
+                        { if ("sound_source" in toLower _x) then { _g animateSource [_x, 1, true] } } forEach (("true" configClasses (configOf _g >> "AnimationSources")) apply { configName _x });
+                    };
+                } forEach _objects;
                 sleep 3; // Settled
                 private _parts = [[_b] call OT_fnc_officeTemplateKey, _b] call OTQA_officeReview_realParts;
                 private _terrain = ((nearestTerrainObjects [getPosATL _b, _terrainTypes, 70, false, true]) - _parts) select { !isObjectHidden _x }; // Not the ones the tier removes

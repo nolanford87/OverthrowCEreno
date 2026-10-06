@@ -489,8 +489,12 @@ OTQA_townLayout_save = {
             private _static = [_x] call OT_fnc_officeStatic;
             if (_static isNotEqualTo "") exitWith { ["static", _static, getPosASL _x, [vectorDir _x, vectorUp _x], []] };
             private _extra = [[], ["flag"]] select (_x isKindOf "FlagCarrier");
-            if ("open" in (((_x getVariable ["OT_officeItem", []]) param [3, []]) param [4, []]) || { "_gate" in toLower typeOf _x }) then { _extra pushBack "open" }; // A gate stays open
-            if ("lookout" in (((_x getVariable ["OT_officeItem", []]) param [3, []]) param [4, []])) then { _extra pushBack "lookout" }; // A lookout tower stays one (tools/officegen/tower_gen.py)
+            private _was = ((_x getVariable ["OT_officeItem", []]) param [3, []]) param [4, []];
+            // A gate the layout put keeps its state (a compound's shut gate stays shut, OT_fnc_officeGates); one
+            // put with Zeus is open
+            if ("open" in _was || { "_gate" in toLower typeOf _x && { isNil { _x getVariable "OT_officeItem" } } }) then { _extra pushBack "open" };
+            // The generators' own pieces stay theirs (tools/officegen/tower_gen.py, gate_gen.py)
+            { if (_x in _was) then { _extra pushBack _x } } forEach ["lookout", "entrance"];
             ["object", typeOf _x, getPosASL _x, [vectorDir _x, vectorUp _x], _extra]
         }
     };
