@@ -18,6 +18,7 @@ Writes the tiers into tools/officegen/layouts/<world>.txt and the mod's layout d
 """
 import math
 import os
+import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -104,6 +105,22 @@ def line_meet(p, u, q, v):
 def orient(u):
     """[vectorDir, vectorUp] for a piece whose length (model x) runs along u."""
     return f"[[{-u[1]:.4f},{u[0]:.4f},0.0000],[0.0000,0.0000,1.0000]]"
+
+
+_PLANS = None
+
+
+def plan_of(model):
+    """A building class's ground floor plan from the office probe (officegen_lib.Building), None when not probed.
+    Colour variants share their first's plan (Land_i_House_Big_02_V3_F: Land_i_House_Big_02_V1_F)."""
+    global _PLANS
+    if _PLANS is None:
+        import officegen_lib
+        _PLANS = officegen_lib.parse_probe(os.path.join(ROOT, "tools", "officegen", "probe_offices.txt"))
+    if model in _PLANS:
+        return _PLANS[model]
+    base = re.sub(r"_V\d+_F$", "_V1_F", model)
+    return _PLANS.get(base)
 
 
 def fill_lengths(L):
@@ -206,10 +223,19 @@ class Gen:
         return out
 
     def on_building(self, p, deep=2.0):
-        """The building whose footprint holds p at least deep metres in from every side of its box (a box is
-        bigger than the walls: porches, a garage's open front; an edge only grazing one gets a wall)."""
+        """The building whose real walls hold p: its ground floor plan from the office probe where its class was
+        probed (tools/officegen/probe_offices.txt; a wall cell, or a floor cell under a roof: a porch is outside),
+        else at least deep metres in from every side of its box (a box is bigger than the walls: porches, a
+        garage's open front; an edge only grazing one gets a wall)."""
         for t in self.solid:
             lx, ly = blocklib.rot(p[0] - t.pos[0], p[1] - t.pos[1], -t.dir)
+            plan = plan_of(t.model)
+            if plan is not None:
+                level = min(plan.levels)
+                c = plan.cell(level, lx, ly)
+                if c == "#" or (c == "." and (int(round(lx)), int(round(ly))) not in plan.opensky.get(level, set())):
+                    return t
+                continue
             if t.box[0] + deep <= lx <= t.box[2] - deep and t.box[1] + deep <= ly <= t.box[3] - deep:
                 return t
         return None
