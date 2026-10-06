@@ -890,7 +890,7 @@ class CfgFunctions {
         };
         // The occupier compounds' areas in each town (tools/officegen/merge_compounds.py), one per map
         class OfficeCompounds {
-            file = "\overthrow_mainunctions\offices\compounds";
+            file = "\overthrow_main\functions\offices\compounds";
             class officeCompounds_Altis {};
         };
         /*
