@@ -22,15 +22,22 @@ params [["_items", [], [[]]], ["_side", west, [west]], ["_placeholders", false, 
 private _objects = [];
 private _guards = [];
 private _group = grpNull;
+private _patrolGroup = grpNull; // A compound's patrol walks as a group of its own (OT_fnc_officeGarrison)
 {
     private _item = _x;
     _item params ["_kind", "_what", "_at", "_orient", ["_extra", []]];
     if (_kind in ["hide", "gate"]) then { continue }; // A map object removed (OT_fnc_officeHide), a gate's opening (a marker)
     if (_kind isEqualTo "guard") then {
-        if (isNull _group) then { _group = createGroup [_side, true] };
+        private _in = if ("patrol" in _extra) then {
+            if (isNull _patrolGroup) then { _patrolGroup = createGroup [_side, true] };
+            _patrolGroup
+        } else {
+            if (isNull _group) then { _group = createGroup [_side, true] };
+            _group
+        };
         private _p = ASLToATL _at;
         if ("ground" in _extra) then { _p set [2, 0] };
-        private _unit = [_what, _p, _orient, _group, _placeholders] call OT_fnc_officeGuard;
+        private _unit = [_what, _p, _orient, _in, _placeholders] call OT_fnc_officeGuard;
         // A post the garrison generator put (tools/officegen/garrison_gen.py) turned to its longest clear view
         // within 90 degrees of its way: a window, the bunker's slit, over the wall
         if ("garrison" in _extra && { !("patrol" in _extra) }) then {

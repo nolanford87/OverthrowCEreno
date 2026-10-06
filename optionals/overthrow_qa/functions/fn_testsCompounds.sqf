@@ -7,6 +7,10 @@
     2. An occupier soldier walks out of Rodopoli's T3 compound and back in through its gate shut (the path
        finding plans no way through a shut gate: it opens for one going somewhere within 40 m)
     3. Static weapons by role: the hmg role a machine gun, the vanilla AT static read as at
+    4. The garrison (OT_fnc_officeGarrison through OT_fnc_spawnOffice, Rodopoli at T4): the guards made, the
+       patrol its own group walking a loop inside the walls, the posts holding, aware, flashlights, no NVGs, the
+       area published; losses kept off and paid back; the patrol hunting a threat outside but staying inside the
+       walls, the town's gendarmerie sent over
     (A truck can't drive in, even through the gate open: the vehicle path finding gives up, so occupier
     vehicles park and unload outside the gate, the user's choice.)
 
@@ -118,5 +122,115 @@ _tests pushBack ["Office: static weapons by role", {
     ["Statics: the hmg role is a machine gun (fires bullets)", _sim isEqualTo "shotBullet", format ["%1 fires %2", _hmg, _sim]] call OTQA_fnc_check;
     ["Statics: the vanilla AT static reads as at, the HMG as hmg", (["B_static_AT_F"] call OT_fnc_officeStatic) isEqualTo "at" && { (["B_HMG_01_high_F"] call OT_fnc_officeStatic) isEqualTo "hmg" }, format ["AT %1, HMG %2", ["B_static_AT_F"] call OT_fnc_officeStatic, ["B_HMG_01_high_F"] call OT_fnc_officeStatic]] call OTQA_fnc_check;
 }, 10];
+
+// Rodopoli's compound spawned by the game's own spawner at a tier, [guards, things, spawner id]
+OTQA_cp_spawn = {
+    params ["_tier"];
+    private _town = "Rodopoli";
+    server setVariable [format ["officetier%1", _town], _tier];
+    private _id = format ["OTQA_compound%1", round (time * 100)];
+    [_town, _id] call OT_fnc_spawnOffice;
+    private _things = spawner getVariable [_id, []];
+    private _guards = allUnits select { (_x getVariable ["OT_compoundGuard", ""]) isEqualTo _town };
+    [_guards, _things, _id]
+};
+OTQA_cp_clear = {
+    params ["_spawned"];
+    _spawned params ["_guards", "_things", "_id"];
+    call OTQA_og_cameraOff;
+    { deleteVehicle _x } forEach (allUnits select { (_x getVariable ["OT_compoundGuard", ""]) isEqualTo "Rodopoli" });
+    { if (_x isEqualType grpNull) then { { deleteVehicle _x } forEach units _x; deleteGroup _x } else { deleteVehicle _x } } forEach _things;
+    spawner setVariable [_id, nil];
+    server setVariable ["officetierRodopoli", nil];
+    server setVariable ["compoundlostRodopoli", nil];
+    server setVariable ["compoundareaRodopoli", nil, true];
+    ["Rodopoli", ["Rodopoli"] call OT_fnc_officeTier] call OT_fnc_officeHide;
+    ["Rodopoli", ["Rodopoli"] call OT_fnc_officeTier] call OT_fnc_officeDoors;
+};
+OTQA_cp_patrol = {
+    params ["_guards"];
+    _guards select { "patrol" in (((_x getVariable ["OT_officeItem", []]) param [3, []]) param [4, []]) }
+};
+
+_tests pushBack ["Compounds: the garrison at work", {
+    private _spawned = [4] call OTQA_cp_spawn;
+    _spawned params ["_guards"];
+    private _patrol = [_guards] call OTQA_cp_patrol;
+    private _posts = _guards - _patrol;
+    private _pg = group (_patrol param [0, objNull]);
+    private _area = server getVariable ["compoundareaRodopoli", []];
+    private _cycle = ((waypoints _pg) findIf { (waypointType _x) isEqualTo "CYCLE" }) > -1;
+    private _free = { _x checkAIFeature "PATH" } count _posts;
+    private _unaware = { (behaviour _x) isNotEqualTo "AWARE" } count _guards;
+    private _nvg = { hmd _x isNotEqualTo "" } count _guards;
+    private _dark = { primaryWeapon _x isNotEqualTo "" && { ((primaryWeaponItems _x) select 1) isEqualTo "" } } count _guards;
+    ["Garrison: T4's 15 men (14 guards, the HMG's gunner)", (count _guards) isEqualTo 15, str count _guards] call OTQA_fnc_check;
+    ["Garrison: the patrol of four its own group, walking a loop", (count _patrol) isEqualTo 4 && { (count units _pg) isEqualTo 4 } && _cycle, format ["%1 in the patrol, %2 in its group, %3 waypoints", count _patrol, count units _pg, count waypoints _pg]] call OTQA_fnc_check;
+    ["Garrison: the posts hold, everyone aware, flashlights, no NVGs", _free isEqualTo 0 && _unaware isEqualTo 0 && _nvg isEqualTo 0 && _dark isEqualTo 0, format ["posts free to walk %1, not aware %2, NVGs %3, no light %4", _free, _unaware, _nvg, _dark]] call OTQA_fnc_check;
+    ["Garrison: the compound's area published for the undercover check", (count _area) > 2, str count _area] call OTQA_fnc_check;
+    private _from = getPosATL leader _pg;
+    [leader _pg, [0, -14, 16]] call OTQA_og_camera;
+    sleep 30;
+    private _moved = (leader _pg) distance2D _from;
+    private _inside = ((units _pg) findIf { !((getPosATL _x) inPolygon _area) }) < 0;
+    ["Garrison: the patrol walks its loop, inside the walls", _moved > 5 && _inside, format ["leader %1 m on, all inside %2", round _moved, _inside]] call OTQA_fnc_check;
+    [_spawned] call OTQA_cp_clear;
+}, 90];
+
+_tests pushBack ["Compounds: the garrison's losses, paid back", {
+    server setVariable ["compoundlostRodopoli", [3, time]];
+    private _spawned = [4] call OTQA_cp_spawn;
+    private _first = count (_spawned select 0);
+    private _patrolLeft = count ([_spawned select 0] call OTQA_cp_patrol);
+    [_spawned] call OTQA_cp_clear;
+    private _resources = server getVariable ["NATOresources", 2000];
+    server setVariable ["NATOresources", 2000];
+    server setVariable ["compoundlostRodopoli", [3, time - 1250]];
+    _spawned = [4] call OTQA_cp_spawn;
+    private _second = count (_spawned select 0);
+    private _paid = 2000 - (server getVariable ["NATOresources", 2000]);
+    private _left = (server getVariable ["compoundlostRodopoli", [0, 0]]) select 0;
+    [_spawned] call OTQA_cp_clear;
+    server setVariable ["NATOresources", _resources];
+    ["Losses: three lost, three fewer made, the patrol's first", _first isEqualTo 12 && { _patrolLeft isEqualTo 1 }, format ["%1 made, %2 of the patrol", _first, _patrolLeft]] call OTQA_fnc_check;
+    ["Losses: 20 minutes on, two paid back (10 each), one still lost", _second isEqualTo 14 && { _paid isEqualTo 20 } && { _left isEqualTo 1 }, format ["%1 made, %2 paid, %3 lost", _second, _paid, _left]] call OTQA_fnc_check;
+}, 60];
+
+_tests pushBack ["Compounds: the patrol hunts inside the walls, the gendarmerie comes", {
+    private _spawned = [4] call OTQA_cp_spawn;
+    _spawned params ["_guards"];
+    private _pg = group (([_guards] call OTQA_cp_patrol) param [0, objNull]);
+    private _area = server getVariable ["compoundareaRodopoli", []];
+    { _x allowDamage false } forEach _guards;
+    // One of the town's gendarmes 150 m off
+    private _hq = "Rodopoli" call OTQA_og_officePos;
+    private _gg = createGroup [blufor, true];
+    private _gendarme = _gg createUnit ["B_GEN_Soldier_F", _hq vectorAdd [150, 0, 0], [], 0, "NONE"];
+    _gendarme setVariable ["garrison", "Rodopoli"];
+    _gendarme allowDamage false;
+    // A threat 25 m outside the wall, shown to the patrol
+    private _corner = _area select 0;
+    private _out = _corner vectorAdd ((vectorNormalized (_corner vectorDiff _hq)) vectorMultiply 25);
+    private _eg = createGroup [independent, true];
+    private _enemy = _eg createUnit ["I_soldier_F", _out, [], 0, "CAN_COLLIDE"];
+    _enemy allowDamage false;
+    _enemy disableAI "MOVE";
+    { _x reveal [_enemy, 4] } forEach (units _pg);
+    [leader _pg, [0, -16, 18]] call OTQA_og_camera;
+    private _t = time + 40;
+    private _outside = 0;
+    waitUntil {
+        sleep 1;
+        _outside = _outside max ({ alive _x && { !((getPosATL _x) inPolygon _area) } } count units _pg);
+        time > _t
+    };
+    private _sent = ((waypoints _gg) findIf { (waypointType _x) isEqualTo "SAD" && { ((waypointPosition _x) distance2D _hq) < 60 } }) > -1;
+    private _hunted = ((units _pg) findIf { (behaviour _x) isEqualTo "COMBAT" }) > -1;
+    deleteVehicle _enemy;
+    deleteVehicle _gendarme;
+    [_spawned] call OTQA_cp_clear;
+    ["Hunt: the patrol went to combat and never left the walls", _hunted && { _outside isEqualTo 0 }, format ["in combat %1, most outside at once %2", _hunted, _outside]] call OTQA_fnc_check;
+    ["Hunt: the town's gendarmerie sent to the compound", _sent, str _sent] call OTQA_fnc_check;
+}, 90];
 
 _tests

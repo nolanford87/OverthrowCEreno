@@ -163,6 +163,15 @@ if !(captive _unit) then {
                 [_unit] call OT_fnc_revealToNATO;
             };
             private _unitpos = getPosATL _unit;
+            // Inside an occupier compound's walls (OT_fnc_spawnOffice publishes its area while it's theirs)
+            private _compound = server getVariable [format ["compoundarea%1", _unitpos call OT_fnc_nearestTown], []];
+            if (_compound isNotEqualTo [] && { _unitpos inPolygon _compound }) exitWith {
+                if (isPlayer _unit) then {
+                    "You are in a restricted area" call OT_fnc_notifyMinor;
+                };
+                _unit setCaptive false;
+                [_unit] call OT_fnc_revealToNATO;
+            };
             private _base = _unitpos call OT_fnc_nearestObjective;
             if !(isNil "_base") then {
                 _base params ["_obpos", "_obname"];

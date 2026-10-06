@@ -7,8 +7,9 @@ this order until the count is reached:
     3. the HMG crew (a static is crewed in play, so it counts);
     4. from T4 an AT soldier near the main gate;
     5. up to three at the HQ's upper windows (its buildingPos places);
-    6. the patrol: a fireteam of four (rifleman, autorifleman, two riflemen) in the courtyard, "patrol" (it walks
-       the inside of the walls in play);
+    6. the patrol: a fireteam of four (rifleman, autorifleman, two riflemen) just inside the main gate (every way
+       in and out goes through there, so it's never a pocket the walls cut off), "patrol" (it walks the inside of
+       the walls in play);
     7. a rifleman at each side gate;
     8. more at the HQ's places.
 Heights and places from the class probe (probes/<world>_classes.txt: OTFLOORS, OTBPOS). The guards carry the
@@ -166,21 +167,11 @@ class Garrison:
             out = side((x, y))[1]
             if self.man("rifleman", p, self.b.pos[2] + h, heading(p, to_world(hq, vd_hq, x + out[0], y + out[1])), []):
                 note("HQ window")
-        # 6. The patrol fireteam in the courtyard
-        cands = []
-        minx, maxx = min(p[0] for p in self.poly), max(p[0] for p in self.poly)
-        miny, maxy = min(p[1] for p in self.poly), max(p[1] for p in self.poly)
-        x = minx
-        while x <= maxx:
-            y = miny
-            while y <= maxy:
-                if cg.inside((x, y), self.poly) and self.e.edge_dist((x, y)) > 3:
-                    cands.append((x, y))
-                y += 1.0
-            x += 1.0
-        if self.room() >= len(PATROL):
+        # 6. The patrol fireteam just inside the main gate, beside its lane
+        if main and self.room() >= len(PATROL):
+            cands = [cg.add(cg.add(gp, cg.mul(u, a)), cg.mul(n, i)) for a in (-6, -5, -4, -3, 3, 4, 5, 6) for i in (6, 7, 8, 9, 10, 11, 12)]
             for role in PATROL:
-                if self.ground_man(role, self.centre, cands, None, ["patrol"]):
+                if self.ground_man(role, cg.add(gp, cg.mul(n, 9)), cands, None, ["patrol"]):
                     note("patrol " + role)
         # 7. A rifleman at each side gate
         for g in gates:
