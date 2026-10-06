@@ -10,9 +10,11 @@
         roadsHidden+combat
     Each plans 8 walks out (the office to 60 m out) and 8 in, and counts those that get there and those not
     through one of the tier's gates. Then live men (in "safe", then "combat") are ordered out to the 8 points and
-    watched for 90 s: do they get out through the walls, by a gate, or stick? Lines:
+    followed for 90 s: do they get out through a gate, through a wall, round a gap, or stick? Lines:
         OTROAD|town|tier|variant|out: planned, reached, not through a gate|in: the same|example crossing
-        OTROADLIVE|town|tier|behaviour|[[bearing, reached, not through a gate, where it ended [x, y]], ...]
+        OTROADMAN|town|tier|behaviour|bearing|out/stuck|through a gate/by a gap|the piece it walked through (inside
+            its footprint), if any|where it left the walls [x, y]|where it ended [x, y]
+    The behaviour and other variants above run only with OTQA_roadVariants = true.
 
     Returns: ARRAY - [[name, code, seconds]]
 */
@@ -143,11 +145,36 @@
                 diag_log format ["OTROAD|%1|%2|%3|out %4|in %5|%6", _town, _tier, _name, _out, _in, _example];
                 call _off;
                 sleep 1;
-            } forEach _variants;
+            } forEach ([[], _variants] select (missionNamespace getVariable ["OTQA_roadVariants", false]));
 
-            // Live men, ordered out to the 8 points: in "safe", then "combat"
+            // Live men, ordered out to the 8 points (in "safe", then "combat"), followed every half second: through a
+            // gate, through a piece (inside its footprint: walking through a wall), or round a piece's end (a gap)
+            private _inPiece = {
+                params ["_p"];
+                private _hit = "";
+                {
+                    private _l = _x worldToModel (ASLToAGL (AGLToASL _p));
+                    (boundingBoxReal _x) params ["_mn", "_mx"];
+                    if ((_l select 0) > (_mn select 0) + 0.25 && { (_l select 0) < (_mx select 0) - 0.25 } && { (_l select 1) > (_mn select 1) + 0.15 } && { (_l select 1) < (_mx select 1) - 0.15 } && { abs (_l select 2) < 3 }) exitWith {
+                        _hit = format ["%1 %2", typeOf _x, (getPosATL _x) call _model];
+                    };
+                } forEach _barriers;
+                _hit
+            };
+            private _liveVariants = [
+                ["base", {}, {}],
+                ["simulation", { { _x enableSimulationGlobal true } forEach _objects }, { { _x enableSimulationGlobal false } forEach _objects }],
+                ["roadsHidden", { { _x hideObjectGlobal true } forEach _roads }, { { _x hideObjectGlobal false } forEach _roads }],
+                ["both", { { _x enableSimulationGlobal true } forEach _objects; { _x hideObjectGlobal true } forEach _roads }, { { _x enableSimulationGlobal false } forEach _objects; { _x hideObjectGlobal false } forEach _roads }]
+            ];
             {
+              _x params ["_variant", "_on", "_off"];
+              call _on;
+              sleep 2;
+              {
                 private _behaviour = _x;
+                private _clips = [];
+                private _gaps = 0; private _gated = 0; private _stuck = 0;
                 private _men = _aways apply {
                     private _g = createGroup [independent, true];
                     private _u = _g createUnit ["I_soldier_F", _start, [], 0, "CAN_COLLIDE"];
@@ -156,22 +183,38 @@
                     _g setBehaviour toUpper _behaviour;
                     _g setCombatMode "BLUE";
                     _u doMove _x;
-                    [_u, _x, [getPosATL _u]]
+                    [_u, _x, [getPosATL _u], ""]
                 };
-                for "_s" from 1 to 45 do {
-                    sleep 2;
-                    { (_x select 2) pushBack getPosATL (_x select 0) } forEach _men;
+                for "_s" from 1 to ([180, 300] select (_behaviour isEqualTo "combat")) do {
+                    sleep 0.5;
+                    {
+                        private _p = getPosATL (_x select 0);
+                        (_x select 2) pushBack _p;
+                        if ((_x select 3) isEqualTo "") then { _x set [3, [_p] call _inPiece] };
+                    } forEach _men;
                 };
-                private _report = [];
                 {
-                    _x params ["_u", "_to", "_trail"];
+                    _x params ["_u", "_to", "_trail", "_clip"];
                     private _reached = (_u distance2D _to) < 8;
-                    _report pushBack [[0, 45, 90, 135, 180, 225, 270, 315] select _forEachIndex, _reached, _reached && { !([_trail call _dense] call _viaGate) }, (getPosATL _u) call _model];
+                    private _gate = [_trail] call _viaGate;
+                    // Where it left the walls: the last trail point within 2.5 m of a piece
+                    private _left = [];
+                    { private _p = _x; if ((_barriers findIf { (_x distance2D _p) < 2.5 }) > -1) then { _left = _p } } forEach _trail;
+                    if (_clip isNotEqualTo "") then { _clips pushBack _clip };
+                    if (!_reached) then { _stuck = _stuck + 1 } else { if (_gate) then { _gated = _gated + 1 } else { _gaps = _gaps + 1 } };
+                    diag_log format ["OTROADMAN|%1|%2|%3|%4|%5|%6|%7|%8|%9", _town, _tier, _variant + " " + _behaviour, [0, 45, 90, 135, 180, 225, 270, 315] select _forEachIndex,
+                        ["stuck", "out"] select _reached,
+                        ["", ["by a gap", "through a gate"] select _gate] select _reached,
+                        ["", _clip] select (_clip isNotEqualTo ""),
+                        [[], _left call _model] select (_left isNotEqualTo []), (getPosATL _u) call _model];
                 } forEach _men;
-                diag_log format ["OTROADLIVE|%1|%2|%3|%4", _town, _tier, _behaviour, _report];
                 { deleteVehicle (_x select 0) } forEach _men;
+                diag_log format ["OTROADSUM|%1|%2|%3|%4|out by a gate %5, by a gap %6, not out %7|walked through a piece: %8 %9", _town, _tier, _variant, _behaviour, _gated, _gaps, _stuck, count _clips, _clips];
                 sleep 1;
-            } forEach ["safe", "combat"];
+              } forEach ["safe", "combat"];
+              call _off;
+              sleep 1;
+            } forEach _liveVariants;
 
             [_office] call OT_fnc_officeClearTemplate;
             [_town, [_town] call OT_fnc_officeTier] call OT_fnc_officeHide;

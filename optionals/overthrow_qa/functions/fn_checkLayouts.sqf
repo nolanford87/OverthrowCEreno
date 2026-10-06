@@ -13,7 +13,8 @@
                 within 4 m: facing a wall
             blocked: [[role, m, [x, y]], ...] statics whose field of fire (a 60 degree cone, 40 m) ends within 15 m
             views: the guards' median clear view in metres
-        OTPATH|town|tier|bearing|[x, y]|[[x, y], ...] a way out: a man's route (the engine's path finding) from the
+        OTPATH|town|tier|bearing|[x, y]|[[x, y], ...] a way out: a man's route (the engine's path finding, planned
+            in "combat"; OTPATHSAFE|town|tier|n of 8 the ways out not through a gate planned in "safe") from the
             office's door to a point 60 m out at that bearing from the office's front, [x, y] where it last passes
             within 3 m of a fortification (the gap), and the route every ~5 m out to 45 m, then |gate [x, y] when it
             goes out through one of the tier's gates (a "gate" item, within its half width + 1 m), else |none (a gap
@@ -61,9 +62,11 @@
         // The furthest clear distance over a cone of rays from a point (ASL) round a direction
         // A man's route (the engine's path finding) between two points, [] when it isn't computed in 30 s
         private _route = {
-            params ["_from", "_to"];
+            params ["_from", "_to", ["_behaviour", "combat"]];
             OTQA_pathDone = nil;
-            private _agent = calculatePath ["man", "safe", _from, _to];
+            // Planned as an attacker or alerted defender moves ("combat"): in "safe" the engine walks through pieces
+            // standing on a road (the roadpath survey), which no fighting man does
+            private _agent = calculatePath ["man", _behaviour, _from, _to];
             _agent addEventHandler ["PathCalculated", { OTQA_pathDone = _this select 1 }];
             private _t = time + 30;
             waitUntil { sleep 0.2; !isNil "OTQA_pathDone" || { time > _t } };
@@ -291,6 +294,25 @@
                 // One line per way out (an RPT line is cut at about 1 KB)
                 { diag_log format ["OTPATH|%1|%2|%3|%4|%5|%6", _town, _tier, _x select 0, _x select 1, _x select 2, _x select 3] } forEach _ways;
                 if (_ways isEqualTo []) then { diag_log format ["OTPATH|%1|%2|%3", _town, _tier, ["closed", format ["unknown (%1 of 8 routes not computed)", _none]] select (_none > 0)] };
+
+                // A second readout in "safe" (relaxed men, who take road pieces as if they weren't there): ways out not
+                // through a gate. OTPATHSAFE|town|tier|n of 8
+                private _safeOff = 0;
+                {
+                    private _to = (getPosATL _b) getPos [60, (getDir _b) + _x];
+                    private _road = (_to nearRoads 25) param [0, objNull];
+                    if (!isNull _road) then { _to = getPosATL _road };
+                    private _path = if (_exit isEqualTo []) then { [] } else { [_exit, _to, "safe"] call _route };
+                    if (_path isNotEqualTo [] && { ((_path select -1) distance2D _to) < 4 }) then {
+                        private _d = [_path select 0];
+                        for "_i" from 1 to (count _path) - 1 do {
+                            private _a = _path select (_i - 1); private _c = _path select _i; private _n = ceil (_a distance2D _c);
+                            for "_k" from 1 to _n do { _d pushBack (_a vectorAdd ((_c vectorDiff _a) vectorMultiply (_k / _n))) };
+                        };
+                        if ((_gates findIf { _x params ["_g", "_w"]; (_d findIf { (_x distance2D _g) <= (_w / 2 + 1) }) > -1 }) isEqualTo -1) then { _safeOff = _safeOff + 1 };
+                    };
+                } forEach [0, 45, 90, 135, 180, 225, 270, 315];
+                diag_log format ["OTPATHSAFE|%1|%2|%3 of 8", _town, _tier, _safeOff];
 
                 // And the attacker's way: from the same 8 points 60 m out to the office (the engine's routes aren't
                 // the same both ways). OTPATHIN|town|tier|bearing|[x, y] where it first passes within 3 m of a
