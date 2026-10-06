@@ -59,7 +59,8 @@ class CfgFunctions {
             class townLayout {}; // The mayor's office layout editor, ["townlayout"] spawn OTQA_fnc_run
             class testsTownLayout {};
             class testsOfficeGameplay {};
-            class probeClasses {}; // Survey: the real size of every gate-like class, ["classprobe"] spawn OTQA_fnc_run
+            class probeClasses {};
+            class roadPath {}; // Survey: why path finding walks through layout pieces on roads, ["roadpath"] spawn OTQA_fnc_run // Survey: the real size of every gate-like class, ["classprobe"] spawn OTQA_fnc_run
             class checkLayouts {}; // Survey: measures and screenshots each town's office layout, ["layoutcheck"] spawn OTQA_fnc_run
             class probeTowns {}; // Survey: each town's office surroundings for drafting layouts, ["townprobe"] spawn OTQA_fnc_run
             // Bug fix QA tests: the suite, and the tests for each fix batch it's made of
