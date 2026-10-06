@@ -2,7 +2,8 @@
 Generates a town's occupier compound walls (tools/officegen/COMPOUND_PLAN.md) from its areas
 (tools/officegen/compounds/<world>.txt) and the block probe (tools/officegen/probes/<world>_blocks.txt). Each tier
 3+ with an area becomes the town's tier 2 snapshot plus one ring round that area (the tier below's ring comes down):
-    - an edge running along a road is set inside it (no barrier stands on a road: the AI walks through those);
+    - an edge running along a road is set 0.25 m inside its edge at T3 (H-barrier); at T4+ (military and concrete
+      walls) the walls follow the edge as drawn;
     - a road crossing an edge is a gate of its width (3.5-8 m); a compound no road crosses gets a 4 m main gate on
       its road-facing edge nearest the HQ's door;
     - a building on an edge is part of the wall; a door of it opening outside the area is barricaded;
@@ -30,7 +31,9 @@ MIL = ("Land_Mil_WallBig_4m_F", 4.0)   # The tall green military wall (T4+)
 MIL_JOINT = 0.1
 CNC = ("Land_CncWall1_F", 1.4)         # The small grey concrete wall (fills a run's remainder)
 JOINT = 0.3          # How far pieces run into each other
-ROAD_CLEAR = 1.0     # A wall's middle line at least this far off a road's edge
+# How far inside a road's edge an edge along it is set, by tier (the user's): the deep H-barrier (T3) 0.25 m; the
+# thin military and concrete walls (T4+) none, they follow the edge as drawn
+ROAD_CLEAR = {3: 0.25}
 GATE_SMALL, GATE_LARGE = "Land_NetFence_01_m_gate_F", "Land_Net_Fence_Gate_F"
 
 
@@ -142,7 +145,7 @@ class Gen:
                 continue
             for k in range(11):
                 p = add(a, mul(sub(b, a), k / 10))
-                worst = max(worst, r["width"] / 2 + ROAD_CLEAR - seg_dist(p, ra, rb))
+                worst = max(worst, r["width"] / 2 + ROAD_CLEAR[self.tier] - seg_dist(p, ra, rb))
         return worst
 
     def edges(self):
@@ -153,7 +156,7 @@ class Gen:
             a, b = self.poly[i], self.poly[(i + 1) % n]
             u = norm(sub(b, a))
             inward = (-u[1], u[0])
-            off = min(max(self.road_clearance(a, b), 0), 4)
+            off = min(max(self.road_clearance(a, b), 0), 4) if self.tier in ROAD_CLEAR else 0
             if off > 0:
                 self.notes.append(f"edge {i} set {off:.1f} m inside a road along it")
             lines.append((add(a, mul(inward, off)), u))
