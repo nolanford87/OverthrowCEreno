@@ -12,6 +12,7 @@
     5. Called off: the town's stability rises before the office is taken, the task is cancelled
     6. The fight for the office: the occupier holding it with nobody of ours inside wins
     7. The office's radius: 30 m for a house, out to the wings for Kavala's hospital
+    8. The office's area: the compound at the town's tier (Rodopoli: T3 then T4), the radius at tiers 1-2
     Uses towns far from the host, so their spawners stay out of it. The hold, the QRF's set-up and the
     results are shortened or forced (OT_officeHoldTime, OT_QRFsetupTime, OT_QRFforceResult).
 
@@ -251,6 +252,29 @@ _tests pushBack ["Office: the radius covers a big building", {
     if (isNil "_keep") then { OT_officeLayouts deleteAt "Kavala" } else { OT_officeLayouts set ["Kavala", _keep] };
     ["Radius: 30 m round a house", _small isEqualTo 30, format ["%1: %2 m", _house, _small]] call OTQA_fnc_check;
     ["Radius: out to the wings round Kavala's hospital", !isNull _hospital && { _big > 45 }, format ["%1 m (hospital found %2)", round _big, !isNull _hospital]] call OTQA_fnc_check;
+}, 10];
+
+_tests pushBack ["Office: the area is the compound at the town's tier", {
+    private _town = "Rodopoli";
+    private _var = format ["officetier%1", _town];
+    private _keep = server getVariable [_var, -1];
+    private _pos = _town call OTQA_og_officePos;
+    // A spot in the T3 and T4 areas (the HQ), one in T4 only, one outside both
+    private _spots = [[18720, 16597, 0], [18750, 16575, 0], [18680, 16620, 0]] apply { createVehicleLocal ["Land_HelipadEmpty_F", _x, [], 0, "CAN_COLLIDE"] };
+    private _ins = {
+        params ["_tier"];
+        server setVariable [_var, _tier];
+        private _area = [_town] call OT_fnc_officeArea;
+        [_area isEqualType [], _spots apply { [_x, _area, _pos] call OT_fnc_officeInArea }]
+    };
+    private _t3 = [3] call _ins;
+    private _t4 = [4] call _ins;
+    private _t1 = [1] call _ins;
+    server setVariable [_var, [_keep, nil] select (_keep isEqualTo -1)];
+    { deleteVehicle _x } forEach _spots;
+    ["Area: tier 3 is the T3 compound (HQ in, T4-only spot out, outside out)", _t3 isEqualTo [true, [true, false, false]], str _t3] call OTQA_fnc_check;
+    ["Area: tier 4 is the T4 compound (the T4-only spot in)", _t4 isEqualTo [true, [true, true, false]], str _t4] call OTQA_fnc_check;
+    ["Area: tier 1 is the radius round the office", (_t1 select 0) isEqualTo false && { ((_t1 select 1) select 0) }, str _t1] call OTQA_fnc_check;
 }, 10];
 
 _tests pushBack ["Office: the occupier holding it wins the fight", {

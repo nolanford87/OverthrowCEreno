@@ -6,7 +6,7 @@
     against the resistance's (players twice) every 5 seconds until one side reaches 1500 points, or the
     occupier wins after 30 minutes if it's ahead. The occupier winning calls _success, losing _fail.
     For a mayor's office (_hold, OT_fnc_officeCapture) instead: the occupier wins by holding the office
-    (nobody of the resistance's within _hold m, some of its own) for 2 minutes; the resistance wins once the
+    (nobody of the resistance's in its area _hold, some of its own) for 2 minutes; the resistance wins once the
     attack is spent (none of the occupier's left within 200 m after 13 minutes) or after 30 minutes.
 
     Parameters:
@@ -17,8 +17,8 @@
         _this # 3: CODE - Called with _params when the resistance wins
         _this # 4: ARRAY - Parameters for _success / _fail
         _this # 5: STRING - Garrison the occupier's surviving attackers join if it wins
-        _this # 6: NUMBER - (Optional) The mayor's office's radius, the fight is for the office (0: the
-            head count, default)
+        _this # 6: ARRAY or NUMBER - (Optional) The mayor's office's area (OT_fnc_officeArea), the fight is
+            for the office (0: the head count, default)
 
     Usage: [_pos, _strength, _success, _fail, _params, _town] call OT_fnc_NATOQRFfight; (scheduled)
 
@@ -62,8 +62,8 @@ while {
 
     if (time > _timeout && { _alive isEqualTo 0 && _enemy isEqualTo 0 }) then { _enemy = 1 };
 
-    if (_hold > 0) then {
-        private _office = _unitsAO select { (_x distance2D _pos) <= _hold };
+    if (_hold isNotEqualTo 0) then {
+        private _office = _unitsAO select { [_x, _hold, _pos] call OT_fnc_officeInArea };
         private _ours = { side _x isEqualTo independent || { captive _x } } count _office;
         _holding = [0, _holding + 5] select (_ours isEqualTo 0 && { (blufor countSide _office) > 0 });
         private _holdTime = missionNamespace getVariable ["OT_officeHoldTime", 120]; // Shorter only in the QA tests
