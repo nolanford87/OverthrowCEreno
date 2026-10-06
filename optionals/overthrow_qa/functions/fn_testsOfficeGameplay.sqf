@@ -341,7 +341,7 @@ _tests pushBack ["Office: trees cleared round the lookout towers", {
     private _far = (nearestTerrainObjects [ASLToAGL (_tower select 2), ["TREE", "SMALL TREE", "BUSH"], 30, false, true]) select { ((_x distance2D ASLToAGL (_tower select 2)) > 14) && { !isObjectHidden _x } };
     [_town, 3] call OT_fnc_officeHide;
     private _hidden = (_trees findIf { !isObjectHidden _x }) < 0;
-    private _farKept = (_far findIf { isObjectHidden _x }) < 0;
+    private _farKept = ((_far - (OT_officeHidden getOrDefault [_town, []])) findIf { isObjectHidden _x }) < 0; // Not the layout's own hides
     private _apart = ((OT_officeHidden getOrDefault [_town, []]) arrayIntersect _trees) isEqualTo [];
     [_town, 1] call OT_fnc_officeHide;
     private _back = (_trees findIf { isObjectHidden _x }) < 0;
@@ -432,6 +432,15 @@ _tests pushBack ["Office: the occupier's men walk out and in through a shut gate
     ["Walk: an occupier soldier gets out through the shut gate", (_outward select 0) && { _outward select 1 }, format ["gate shut first %1, out %2 in %3 s", _outward select 0, _outward select 1, _outward select 2]] call OTQA_fnc_check;
     ["Walk: an occupier soldier gets in through the shut gate", (_inward select 0) && { _inward select 1 }, format ["gate shut first %1, in %2 in %3 s", _inward select 0, _inward select 1, _inward select 2]] call OTQA_fnc_check;
 }, 240];
+
+_tests pushBack ["Office: static weapons by role", {
+    private _hmg = ["hmg"] call OT_fnc_officeStatic;
+    private _weapon = (getArray (configFile >> "CfgVehicles" >> _hmg >> "Turrets" >> "MainTurret" >> "weapons")) param [0, ""];
+    private _mag = (getArray (configFile >> "CfgWeapons" >> _weapon >> "magazines")) param [0, ""];
+    private _sim = getText (configFile >> "CfgAmmo" >> getText (configFile >> "CfgMagazines" >> _mag >> "ammo") >> "simulation");
+    ["Statics: the hmg role is a machine gun (fires bullets)", _sim isEqualTo "shotBullet", format ["%1 fires %2", _hmg, _sim]] call OTQA_fnc_check;
+    ["Statics: the vanilla AT static reads as at, the HMG as hmg", (["B_static_AT_F"] call OT_fnc_officeStatic) isEqualTo "at" && { (["B_HMG_01_high_F"] call OT_fnc_officeStatic) isEqualTo "hmg" }, format ["AT %1, HMG %2", ["B_static_AT_F"] call OT_fnc_officeStatic, ["B_HMG_01_high_F"] call OT_fnc_officeStatic]] call OTQA_fnc_check;
+}, 10];
 
 _tests pushBack ["Office: the occupier holding it wins the fight", {
     if !(call OTQA_og_idle) exitWith { ["Fight: no QRF running first", false, server getVariable ["NATOattacking", ""]] call OTQA_fnc_check };
