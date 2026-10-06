@@ -405,6 +405,8 @@ def check(town, tiers):
             kind, what, p, o, extra = it
             if kind in ("hide", "gate"):
                 continue
+            if what == "Land_HBarrier_Big_F":
+                problems.append(f"tier {n}: Land_HBarrier_Big_F (AI soldiers walk through it): stack an HBarrier_5 and an HBarrier_3 instead (tools/officegen/swap_big.py)")
             m = town.to_model(p)
             dist = math.hypot(m[0], m[1])
             if dist > town.reach + 1:

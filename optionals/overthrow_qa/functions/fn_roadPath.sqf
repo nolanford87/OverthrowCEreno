@@ -161,11 +161,34 @@
                 } forEach _barriers;
                 _hit
             };
+            // Round 4: each Land_HBarrier_Big_F (2-high, 9 m) hidden and replaced by an HBarrier_5 and an HBarrier_3 on the
+            // same line, stacked two high (the lower layer on the ground, the upper 1.4 m up)
             private _liveVariants = [
                 ["base", {}, {}],
-                ["simulation", { { _x enableSimulationGlobal true } forEach _objects }, { { _x enableSimulationGlobal false } forEach _objects }],
-                ["roadsHidden", { { _x hideObjectGlobal true } forEach _roads }, { { _x hideObjectGlobal false } forEach _roads }],
-                ["both", { { _x enableSimulationGlobal true } forEach _objects; { _x hideObjectGlobal true } forEach _roads }, { { _x enableSimulationGlobal false } forEach _objects; { _x hideObjectGlobal false } forEach _roads }]
+                ["swapBig", {
+                    OTQA_roadSwap = [];
+                    {
+                        private _big = _x;
+                        _big hideObjectGlobal true;
+                        {
+                            _x params ["_cls", "_offset"];
+                            {
+                                private _p = _big modelToWorld [_offset, 0, 0];
+                                private _o = createVehicle [_cls, [0, 0, 0], [], 0, "CAN_COLLIDE"];
+                                _o setVectorDirAndUp [vectorDir _big, vectorUp _big];
+                                _o setPosATL [_p select 0, _p select 1, _x];
+                                _o enableSimulationGlobal false;
+                                OTQA_roadSwap pushBack _o;
+                            } forEach [0, 1.4];
+                        } forEach [["Land_HBarrier_5_F", -1.6], ["Land_HBarrier_3_F", 2.7]];
+                    } forEach (_objects select { typeOf _x isEqualTo "Land_HBarrier_Big_F" });
+                    OTQA_roadBarriersKept = _barriers;
+                    _barriers = (_barriers select { typeOf _x isNotEqualTo "Land_HBarrier_Big_F" }) + OTQA_roadSwap;
+                }, {
+                    { deleteVehicle _x } forEach OTQA_roadSwap;
+                    { if (typeOf _x isEqualTo "Land_HBarrier_Big_F") then { _x hideObjectGlobal false } } forEach _objects;
+                    _barriers = OTQA_roadBarriersKept;
+                }]
             ];
             {
               _x params ["_variant", "_on", "_off"];
@@ -206,7 +229,7 @@
                         ["stuck", "out"] select _reached,
                         ["", ["by a gap", "through a gate"] select _gate] select _reached,
                         ["", _clip] select (_clip isNotEqualTo ""),
-                        [[], _left call _model] select (_left isNotEqualTo []), (getPosATL _u) call _model];
+                        (if (_left isEqualTo []) then { [] } else { _left call _model }), (getPosATL _u) call _model];
                 } forEach _men;
                 { deleteVehicle (_x select 0) } forEach _men;
                 diag_log format ["OTROADSUM|%1|%2|%3|%4|out by a gate %5, by a gap %6, not out %7|walked through a piece: %8 %9", _town, _tier, _variant, _behaviour, _gated, _gaps, _stuck, count _clips, _clips];

@@ -32,6 +32,11 @@ Read first: `CLAUDE.md`, `tools/officegen/DESIGN_BRIEF.md` (its passes section),
   `tl.check()` allows it.
 
 ## The rules
+- **Never `Land_HBarrier_Big_F`.** AI soldiers walk straight through it in any behaviour (the QA "roadpath" survey).
+  For a 2-high H-barrier line, stack `Land_HBarrier_5_F` / `_3_F` pieces (the upper layer 1.4 m up); `tl.check()`
+  refuses the big piece, and `tools/officegen/swap_big.py` converts it.
+- **Pieces standing on a road** are walked through by relaxed (safe-mode) AI, whatever the class; fighting AI
+  (combat) respects them. Where a ring crosses a road, prefer a gate there.
 - **Gates (pass 2) on future maps: agents choose, a script cuts.** On Altis the towns agent re-laid whole wall runs
   round its gates and the user's reviewed layouts had to be rolled back. So the agent only places `tl.gate()`
   markers (where, how wide, why), and the lead cuts them with `tools/officegen/cut_gates.py` (it takes out only the
