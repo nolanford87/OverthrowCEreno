@@ -6,12 +6,15 @@ only what's round each gate (the "gate" markers of the tiers 3+ layouts):
       worked by the occupier (OT_fnc_officeGates): no "open" flag. The wall pieces the T4 gate stands on come out
       and the gaps either side of it are filled with small concrete wall;
     - the main gate (the one nearest the HQ) dressed inside, clear of a lane 10 m in from the gate: a small sandbag
-      bunker, the flag, a floodlight facing out, two lamps along the wall; warning signs outside either side;
-      from T4 an HMG behind round sandbags covering the approach (crewed in the garrison step);
+      bunker, the flag by the wall beside the gate, a floodlight about 4 m in and 4 m aside aimed at the gate, two
+      lamps along the wall; one warning sign outside; from T4 an HMG behind round sandbags aimed out through the
+      gate (crewed in the garrison step);
     - side gates: a floodlight and a sign.
+    (The user's touches at Rodopoli's T3: one sign, read from the street (its model +y in); the light aimed at the
+    gate (its lamps face model -y); the flag by the wall.)
 The pieces carry the "entrance" flag; running it again replaces only those (the gate's own cut stays).
 
-    python tools/officegen/gate_gen.py "Town" [--world Altis] [--dry]
+    python tools/officegen/gate_gen.py "Town" [--world Altis] [--tiers 3,4] [--dry]
 """
 import math
 import os
@@ -194,7 +197,7 @@ class Entrances:
             if c:
                 self.put("object", "Land_BagBunker_Small_F", c, cg.mul(n, -1))
                 placed.append("bunker")
-            c = self.near_spot(cg.add(gp, cg.mul(n, 3.0)), SIZE["Flag_NATO_F"], n, ring(gp, sides, (2.0, 3.0, 4.0)), lanes=lanes)
+            c = self.near_spot(cg.add(cg.add(gp, cg.mul(u, 3.0)), cg.mul(n, 0.8)), SIZE["Flag_NATO_F"], n, ring(gp, sides, (0.8, 1.2, 1.8, 2.5)), lanes=lanes)
             if c:
                 self.put("object", "Flag_NATO_F", c, n, "ground,flag,entrance")
                 placed.append("flag")
@@ -215,18 +218,24 @@ class Entrances:
                     self.put("static", "hmg", c, d)
                     self.put("object", "Land_BagFence_Round_F", cg.add(c, cg.mul(d, 1.4)), d)
                     placed.append("HMG nest")
-        # A floodlight inside by the gate, facing out
-        c = self.near_spot(cg.add(gp, cg.mul(n, 2.0)), SIZE["Land_PortableLight_double_F"], cg.mul(n, -1), ring(gp, sides, (1.8, 2.5, 3.5)), lanes=lanes)
-        if c:
-            self.put("object", "Land_PortableLight_double_F", c, cg.mul(n, -1))
+        # A floodlight inside beside the lane, aimed at the gate (its lamps face model -y)
+        rings = ring(gp, [x * s for x in (3.5, 4.0, 4.5, 5.0, 6.0) for s in (1, -1)], (3.5, 4.0, 4.5, 5.0, 6.0))
+        best = None
+        for c in rings:
+            d = cg.norm(cg.sub(c, gp))
+            if self.free(c, d, SIZE["Land_PortableLight_double_F"], lanes=lanes):
+                key = abs(math.dist(c, gp) - 5.8)
+                if best is None or key < best[0]:
+                    best = (key, c, d)
+        if best:
+            self.put("object", "Land_PortableLight_double_F", best[1], best[2])
             placed.append("floodlight")
-        # Signs outside either side (one at a side gate), facing out
-        for s in ((1, -1) if main else (1,)):
-            c = self.near_spot(cg.add(gp, cg.mul(u, s * 4.0)), SIZE["Land_Sign_WarningMilitaryArea_F"], cg.mul(n, -1),
-                               ring(gp, [s * x for x in (3.5, 4.5, 5.5, 6.5, 8.0)], (-1.2, -1.8, -2.5, -3.2)), inside=False, lanes=lanes, verge=True)
-            if c:
-                self.put("object", "Land_Sign_WarningMilitaryArea_F", c, cg.mul(n, -1))
-                placed.append("sign")
+        # One sign outside, read from the street (its model +y in)
+        c = self.near_spot(cg.add(gp, cg.mul(u, 4.0)), SIZE["Land_Sign_WarningMilitaryArea_F"], n,
+                           ring(gp, [x * s for x in (3.5, 4.5, 5.5, 6.5, 8.0) for s in (1, -1)], (-1.2, -1.8, -2.5, -3.2)), inside=False, lanes=lanes, verge=True)
+        if c:
+            self.put("object", "Land_Sign_WarningMilitaryArea_F", c, n)
+            placed.append("sign")
         # Lamps along the wall inside, either side
         if main:
             for s in (1, -1):
@@ -245,7 +254,8 @@ def main(argv):
     areas = merge_compounds.load_saved(world)[town]["tiers"]
     towns = merge_layouts.load_saved(world)
     t = towns[town]
-    for tier in (3, 4, 5):
+    only = [int(a) for a in argv[argv.index("--tiers") + 1].split(",")] if "--tiers" in argv else (3, 4, 5)
+    for tier in only:
         if tier not in areas or tier not in t["tiers"]:
             continue
         e = Entrances(block, areas[tier], tier, t["tiers"][tier], town)
