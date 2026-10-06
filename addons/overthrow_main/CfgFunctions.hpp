@@ -881,11 +881,17 @@ class CfgFunctions {
             class officeHide {};
             class officeCapture {};
             class officeRadius {};
+            class officeCompound {};
         };
         // Mayor's office layouts authored in each town (tools/officegen/merge_layouts.py), one per map
         class OfficeLayouts {
             file = "\overthrow_main\functions\offices\layouts";
             class officeLayouts_Altis {};
+        };
+        // The occupier compounds' areas in each town (tools/officegen/merge_compounds.py), one per map
+        class OfficeCompounds {
+            file = "\overthrow_mainunctions\offices\compounds";
+            class officeCompounds_Altis {};
         };
         /*
          * Mod integration
