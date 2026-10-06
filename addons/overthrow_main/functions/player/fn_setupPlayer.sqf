@@ -18,6 +18,17 @@ if ((missionNamespace getVariable ["OT_setupPlayerUnit", objNull]) isNotEqualTo 
     // Drugs: harvest a wild ganja plant within 3 m (OT_fnc_ganjaHarvest)
     player addAction ["Harvest the ganja plant", { [] spawn OT_fnc_ganjaHarvest }, nil, 1.5, true, true, "",
         "isNull objectParent _this && { isNil 'OT_ganjaPicking' } && { ((missionNamespace getVariable ['OT_ganjaPlants', []]) findIf { !isNull _x && { (_this distance2D _x) < 3 } }) > -1 }"];
+    // Compounds: pick a locked door with ACE's lockpick (OT_fnc_officeLockNear), as long as ACE picks a car's lock
+    player addAction ["Pick the lock", {
+        params ["", "_caller"];
+        private _door = [_caller] call OT_fnc_officeLockNear;
+        if (_door isEqualTo []) exitWith {};
+        [missionNamespace getVariable ["ace_vehiclelock_defaultLockpickStrength", 10], _door, {
+            (_this select 0) remoteExec ["OT_fnc_officeUnlock", 2];
+            "The lock gives" call OT_fnc_notifyMinor;
+        }, {}, "Picking the lock..."] call ace_common_fnc_progressBar;
+    }, nil, 1.5, true, true, "",
+        "isNull objectParent _this && { 'ACE_key_lockpick' in items _this } && { (cursorObject getVariable ['OT_lockedDoors', []]) isNotEqualTo [] } && { ([_this] call OT_fnc_officeLockNear) isNotEqualTo [] }"];
     if (isNil "OT_huntLicenceLoopId") then { OT_huntLicenceLoopId = [OT_fnc_huntingLicenceLoop, 10] call CBA_fnc_addPerFrameHandler };
     // Fishing: the driver of a fishing boat casts its net, once every 15 seconds, going slowly
     player addAction ["Cast the net", {

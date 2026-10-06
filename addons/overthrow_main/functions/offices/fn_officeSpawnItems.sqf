@@ -72,6 +72,11 @@ private _group = grpNull;
             { if ("sound_source" in toLower _x) then { _object animateSource [_x, 1, true] } } forEach (("true" configClasses (configOf _object >> "AnimationSources")) apply { configName _x });
         } else {
             _object enableSimulationGlobal false;
+            // A closed gate locked: only a charge opens it (OT_fnc_officeBreach)
+            if ("gate" in toLower _class) then {
+                for "_d" from 1 to getNumber (configOf _object >> "numberOfDoors") do { _object setVariable [format ["bis_disabled_Door_%1", _d], 1, true] };
+                _object setVariable ["OT_officeGate", true, true];
+            };
         };
         _object setVariable ["OT_officeItem", _tag + [_forEachIndex, _item]];
         _objects pushBack _object;

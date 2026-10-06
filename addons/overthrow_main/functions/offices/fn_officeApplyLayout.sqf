@@ -36,6 +36,7 @@ _tier = (round _tier) max 1 min 5;
 
 ([_tiers param [_tier - 1, []], _side, _placeholders, [_town, _tier]] call OT_fnc_officeSpawnItems) params ["_objects", "_guards"];
 [_town, _tier] call OT_fnc_officeHide; // The map objects the tier removes
+[_town, _tier] call OT_fnc_officeDoors; // The doors out of its compound locked
 
 _building setVariable ["OT_officeObjects", _objects];
 _building setVariable ["OT_officeGuards", _guards];

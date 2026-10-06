@@ -60,6 +60,7 @@ if !(server getVariable [_held, false]) then {
     [_task, _result, true] call BIS_fnc_taskSetState;
     if (_result isEqualTo "SUCCEEDED") then {
         server setVariable [_held, true, true];
+        [_town, 0] call OT_fnc_officeDoors; // The compound's doors unlocked
         format ["We hold the mayor's office in %1. Bunker down: %2 will counter-attack it in about 10 minutes", _town, OT_NATO_name] remoteExec ["OT_fnc_notifyGood", 0, false];
     };
 };

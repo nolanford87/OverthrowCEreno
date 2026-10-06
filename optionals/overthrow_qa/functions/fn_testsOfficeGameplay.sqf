@@ -13,6 +13,8 @@
     6. The fight for the office: the occupier holding it with nobody of ours inside wins
     7. The office's radius: 30 m for a house, out to the wings for Kavala's hospital
     8. The office's area: the compound at the town's tier (Rodopoli: T3 then T4), the radius at tiers 1-2
+    9. Locked doors: Rodopoli's doors out of its compound locked at T3, all unlocked for none; the lockpick
+       unlocks one; a charge breaches the doors near it and a closed gate, not those farther off
     Uses towns far from the host, so their spawners stay out of it. The hold, the QRF's set-up and the
     results are shortened or forced (OT_officeHoldTime, OT_QRFsetupTime, OT_QRFforceResult).
 
@@ -276,6 +278,54 @@ _tests pushBack ["Office: the area is the compound at the town's tier", {
     ["Area: tier 4 is the T4 compound (the T4-only spot in)", _t4 isEqualTo [true, [true, true, false]], str _t4] call OTQA_fnc_check;
     ["Area: tier 1 is the radius round the office", (_t1 select 0) isEqualTo false && { ((_t1 select 1) select 0) }, str _t1] call OTQA_fnc_check;
 }, 10];
+
+_tests pushBack ["Office: the compound's doors locked, picked and breached", {
+    private _town = "Rodopoli";
+    private _locked = { (_this select 0) getVariable [format ["bis_disabled_Door_%1", _this select 1], 0] };
+    private _t3 = [_town, 3] call OT_fnc_officeDoors;
+    diag_log format ["OT_QA locked doors %1 T3: %2", _town, _t3 apply { [typeOf (_x select 0), _x select 1, getPosATL (_x select 0)] }];
+    private _t4 = [_town, 4] call OT_fnc_officeDoors;
+    diag_log format ["OT_QA locked doors %1 T4: %2", _town, _t4 apply { [typeOf (_x select 0), _x select 1, getPosATL (_x select 0)] }];
+    private _none = [_town, 0] call OT_fnc_officeDoors;
+    private _allOpen = ((_t3 + _t4) findIf { (_x call _locked) isNotEqualTo 0 }) < 0;
+    _t3 = [_town, 3] call OT_fnc_officeDoors;
+    private _allLocked = (_t3 findIf { (_x call _locked) isNotEqualTo 1 }) < 0;
+    // The block probe's buildings by the same rule: T3 the house across its line (6 doors), T4 the two houses
+    // across its line and the garage (13)
+    ["Doors: T3 locks the doors out of the compound, the building knows them", (count _t3) isEqualTo 6 && { (count _t4) isEqualTo 13 } && _allLocked && { (_t3 findIf { !((_x select 1) in ((_x select 0) getVariable ["OT_lockedDoors", []])) }) < 0 }, format ["%1 locked at T3, %2 at T4", count _t3, count _t4]] call OTQA_fnc_check;
+    ["Doors: none locked for no tier, all unlocked again", _none isEqualTo [] && _allOpen, str count _none] call OTQA_fnc_check;
+
+    // The lockpick: one door unlocked, the rest kept
+    (_t3 select 0) params ["_pb", "_pd"];
+    [_pb, _pd] call OT_fnc_officeUnlock;
+    private _picked = ([_pb, _pd] call _locked) isEqualTo 0 && { !(_pd in (_pb getVariable ["OT_lockedDoors", []])) };
+    private _others = ((_t3 - [[_pb, _pd]]) findIf { (_x call _locked) isNotEqualTo 1 }) < 0;
+    ["Lockpick: the door unlocked, the others still locked", _picked && _others, format ["%1 door %2", typeOf _pb, _pd]] call OTQA_fnc_check;
+
+    // A charge at a locked door: it's breached, a locked door more than 3 m off isn't
+    _t3 = [_town, 3] call OT_fnc_officeDoors;
+    (_t3 select 0) params ["_bb", "_bd"];
+    private _at = AGLToASL ([_bb, _bd] call OT_fnc_officeDoorPos);
+    private _far = _t3 select { (AGLToASL ([_x select 0, _x select 1] call OT_fnc_officeDoorPos) distance _at) > 6 };
+    [_at] call OT_fnc_officeBreach;
+    private _breached = ([_bb, _bd] call _locked) isEqualTo 0;
+    private _kept = (_far findIf { (_x call _locked) isNotEqualTo 1 }) < 0;
+    ["Charge: the door by it breached, those farther off still locked", _breached && _kept && { _far isNotEqualTo [] }, format ["%1 door %2, %3 farther off", typeOf _bb, _bd, count _far]] call OTQA_fnc_check;
+
+    // A closed gate: locked, never picked, breached by a charge
+    private _o = _town call OTQA_og_officePos;
+    private _gatePos = AGLToASL [(_o select 0) + 400, (_o select 1) + 400, 0];
+    (([[["object", "Land_NetFence_01_m_gate_F", _gatePos, [[0, 1, 0], [0, 0, 1]], ["ground"]]], west, true, [_town, 3]] call OT_fnc_officeSpawnItems) select 0) params ["_gate"];
+    private _gateLocked = (_gate getVariable ["OT_officeGate", false]) && { ([_gate, 1] call _locked) isEqualTo 1 };
+    [AGLToASL ((getPosATL _gate) vectorAdd [6, 0, 0])] call OT_fnc_officeBreach;
+    private _stillLocked = ([_gate, 1] call _locked) isEqualTo 1;
+    [getPosASL _gate] call OT_fnc_officeBreach;
+    private _gateOpen = ([_gate, 1] call _locked) isEqualTo 0 && { !(_gate getVariable ["OT_officeGate", false]) };
+    deleteVehicle _gate;
+    ["Gate: a closed gate locked, a charge 6 m off leaves it, one at it breaches it", _gateLocked && _stillLocked && _gateOpen, format ["locked %1, after a far charge %2, breached %3", _gateLocked, _stillLocked, _gateOpen]] call OTQA_fnc_check;
+
+    [_town, [_town] call OT_fnc_officeTier] call OT_fnc_officeDoors;
+}, 20];
 
 _tests pushBack ["Office: the occupier holding it wins the fight", {
     if !(call OTQA_og_idle) exitWith { ["Fight: no QRF running first", false, server getVariable ["NATOattacking", ""]] call OTQA_fnc_check };

@@ -31,6 +31,19 @@ OT_ACEremoveActionConfirm = [
     10
 ] call ace_interact_menu_fnc_createAction;
 
+// A charge set off by a player (ACE explosives) breaches the compounds' locked doors and gates near it,
+// once its fuse has burnt (OT_fnc_officeBreach); handlers run where the charge is set off
+if (isNil "OT_breachHandler" && { !isNil "ace_explosives_fnc_addDetonateHandler" }) then {
+    OT_breachHandler = true;
+    [{
+        params ["", "", "_explosive", ["_fuze", 0]];
+        if (!isNull _explosive) then {
+            [{ _this remoteExec ["OT_fnc_officeBreach", 2] }, [getPosASL _explosive], (_fuze max 0) + 0.1] call CBA_fnc_waitAndExecute;
+        };
+        true
+    }] call ace_explosives_fnc_addDetonateHandler;
+};
+
 //Find markers
 OT_ferryDestinations = [];
 OT_NATO_control = [];
