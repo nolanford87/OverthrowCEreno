@@ -140,7 +140,8 @@ def svg(b, path, polygons=None, reach=90, scale=6, marks=None, pieces=None):
     # objects as crosses
     sizes = {"Land_HBarrier_5_F": (5.8, 1.7), "Land_HBarrier_3_F": (3.6, 1.7), "Land_HBarrier_1_F": (1.4, 1.5),
              "Land_Mil_WallBig_4m_F": (4.0, 0.6), "Land_CncWall1_F": (1.4, 1.0), "Land_NetFence_01_m_gate_F": (4.1, 0.3),
-             "Land_Net_Fence_Gate_F": (6.2, 0.3), "Land_BagFence_Long_F": (2.9, 0.5), "Land_BagFence_Short_F": (1.5, 0.5)}
+             "Land_Net_Fence_Gate_F": (6.2, 0.3), "Land_BagFence_Long_F": (2.9, 0.5), "Land_BagFence_Short_F": (1.5, 0.5),
+             "Land_BagBunker_Tower_F": (6.4, 9.83), "Land_Cargo_Patrol_V1_F": (6.67, 6.8), "Land_Cargo_Tower_V1_F": (14.83, 13.48)}
     seen = set()
     for it in (pieces or []):
         kind, cls, pos, ori = it[0], it[1], [float(v) for v in str(it[2]).strip("[]").split(",")], it[3]
