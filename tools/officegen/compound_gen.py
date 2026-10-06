@@ -7,7 +7,8 @@ Generates a town's occupier compound walls (tools/officegen/COMPOUND_PLAN.md) fr
     - a road crossing an edge is a gate of its width (3.5-8 m); a compound no road crosses gets a 4 m main gate on
       its road-facing edge nearest the HQ's door;
     - a building on an edge is part of the wall; a door of it opening outside the area is barricaded;
-    - the map's walls and fences along an edge are hidden (our wall goes up on their line);
+    - the map's walls and fences along an edge or inside the area are hidden (our wall goes up on the edge's;
+      the occupier cleared the compound);
     - the rest of every edge is wall: T3 2-high H-barrier (the upper layer 1.4 m up, each pair on the ground) with
       small concrete wall for the remainders; T4+ mostly the tall military wall, small concrete wall for the
       remainders, 2-high H-barrier where the ground slopes too much for a rigid panel.
@@ -267,7 +268,11 @@ class Gen:
                 e2 = ((c[1][0] + c[2][0]) / 2, (c[1][1] + c[2][1]) / 2)
                 mid = ((e1[0] + e2[0]) / 2, (e1[1] + e2[1]) / 2)
                 along = norm(sub(e2, e1))
-                if seg_dist(mid, a, b) < 2.0 and (math.dist(e1, e2) < 1.5 or abs(dot(along, u)) > 0.9) and id(w) not in hidden:
+                # On the edge (along it, or short), or anywhere inside the area: the occupier cleared the compound
+                # (the edge as drawn and as set off a road: whichever is nearer)
+                a0, b0 = self.poly[i], self.poly[(i + 1) % len(self.poly)]
+                near = min(seg_dist(mid, a, b), seg_dist(mid, a0, b0))
+                if id(w) not in hidden and (inside(mid, self.poly) or (near < 2.0 and (math.dist(e1, e2) < 1.5 or abs(dot(along, u)) > 0.9))):
                     hidden.add(id(w))
                     self.items.append(["hide", w.model, f"[{w.pos[0]:.3f},{w.pos[1]:.3f},{w.pos[2]:.3f}]", "[[0.0000,1.0000,0.0000],[0.0000,0.0000,1.0000]]", ""])
             # The gates
