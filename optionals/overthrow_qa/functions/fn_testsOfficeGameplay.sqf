@@ -15,6 +15,8 @@
     8. The office's area: the compound at the town's tier (Rodopoli: T3 then T4), the radius at tiers 1-2
     9. Locked doors: Rodopoli's doors out of its compound locked at T3, all unlocked for none; the lockpick
        unlocks one; a charge breaches the doors near it and a closed gate, not those farther off
+    10. Lookout towers: the trees and bushes within 10 m of Rodopoli's T3 tower cleared at T3 (not saved as the
+       layout's hides), back at tier 1
     Uses towns far from the host, so their spawners stay out of it. The hold, the QRF's set-up and the
     results are shortened or forced (OT_officeHoldTime, OT_QRFsetupTime, OT_QRFforceResult).
 
@@ -326,6 +328,23 @@ _tests pushBack ["Office: the compound's doors locked, picked and breached", {
 
     [_town, [_town] call OT_fnc_officeTier] call OT_fnc_officeDoors;
 }, 20];
+
+_tests pushBack ["Office: trees cleared round the lookout towers", {
+    private _town = "Rodopoli";
+    private _tower = (((([_town] call OT_fnc_officeLayout) select 1) select 2) select { "lookout" in (_x param [4, []]) }) param [0, []];
+    if (_tower isEqualTo []) exitWith { ["Towers: Rodopoli's T3 has a lookout tower", false, ""] call OTQA_fnc_check };
+    private _trees = nearestTerrainObjects [ASLToAGL (_tower select 2), ["TREE", "SMALL TREE", "BUSH"], 10, false, true];
+    private _far = (nearestTerrainObjects [ASLToAGL (_tower select 2), ["TREE", "SMALL TREE", "BUSH"], 30, false, true]) select { ((_x distance2D ASLToAGL (_tower select 2)) > 14) && { !isObjectHidden _x } };
+    [_town, 3] call OT_fnc_officeHide;
+    private _hidden = (_trees findIf { !isObjectHidden _x }) < 0;
+    private _farKept = (_far findIf { isObjectHidden _x }) < 0;
+    private _apart = ((OT_officeHidden getOrDefault [_town, []]) arrayIntersect _trees) isEqualTo [];
+    [_town, 1] call OT_fnc_officeHide;
+    private _back = (_trees findIf { isObjectHidden _x }) < 0;
+    [_town, [_town] call OT_fnc_officeTier] call OT_fnc_officeHide;
+    ["Towers: the trees within 10 m cleared at T3, those farther off kept, apart from the layout's hides", _trees isNotEqualTo [] && _hidden && _farKept && _apart, format ["%1 trees and bushes cleared, %2 farther off kept %3, apart %4", count _trees, count _far, _farKept, _apart]] call OTQA_fnc_check;
+    ["Towers: the trees back at tier 1", _back, str _back] call OTQA_fnc_check;
+}, 10];
 
 _tests pushBack ["Office: the occupier holding it wins the fight", {
     if !(call OTQA_og_idle) exitWith { ["Fight: no QRF running first", false, server getVariable ["NATOattacking", ""]] call OTQA_fnc_check };

@@ -468,6 +468,19 @@ OTQA_townLayout_save = {
     private _town = OTQA_townLayout get "town";
     private _tier = OTQA_townLayout get "tier";
     private _b = OTQA_townLayout get "building";
+    // The pieces moved since the tier was shown (from where their item put them), logged as OTLAYOUTMOVED lines;
+    // more than a few at once is warned about (a whole wall once moved 1.2 m in a save with only a few edits)
+    private _moved = (call OTQA_townLayout_live) select {
+        private _item = (_x getVariable ["OT_officeItem", []]) param [3, []];
+        !(_x isKindOf "CAManBase") && { _item isNotEqualTo [] } && { ((getPosASL _x) distance2D (_item select 2)) > 0.05 }
+    };
+    {
+        private _item = (_x getVariable ["OT_officeItem", []]) select 3;
+        diag_log format ["OTLAYOUTMOVED|%1|%2|%3|%4|%5|%6", _town, _tier, typeOf _x, _item select 2, getPosASL _x, _item param [4, []]];
+    } forEach _moved;
+    if ((count _moved) > 5) then {
+        systemChat format ["Layout editor: %1 pieces moved since tier %2 was shown, more than a few edits would move. Saved anyway; tell Claude if you didn't move them.", count _moved, _tier];
+    };
     private _spawned = OTQA_townLayout get "spawned";
     private _items = ((call OTQA_townLayout_live) select { !(_x isKindOf "CAManBase") || { alive _x } }) apply {
         if (_x isKindOf "CAManBase") then {
@@ -477,6 +490,7 @@ OTQA_townLayout_save = {
             if (_static isNotEqualTo "") exitWith { ["static", _static, getPosASL _x, [vectorDir _x, vectorUp _x], []] };
             private _extra = [[], ["flag"]] select (_x isKindOf "FlagCarrier");
             if ("open" in (((_x getVariable ["OT_officeItem", []]) param [3, []]) param [4, []]) || { "_gate" in toLower typeOf _x }) then { _extra pushBack "open" }; // A gate stays open
+            if ("lookout" in (((_x getVariable ["OT_officeItem", []]) param [3, []]) param [4, []])) then { _extra pushBack "lookout" }; // A lookout tower stays one (tools/officegen/tower_gen.py)
             ["object", typeOf _x, getPosASL _x, [vectorDir _x, vectorUp _x], _extra]
         }
     };
