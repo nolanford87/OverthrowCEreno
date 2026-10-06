@@ -66,7 +66,7 @@ OTQA_compound_show = {
 };
 
 // The polygon of a tier from its arrows, world [x, y]
-OTQA_compound_poly = { params ["_tier"]; ((OTQA_compound get "verts") select (_tier - 3)) apply { (getPosATL _x) select [0, 2] } };
+OTQA_compound_poly = { params ["_tier"]; ((OTQA_compound getOrDefault ["verts", [[], [], []]]) param [_tier - 3, []]) apply { (getPosATL _x) select [0, 2] } };
 
 OTQA_compound_addVertex = {
     private _aim = screenToWorld [0.5, 0.5];
