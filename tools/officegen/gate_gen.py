@@ -217,7 +217,8 @@ class Entrances:
                 if best:
                     _, c, d = best
                     self.put("static", "hmg", c, d)
-                    self.put("object", "Land_BagFence_Round_F", cg.add(c, cg.mul(d, 1.4)), d)
+                    # The round sandbags' curve is their model -y (the user turned one round at Rodopoli)
+                    self.put("object", "Land_BagFence_Round_F", cg.add(c, cg.mul(d, 1.4)), cg.mul(d, -1))
                     placed.append("HMG nest")
         # A floodlight inside beside the lane, aimed at the gate (its lamps face model -y)
         rings = ring(gp, [x * s for x in (3.5, 4.0, 4.5, 5.0, 6.0) for s in (1, -1)], (3.5, 4.0, 4.5, 5.0, 6.0))

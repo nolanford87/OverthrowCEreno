@@ -489,7 +489,7 @@ OTQA_townLayout_save = {
             ["guard", [_x] call OTQA_townLayout_role, getPosASL _x, getDir _x, _was select { _x in ["patrol", "garrison"] }]
         } else {
             private _static = [_x] call OT_fnc_officeStatic;
-            if (_static isNotEqualTo "") exitWith { ["static", _static, getPosASL _x, [vectorDir _x, vectorUp _x], []] };
+            if (_static isNotEqualTo "") exitWith { ["static", _static, getPosASL _x, [vectorDir _x, vectorUp _x], (((_x getVariable ["OT_officeItem", []]) param [3, []]) param [4, []]) select { _x in ["entrance", "garrison"] }] };
             private _extra = [[], ["flag"]] select (_x isKindOf "FlagCarrier");
             private _was = ((_x getVariable ["OT_officeItem", []]) param [3, []]) param [4, []];
             // A gate the layout put keeps its state (a compound's shut gate stays shut, OT_fnc_officeGates); one
