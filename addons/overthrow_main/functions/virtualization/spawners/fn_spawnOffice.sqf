@@ -19,6 +19,8 @@ if (!isServer) exitWith {};
 params ["_town", "_spawnid"];
 
 if (([_town] call OT_fnc_officeLayout) isEqualTo []) exitWith {};
+// The QA layout editor showing this town puts its own tiers up (OT_officeEditing): the game's office stays out
+if ((missionNamespace getVariable ["OT_officeEditing", ""]) isEqualTo _town) exitWith {};
 
 ([_town, [_town] call OT_fnc_officeTier, blufor] call OT_fnc_officeApplyLayout) params ["", "_objects", "_guards"];
 

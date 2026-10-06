@@ -311,6 +311,10 @@ OTQA_townLayout_show = {
     // A town part done picks up at its last saved tier (the next one's additions go on top below), a done one's
     // review opens at its top tier (tier 1 is often empty)
     private _from = (([_layout] call OTQA_townLayout_top) min ([_town] call OTQA_townLayout_cap)) max 1;
+    // A done town's review starts at tier 3 (the compound tiers' first: their walls' removals go up from it)
+    if !([_town] call OTQA_townLayout_unfinished) then { _from = _from min 3 };
+    // The game's own office spawner keeps out of the town shown (it would put its tier and removals over these)
+    OT_officeEditing = _town;
     if (_layout isNotEqualTo []) then {
         ([_town, _from, west, true] call OT_fnc_officeApplyLayout) params ["_office", "_objects", "_guards"];
         _b = _office;
