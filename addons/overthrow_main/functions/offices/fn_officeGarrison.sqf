@@ -9,7 +9,9 @@
     - flashlights rather than night vision, on after dark;
     - in a fight the posts hold and the patrol goes after the nearest threat it knows of, but never out of the
       walls (to the nearest point of its loop instead); a minute after the last contact it walks its loop again;
-      at the first contact the town's gendarmerie comes to the compound.
+      at the first contact the town's gendarmerie comes to the compound's main gate from the street (15 m out:
+      the gate doesn't open for it, a man can't plan a way to a place behind a shut gate); a patrol man found
+      outside the walls is sent straight back to his loop.
     Runs while any guard lives. Server, from OT_fnc_spawnOffice.
 
     Parameters:
@@ -102,6 +104,13 @@ private _walk = {
     if (_loop isNotEqualTo []) then { (_group addWaypoint [_loop select 0, 0]) setWaypointType "CYCLE" };
 };
 private _patrolGroup = group (_patrol param [0, objNull]);
+// The patrol's moves are this function's (inside the walls only), not an AI mod's flanking (LAMBS)
+// and no attack orders of its own (the engine's "ATTACK" takes a man out over a wall the path finding keeps to:
+// it still fires at what it sees)
+if (!isNull _patrolGroup) then {
+    _patrolGroup setVariable ["lambs_danger_disableGroupAI", true, true];
+    { _x disableAI "TARGET" } forEach _patrol;
+};
 if (!isNull _patrolGroup && { count _loop > 1 }) then {
     { _x enableAI "PATH"; _x doFollow (leader _patrolGroup) } forEach _patrol; // Off the post OT_fnc_officeGuard holds them at
     [_patrolGroup, _loop] call _walk;
@@ -122,25 +131,35 @@ if (!isNull _patrolGroup && { count _loop > 1 }) then {
         // The first contact brings the town's gendarmerie over
         if (_contact && { !_alerted }) then {
             _alerted = true;
+            // Outside the main gate (the town's gate nearest the HQ), 15 m out from the compound's middle
+            private _hq = ASLToAGL ((([_town] call OT_fnc_officeLayout) select 0) select 1);
+            private _gates = ((missionNamespace getVariable ["OT_officeGates", []]) select { !isNull _x && { (((_x getVariable ["OT_officeItem", []]) param [0, ""]) isEqualTo _town) } });
             private _at = getPosATL (_alive select 0);
+            if (_gates isNotEqualTo []) then {
+                private _gate = ([_gates, [], { _x distance2D _hq }, "ASCEND"] call BIS_fnc_sortBy) select 0;
+                _at = (getPosATL _gate) vectorAdd ((vectorNormalized ((getPosATL _gate) vectorDiff _hq)) vectorMultiply 15);
+            };
             private _gendarmes = allUnits select { alive _x && { (_x getVariable ["garrison", ""]) isEqualTo _town } };
             {
                 private _g = _x;
                 { deleteWaypoint _x } forEach ((waypoints _g) select { (_x select 1) > 0 });
-                private _wp = _g addWaypoint [_at, 20];
+                private _wp = _g addWaypoint [_at, 5];
                 _wp setWaypointType "SAD";
                 _wp setWaypointBehaviour "AWARE";
                 _wp setWaypointSpeed "FULL";
             } forEach ((_gendarmes apply { group _x }) arrayIntersect (_gendarmes apply { group _x }));
         };
-        // The patrol hunts the nearest threat it knows of, inside the walls only
+        // The patrol hunts the nearest threat it knows of, inside the walls only; one outside straight back in
         private _leader = leader _patrolGroup;
+        private _area = ([_town, [_town] call OT_fnc_officeTier] call OT_fnc_officeCompound) apply { [_x select 0, _x select 1, 0] };
+        if (_area isNotEqualTo [] && { count _loop > 1 }) then {
+            { if (alive _x && { [getPosATL _x, _area] call OT_fnc_officeOutside }) then { private _m = _x; _m doMove (([_loop, [], { _x distance2D _m }, "ASCEND"] call BIS_fnc_sortBy) select 0) } } forEach (units _patrolGroup);
+        };
         if (!isNull _patrolGroup && { alive _leader } && { count _loop > 1 }) then {
             private _threats = (_leader targets [true, 300]) select { alive _x };
             if (_threats isNotEqualTo []) then {
                 private _t = [_threats, [], { _leader distance _x }, "ASCEND"] call BIS_fnc_sortBy;
                 private _seen = _leader getHideFrom (_t select 0);
-                private _area = ([_town, [_town] call OT_fnc_officeTier] call OT_fnc_officeCompound) apply { [_x select 0, _x select 1, 0] };
                 private _go = if (_seen inPolygon _area) then { _seen } else { ([_loop, [], { _x distance2D _seen }, "ASCEND"] call BIS_fnc_sortBy) select 0 };
                 { deleteWaypoint _x } forEach ((waypoints _patrolGroup) select { (_x select 1) > 0 });
                 { _x doMove _go } forEach (units _patrolGroup);

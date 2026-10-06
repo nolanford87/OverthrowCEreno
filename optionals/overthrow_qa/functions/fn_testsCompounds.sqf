@@ -11,6 +11,7 @@
        patrol its own group walking a loop inside the walls, the posts holding, aware, flashlights, no NVGs, the
        area published; losses kept off and paid back; the patrol hunting a threat outside but staying inside the
        walls, the town's gendarmerie sent over
+    5. An undercover player (unarmed) seen inside the compound's walls loses his cover; outside it he keeps it
     (A truck can't drive in, even through the gate open: the vehicle path finding gives up, so occupier
     vehicles park and unload outside the gate, the user's choice.)
 
@@ -172,7 +173,7 @@ _tests pushBack ["Compounds: the garrison at work", {
     [leader _pg, [0, -14, 16]] call OTQA_og_camera;
     sleep 30;
     private _moved = (leader _pg) distance2D _from;
-    private _inside = ((units _pg) findIf { !((getPosATL _x) inPolygon _area) }) < 0;
+    private _inside = ((units _pg) findIf { [getPosATL _x, _area] call OT_fnc_officeOutside }) < 0;
     ["Garrison: the patrol walks its loop, inside the walls", _moved > 5 && _inside, format ["leader %1 m on, all inside %2", round _moved, _inside]] call OTQA_fnc_check;
     [_spawned] call OTQA_cp_clear;
 }, 90];
@@ -221,16 +222,63 @@ _tests pushBack ["Compounds: the patrol hunts inside the walls, the gendarmerie 
     private _outside = 0;
     waitUntil {
         sleep 1;
-        _outside = _outside max ({ alive _x && { !((getPosATL _x) inPolygon _area) } } count units _pg);
+        _outside = _outside max ({ alive _x && { [getPosATL _x, _area] call OT_fnc_officeOutside } } count units _pg);
+        {
+            if (alive _x && { [getPosATL _x, _area] call OT_fnc_officeOutside }) then {
+                private _g = (OT_officeGates select { alive _x }) apply { [_x distance2D (getPosATL _x), _x] };
+                diag_log format ["OTHUNTOUT|%1 at %2|nearest gate %3 m, open %4|behaviour %5|command %6", typeOf _x, getPosATL _x, round (((nearestObjects [_x, ["Land_ConcreteWall_01_l_gate_F", "Land_NetFence_01_m_gate_F"], 60]) apply { _x distance2D (getPosATL _x) }) param [0, -1]), ((nearestObjects [_x, ["Land_ConcreteWall_01_l_gate_F", "Land_NetFence_01_m_gate_F"], 60]) apply { _x animationSourcePhase "Door_1_sound_source" }) param [0, -1], behaviour _x, currentCommand _x];
+            };
+        } forEach units _pg;
         time > _t
     };
-    private _sent = ((waypoints _gg) findIf { (waypointType _x) isEqualTo "SAD" && { ((waypointPosition _x) distance2D _hq) < 60 } }) > -1;
+    private _sent = ((waypoints _gg) findIf { (waypointType _x) isEqualTo "SAD" && { ((waypointPosition _x) distance2D _hq) < 60 } && { !((waypointPosition _x) inPolygon _area) } }) > -1; // To the gate, outside
     private _hunted = ((units _pg) findIf { (behaviour _x) isEqualTo "COMBAT" }) > -1;
     deleteVehicle _enemy;
     deleteVehicle _gendarme;
     [_spawned] call OTQA_cp_clear;
     ["Hunt: the patrol went to combat and never left the walls", _hunted && { _outside isEqualTo 0 }, format ["in combat %1, most outside at once %2", _hunted, _outside]] call OTQA_fnc_check;
-    ["Hunt: the town's gendarmerie sent to the compound", _sent, str _sent] call OTQA_fnc_check;
+    ["Hunt: the town's gendarmerie sent to the compound's gate, outside", _sent, str _sent] call OTQA_fnc_check;
 }, 90];
+
+_tests pushBack ["Compounds: undercover inside the walls is spotted", {
+    private _spawned = [4] call OTQA_cp_spawn;
+    _spawned params ["_guards"];
+    private _area = server getVariable ["compoundareaRodopoli", []];
+    private _post = (_guards select { !("patrol" in (((_x getVariable ["OT_officeItem", []]) param [3, []]) param [4, []])) && { isNull objectParent _x } && { ((getPosATL _x) select 2) < 0.5 } && { (getPosATL _x) inPolygon _area } }) param [0, objNull];
+    if (isNull _post) exitWith {
+        [_spawned] call OTQA_cp_clear;
+        ["Undercover: a guard on the ground inside", false, ""] call OTQA_fnc_check;
+    };
+    { _x allowDamage false; _x setCombatMode "BLUE" } forEach _guards;
+    private _loadout = getUnitLoadout player;
+    private _was = getPosATL player;
+    removeAllWeapons player;
+    player allowDamage false;
+    // Outside first, 30 m off the wall: undercover kept
+    private _hq = "Rodopoli" call OTQA_og_officePos;
+    private _outside = (_area select 0) vectorAdd ((vectorNormalized ((_area select 0) vectorDiff _hq)) vectorMultiply 30);
+    player setPosATL _outside;
+    player setCaptive true;
+    player setVariable ["SeenCacheNATO", nil];
+    sleep 12;
+    private _keptOutside = captive player;
+    // Inside, 4 m from a guard
+    private _in = (getPosATL _post) vectorAdd ((vectorNormalized (_hq vectorDiff (getPosATL _post))) vectorMultiply 4);
+    _in set [2, 0];
+    player setPosATL _in;
+    player setCaptive true;
+    player setVariable ["SeenCacheNATO", nil];
+    private _t = time + 20;
+    waitUntil { sleep 1; !(captive player) || { time > _t } };
+    private _spotted = !(captive player);
+    private _wasInside = _in inPolygon _area;
+    player setPosATL _was;
+    player setUnitLoadout _loadout;
+    player setCaptive true;
+    player allowDamage true;
+    [_spawned] call OTQA_cp_clear;
+    ["Undercover: kept outside the walls", _keptOutside, str _keptOutside] call OTQA_fnc_check;
+    ["Undercover: seen inside the walls, cover lost", _wasInside && _spotted, format ["inside %1, spotted %2", _wasInside, _spotted]] call OTQA_fnc_check;
+}, 60];
 
 _tests
