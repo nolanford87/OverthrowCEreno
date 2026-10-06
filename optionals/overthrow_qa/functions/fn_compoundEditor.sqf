@@ -10,6 +10,8 @@
         Compound: confirm this tier             (a town opens on T3 alone; each tier confirmed shows the next
                                                  with the ones inside it; all confirmed shows every tier)
         Compound: show tier N only / show the tiers for this step   (a filter; edits stay for the session)
+    The map's walls the tiers shown would replace (the generator's rule) are hidden as a preview, live as the
+    arrows move: the lowest tier shown and those below it; the tiers above outline theirs in their colour.
         Compound: confirm the town, next town / skip to the next town / back to the previous town / finished
     Saved lines, merged with tools/officegen/merge_compounds.py:
         OTCOMPOUND|world|town|tier|[[x,y],...]
@@ -65,11 +67,70 @@ OTQA_compound_stageTiers = {
     _has select { _x <= (_next select 0) }
 };
 
+// The map's walls and fences round the town shown, each [object, end, end] (its length's ends, world [x, y])
+OTQA_compound_findWalls = {
+    params ["_centre"];
+    ((nearestTerrainObjects [_centre, ["WALL", "FENCE"], 150, false, true]) select { !isObjectHidden _x }) apply {
+        (boundingBoxReal _x) params ["_mn", "_mx"];
+        private _my = ((_mn select 1) + (_mx select 1)) / 2;
+        [_x, (_x modelToWorld [_mn select 0, _my, 0]) select [0, 2], (_x modelToWorld [_mx select 0, _my, 0]) select [0, 2]]
+    }
+};
+// The walls a tier's area would replace (the generator's rule: within 2 m of an edge and along it, or short)
+OTQA_compound_wallsOn = {
+    params ["_poly"];
+    private _n = count _poly;
+    if (_n < 3) exitWith { [] };
+    (OTQA_compound getOrDefault ["walls", []]) select {
+        _x params ["", "_e1", "_e2"];
+        private _mid = (_e1 vectorAdd _e2) vectorMultiply 0.5;
+        private _len = _e1 distance2D _e2;
+        private _along = (_e2 vectorDiff _e1) vectorMultiply (1 / (_len max 0.01));
+        private _hit = false;
+        for "_i" from 0 to _n - 1 do {
+            private _a = _poly select _i;
+            private _b = _poly select ((_i + 1) mod _n);
+            private _ab = _b vectorDiff _a;
+            private _l = (_ab distance2D [0, 0]) max 0.01;
+            private _u = _ab vectorMultiply (1 / _l);
+            private _t = 0 max (_l min ((_mid vectorDiff _a) vectorDotProduct _u));
+            if (((_a vectorAdd (_u vectorMultiply _t)) distance2D _mid) < 2 && { _len < 1.5 || { abs (_along vectorDotProduct _u) > 0.9 } }) exitWith { _hit = true };
+        };
+        _hit
+    }
+};
+// The preview: the walls of the lowest tier shown and those below it hidden (a removal holds above its tier), the
+// walls the tiers above would replace outlined in their colour
+OTQA_compound_walls = {
+    private _visible = OTQA_compound getOrDefault ["visible", [3]];
+    private _lo = selectMin _visible;
+    private _hide = [];
+    private _mark = [];
+    {
+        private _on = ([[_x] call OTQA_compound_poly] call OTQA_compound_wallsOn) apply { _x select 0 };
+        if (_x <= _lo) then { _hide append _on };
+    } forEach [3, 4, 5];
+    // The outlined: [object, tier] for the tiers above, not already hidden
+    _mark = [];
+    {
+        private _tier = _x;
+        if (_tier > _lo) then { { if !(_x in _hide) then { _mark pushBack [_x, _tier] } } forEach (([[_tier] call OTQA_compound_poly] call OTQA_compound_wallsOn) apply { _x select 0 }) };
+    } forEach [3, 4, 5];
+    private _was = OTQA_compound getOrDefault ["hidden", []];
+    { _x hideObject false } forEach (_was - _hide);
+    { _x hideObject true } forEach (_hide - _was);
+    OTQA_compound set ["hidden", _hide];
+    OTQA_compound set ["marked", _mark];
+};
+
 // The arrows of the town shown, per tier (3, 4, 5): [[objects in order], ...]
 OTQA_compound_clear = {
     { { deleteVehicle _x } forEach _x } forEach (OTQA_compound getOrDefault ["verts", [[], [], []]]);
     OTQA_compound set ["verts", [[], [], []]];
     { deleteMarkerLocal format ["OTQA_compound_T%1", _x] } forEach [3, 4, 5];
+    { _x hideObject false } forEach (OTQA_compound getOrDefault ["hidden", []]);
+    OTQA_compound set ["hidden", []];
+    OTQA_compound set ["marked", []];
 };
 OTQA_compound_arrow = {
     params ["_tier", "_xy"];
@@ -93,6 +154,7 @@ OTQA_compound_show = {
         { (_verts select (_tier - 3)) pushBack ([_tier, _x] call OTQA_compound_arrow) } forEach _own;
     } forEach [3, 4, 5];
     OTQA_compound set ["verts", _verts];
+    OTQA_compound set ["walls", [[_ox, _oy, 0]] call OTQA_compound_findWalls];
     [call OTQA_compound_stageTiers] call OTQA_compound_setVisible;
     // The host south of the office, the Zeus camera high above it looking down
     player setPosATL [_ox, _oy - 30, 0];
@@ -227,6 +289,19 @@ OTQA_compound_confirm = {
                     drawIcon3D ["", _col, ASLToAGL (ATLToASL ((getPosATL _x) vectorAdd [0, 0, 4])), 0, 0, 0, format ["T%1.%2", _ti + 3, _forEachIndex], 2, 0.045, "PuristaBold"];
                 } forEach _arr;
             } forEach (OTQA_compound getOrDefault ["verts", []]);
+            {
+                _x params ["_w", "_tier"];
+                if (isNull _w) then { continue };
+                private _col = OTQA_compound_colours select (_tier - 3);
+                (boundingBoxReal _w) params ["_mn", "_mx"];
+                private _my = ((_mn select 1) + (_mx select 1)) / 2;
+                private _top = (_mx select 2) + 0.3;
+                private _e1 = _w modelToWorld [_mn select 0, _my, _top];
+                private _e2 = _w modelToWorld [_mx select 0, _my, _top];
+                drawLine3D [_e1, _e2, _col];
+                drawLine3D [_e1 vectorAdd [0, 0, 0.1], _e2 vectorAdd [0, 0, 0.1], _col];
+                drawIcon3D ["", _col, (_e1 vectorAdd _e2) vectorMultiply 0.5, 0, 0, 0, format ["T%1", _tier], 2, 0.035, "PuristaMedium"];
+            } forEach (OTQA_compound getOrDefault ["marked", []]);
         }];
         [] spawn {
             while { !(OTQA_compound getOrDefault ["finished", false]) } do {
@@ -240,6 +315,7 @@ OTQA_compound_confirm = {
                         _m setMarkerPolylineLocal _line;
                     } else { deleteMarkerLocal _m };
                 } forEach [3, 4, 5];
+                if ((OTQA_compound getOrDefault ["walls", []]) isNotEqualTo []) then { call OTQA_compound_walls };
                 sleep 1;
             };
         };
