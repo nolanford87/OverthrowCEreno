@@ -292,6 +292,45 @@
                 { diag_log format ["OTPATH|%1|%2|%3|%4|%5|%6", _town, _tier, _x select 0, _x select 1, _x select 2, _x select 3] } forEach _ways;
                 if (_ways isEqualTo []) then { diag_log format ["OTPATH|%1|%2|%3", _town, _tier, ["closed", format ["unknown (%1 of 8 routes not computed)", _none]] select (_none > 0)] };
 
+                // And the attacker's way: from the same 8 points 60 m out to the office (the engine's routes aren't
+                // the same both ways). OTPATHIN|town|tier|bearing|[x, y] where it first passes within 3 m of a
+                // fortification (its way in)|route|gate [x, y] or none; OTPATHIN|town|tier|closed / unknown
+                private _ins = [];
+                private _noneIn = 0;
+                {
+                    private _from = (getPosATL _b) getPos [60, (getDir _b) + _x];
+                    private _road = (_from nearRoads 25) param [0, objNull];
+                    if (!isNull _road) then { _from = getPosATL _road };
+                    private _path = if (_exit isEqualTo []) then { [] } else { [_from, _exit] call _route };
+                    if (_path isEqualTo []) then { _noneIn = _noneIn + 1 };
+                    if (_path isNotEqualTo [] && { ((_path select -1) distance2D _exit) < 4 }) then {
+                        private _dense = [_path select 0];
+                        for "_i" from 1 to (count _path) - 1 do {
+                            private _a = _path select (_i - 1);
+                            private _c = _path select _i;
+                            private _n = ceil (_a distance2D _c);
+                            for "_k" from 1 to _n do { _dense pushBack (_a vectorAdd ((_c vectorDiff _a) vectorMultiply (_k / _n))) };
+                        };
+                        private _gap = [];
+                        private _trace = [];
+                        {
+                            private _p = _x;
+                            if ((_p distance2D _b) < 45) then {
+                                if (_gap isEqualTo [] && { (_props findIf { (_x distance2D _p) < 3 }) > -1 }) then { _gap = _p };
+                                if (_trace isEqualTo [] || { ((_trace select -1) distance2D _p) > 5 }) then { _trace pushBack _p };
+                            };
+                        } forEach _dense;
+                        private _model = { ((_b worldToModel _this) select [0, 2]) apply { _x call _r1 } };
+                        private _via = _gates findIf {
+                            _x params ["_g", "_w"];
+                            (_dense findIf { (_x distance2D _g) <= (_w / 2 + 1) }) > -1
+                        };
+                        _ins pushBack [_x, if (_gap isEqualTo []) then { [] } else { _gap call _model }, _trace apply { _x call _model }, if (_via < 0) then { "none" } else { str (((_gates select _via) select 0) call _model) }];
+                    };
+                } forEach [0, 45, 90, 135, 180, 225, 270, 315];
+                { diag_log format ["OTPATHIN|%1|%2|%3|%4|%5|%6", _town, _tier, _x select 0, _x select 1, _x select 2, _x select 3] } forEach _ins;
+                if (_ins isEqualTo []) then { diag_log format ["OTPATHIN|%1|%2|%3", _town, _tier, ["closed", format ["unknown (%1 of 8 routes not computed)", _noneIn]] select (_noneIn > 0)] };
+
                 // The pictures: from above, and from out along the way to the street
                 if (_shots) then {
                     // Farther out for a big office (Kavala's hospital): by its radius against a house's 30 m

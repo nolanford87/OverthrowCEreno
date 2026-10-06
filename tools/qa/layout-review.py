@@ -81,8 +81,18 @@ def main(argv):
         f = m.group(1).replace('""', '"').split("|")
         if f[0] == "OTPATHSTART":
             starts[f[1]] = f[2]
-        elif f[0] == "OTPATH" and (len(f) in (6, 7) or f[3] == "closed" or f[3].startswith("unknown")):
+        elif f[0] in ("OTPATH", "OTPATHIN") and (len(f) in (6, 7) or f[3] == "closed" or f[3].startswith("unknown")):
             ways = paths.setdefault(f[1], {}).setdefault(int(f[2]), [])
+            if f[0] == "OTPATHIN":
+                f = f[:3] + [("in, " + f[3]) if not f[3][0].isdigit() else f[3]] + f[4:]
+                if len(f) == 7:
+                    ways.append(f"WAY IN from bearing {f[3]}: " + (f"through the gate at {f[6]} (meant)" if f[6] != "none" else "NOT through a gate")
+                                + f", first at the walls {f[4]}, route {f[5]}")
+                elif f[3].startswith("in, unknown"):
+                    ways.append(f"ways in: {f[3][4:]}")
+                else:
+                    ways.append("ways in: closed")
+                continue
             if f[3].startswith("unknown"):
                 ways.append(f"closure {f[3]}: the check couldn't start, not a pass")
             elif f[3] != "closed":
