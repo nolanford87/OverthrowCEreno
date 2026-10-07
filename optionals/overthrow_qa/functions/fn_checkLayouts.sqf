@@ -21,9 +21,9 @@
             the layout didn't mean); OTPATH|town|tier|closed
             when every route was computed and none gets out, "unknown (...)" when some weren't computed
         OTGAP|town|tier|[x, y]|[x, y]|width an opening in a compound's wall line (OT_fnc_officeCompound's area, tier 3
-            up): along every edge every 0.1 m, two rays across the line (1 m in to 1 m out, 0.3 and 0.8 m up: the line's own pieces, not a building standing beside it) that
-            meet no wall (the tier's barrier pieces, a building or the map's walls and fences it keeps: not one it
-            hides) and no building's floor under it; a stretch of 0.8 m or more of them, not in a gate's opening, from [x, y] to [x, y] (office model);
+            up): along every edge every 0.1 m, two rays across the line (2.5 m in to 2.5 m out, 0.3 and 0.8 m up) that
+            meet no wall (the tier's barrier pieces or the map's walls and fences it keeps: not one it hides; not a
+            building beside the line) and no building's floor under it (the line run through a house); a stretch of 0.8 m or more of them, not in a gate's opening (its half width + 0.6 m round the marker), from [x, y] to [x, y] (office model);
             OTGAP|town|tier|none when the line is whole
         OTCLASS|class|[length, depth, height] the real size of every class the layouts use (once)
     and two screenshots per tier (the profile's Screenshots folder): OTL_<town>_T<tier>_top.png from 60 m
@@ -270,15 +270,19 @@
                 private _area = [_town, _tier] call OT_fnc_officeCompound;
                 if (_tier >= 3 && { _area isNotEqualTo [] }) then {
                     private _barriers = ["Wall", "Fence", "HBarrier", "Barrier", "Gate", "Cnc"];
-                    private _solid = (_objects select { private _t = typeOf _x; (_barriers findIf { _x in _t }) > -1 }) + _parts + [_b]
-                        + ((nearestTerrainObjects [getPosATL _b, _terrainTypes, 120, false, true]) select { !isObjectHidden _x });
+                    // Across the line only the line's own pieces and the map's walls and fences it keeps count (a
+                    // building standing beside an opening doesn't close it); a building only where the line runs
+                    // through it (its floor under the point)
+                    private _line = (_objects select { private _t = typeOf _x; (_barriers findIf { _x in _t }) > -1 })
+                        + ((nearestTerrainObjects [getPosATL _b, ["WALL", "FENCE"], 120, false, true]) select { !isObjectHidden _x });
+                    private _houses = _parts + [_b] + ((nearestTerrainObjects [getPosATL _b, _terrainTypes - ["WALL", "FENCE"], 120, false, true]) select { !isObjectHidden _x });
                     private _gapGates = (_items select { (_x select 0) isEqualTo "gate" }) apply { [ASLToAGL (_x select 2), parseNumber (_x select 1)] };
                     private _model = { ((_b worldToModel _this) select [0, 2]) apply { _x call _r1 } };
                     private _hits = {
-                        params ["_f", "_t"];
+                        params ["_f", "_t", "_of"];
                         ((lineIntersectsSurfaces [_f, _t, objNull, objNull, true, 10, "GEOM", "NONE", true]) findIf {
                             private _o = _x select 3; if (isNull _o) then { _o = _x select 2 };
-                            !isNull _o && { _o in _solid }
+                            !isNull _o && { _o in _of }
                         }) > -1
                     };
                     private _gaps = [];
@@ -292,18 +296,18 @@
                         private _run = [];
                         for "_k" from 0 to floor (_len * 10) do {
                             private _p = _a vectorAdd (_u vectorMultiply (_k / 10));
-                            private _inGate = (_gapGates findIf { _x params ["_g", "_w"]; (_p distance2D _g) <= (_w / 2 + 0.3) }) > -1;
+                            private _inGate = (_gapGates findIf { _x params ["_g", "_w"]; (_p distance2D _g) <= (_w / 2 + 0.6) }) > -1;
                             // Open: neither ray across meets a wall, and no building's floor is under the point (a line
                             // run deep through a house, its walls farther off than the rays reach; from 2.5 m up, under
                             // a roof's eaves outside the walls is still open)
                             private _z = getTerrainHeightASL _p;
                             private _open = !_inGate && {
                                 ([0.3, 0.8] findIf {
-                                    private _f = _p vectorAdd _across; _f set [2, _z + _x];
-                                    private _t = _p vectorAdd (_across vectorMultiply -1); _t set [2, _z + _x];
-                                    [_f, _t] call _hits
+                                    private _f = _p vectorAdd (_across vectorMultiply 2.5); _f set [2, _z + _x];
+                                    private _t = _p vectorAdd (_across vectorMultiply -2.5); _t set [2, _z + _x];
+                                    [_f, _t, _line] call _hits
                                 }) isEqualTo -1
-                            } && { !([[_p select 0, _p select 1, _z + 2.5], [_p select 0, _p select 1, _z - 0.5]] call _hits) };
+                            } && { !([[_p select 0, _p select 1, _z + 2.5], [_p select 0, _p select 1, _z - 0.5], _houses] call _hits) };
                             if (_open) then { _run pushBack _p };
                             if ((!_open || { _k isEqualTo floor (_len * 10) }) && { _run isNotEqualTo [] }) then {
                                 private _w = ((_run select 0) distance2D (_run select -1)) + 0.1;
