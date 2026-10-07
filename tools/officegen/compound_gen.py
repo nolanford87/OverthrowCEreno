@@ -109,6 +109,43 @@ def orient(u):
 
 _PLANS = None
 HINTS = {}
+_FEET = None
+
+
+def footprint_of(model):
+    """A building class's real footprint from the class probe's floors (probes/Altis_classes.txt OTFLOORS: every
+    up-facing surface a line down meets, on a 1 m grid over its box): (covered cells {(x, y)}, the last model x
+    column known), None when not probed. A cell is covered when it has a surface 2 m or more up (a roof or an
+    upper floor over the walls; a porch slab or a step alone isn't). The game cuts a log line at about 1,020
+    characters, so a big building's line can end part way: its last, partial column is dropped and the columns
+    past it are unknown (the caller falls back to the box). Lines for the same class are merged (a probe logging
+    a class in parts). Colour variants share their first's (V3: V1), a closed house its open twin's (u_: i_)."""
+    global _FEET
+    if _FEET is None:
+        _FEET = {}
+        cells, known = {}, {}
+        for line in open(os.path.join(ROOT, "tools", "officegen", "probes", "Altis_classes.txt"), encoding="utf-8"):
+            f = line.rstrip().split("|")
+            if len(f) < 3 or f[0] != "OTFLOORS":
+                continue
+            got = [(int(x), int(y), [float(h) for h in hs.split(",") if h])
+                   for x, y, hs in re.findall(r"\[(-?\d+),(-?\d+),\[([^\]]*)\]\]", f[2])]
+            if not got:
+                continue
+            xs = sorted({g[0] for g in got})
+            whole = f[2].rstrip().endswith("]]]")
+            last = 999 if whole else xs[-1] - 1
+            c = cells.setdefault(f[1], set())
+            c |= {(x, y) for x, y, hs in got if x <= last and hs and max(hs) >= 2.0}
+            known.setdefault(f[1], []).append((xs[0], last))
+        for k in cells:
+            spans = sorted(known[k])
+            _FEET[k] = (cells[k], max(hi for lo, hi in spans))
+    for k in (model, re.sub(r"_V\d+_F$", "_V1_F", model)):
+        for kk in (k, k.replace("Land_u_", "Land_i_")):
+            if kk in _FEET:
+                return _FEET[kk]
+    return None
 
 
 def load_hints(world):
@@ -272,6 +309,7 @@ class Gen:
     def on_building(self, p, deep=2.0):
         """The building whose real walls hold p: its ground floor plan from the office probe where its class was
         probed (tools/officegen/probe_offices.txt; a wall cell, or a floor cell under a roof: a porch is outside),
+        else its roofed cells from the class probe (footprint_of; the Rodopoli shed's box is twice the shed),
         else at least deep metres in from every side of its box (a box is bigger than the walls: porches, a
         garage's open front; an edge only grazing one gets a wall)."""
         for t in self.solid:
@@ -281,6 +319,11 @@ class Gen:
                 level = min(plan.levels)
                 c = plan.cell(level, lx, ly)
                 if c == "#" or (c == "." and (int(round(lx)), int(round(ly))) not in plan.opensky.get(level, set())):
+                    return t
+                continue
+            foot = footprint_of(t.model if t.model.startswith("Land_") else "Land_" + t.model)
+            if foot is not None and lx <= foot[1] + 0.5:
+                if (int(round(lx)), int(round(ly))) in foot[0]:
                     return t
                 continue
             if t.box[0] + deep <= lx <= t.box[2] - deep and t.box[1] + deep <= ly <= t.box[3] - deep:

@@ -7,7 +7,7 @@
         OTMEASURE|class|[length x, depth y, height z]|[centre x, centre y] the box's middle off the model's
             origin|[door animation sources]|[animation names]
         OTFLOORS|class|[[model x, model y, [heights above the model's base a man can stand on]], ...] on a 1 m
-            grid over the box (every surface a line down meets, highest first)
+            grid over the box (every surface a line down meets, highest first), a line per column of the grid
         OTBPOS|class|[[model x, model y, height above the base], ...] its buildingPos places
 
     Returns: ARRAY - [[name, code, seconds]]
@@ -35,8 +35,10 @@
             if ((missionNamespace getVariable ["OTQA_only", []]) isNotEqualTo []) then {
                 // The floors: every surface a line straight down meets, on a 1 m grid
                 private _base = (getPosASL _o) select 2;
-                private _floors = [];
+                // One line per column of the grid: the game cuts a log line at about 1,020 characters, which cut a
+                // house's single line part way (tools/officegen/compound_gen.py footprint_of merges the columns)
                 for "_gx" from floor (_mn select 0) to ceil (_mx select 0) do {
+                    private _floors = [];
                     for "_gy" from floor (_mn select 1) to ceil (_mx select 1) do {
                         private _top = _o modelToWorldWorld [_gx, _gy, (_mx select 2) + 1];
                         // Every surface on the way down (not only the first of the object: returnUnique false)
@@ -44,8 +46,8 @@
                         private _h = (_hits select { (_x select 2) isEqualTo _o && { ((_x select 1) select 2) > 0.7 } }) apply { (round ((((_x select 0) select 2) - _base) * 100)) / 100 };
                         if (_h isNotEqualTo []) then { _floors pushBack [_gx, _gy, _h] };
                     };
+                    if (_floors isNotEqualTo []) then { diag_log format ["OTFLOORS|%1|%2", _x, _floors] };
                 };
-                diag_log format ["OTFLOORS|%1|%2", _x, _floors];
                 // The building's own places for a man (buildingPos), model x, y and height above its base
                 diag_log format ["OTBPOS|%1|%2", _x, (_o buildingPos -1) apply { private _m = _o worldToModel _x; [(round ((_m select 0) * 10)) / 10, (round ((_m select 1) * 10)) / 10, (round ((((AGLToASL _x) select 2) - _base) * 100)) / 100] }];
                 // A gate's way through: the stretches of model x a line along y at 1 m up meets nothing, shut and

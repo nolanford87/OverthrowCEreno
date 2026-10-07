@@ -651,14 +651,12 @@
 <path d="M574.512000000017,320.9759999999951L586.512000000017,332.9759999999951M574.512000000017,332.9759999999951L586.512000000017,320.9759999999951" stroke="#9b59b6" stroke-width="3"/>
 <path d="M537.0720000000147,347.2160000000149L549.0720000000147,359.2160000000149M537.0720000000147,359.2160000000149L549.0720000000147,347.2160000000149" stroke="#9b59b6" stroke-width="3"/>
 <polygon points="745.7,547.8 720.4,508.8 709.0,516.2 734.2,555.2" fill="#8e7d5a" stroke="#222" stroke-width="0.6"/>
-<polygon points="721.7,510.8 706.1,486.7 694.7,494.0 710.3,518.2" fill="#8e7d5a" stroke="#222" stroke-width="0.6"/>
-<polygon points="705.0,490.2 699.0,480.8 692.2,485.1 698.3,494.5" fill="#555" stroke="#222" stroke-width="0.6"/>
-<polygon points="701.8,485.1 695.7,475.7 689.0,480.0 695.0,489.5" fill="#555" stroke="#222" stroke-width="0.6"/>
-<polygon points="676.2,445.6 670.1,436.2 663.4,440.6 669.5,450.0" fill="#555" stroke="#222" stroke-width="0.6"/>
-<polygon points="672.2,439.5 666.2,430.1 659.4,434.5 665.5,443.9" fill="#555" stroke="#222" stroke-width="0.6"/>
-<polygon points="647.9,396.8 622.7,357.9 611.3,365.3 636.5,404.2" fill="#8e7d5a" stroke="#222" stroke-width="0.6"/>
-<polygon points="624.0,359.9 598.8,321.0 587.4,328.4 612.6,367.3" fill="#8e7d5a" stroke="#222" stroke-width="0.6"/>
-<polygon points="598.7,326.0 592.6,316.6 585.9,320.9 592.0,330.3" fill="#555" stroke="#222" stroke-width="0.6"/>
+<polygon points="721.7,510.8 696.5,471.9 685.1,479.3 710.3,518.2" fill="#8e7d5a" stroke="#222" stroke-width="0.6"/>
+<polygon points="697.8,473.9 672.6,434.9 661.2,442.3 686.4,481.3" fill="#8e7d5a" stroke="#222" stroke-width="0.6"/>
+<polygon points="673.9,437.0 648.7,398.0 637.3,405.4 662.5,444.4" fill="#8e7d5a" stroke="#222" stroke-width="0.6"/>
+<polygon points="650.0,400.0 624.8,361.1 613.4,368.5 638.6,407.4" fill="#8e7d5a" stroke="#222" stroke-width="0.6"/>
+<polygon points="626.1,363.1 610.4,338.9 599.0,346.3 614.7,370.5" fill="#8e7d5a" stroke="#222" stroke-width="0.6"/>
+<polygon points="611.7,340.9 596.1,316.8 584.7,324.2 600.3,348.3" fill="#8e7d5a" stroke="#222" stroke-width="0.6"/>
 <polygon points="586.6,314.4 547.1,338.7 554.3,350.3 593.8,326.0" fill="#8e7d5a" stroke="#222" stroke-width="0.6"/>
 <polygon points="549.2,337.5 509.7,361.8 516.8,373.4 556.3,349.1" fill="#8e7d5a" stroke="#222" stroke-width="0.6"/>
 <polygon points="511.7,360.5 472.2,384.9 479.3,396.4 518.8,372.1" fill="#8e7d5a" stroke="#222" stroke-width="0.6"/>

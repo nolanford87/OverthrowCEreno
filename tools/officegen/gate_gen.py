@@ -29,7 +29,7 @@ import tower_gen as tg  # noqa: E402
 
 T3_GATE = "Land_NetFence_01_m_gate_F"
 T4_GATE = "Land_ConcreteWall_01_l_gate_F"
-T4_SPAN = (-5.3, 5.3)    # Model x of the T4 gate's ends
+T4_SPAN = (-5.3, 5.3)    # Model x of the T4 gate's ends (its box)
 T4_WAY = (-4.0, 0.1)     # Model x of its way through, open
 WALLS = ("Mil_WallBig", "CncWall", "HBarrier")
 CNC = cg.CNC
@@ -38,6 +38,25 @@ SIZE = {"Land_BagBunker_Small_F": (5.0, 5.69), "Flag_NATO_F": (0.6, 0.6), "Land_
         "Land_LampShabby_F": (0.7, 0.8), "Land_Sign_WarningMilitaryArea_F": (2.09, 0.3), "Land_BagFence_Round_F": (2.86, 1.08),
         "hmg": (1.6, 2.3)}
 LANE = 10.0
+
+
+def solid_span(cls, box):
+    """The model x stretch of a gate that is solid when shut: its box (lo, hi) less the open air at either end the
+    class probe found (probes/<world>_classes.txt OTGATEWAY: the x a line along y at 1 m meets nothing, shut). The
+    concrete sliding gate's last 0.6 m at model -x is air: walls filled only to its box's end left a man-wide gap
+    beside the gate (Rodopoli T4)."""
+    path = os.path.join(merge_layouts.ROOT, "tools", "officegen", "probes", "Altis_classes.txt")
+    free = set()
+    for line in open(path, encoding="utf-8"):
+        f = line.rstrip().split("|")
+        if f[0] == "OTGATEWAY" and f[1] == cls:
+            free = {round(float(v), 1) for v in f[2].replace("shut", "").strip(" []").split(",") if v.strip()}
+    lo, hi = round(box[0], 1), round(box[1], 1)
+    while lo in free and lo < hi:
+        lo = round(lo + 0.1, 1)
+    while hi in free and hi > lo:
+        hi = round(hi - 0.1, 1)
+    return lo, hi
 
 
 def is_wall(cls):
@@ -171,8 +190,9 @@ class Entrances:
             if best is None or key < best[0]:
                 best = (key, s, c, ax)
         _, s, c, ax = best
-        # Out with the wall pieces on its span (along the line, within 1.5 m of it)
-        lo, hi = T4_SPAN[0] - 0.05, T4_SPAN[1] + 0.05
+        # Out with the wall pieces on its solid span (along the line, within 1.5 m of it)
+        lo, hi = solid_span(T4_GATE, T4_SPAN)
+        lo, hi = lo - 0.05, hi + 0.05
         kept_ends = []
         out = 0
         for it in list(self.items):
@@ -193,15 +213,18 @@ class Entrances:
         filled = 0
         right = min((a for a, b2 in kept_ends if a >= hi - 0.3), default=None)
         left = max((b2 for a, b2 in kept_ends if b2 <= lo + 0.3), default=None)
-        for a, b2 in ((hi - 0.05, right), (left, lo + 0.05)):
-            if a is None or b2 is None or b2 - a < 0.25 or b2 - a > 6.0:
+        # From the gate's solid end (0.15 m into it) out to the wall kept, the panel nearest the gate flush with it
+        # (a short filler centred on the gap would reach past the post into the way through)
+        for g_end, w_end in ((hi - 0.05 - 0.15, right), (lo + 0.05 + 0.15, left)):
+            if w_end is None or abs(w_end - g_end) < 0.05 or abs(w_end - g_end) > 6.0:
                 continue
-            start = cg.add(c, cg.mul(ax, a))
+            sgn = 1 if w_end > g_end else -1
+            gap = abs(w_end - g_end)
             before = len(self.items)
-            k = max(1, math.ceil((b2 - a - CNC[1]) / (CNC[1] - 0.1)) + 1) if b2 - a > CNC[1] else 1
+            k = max(1, math.ceil((gap - CNC[1]) / (CNC[1] - 0.1)) + 1) if gap > CNC[1] else 1
             for i in range(k):
-                mid_t = min(CNC[1] / 2 + i * (CNC[1] - 0.1), (b2 - a) - CNC[1] / 2) if b2 - a > CNC[1] else (b2 - a) / 2
-                p = cg.add(start, cg.mul(ax, mid_t))
+                mid_t = g_end + sgn * min(CNC[1] / 2 + i * (CNC[1] - 0.1), max(gap - CNC[1] / 2, CNC[1] / 2))
+                p = cg.add(c, cg.mul(ax, mid_t))
                 self.items.append(["object", CNC[0], f"[{p[0]:.3f},{p[1]:.3f},{self.b.ground(*p):.3f}]", cg.orient(ax), "entrance"])
             filled += len(self.items) - before
         self.items.append(["object", T4_GATE, f"[{c[0]:.3f},{c[1]:.3f},{self.b.ground(*c):.3f}]", cg.orient(ax), "ground,entrance"])
