@@ -78,9 +78,9 @@ def shift(line, d):
 def tier(off, south):
     n1 = offset_line(*N1, off, IN)
     n3 = offset_line(*N3, off, IN)
-    # The east road: 6 m off its middle, through the houses fronting it (more than 2 m inside their boxes: they
-    # are the wall)
-    e6 = offset_line(*E2, 6.1 if south == 3 else 6.0, IN)
+    # The east road: at its edge like the others (the houses fronting it stand clear behind the wall, their real
+    # footprints from the class probe)
+    e6 = offset_line(*E2, off, IN)
     w2 = offset_line(*W2, off, IN)
     pts = [meet(w2, n1), meet(n1, n3), meet(n3, e6)]
     face = offset_line((32.0, -2.3), (12.1, -15.9), 0.0, IN)   # House V2's NW face

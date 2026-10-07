@@ -1,2 +1,2 @@
 OTGATE|Altis|Rodopoli|3|[18707.92,16574.01]|4.0
-OTGATE|Altis|Rodopoli|4|[18707.71,16573.87]|4.1
+OTGATE|Altis|Rodopoli|4|[18707.72,16573.86]|4.1

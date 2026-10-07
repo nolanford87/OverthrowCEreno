@@ -222,8 +222,12 @@ class Entrances:
             gap = abs(w_end - g_end)
             before = len(self.items)
             k = max(1, math.ceil((gap - CNC[1]) / (CNC[1] - 0.1)) + 1) if gap > CNC[1] else 1
+            mids = []
             for i in range(k):
                 mid_t = g_end + sgn * min(CNC[1] / 2 + i * (CNC[1] - 0.1), max(gap - CNC[1] / 2, CNC[1] / 2))
+                if mids and abs(mid_t - mids[-1]) < 0.3:   # The last panel clamped onto the one before it
+                    continue
+                mids.append(mid_t)
                 p = cg.add(c, cg.mul(ax, mid_t))
                 self.items.append(["object", CNC[0], f"[{p[0]:.3f},{p[1]:.3f},{self.b.ground(*p):.3f}]", cg.orient(ax), "entrance"])
             filled += len(self.items) - before

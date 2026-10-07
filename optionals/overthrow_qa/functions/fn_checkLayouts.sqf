@@ -21,9 +21,9 @@
             the layout didn't mean); OTPATH|town|tier|closed
             when every route was computed and none gets out, "unknown (...)" when some weren't computed
         OTGAP|town|tier|[x, y]|[x, y]|width an opening in a compound's wall line (OT_fnc_officeCompound's area, tier 3
-            up): along every edge every 0.1 m, two rays across the line (2.5 m in to 2.5 m out, 0.3 and 0.8 m up) that
+            up): along every edge every 0.1 m, two rays across the line (1 m in to 1 m out, 0.3 and 0.8 m up: the line's own pieces, not a building standing beside it) that
             meet no wall (the tier's barrier pieces, a building or the map's walls and fences it keeps: not one it
-            hides) and stand under no building; a stretch of 0.8 m or more of them, not in a gate's opening, from [x, y] to [x, y] (office model);
+            hides) and no building's floor under it; a stretch of 0.8 m or more of them, not in a gate's opening, from [x, y] to [x, y] (office model);
             OTGAP|town|tier|none when the line is whole
         OTCLASS|class|[length, depth, height] the real size of every class the layouts use (once)
     and two screenshots per tier (the profile's Screenshots folder): OTL_<town>_T<tier>_top.png from 60 m
@@ -293,16 +293,17 @@
                         for "_k" from 0 to floor (_len * 10) do {
                             private _p = _a vectorAdd (_u vectorMultiply (_k / 10));
                             private _inGate = (_gapGates findIf { _x params ["_g", "_w"]; (_p distance2D _g) <= (_w / 2 + 0.3) }) > -1;
-                            // Open: neither ray across meets a wall, and no building stands over the point (a line run
-                            // deep through a house, its walls farther off than the rays reach)
+                            // Open: neither ray across meets a wall, and no building's floor is under the point (a line
+                            // run deep through a house, its walls farther off than the rays reach; from 2.5 m up, under
+                            // a roof's eaves outside the walls is still open)
                             private _z = getTerrainHeightASL _p;
                             private _open = !_inGate && {
                                 ([0.3, 0.8] findIf {
-                                    private _f = _p vectorAdd (_across vectorMultiply 2.5); _f set [2, _z + _x];
-                                    private _t = _p vectorAdd (_across vectorMultiply -2.5); _t set [2, _z + _x];
+                                    private _f = _p vectorAdd _across; _f set [2, _z + _x];
+                                    private _t = _p vectorAdd (_across vectorMultiply -1); _t set [2, _z + _x];
                                     [_f, _t] call _hits
                                 }) isEqualTo -1
-                            } && { !([[_p select 0, _p select 1, _z + 15], [_p select 0, _p select 1, _z + 0.3]] call _hits) };
+                            } && { !([[_p select 0, _p select 1, _z + 2.5], [_p select 0, _p select 1, _z - 0.5]] call _hits) };
                             if (_open) then { _run pushBack _p };
                             if ((!_open || { _k isEqualTo floor (_len * 10) }) && { _run isNotEqualTo [] }) then {
                                 private _w = ((_run select 0) distance2D (_run select -1)) + 0.1;
