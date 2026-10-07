@@ -1054,11 +1054,11 @@
 <polygon points="660.2,415.5 679.5,384.0 677.2,382.6 657.9,414.0" fill="#2ecc71" stroke="#222" stroke-width="0.6"/>
 <polygon points="672.3,367.4 675.1,362.8 670.5,360.0 667.7,364.6" fill="#e67e22" stroke="#222" stroke-width="0.6"/>
 <polygon points="657.6,353.3 669.6,351.9 668.6,342.8 656.6,344.1" fill="#e67e22" stroke="#222" stroke-width="0.6"/>
-<polygon points="699.9,381.8 709.8,365.7 707.5,364.3 697.6,380.3" fill="#e67e22" stroke="#222" stroke-width="0.6"/>
+<polygon points="690.1,388.4 699.9,372.3 697.6,370.9 687.8,386.9" fill="#e67e22" stroke="#222" stroke-width="0.6"/>
 <polygon points="695.7,324.2 699.0,318.9 692.9,315.1 689.6,320.5" fill="#e67e22" stroke="#222" stroke-width="0.6"/>
 <polygon points="606.1,469.9 609.4,464.5 603.3,460.7 600.0,466.1" fill="#e67e22" stroke="#222" stroke-width="0.6"/>
-<polygon points="702.7,387.5 716.1,365.6 707.9,360.5 694.4,382.4" fill="#555" stroke="#222" stroke-width="0.6"/>
-<polygon points="660.2,456.5 673.7,434.6 665.4,429.5 651.9,451.4" fill="#555" stroke="#222" stroke-width="0.6"/>
+<polygon points="718.9,386.9 732.4,365.0 724.1,359.9 710.6,381.8" fill="#555" stroke="#222" stroke-width="0.6"/>
+<polygon points="667.0,471.2 680.5,449.3 672.2,444.2 658.7,466.1" fill="#555" stroke="#222" stroke-width="0.6"/>
 <polygon points="577.6,434.6 569.9,430.1 565.4,437.9 573.1,442.4" fill="#555" stroke="#222" stroke-width="0.6"/>
 <polygon points="569.4,430.9 577.2,435.4 581.7,427.6 573.9,423.1" fill="#555" stroke="#222" stroke-width="0.6"/>
 <polygon points="573.6,441.6 565.8,437.1 561.3,444.9 569.1,449.4" fill="#555" stroke="#222" stroke-width="0.6"/>
@@ -1070,8 +1070,8 @@
 <polygon points="576.0,402.3 576.0,411.3 585.0,411.3 585.0,402.3" fill="#555" stroke="#222" stroke-width="0.6"/>
 <circle cx="523.8" cy="580.4" r="6" fill="#111"/><text x="531.8" y="585.4" font-size="15" font-weight="bold">MK^                                                                                                                                    </text>
 <circle cx="626.8" cy="415.5" r="6" fill="#111"/><text x="634.8" y="420.5" font-size="15" font-weight="bold">AR                                                                                                                                     </text>
-<circle cx="697.6" cy="369.3" r="6" fill="#111"/><text x="705.6" y="374.3" font-size="15" font-weight="bold">R                                                                                                                                      </text>
-<circle cx="655.1" cy="438.3" r="6" fill="#111"/><text x="663.1" y="443.3" font-size="15" font-weight="bold">R                                                                                                                                       </text>
+<circle cx="713.8" cy="368.7" r="6" fill="#111"/><text x="721.8" y="373.7" font-size="15" font-weight="bold">R                                                                                                                                      </text>
+<circle cx="661.9" cy="453.0" r="6" fill="#111"/><text x="669.9" y="458.0" font-size="15" font-weight="bold">R                                                                                                                                       </text>
 <circle cx="580.9" cy="387.3" r="6" fill="#111"/><text x="588.9" y="392.3" font-size="15" font-weight="bold">R-patrol                                                                                                                                        </text>
 <circle cx="618.6" cy="325.9" r="6" fill="#111"/><text x="626.6" y="330.9" font-size="15" font-weight="bold">AR-patrol                                                                                                                                         </text>
 <circle cx="562.6" cy="365.4" r="6" fill="#111"/><text x="570.6" y="370.4" font-size="15" font-weight="bold">R-patrol                                                                                                                                          </text>
