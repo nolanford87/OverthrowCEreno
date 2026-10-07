@@ -683,11 +683,11 @@
 <polygon points="322.1,659.7 348.7,696.0 390.0,665.6 363.4,629.4" fill="#e67e22" stroke="#222" stroke-width="0.6"/>
 <polygon points="381.6,752.2 384.8,756.6 389.2,753.4 386.0,749.0" fill="#e67e22" stroke="#222" stroke-width="0.6"/>
 <polygon points="384.7,660.2 395.7,665.2 399.5,656.9 388.5,651.8" fill="#e67e22" stroke="#222" stroke-width="0.6"/>
-<polygon points="366.7,766.0 377.8,781.2 380.0,779.6 368.8,764.5" fill="#e67e22" stroke="#222" stroke-width="0.6"/>
+<polygon points="361.7,756.3 372.9,771.4 375.0,769.8 363.9,754.7" fill="#e67e22" stroke="#222" stroke-width="0.6"/>
 <polygon points="310.6,641.9 314.4,647.0 320.2,642.7 316.4,637.6" fill="#e67e22" stroke="#222" stroke-width="0.6"/>
 <polygon points="273.3,591.1 277.0,596.2 282.8,591.9 279.1,586.9" fill="#e67e22" stroke="#222" stroke-width="0.6"/>
-<polygon points="356.0,769.6 371.2,790.3 379.1,784.6 363.8,763.8" fill="#555" stroke="#222" stroke-width="0.6"/>
-<polygon points="308.0,704.3 323.3,725.1 331.1,719.3 315.9,698.6" fill="#555" stroke="#222" stroke-width="0.6"/>
+<polygon points="351.4,778.6 366.6,799.3 374.5,793.5 359.2,772.8" fill="#555" stroke="#222" stroke-width="0.6"/>
+<polygon points="298.1,706.0 313.3,726.8 321.2,721.0 305.9,700.3" fill="#555" stroke="#222" stroke-width="0.6"/>
 <polygon points="517.4,596.1 526.1,593.8 523.8,585.1 515.1,587.4" fill="#555" stroke="#222" stroke-width="0.6"/>
 <polygon points="525.9,592.9 517.2,595.3 519.5,604.0 528.2,601.6" fill="#555" stroke="#222" stroke-width="0.6"/>
 <polygon points="515.3,588.3 524.0,586.0 521.7,577.3 513.0,579.6" fill="#555" stroke="#222" stroke-width="0.6"/>
@@ -699,8 +699,8 @@
 <polygon points="536.3,374.8 536.3,383.8 545.3,383.8 545.3,374.8" fill="#555" stroke="#222" stroke-width="0.6"/>
 <circle cx="271.7" cy="537.6" r="6" fill="#111"/><text x="279.7" y="542.6" font-size="15" font-weight="bold">ma0</text>
 <circle cx="352.1" cy="675.6" r="6" fill="#111"/><text x="360.1" y="680.6" font-size="15" font-weight="bold">au1</text>
-<circle cx="374.8" cy="771.8" r="6" fill="#111"/><text x="382.8" y="776.8" font-size="15" font-weight="bold">ri2</text>
-<circle cx="326.8" cy="706.5" r="6" fill="#111"/><text x="334.8" y="711.5" font-size="15" font-weight="bold">ri3</text>
+<circle cx="370.2" cy="780.7" r="6" fill="#111"/><text x="378.2" y="785.7" font-size="15" font-weight="bold">ri2</text>
+<circle cx="316.9" cy="708.2" r="6" fill="#111"/><text x="324.9" y="713.2" font-size="15" font-weight="bold">ri3</text>
 <circle cx="402.0" cy="656.8" r="6" fill="#111"/><text x="410.0" y="661.8" font-size="15" font-weight="bold">ri4</text>
 <circle cx="429.1" cy="648.1" r="6" fill="#111"/><text x="437.1" y="653.1" font-size="15" font-weight="bold">au5</text>
 <circle cx="461.1" cy="691.6" r="6" fill="#111"/><text x="469.1" y="696.6" font-size="15" font-weight="bold">ri6</text>
