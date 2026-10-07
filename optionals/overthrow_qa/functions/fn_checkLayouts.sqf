@@ -21,7 +21,7 @@
             the layout didn't mean); OTPATH|town|tier|closed
             when every route was computed and none gets out, "unknown (...)" when some weren't computed
         OTGAP|town|tier|[x, y]|[x, y]|width an opening in a compound's wall line (OT_fnc_officeCompound's area, tier 3
-            up): along every edge every 0.1 m, two rays across the line (2.5 m in to 2.5 m out, 0.3 and 0.8 m up) that
+            up): along every edge every 0.1 m, two rays across the line (1.5 m in to 1.5 m out, level, 0.3 and 0.8 m above the higher ground of their ends) that
             meet no wall (the tier's barrier pieces or the map's walls and fences it keeps: not one it hides; not a
             building beside the line) and no building's floor under it (the line run through a house); a stretch of 0.8 m or more of them, not in a gate's opening (its half width + 0.6 m round the marker), from [x, y] to [x, y] (office model);
             OTGAP|town|tier|none when the line is whole
@@ -302,9 +302,13 @@
                             // a roof's eaves outside the walls is still open)
                             private _z = getTerrainHeightASL _p;
                             private _open = !_inGate && {
+                                // Level rays from the higher ground of their two ends (one from the line's ground ran
+                                // into the hillside uphill and met nothing: Chalkeia)
+                                private _f = _p vectorAdd (_across vectorMultiply 1.5);
+                                private _t = _p vectorAdd (_across vectorMultiply -1.5);
+                                private _top = (getTerrainHeightASL _f) max (getTerrainHeightASL _t) max _z;
                                 ([0.3, 0.8] findIf {
-                                    private _f = _p vectorAdd (_across vectorMultiply 2.5); _f set [2, _z + _x];
-                                    private _t = _p vectorAdd (_across vectorMultiply -2.5); _t set [2, _z + _x];
+                                    _f set [2, _top + _x]; _t set [2, _top + _x];
                                     [_f, _t, _line] call _hits
                                 }) isEqualTo -1
                             } && { !([[_p select 0, _p select 1, _z + 2.5], [_p select 0, _p select 1, _z - 0.5], _houses] call _hits) };
