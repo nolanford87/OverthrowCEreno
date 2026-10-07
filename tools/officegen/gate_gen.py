@@ -202,7 +202,10 @@ class Entrances:
             c = self.near_spot(cg.add(gp, cg.mul(n, 4.0)), SIZE["Land_BagBunker_Small_F"], n,
                                ring(gp, [x * s for x in (5.5, 6.5, 7.5, 9.0, 10.5, 12.0, 14.0) for s in (1, -1)], (3.5, 4.5, 5.5, 6.5, 8.0, 9.5, 11.0)), lanes=lanes)
             if c:
-                self.put("object", "Land_BagBunker_Small_F", c, n)
+                # Turned to cover the gate's opening (its slit, model -y, toward it: a wall a man's height or more
+                # stands straight out), where it still fits that way
+                d = cg.norm(cg.sub(c, gp))
+                self.put("object", "Land_BagBunker_Small_F", c, d if self.free(c, d, SIZE["Land_BagBunker_Small_F"], lanes=lanes) else n)
                 placed.append("bunker")
             c = self.near_spot(cg.add(cg.add(gp, cg.mul(u, 3.0)), cg.mul(n, 0.8)), SIZE["Flag_NATO_F"], n, ring(gp, sides, (0.8, 1.2, 1.8, 2.5, 3.5)), lanes=lanes)
             if c:

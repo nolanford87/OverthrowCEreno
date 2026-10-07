@@ -5,7 +5,7 @@ Generates a town's occupier compound walls (tools/officegen/COMPOUND_PLAN.md) fr
     - an edge running into a road is set inside it: 0.25 m inside the road's edge at T3 (H-barrier), right at the
       edge at T4+ (military and concrete walls), so no wall stands on a road (the AI walks through those);
     - a road crossing an edge is a gate of its width (3.5-8 m); a compound no road crosses gets a 4 m main gate on
-      its road-facing edge nearest the HQ's door;
+      its road-facing edge nearest the HQ's door; gates set by hand (compounds/<world>_gates.txt) replace both;
     - a building on an edge is part of the wall; a door of it opening outside the area is barricaded;
     - the map's walls and fences along an edge or inside the area are hidden (our wall goes up on the edge's;
       the occupier cleared the compound);
@@ -108,6 +108,21 @@ def orient(u):
 
 
 _PLANS = None
+HINTS = {}
+
+
+def load_hints(world):
+    """Gates set by hand (compounds/<world>_gates.txt): OTGATE|world|town|tier|[x,y]|width, world x, y near the edge
+    the gate goes on. {(town, tier): [((x, y), width)]}"""
+    path = os.path.join(ROOT, "tools", "officegen", "compounds", f"{world}_gates.txt")
+    out = {}
+    if os.path.exists(path):
+        for line in open(path, encoding="utf-8"):
+            f = line.strip().split("|")
+            if len(f) >= 6 and f[0] == "OTGATE" and f[1] == world:
+                x, y = [float(v) for v in f[4].strip("[]").split(",")[:2]]
+                out.setdefault((f[2], int(f[3])), []).append(((x, y), max(3.5, float(f[5]))))
+    return out
 
 
 def plan_of(model):
@@ -187,8 +202,19 @@ class Gen:
         return [(corners[i], corners[(i + 1) % n]) for i in range(n)]
 
     def gates(self, edges):
-        """Openings per edge: {edge index: [(t from, t to, width, middle)]}."""
+        """Openings per edge: {edge index: [(t from, t to, width, middle)]}. Gates set by hand for the town's tier
+        (compounds/<world>_gates.txt) replace the road crossings: each on the edge nearest its point."""
         out = {}
+        hints = HINTS.get((self.town, self.tier))
+        if hints:
+            for (x, y), w in hints:
+                i = min(range(len(edges)), key=lambda k: seg_dist((x, y), *edges[k]))
+                a, b = edges[i]
+                L = math.dist(a, b)
+                t = max(w / 2, min(L - w / 2, dot(sub((x, y), a), norm(sub(b, a)))))
+                out.setdefault(i, []).append((t - w / 2, t + w / 2, w, add(a, mul(norm(sub(b, a)), t))))
+                self.notes.append(f"a {w:.1f} m gate set by hand on edge {i}")
+            return out
         for i, (a, b) in enumerate(edges):
             L = math.dist(a, b)
             for r in self.b.roads:
@@ -413,6 +439,7 @@ def main(argv):
     world = argv[argv.index("--world") + 1] if "--world" in argv else "Altis"
     town = [a for a in argv if not a.startswith("--") and a != world][0]
     block = blocklib.load(world)[town]
+    HINTS.update(load_hints(world))
     areas = merge_compounds.load_saved(world)[town]["tiers"]
     towns = merge_layouts.load_saved(world)
     t = towns[town]

@@ -79,7 +79,8 @@ class Props:
             # The fighting holes either side of the approach, their curve out (model -y), a man behind each
             for s in (1, -1):
                 cands = [cg.add(cg.add(gp, cg.mul(u, s * a)), cg.mul(out, i)) for a in (4.5, 5.5, 6.5, 7.5, 9.0) for i in (2.0, 3.0, 4.0, 5.0)]
-                c = self.spot(SIZE["Land_BagFence_Round_F"], n, cands, cg.add(cg.add(gp, cg.mul(u, s * 5)), cg.mul(out, 3)), inside=False, verge=True, lanes=lanes)
+                # On the street's verge if the wall stands at its edge (3 m onto it at most: a lane stays open)
+                c = self.spot(SIZE["Land_BagFence_Round_F"], n, cands, cg.add(cg.add(gp, cg.mul(u, s * 5)), cg.mul(out, 3)), inside=False, verge=3.0, lanes=lanes)
                 if c:
                     self.put("object", "Land_BagFence_Round_F", c, n, "ground,props,hole")
                     placed.append("fighting hole")
@@ -121,7 +122,8 @@ class Props:
                     grid.append((x, y))
                 y += 1.0
             x += 1.0
-        corner = max(self.poly, key=lambda p: math.dist(p, hq))
+        # The stores in the back corner: the one farthest from the main gate (from the HQ without a gate)
+        corner = max(self.poly, key=lambda p: math.dist(p, gg.vec(main[2])[:2] if main else hq))
         for cls in CRATES:
             c = self.spot(SIZE[cls], cg.norm(cg.sub(hq, corner)), grid, corner, lanes=lanes)
             if c:

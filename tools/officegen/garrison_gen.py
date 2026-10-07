@@ -74,6 +74,14 @@ class Garrison:
         self.count = round(area(self.poly) / PER_MAN)
         self.centre = (sum(p[0] for p in self.poly) / len(self.poly), sum(p[1] for p in self.poly) / len(self.poly))
         self.e = gg.Entrances(block, poly, tier, self.items, "")
+        # The gates' vehicle lanes (10 m in) and their way out, kept clear of men standing
+        self.lanes = []
+        for g in [it for it in self.items if it[0] == "gate"]:
+            gp, u = gg.vec(g[2])[:2], cg.norm(gg.vdir(g[3])[:2])
+            n = (-u[1], u[0])
+            if not cg.inside(cg.add(gp, n), self.poly):
+                n = (u[1], -u[0])
+            self.lanes.append(gg.tg.rect(cg.add(gp, cg.mul(n, 5.0)), n, (max(float(g[1]), 4.0) + 1.5, 11.0)))
         self.men = []
         self.notes = []
 
@@ -96,7 +104,7 @@ class Garrison:
         taken = [gg.vec(m[2])[:2] for m in self.men]
         best = None
         for c in cands:
-            if any(math.dist(c, t) < 1.5 for t in taken) or not self.e.free(c, (0, 1), MAN, pad=0.3):
+            if any(math.dist(c, t) < 1.5 for t in taken) or not self.e.free(c, (0, 1), MAN, pad=0.3, lanes=self.lanes):
                 continue
             key = math.dist(c, origin)
             if best is None or key < best[0]:
