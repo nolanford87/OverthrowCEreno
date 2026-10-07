@@ -11,7 +11,8 @@
       walls (to the nearest point of its loop instead); a minute after the last contact it walks its loop again;
       at the first contact the town's gendarmerie comes to the compound's main gate from the street (15 m out:
       the gate doesn't open for it, a man can't plan a way to a place behind a shut gate); a patrol man found
-      outside the walls is sent straight back to his loop.
+      outside the walls is sent straight back to his loop. The first contact also sounds the alarm: a siren from
+      the HQ for 90 s (missionNamespace "OT_compoundSiren<town>" while it sounds).
     Runs while any guard lives. Server, from OT_fnc_spawnOffice.
 
     Parameters:
@@ -132,6 +133,13 @@ if (!isNull _patrolGroup && { count _loop > 1 }) then {
         // where it's parked, a gun on the approach)
         if (_contact && { !_alerted }) then {
             _alerted = true;
+            // The siren from the HQ, 90 s
+            private _siren = ["Sound_Alarm", "Sound_Alarm2"] select { isClass (configFile >> "CfgVehicles" >> _x) };
+            if (_siren isNotEqualTo []) then {
+                private _source = createSoundSource [_siren select 0, ASLToAGL ((([_town] call OT_fnc_officeLayout) select 0) select 1), [], 0];
+                missionNamespace setVariable [format ["OT_compoundSiren%1", _town], _source];
+                [{ deleteVehicle _this }, _source, 90] call CBA_fnc_waitAndExecute;
+            };
             {
                 private _veh = _x;
                 createVehicleCrew _veh;

@@ -3,8 +3,8 @@
     The occupier compounds' closed gates worked by the occupier (OT_fnc_officeSpawnItems registers each locked
     one, shut): a gate swings open for the occupier's men and vehicles within 12 m of it, and for those within
     40 m going somewhere (the engine's path finding plans no way through a shut gate, so a man inside ordered
-    out, or a truck outside ordered in, would never come up to it), and shuts again 10 s after the last (once open,
-    the ones waiting plan their way again: one planned while it was shut stops at it); never
+    out, or a truck outside ordered in, would never come up to it), and shuts again 10 s after the last (while it's
+    open, one standing waiting plans his way again: one planned while it was shut stops at it); never
     for the compound's own garrison (its patrol stays inside the walls, even chasing someone; one that's ended up
     outside it does get back in), the town's
     gendarmerie (it comes to the gate from the street) or a static weapon's crew; players can't open it (it stays locked, OT_fnc_officeBreach blows it open). A gate
@@ -49,19 +49,21 @@ if (isNil "OT_officeGates") then {
             if (_theirs isNotEqualTo _open && { _theirs || { time > (_g getVariable ["OT_gateUntil", 0]) } }) then {
                 _g setVariable ["OT_gateOpen", _theirs];
                 { if ("sound_source" in toLower _x) then { _g animateSource [_x, [0, 1] select _theirs] } } forEach (("true" configClasses (configOf _g >> "AnimationSources")) apply { configName _x });
-                if (_theirs) then { _g setVariable ["OT_gateReplan", time + 3] };
             };
-            // Once it's open, the ones waiting plan their way again: a way planned while it was shut stops at it
-            if (_open && { time > (_g getVariable ["OT_gateReplan", 1e9]) }) then {
-                _g setVariable ["OT_gateReplan", nil];
+            // While it's open, one standing waiting with somewhere to go plans his way again (once every 8 s): a way
+            // planned while it was shut, or half shut, stops at it
+            if (_open) then {
                 {
                     private _m = effectiveCommander _x;
-                    private _grp = group _m;
-                    if (_m isEqualTo leader _grp && { (count waypoints _grp) > (currentWaypoint _grp) } && { (currentWaypoint _grp) > 0 }) then {
-                        _grp setCurrentWaypoint [_grp, currentWaypoint _grp];
-                    } else {
-                        private _to = (expectedDestination _m) select 0;
-                        if ((_to distance2D _m) > 5 && { ((expectedDestination _m) select 1) isNotEqualTo "DoNotPlan" }) then { _m doMove _to };
+                    private _to = (expectedDestination _m) select 0;
+                    if ((speed _x) < 0.5 && { (_to distance2D _m) > 5 } && { ((expectedDestination _m) select 1) isNotEqualTo "DoNotPlan" } && { time > (_m getVariable ["OT_gateReplanAt", 0]) }) then {
+                        _m setVariable ["OT_gateReplanAt", time + 8];
+                        private _grp = group _m;
+                        if (_m isEqualTo leader _grp && { (count waypoints _grp) > (currentWaypoint _grp) } && { (currentWaypoint _grp) > 0 }) then {
+                            _grp setCurrentWaypoint [_grp, currentWaypoint _grp];
+                        } else {
+                            _m doMove _to;
+                        };
                     };
                 } forEach _near;
             };
