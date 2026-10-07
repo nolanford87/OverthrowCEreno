@@ -488,6 +488,9 @@ OTQA_townLayout_save = {
             private _was = ((_x getVariable ["OT_officeItem", []]) param [3, []]) param [4, []];
             ["guard", [_x] call OTQA_townLayout_role, getPosASL _x, getDir _x, _was select { _x in ["patrol", "garrison"] }]
         } else {
+            // A vehicle the layout put by role stays one (tools/officegen/props_gen.py's armed car)
+            private _was = (_x getVariable ["OT_officeItem", []]) param [3, []];
+            if ((_was param [0, ""]) isEqualTo "vehicle") exitWith { ["vehicle", _was select 1, getPosASL _x, [vectorDir _x, vectorUp _x], (_was param [4, []]) select { _x in ["props", "ground"] }] };
             private _static = [_x] call OT_fnc_officeStatic;
             if (_static isNotEqualTo "") exitWith { ["static", _static, getPosASL _x, [vectorDir _x, vectorUp _x], (((_x getVariable ["OT_officeItem", []]) param [3, []]) param [4, []]) select { _x in ["entrance", "garrison"] }] };
             private _extra = [[], ["flag"]] select (_x isKindOf "FlagCarrier");

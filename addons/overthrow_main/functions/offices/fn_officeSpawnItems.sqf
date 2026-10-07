@@ -54,6 +54,16 @@ private _patrolGroup = grpNull; // A compound's patrol walks as a group of its o
         _unit setVariable ["OT_officeItem", _tag + [_forEachIndex, _item]];
         _guards pushBack _unit;
     } else {
+        if (_kind isEqualTo "vehicle") exitWith {
+            // A vehicle by role ("armedcar": the occupier's armed car), parked empty on the ground; the compound's
+            // garrison crews it when its alarm goes (OT_fnc_officeGarrison)
+            private _class = ((missionNamespace getVariable ["OT_NATO_Vehicles_PoliceSupport", []]) select { _x isKindOf "Car" }) param [0, "B_MRAP_01_hmg_F"];
+            private _veh = createVehicle [_class, [0, 0, 0], [], 0, "CAN_COLLIDE"];
+            _veh setVectorDirAndUp _orient;
+            _veh setPosATL [_at select 0, _at select 1, 0];
+            _veh setVariable ["OT_officeItem", _tag + [_forEachIndex, _item]];
+            _objects pushBack _veh;
+        };
         if (_kind isEqualTo "static") exitWith {
             // A static weapon by role (OT_fnc_officeStatic), the occupier's own, crewed unless placeholders
             private _static = createVehicle [[_what] call OT_fnc_officeStatic, [0, 0, 0], [], 0, "CAN_COLLIDE"];

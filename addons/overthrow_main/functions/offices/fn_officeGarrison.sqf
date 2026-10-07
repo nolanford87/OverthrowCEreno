@@ -128,9 +128,20 @@ if (!isNull _patrolGroup && { count _loop > 1 }) then {
         { _x enableGunLights (["Auto", "ForceOn"] select (sunOrMoon < 0.5)) } forEach _groups;
         private _contact = (_alive findIf { (behaviour _x) isEqualTo "COMBAT" }) > -1;
         if (_contact) then { _lastContact = time };
-        // The first contact brings the town's gendarmerie over
+        // The first contact brings the town's gendarmerie over and crews the compound's parked armed car (it stays
+        // where it's parked, a gun on the approach)
         if (_contact && { !_alerted }) then {
             _alerted = true;
+            {
+                private _veh = _x;
+                createVehicleCrew _veh;
+                { _x setVariable ["OT_compoundGuard", _town]; _x disableAI "PATH" } forEach crew _veh;
+                (group effectiveCommander _veh) setBehaviour "COMBAT";
+            } forEach (vehicles select {
+                alive _x && { (crew _x) isEqualTo [] }
+                    && { (((_x getVariable ["OT_officeItem", []]) param [0, ""]) isEqualTo _town) }
+                    && { ((((_x getVariable ["OT_officeItem", []]) param [3, []]) param [0, ""]) isEqualTo "vehicle") }
+            });
             // Outside the main gate (the town's gate nearest the HQ), 15 m out from the compound's middle
             private _hq = ASLToAGL ((([_town] call OT_fnc_officeLayout) select 0) select 1);
             private _gates = ((missionNamespace getVariable ["OT_officeGates", []]) select { !isNull _x && { (((_x getVariable ["OT_officeItem", []]) param [0, ""]) isEqualTo _town) } });

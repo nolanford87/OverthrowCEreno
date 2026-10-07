@@ -10,7 +10,7 @@
     4. The garrison (OT_fnc_officeGarrison through OT_fnc_spawnOffice, Rodopoli at T4): the guards made, the
        patrol its own group walking a loop inside the walls, the posts holding, aware, flashlights, no NVGs, the
        area published; losses kept off and paid back; the patrol hunting a threat outside but staying inside the
-       walls, the town's gendarmerie sent over
+       walls, the town's gendarmerie sent over, the parked armed car crewed
     5. An undercover player (unarmed) seen inside the compound's walls loses his cover; outside it he keeps it
     (A truck can't drive in, even through the gate open: the vehicle path finding gives up, so occupier
     vehicles park and unload outside the gate, the user's choice.)
@@ -233,11 +233,16 @@ _tests pushBack ["Compounds: the patrol hunts inside the walls, the gendarmerie 
     };
     private _sent = ((waypoints _gg) findIf { (waypointType _x) isEqualTo "SAD" && { ((waypointPosition _x) distance2D _hq) < 60 } && { !((waypointPosition _x) inPolygon _area) } }) > -1; // To the gate, outside
     private _hunted = ((units _pg) findIf { (behaviour _x) isEqualTo "COMBAT" }) > -1;
+    private _car = (vehicles select { ((((_x getVariable ["OT_officeItem", []]) param [3, []]) param [0, ""]) isEqualTo "vehicle") && { ((_x getVariable ["OT_officeItem", []]) param [0, ""]) isEqualTo "Rodopoli" } }) param [0, objNull];
+    private _crew = count crew _car;
+    private _crewed = !isNull _car && { _crew > 0 } && { alive gunner _car };
+    { deleteVehicle _x } forEach (crew _car);
     deleteVehicle _enemy;
     deleteVehicle _gendarme;
     [_spawned] call OTQA_cp_clear;
     ["Hunt: the patrol went to combat and never left the walls", _hunted && { _outside isEqualTo 0 }, format ["in combat %1, most outside at once %2", _hunted, _outside]] call OTQA_fnc_check;
     ["Hunt: the town's gendarmerie sent to the compound's gate, outside", _sent, str _sent] call OTQA_fnc_check;
+    ["Hunt: the parked armed car crewed at the alarm", _crewed, format ["%1, crew %2", typeOf _car, _crew]] call OTQA_fnc_check;
 }, 90];
 
 _tests pushBack ["Compounds: undercover inside the walls is spotted", {

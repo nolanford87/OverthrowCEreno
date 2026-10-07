@@ -5,11 +5,11 @@ this order until the count is reached:
     1. the lookout towers: a marksman each (and an autorifleman in each from T4), on the tower's floor;
     2. the main gate (the one nearest the HQ): an autorifleman, in the gate bunker if it has one;
     3. the HMG crew (a static is crewed in play, so it counts);
-    4. from T4 an AT soldier near the main gate;
-    5. up to three at the HQ's upper windows (its buildingPos places);
-    6. the patrol: a fireteam of four (rifleman, autorifleman, two riflemen) just inside the main gate (every way
+    4. from T4 an AT soldier near the main gate; a rifleman in each fighting hole outside it (props_gen.py);
+    5. the patrol: a fireteam of four (rifleman, autorifleman, two riflemen) just inside the main gate (every way
        in and out goes through there, so it's never a pocket the walls cut off), "patrol" (it walks the inside of
        the walls in play);
+    6. up to three at the HQ's upper windows (its buildingPos places);
     7. a rifleman at each side gate;
     8. more at the HQ's places.
 Heights and places from the class probe (probes/<world>_classes.txt: OTFLOORS, OTBPOS). The guards carry the
@@ -145,7 +145,20 @@ class Garrison:
                      if all(math.dist(c, q) >= 5 for q in statics)]
             if self.ground_man("at", cg.add(gp, cg.mul(n, 8)), cands, gp):
                 note("AT")
-        # 5. The HQ's upper windows: the three places nearest its outer sides (a side each where it can), facing out
+        # 4b. A man in each fighting hole outside the main gate (props_gen.py's, "hole"): behind its sandbags (their
+        # curve model -y faces out, model +y in), facing out
+        for it in [it for it in self.items if it[0] == "object" and "hole" in it[4]]:
+            pos, vd = gg.vec(it[2]), cg.norm(gg.vdir(it[3])[:2])
+            p = cg.add(pos[:2], cg.mul(vd, 1.0))
+            if self.man("rifleman", p, self.b.ground(*p), heading(p, cg.sub(p, vd)), ["ground"]):
+                note("fighting hole rifleman")
+        # 5. The patrol fireteam just inside the main gate, beside its lane
+        if main and self.room() >= len(PATROL):
+            cands = [cg.add(cg.add(gp, cg.mul(u, a)), cg.mul(n, i)) for a in (-6, -5, -4, -3, 3, 4, 5, 6) for i in (6, 7, 8, 9, 10, 11, 12)]
+            for role in PATROL:
+                if self.ground_man(role, cg.add(gp, cg.mul(n, 9)), cands, None, ["patrol"]):
+                    note("patrol " + role)
+        # 6. The HQ's upper windows: the three places nearest its outer sides (a side each where it can), facing out
         # through the nearest side
         places = self.places.get(self.b.office, [])
         vd_hq = (math.sin(math.radians(self.b.dir)), math.cos(math.radians(self.b.dir)))
@@ -167,12 +180,6 @@ class Garrison:
             out = side((x, y))[1]
             if self.man("rifleman", p, self.b.pos[2] + h, heading(p, to_world(hq, vd_hq, x + out[0], y + out[1])), []):
                 note("HQ window")
-        # 6. The patrol fireteam just inside the main gate, beside its lane
-        if main and self.room() >= len(PATROL):
-            cands = [cg.add(cg.add(gp, cg.mul(u, a)), cg.mul(n, i)) for a in (-6, -5, -4, -3, 3, 4, 5, 6) for i in (6, 7, 8, 9, 10, 11, 12)]
-            for role in PATROL:
-                if self.ground_man(role, cg.add(gp, cg.mul(n, 9)), cands, None, ["patrol"]):
-                    note("patrol " + role)
         # 7. A rifleman at each side gate
         for g in gates:
             if g is main:

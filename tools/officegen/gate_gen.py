@@ -81,7 +81,9 @@ class Entrances:
         if any(tg.overlap(padded, q) for q in self.pieces()):
             return False
         for r in self.b.roads:
-            if any(cg.seg_dist(p, r["beg"][:2], r["end"][:2]) < r["width"] / 2 + (-1.5 if verge else 0.3) for p in box + [c]):
+            # verge: True lets a piece 1.5 m onto a road's edge, a number that far (a parked car)
+            onto = (1.5 if verge is True else float(verge)) if verge else -0.3
+            if any(cg.seg_dist(p, r["beg"][:2], r["end"][:2]) < r["width"] / 2 - onto for p in box + [c]):
                 return False
         if any(tg.overlap(padded, q) for q in lanes):
             return False

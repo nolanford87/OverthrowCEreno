@@ -694,14 +694,25 @@
 <path d="M448.5,376.1309999999903L460.5,388.1309999999903M448.5,388.1309999999903L460.5,376.1309999999903" stroke="#9b59b6" stroke-width="3"/>
 <path d="M497.20800000000236,349.63499999999476L509.20800000000236,361.63499999999476M497.20800000000236,361.63499999999476L509.20800000000236,349.63499999999476" stroke="#9b59b6" stroke-width="3"/>
 <path d="M497.5049999999974,347.75400000000445L509.5049999999974,359.75400000000445M497.5049999999974,359.75400000000445L509.5049999999974,347.75400000000445" stroke="#9b59b6" stroke-width="3"/>
+<polygon points="419.2,354.1 398.1,368.9 403.6,376.8 424.7,362.1" fill="#555" stroke="#222" stroke-width="0.6"/>
+<polygon points="493.0,302.7 471.9,317.4 477.4,325.4 498.5,310.6" fill="#555" stroke="#222" stroke-width="0.6"/>
+<polygon points="517.4,596.1 526.1,593.8 523.8,585.1 515.1,587.4" fill="#555" stroke="#222" stroke-width="0.6"/>
+<polygon points="519.5,604.0 528.2,601.6 525.9,592.9 517.2,595.3" fill="#555" stroke="#222" stroke-width="0.6"/>
+<polygon points="521.7,577.3 513.0,579.6 515.3,588.3 524.0,586.0" fill="#555" stroke="#222" stroke-width="0.6"/>
+<polygon points="406.4,718.1 414.9,721.3 418.0,712.9 409.6,709.7" fill="#555" stroke="#222" stroke-width="0.6"/>
+<polygon points="433.7,709.7 442.4,712.0 444.7,703.3 436.0,701.0" fill="#555" stroke="#222" stroke-width="0.6"/>
+<polygon points="406.4,700.0 414.7,703.4 418.1,695.1 409.8,691.7" fill="#555" stroke="#222" stroke-width="0.6"/>
+<polygon points="389.7,693.0 398.7,693.0 398.7,684.0 389.7,684.0" fill="#555" stroke="#222" stroke-width="0.6"/>
+<polygon points="398.7,687.6 407.7,687.6 407.7,678.6 398.7,678.6" fill="#555" stroke="#222" stroke-width="0.6"/>
+<polygon points="398.7,685.8 398.7,694.8 407.7,694.8 407.7,685.8" fill="#555" stroke="#222" stroke-width="0.6"/>
 <circle cx="282.6" cy="544.1" r="6" fill="#111"/><text x="290.6" y="549.1" font-size="15" font-weight="bold">ma0</text>
 <circle cx="539.1" cy="334.6" r="6" fill="#111"/><text x="547.1" y="339.6" font-size="15" font-weight="bold">au1</text>
-<circle cx="538.8" cy="461.9" r="6" fill="#111"/><text x="546.8" y="466.9" font-size="15" font-weight="bold">ri2</text>
-<circle cx="432.2" cy="499.7" r="6" fill="#111"/><text x="440.2" y="504.7" font-size="15" font-weight="bold">ri3</text>
-<circle cx="539.1" cy="501.3" r="6" fill="#111"/><text x="547.1" y="506.3" font-size="15" font-weight="bold">ri4</text>
-<circle cx="592.2" cy="481.5" r="6" fill="#111"/><text x="600.2" y="486.5" font-size="15" font-weight="bold">ri5</text>
-<circle cx="592.2" cy="526.5" r="6" fill="#111"/><text x="600.2" y="531.5" font-size="15" font-weight="bold">au6</text>
-<circle cx="610.2" cy="499.5" r="6" fill="#111"/><text x="618.2" y="504.5" font-size="15" font-weight="bold">ri7</text>
-<circle cx="610.2" cy="517.5" r="6" fill="#111"/><text x="618.2" y="522.5" font-size="15" font-weight="bold">ri8</text>
+<circle cx="416.5" cy="372.9" r="6" fill="#111"/><text x="424.5" y="377.9" font-size="15" font-weight="bold">ri2</text>
+<circle cx="490.4" cy="321.4" r="6" fill="#111"/><text x="498.4" y="326.4" font-size="15" font-weight="bold">ri3</text>
+<circle cx="533.0" cy="390.4" r="6" fill="#111"/><text x="541.0" y="395.4" font-size="15" font-weight="bold">ri4</text>
+<circle cx="515.3" cy="380.8" r="6" fill="#111"/><text x="523.3" y="385.8" font-size="15" font-weight="bold">au5</text>
+<circle cx="471.0" cy="411.7" r="6" fill="#111"/><text x="479.0" y="416.7" font-size="15" font-weight="bold">ri6</text>
+<circle cx="530.1" cy="370.5" r="6" fill="#111"/><text x="538.1" y="375.5" font-size="15" font-weight="bold">ri7</text>
+<circle cx="538.8" cy="461.9" r="6" fill="#111"/><text x="546.8" y="466.9" font-size="15" font-weight="bold">ri8</text>
 <text x="10" y="24" font-size="20" font-weight="bold">Rodopoli: north up, 10 m grid, office blue, doors red</text>
 </svg>

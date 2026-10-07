@@ -743,19 +743,5 @@
 <polygon points="542.7,871.2 551.7,871.2 551.7,862.2 542.7,862.2" fill="#555" stroke="#222" stroke-width="0.6"/>
 <polygon points="551.7,865.8 560.7,865.8 560.7,856.8 551.7,856.8" fill="#555" stroke="#222" stroke-width="0.6"/>
 <polygon points="551.7,864.0 551.7,873.0 560.7,873.0 560.7,864.0" fill="#555" stroke="#222" stroke-width="0.6"/>
-<circle cx="299.6" cy="531.3" r="6" fill="#111"/><text x="307.6" y="536.3" font-size="15" font-weight="bold">ma0</text>
-<circle cx="287.0" cy="518.2" r="6" fill="#111"/><text x="295.0" y="523.2" font-size="15" font-weight="bold">au1</text>
-<circle cx="585.4" cy="327.5" r="6" fill="#111"/><text x="593.4" y="332.5" font-size="15" font-weight="bold">ma2</text>
-<circle cx="572.8" cy="314.4" r="6" fill="#111"/><text x="580.8" y="319.4" font-size="15" font-weight="bold">au3</text>
-<circle cx="452.6" cy="387.7" r="6" fill="#111"/><text x="460.6" y="392.7" font-size="15" font-weight="bold">au4</text>
-<circle cx="468.3" cy="409.7" r="6" fill="#111"/><text x="476.3" y="414.7" font-size="15" font-weight="bold">at5</text>
-<circle cx="420.7" cy="366.3" r="6" fill="#111"/><text x="428.7" y="371.3" font-size="15" font-weight="bold">ri6</text>
-<circle cx="517.4" cy="385.6" r="6" fill="#111"/><text x="525.4" y="390.6" font-size="15" font-weight="bold">ri7</text>
-<circle cx="537.3" cy="382.5" r="6" fill="#111"/><text x="545.3" y="387.5" font-size="15" font-weight="bold">au8</text>
-<circle cx="526.8" cy="367.8" r="6" fill="#111"/><text x="534.8" y="372.8" font-size="15" font-weight="bold">ri9</text>
-<circle cx="453.6" cy="420.1" r="6" fill="#111"/><text x="461.6" y="425.1" font-size="15" font-weight="bold">ri10</text>
-<circle cx="538.8" cy="461.9" r="6" fill="#111"/><text x="546.8" y="466.9" font-size="15" font-weight="bold">ri11</text>
-<circle cx="432.2" cy="499.7" r="6" fill="#111"/><text x="440.2" y="504.7" font-size="15" font-weight="bold">ri12</text>
-<circle cx="539.1" cy="501.3" r="6" fill="#111"/><text x="547.1" y="506.3" font-size="15" font-weight="bold">ri13</text>
 <text x="10" y="24" font-size="20" font-weight="bold">Rodopoli: north up, 10 m grid, office blue, doors red</text>
 </svg>
