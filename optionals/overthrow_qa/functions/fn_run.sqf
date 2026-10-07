@@ -34,7 +34,9 @@ private _suites = createHashMapFromArray [
     // The review by hand of the mayor's office defence templates (ends when the reviewer picks "Review: finished")
     ["officereview", ["Mayor's office template review", OTQA_fnc_officeReview]],
     // Laying out each town's mayor's office by hand with Zeus (ends when the author picks "Layout: finished")
-    ["townlayout", ["Mayor's office town layouts", OTQA_fnc_townLayout]]
+    ["townlayout", ["Mayor's office town layouts", OTQA_fnc_townLayout]],
+    // A game set up for the host to play: taking Rodopoli's compound (the live capture test)
+    ["capturetest", ["Live capture test", OTQA_fnc_captureTest]]
 ];
 if !(_suite in _suites) exitWith {
     hint format ["Overthrow QA: unknown test suite %1", _suite];
