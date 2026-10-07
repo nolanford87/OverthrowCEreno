@@ -176,7 +176,7 @@ _tests pushBack ["Compounds: the garrison at work", {
     private _unaware = { (behaviour _x) isNotEqualTo "AWARE" } count _guards;
     private _nvg = { hmd _x isNotEqualTo "" } count _guards;
     private _dark = { primaryWeapon _x isNotEqualTo "" && { ((primaryWeaponItems _x) select 1) isEqualTo "" } } count _guards;
-    ["Garrison: T4's 15 men (14 guards, the HMG's gunner)", (count _guards) isEqualTo 15, str count _guards] call OTQA_fnc_check;
+    ["Garrison: T4's 14 men (13 guards, the HMG's gunner)", (count _guards) isEqualTo 14, str count _guards] call OTQA_fnc_check;
     ["Garrison: the patrol of four its own group, walking a loop", (count _patrol) isEqualTo 4 && { (count units _pg) isEqualTo 4 } && _cycle, format ["%1 in the patrol, %2 in its group, %3 waypoints", count _patrol, count units _pg, count waypoints _pg]] call OTQA_fnc_check;
     ["Garrison: the posts hold, everyone aware, flashlights, no NVGs", _free isEqualTo 0 && _unaware isEqualTo 0 && _nvg isEqualTo 0 && _dark isEqualTo 0, format ["posts free to walk %1, not aware %2, NVGs %3, no light %4", _free, _unaware, _nvg, _dark]] call OTQA_fnc_check;
     ["Garrison: the compound's area published for the undercover check", (count _area) > 2, str count _area] call OTQA_fnc_check;
@@ -204,8 +204,8 @@ _tests pushBack ["Compounds: the garrison's losses, paid back", {
     private _left = (server getVariable ["compoundlostRodopoli", [0, 0]]) select 0;
     [_spawned] call OTQA_cp_clear;
     server setVariable ["NATOresources", _resources];
-    ["Losses: three lost, three fewer made, the patrol's first", _first isEqualTo 12 && { _patrolLeft isEqualTo 1 }, format ["%1 made, %2 of the patrol", _first, _patrolLeft]] call OTQA_fnc_check;
-    ["Losses: 20 minutes on, two paid back (10 each), one still lost", _second isEqualTo 14 && { _paid isEqualTo 20 } && { _left isEqualTo 1 }, format ["%1 made, %2 paid, %3 lost", _second, _paid, _left]] call OTQA_fnc_check;
+    ["Losses: three lost, three fewer made, the patrol's first", _first isEqualTo 11 && { _patrolLeft isEqualTo 1 }, format ["%1 made, %2 of the patrol", _first, _patrolLeft]] call OTQA_fnc_check;
+    ["Losses: 20 minutes on, two paid back (10 each), one still lost", _second isEqualTo 13 && { _paid isEqualTo 20 } && { _left isEqualTo 1 }, format ["%1 made, %2 paid, %3 lost", _second, _paid, _left]] call OTQA_fnc_check;
 }, 60];
 
 _tests pushBack ["Compounds: the patrol hunts inside the walls, the gendarmerie comes", {
