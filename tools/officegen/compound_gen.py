@@ -198,7 +198,8 @@ class Gen:
                     t = hit[0] * L
                     out.setdefault(i, []).append((t - w / 2, t + w / 2, w, hit[1]))
         if not out:
-            # No road through it: a main gate on the road-facing edge nearest the HQ's door
+            # No road through it: a main gate on a road-facing edge, nearest the HQ's door, with a way in behind it
+            # (5 m wide, 6 m in, no building in it: at Paros the HQ stood right behind the nearest spot)
             hq = next((t for t in self.b.buildings if math.dist(t.pos[:2], self.b.pos[:2]) < 1), None)
             door = (hq.door_points() or [self.b.pos[:2]])[0] if hq else self.b.pos[:2]
             best = None
@@ -209,18 +210,38 @@ class Gen:
                 facing = min((seg_dist(add(a, mul(sub(b, a), k / 10)), tuple(r["beg"][:2]), tuple(r["end"][:2])) for r in self.b.roads for k in range(11)), default=99)
                 if facing > 12:
                     continue
-                t = max(4, min(L - 4, dot(sub(door, a), norm(sub(b, a)))))
-                m = add(a, mul(norm(sub(b, a)), t))
-                score = math.dist(m, door)
-                if self.on_building(m, 0):
-                    continue
-                if best is None or score < best[0]:
-                    best = (score, i, t, m)
+                u = norm(sub(b, a))
+                n = (-u[1], u[0])
+                if not inside(add(add(a, mul(u, L / 2)), n), self.poly):
+                    n = (u[1], -u[0])
+                t = 4.0
+                while t <= L - 4:
+                    m = add(a, mul(u, t))
+                    score = math.dist(m, door)
+                    if not self.on_building(m, 0) and not self.blocked_behind(m, u, n) and (best is None or score < best[0]):
+                        best = (score, i, t, m)
+                    t += 1.0
             if best:
                 _, i, t, m = best
                 out[i] = [(t - 2, t + 2, 4.0, m)]
                 self.notes.append(f"no road crosses it: a 4 m main gate on edge {i}")
         return out
+
+    def blocked_behind(self, m, u, n, width=5.0, depth=6.0):
+        """Does a building stand in the way in behind a gate at m (the line along u, n inward)?"""
+        corridor = [add(add(m, mul(u, s * width / 2)), mul(n, d)) for s, d in ((-1, 0.5), (1, 0.5), (1, depth), (-1, depth))]
+
+        def apart(p, q):
+            for poly in (p, q):
+                for k in range(len(poly)):
+                    e = sub(poly[(k + 1) % len(poly)], poly[k])
+                    ax = (-e[1], e[0])
+                    pa = [dot(ax, x) for x in p]
+                    qa = [dot(ax, x) for x in q]
+                    if max(pa) < min(qa) or max(qa) < min(pa):
+                        return True
+            return False
+        return any(not apart(corridor, t.corners()) for t in self.b.buildings)
 
     def on_building(self, p, deep=2.0):
         """The building whose real walls hold p: its ground floor plan from the office probe where its class was

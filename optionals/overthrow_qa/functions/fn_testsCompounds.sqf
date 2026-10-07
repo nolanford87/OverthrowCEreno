@@ -57,31 +57,39 @@ _tests pushBack ["Office: gates worked by the occupier, open once taken", {
     ["Gates: the town taken, its gate unlocked and open", _taken, str _taken] call OTQA_fnc_check;
 }, 60];
 
-_tests pushBack ["Office: the occupier's men walk out and in through a shut gate", {
-    private _town = "Rodopoli";
-    ([_town, 3, west, true] call OT_fnc_officeApplyLayout) params ["", "_objects", "_guards"];
-    private _gate = (_objects select { "gate" in toLower typeOf _x }) param [0, objNull];
-    private _marker = ((([_town] call OT_fnc_officeLayout) select 1) select 2) select { (_x select 0) isEqualTo "gate" };
+// An occupier soldier walks out of a compound's tier through its main gate shut and back in (the gate operator
+// working it, as in play)
+OTQA_cp_walkTest = {
+    params ["_town", "_tier"];
+    ([_town, _tier, west, true] call OT_fnc_officeApplyLayout) params ["", "_objects", "_guards"];
+    private _hq = _town call OTQA_og_officePos;
+    // The main gate: the tier's gate marker nearest the HQ, and the gate standing on it
+    private _marker = ((([_town] call OT_fnc_officeLayout) select 1) select (_tier - 1)) select { (_x select 0) isEqualTo "gate" };
+    _marker = [_marker, [], { (ASLToAGL (_x select 2)) distance2D _hq }, "ASCEND"] call BIS_fnc_sortBy;
+    private _gp0 = if (_marker isEqualTo []) then { [0, 0, 0] } else { ASLToAGL ((_marker select 0) select 2) };
+    private _gate = (([_objects select { "gate" in toLower typeOf _x }, [], { _x distance2D _gp0 }, "ASCEND"] call BIS_fnc_sortBy) param [0, objNull]);
     if (isNull _gate || { _marker isEqualTo [] }) exitWith {
         { deleteVehicle _x } forEach (_objects + _guards);
-        ["Walk: Rodopoli's T3 gate found", false, format ["gate %1, markers %2", _gate, count _marker]] call OTQA_fnc_check;
+        [format ["Walk: %1's T%2 gate found", _town, _tier], false, format ["gate %1, markers %2", _gate, count _marker]] call OTQA_fnc_check;
     };
     // The gate shut, locked and worked by the occupier, as a closed gate is in play
-    _gate setVariable ["bis_disabled_Door_1", 1, true];
-    _gate setVariable ["bis_disabled_Door_2", 1, true];
+    for "_d" from 1 to (getNumber (configOf _gate >> "numberOfDoors")) max 1 do { _gate setVariable [format ["bis_disabled_Door_%1", _d], 1, true] };
     _gate setVariable ["OT_officeGate", true, true];
     _gate enableSimulationGlobal true;
     [_gate] call OT_fnc_officeGates;
     private _gp = ASLToAGL ((_marker select 0) select 2);
-    private _hq = _town call OTQA_og_officePos;
     private _out = (_gp vectorDiff _hq) vectorMultiply (1 / ((_gp distance2D _hq) max 1));
-    private _in = _gp vectorAdd (_out vectorMultiply -10);
-    private _far = _gp vectorAdd (_out vectorMultiply 30);
+    // Places a man can stand on: 6 m in (not in the HQ, which can stand close to the gate), on the road 25 m out
+    private _in = (_gp vectorAdd (_out vectorMultiply -6)) findEmptyPosition [0, 6, "B_Soldier_F"];
+    if (_in isEqualTo []) then { _in = _gp vectorAdd (_out vectorMultiply -6) };
+    private _road = ((_gp vectorAdd (_out vectorMultiply 25)) nearRoads 15) param [0, objNull];
+    private _far = if (isNull _road) then { (_gp vectorAdd (_out vectorMultiply 25)) findEmptyPosition [0, 10, "B_Soldier_F"] } else { getPosATL _road };
+    if (_far isEqualTo []) then { _far = _gp vectorAdd (_out vectorMultiply 25) };
     _in set [2, 0];
     _far set [2, 0];
     private _walk = {
         params ["_from", "_to"];
-        sleep 12; // The gate shut again behind the last
+        sleep 16; // The gate shut again behind the last (10 s after him, then its swing)
         private _shut = (_gate animationSourcePhase "Door_1_sound_source") < 0.1;
         private _grp = createGroup [blufor, true];
         private _man = _grp createUnit ["B_Soldier_F", _from, [], 0, "CAN_COLLIDE"];
@@ -107,13 +115,16 @@ _tests pushBack ["Office: the occupier's men walk out and in through a shut gate
     };
     private _outward = [_in, _far] call _walk;
     private _inward = [_far, _in] call _walk;
-    diag_log format ["OTGATEWALK|%1|out %2|in %3", _town, _outward, _inward];
+    diag_log format ["OTGATEWALK|%1|T%2|out %3|in %4", _town, _tier, _outward, _inward];
     { deleteVehicle _x } forEach (_objects + _guards);
     [_town, [_town] call OT_fnc_officeTier] call OT_fnc_officeHide;
     [_town, [_town] call OT_fnc_officeTier] call OT_fnc_officeDoors;
-    ["Walk: an occupier soldier gets out through the shut gate", (_outward select 0) && { _outward select 1 }, format ["gate shut first %1, out %2 in %3 s", _outward select 0, _outward select 1, _outward select 2]] call OTQA_fnc_check;
-    ["Walk: an occupier soldier gets in through the shut gate", (_inward select 0) && { _inward select 1 }, format ["gate shut first %1, in %2 in %3 s", _inward select 0, _inward select 1, _inward select 2]] call OTQA_fnc_check;
-}, 240];
+    [format ["Walk (%1 T%2): an occupier soldier gets out through the shut gate", _town, _tier], (_outward select 0) && { _outward select 1 }, format ["gate shut first %1, out %2 in %3 s", _outward select 0, _outward select 1, _outward select 2]] call OTQA_fnc_check;
+    [format ["Walk (%1 T%2): an occupier soldier gets in through the shut gate", _town, _tier], (_inward select 0) && { _inward select 1 }, format ["gate shut first %1, in %2 in %3 s", _inward select 0, _inward select 1, _inward select 2]] call OTQA_fnc_check;
+};
+_tests pushBack ["Compounds: men walk out and in through a shut gate (Rodopoli T3)", { ["Rodopoli", 3] call OTQA_cp_walkTest }, 240];
+_tests pushBack ["Compounds: men walk out and in through a shut gate (Paros T3)", { ["Paros", 3] call OTQA_cp_walkTest }, 240];
+_tests pushBack ["Compounds: men walk out and in through a shut gate (Paros T4)", { ["Paros", 4] call OTQA_cp_walkTest }, 240];
 
 _tests pushBack ["Office: static weapons by role", {
     private _hmg = ["hmg"] call OT_fnc_officeStatic;

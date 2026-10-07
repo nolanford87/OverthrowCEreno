@@ -40,6 +40,10 @@ SIZE = {"Land_BagBunker_Small_F": (5.0, 5.69), "Flag_NATO_F": (0.6, 0.6), "Land_
 LANE = 10.0
 
 
+def is_wall(cls):
+    return any(w in cls for w in WALLS)
+
+
 def vec(s):
     return [float(v) for v in str(s).strip("[]").split(",")]
 
@@ -191,16 +195,16 @@ class Entrances:
         def ring(origin, along, inward):
             return [cg.add(cg.add(origin, cg.mul(u, a)), cg.mul(n, i)) for a in along for i in inward]
 
-        sides = [x * s for x in (3.5, 4.5, 5.5, 6.5, 7.5, 9.0) for s in (1, -1)]
+        sides = [x * s for x in (3.5, 4.5, 5.5, 6.5, 7.5, 9.0, 10.5, 12.0) for s in (1, -1)]
         if main:
             # The bunker beside the lane, firing out: its slit is model -y (its two firing places, the class probe's
             # OTBPOS), so model +y points in
             c = self.near_spot(cg.add(gp, cg.mul(n, 4.0)), SIZE["Land_BagBunker_Small_F"], n,
-                               ring(gp, [x * s for x in (5.5, 6.5, 7.5, 9.0, 10.5, 12.0, 14.0) for s in (1, -1)], (3.5, 4.5, 5.5, 6.5, 8.0, 9.5)), lanes=lanes)
+                               ring(gp, [x * s for x in (5.5, 6.5, 7.5, 9.0, 10.5, 12.0, 14.0) for s in (1, -1)], (3.5, 4.5, 5.5, 6.5, 8.0, 9.5, 11.0)), lanes=lanes)
             if c:
                 self.put("object", "Land_BagBunker_Small_F", c, n)
                 placed.append("bunker")
-            c = self.near_spot(cg.add(cg.add(gp, cg.mul(u, 3.0)), cg.mul(n, 0.8)), SIZE["Flag_NATO_F"], n, ring(gp, sides, (0.8, 1.2, 1.8, 2.5)), lanes=lanes)
+            c = self.near_spot(cg.add(cg.add(gp, cg.mul(u, 3.0)), cg.mul(n, 0.8)), SIZE["Flag_NATO_F"], n, ring(gp, sides, (0.8, 1.2, 1.8, 2.5, 3.5)), lanes=lanes)
             if c:
                 self.put("object", "Flag_NATO_F", c, n, "ground,flag,entrance")
                 placed.append("flag")
@@ -208,7 +212,7 @@ class Entrances:
                 # The HMG behind round sandbags firing out through the gate (a T4 wall is higher than it): off the
                 # lane, aimed through the gate's middle at the street, no more than 50 degrees off straight out
                 best = None
-                for c in ring(gp, [x * s for x in (3.0, 3.5, 4.0, 5.0, 6.0) for s in (1, -1)], (5.0, 6.0, 7.5, 9.0, 10.5, 12.0)):
+                for c in ring(gp, [x * s for x in (3.0, 3.5, 4.0, 5.0, 6.0, 7.0, 8.0) for s in (1, -1)], (4.0, 5.0, 6.0, 7.5, 9.0, 10.5, 12.0)):
                     d = cg.norm(cg.sub(gp, c))
                     if cg.dot(d, cg.mul(n, -1)) < math.cos(math.radians(50)):
                         continue
@@ -222,8 +226,19 @@ class Entrances:
                     # The round sandbags' curve is their model -y (the user turned one round at Rodopoli)
                     self.put("object", "Land_BagFence_Round_F", cg.add(c, cg.mul(d, 1.4)), cg.mul(d, -1))
                     placed.append("HMG nest")
+                else:
+                    # No room by the gate (a crowded compound): the HMG up on a cargo patrol tower's platform
+                    # (model -2.0, -1.2, 4.14 m up), facing its open side
+                    tower = next((it for it in self.items if it[0] == "object" and it[1] == "Land_Cargo_Patrol_V1_F" and "lookout" in it[4]), None)
+                    if tower:
+                        tp, tv = vec(tower[2]), cg.norm(vdir(tower[3])[:2])
+                        tx = (tv[1], -tv[0])
+                        c = cg.add(cg.add(tp[:2], cg.mul(tx, -2.0)), cg.mul(tv, -1.2))
+                        d = cg.mul(tx, -1)  # The platform's open side (its floor runs to model -x)
+                        self.items.append(["static", "hmg", f"[{c[0]:.3f},{c[1]:.3f},{tp[2] + 4.14:.3f}]", orient_dir(d), "entrance"])
+                        placed.append("HMG on the tower")
         # A floodlight inside beside the lane, aimed at the gate (its lamps face model -y)
-        rings = ring(gp, [x * s for x in (3.5, 4.0, 4.5, 5.0, 6.0) for s in (1, -1)], (3.5, 4.0, 4.5, 5.0, 6.0))
+        rings = ring(gp, [x * s for x in (3.5, 4.0, 4.5, 5.0, 6.0, 7.0, 8.0) for s in (1, -1)], (2.5, 3.5, 4.0, 4.5, 5.0, 6.0, 7.0, 8.0))
         best = None
         for c in rings:
             d = cg.norm(cg.sub(c, gp))

@@ -2,7 +2,9 @@
 The occupier compounds' garrison posts (tools/officegen/COMPOUND_PLAN.md, step 5 of the Rodopoli pilot), adding guards
 to the reviewed tiers 3+ and changing nothing else. One man per 200 m2 of the tier's area, posts included, filled in
 this order until the count is reached:
-    1. the lookout towers: a marksman each (and an autorifleman in each from T4), on the tower's floor;
+    1. the lookout towers: a marksman each (and an autorifleman in each from T4), on the tower's floor; where the
+       compound had no room for a tower (tower_gen.py's plan: T3 one, T4 two), a marksman at an upper window
+       instead, in the building on the area that's nearest its line (the HQ when no other has an upper floor);
     2. the main gate (the one nearest the HQ): an autorifleman, in the gate bunker if it has one;
     3. the HMG crew (a static is crewed in play, so it counts);
     4. from T4 an AT soldier near the main gate; a rifleman in each fighting hole outside it (props_gen.py);
@@ -81,6 +83,12 @@ class Garrison:
     def man(self, role, p, z, facing, flags):
         if self.room() <= 0:
             return False
+        # Not on another man's spot (the HQ's places serve its windows and a window lookout)
+        if any(math.dist(p, gg.vec(m[2])[:2]) < 0.8 and abs(z - gg.vec(m[2])[2]) < 1.5 for m in self.men):
+            return False
+        # Nor on a static weapon's (an HMG up a tower takes its autorifleman's place)
+        if any(math.dist(p, gg.vec(it[2])[:2]) < 1.0 and abs(z - gg.vec(it[2])[2]) < 1.5 for it in self.items if it[0] == "static"):
+            return False
         self.men.append(["guard", role, f"[{p[0]:.3f},{p[1]:.3f},{z:.3f}]", f"{facing:.1f}", ",".join(["garrison"] + flags)])
         return True
 
@@ -117,6 +125,33 @@ class Garrison:
                 p = to_world(pos, vd, x, y)
                 if self.man(["marksman", "autorifleman"][min(k, 1)], p, pos[2] + h, heading(self.centre, p), []):
                     note("tower " + ["marksman", "autorifleman"][min(k, 1)])
+        # 1b. A window lookout for each tower the compound had no room for: a marksman at the upper place nearest
+        # the area's line, in a building on the area (other than the HQ first)
+        planned = {3: 1, 4: 2, 5: 3}.get(self.tier, 0)
+        built = sum(1 for it in self.items if it[0] == "object" and "lookout" in it[4])
+        if built < planned:
+            taken = set()
+            options = []
+            for t in self.b.buildings:
+                if sum(cg.inside(c, self.poly) for c in t.corners()) < 2:
+                    continue
+                cls = t.model if t.model in self.places else "Land_" + t.model
+                for x, y, h in self.places.get(cls, []):
+                    if h < 2.0:
+                        continue
+                    p = t.to_world(x, y)
+                    if not cg.inside(p, self.poly):
+                        continue
+                    is_hq = math.dist(t.pos[:2], self.b.pos[:2]) < 1
+                    options.append(((is_hq, self.e.edge_dist(p)), p, t.pos[2] + h, id(t)))
+            options.sort(key=lambda o: o[0])
+            for _ in range(planned - built):
+                pick = next((o for o in options if o[3] not in taken), None)
+                if not pick:
+                    break
+                taken.add(pick[3])
+                if self.man("marksman", pick[1], pick[2], heading(self.centre, pick[1]), []):
+                    note("window lookout marksman")
         # 2. The main gate's autorifleman
         if main:
             gp = gg.vec(main[2])[:2]
@@ -133,8 +168,13 @@ class Garrison:
                 if self.man("autorifleman", p, pos[2] + h, heading(p, cg.sub(p, vd)), []):
                     note("gate bunker autorifleman")
             else:
-                cands = [cg.add(cg.add(gp, cg.mul(u, a)), cg.mul(n, i)) for a in (-6, -5, -4, -3, 3, 4, 5, 6) for i in (2, 3, 4, 5)]
-                if self.ground_man("autorifleman", cg.add(gp, cg.mul(n, 3)), cands, cg.add(gp, cg.mul(n, -20))):
+                # Where his line to the gate's opening is clear of the wall's pieces (not pressed against the T4
+                # gate's stub)
+                rects = [gg.tg.piece_rect(it) for it in self.items if it[0] == "object" and "gate" not in it[1].lower() and gg.is_wall(it[1])]
+                cands = [c for c in (cg.add(cg.add(gp, cg.mul(u, a)), cg.mul(n, i)) for a in (-6, -5, -4, -3, 3, 4, 5, 6) for i in (2, 3, 4, 5))
+                         if not any(gg.tg.overlap([c, cg.add(gp, cg.mul(n, 0.5)), cg.add(gp, cg.mul(n, 0.6)), cg.add(c, (0.05, 0.05))], r) for r in rects)]
+                # Facing the gate's opening (beside it, straight out is the wall)
+                if self.ground_man("autorifleman", cg.add(gp, cg.mul(n, 3)), cands, cg.add(gp, cg.mul(n, -6))):
                     note("gate autorifleman")
         # 3. The HMG crews count (a static is crewed in play)
         # 4. The AT soldier from T4
