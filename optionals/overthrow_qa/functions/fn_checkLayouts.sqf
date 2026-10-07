@@ -20,6 +20,11 @@
             goes out through one of the tier's gates (a "gate" item, within its half width + 1 m), else |none (a gap
             the layout didn't mean); OTPATH|town|tier|closed
             when every route was computed and none gets out, "unknown (...)" when some weren't computed
+        OTGAP|town|tier|[x, y]|[x, y]|width an opening in a compound's wall line (OT_fnc_officeCompound's area, tier 3
+            up): along every edge every 0.1 m, two rays across the line (2.5 m in to 2.5 m out, 0.3 and 0.8 m up) that
+            meet no wall (the tier's barrier pieces, a building or the map's walls and fences it keeps: not one it
+            hides) and stand under no building; a stretch of 0.8 m or more of them, not in a gate's opening, from [x, y] to [x, y] (office model);
+            OTGAP|town|tier|none when the line is whole
         OTCLASS|class|[length, depth, height] the real size of every class the layouts use (once)
     and two screenshots per tier (the profile's Screenshots folder): OTL_<town>_T<tier>_top.png from 60 m
     above, OTL_<town>_T<tier>_street.png from 35 m out on the street side, 20 m up (the first bearing with a clear view); both farther out for a big
@@ -258,6 +263,58 @@
                 diag_log format ["OTCHECK|%1|%2|%3|%4|%5|%6|%7|%8|%9|%10|%11|%12|%13", _town, _tier, count _items, count _guards, count _props, count _statics,
                     ({ !((_x select 0) in ["hide", "gate"]) } count _items) - (count _objects) - (count _guards), // Markers make nothing
                     _clips, _floating, _moved, _blind, _blocked, (_views param [floor ((count _views) / 2), 0]) call _r1];
+
+                // The wall line's openings (a way through no route happened to take): rays across each edge of the
+                // tier's area, a hit only on a barrier piece of the layout, a building or a map wall kept (the map's
+                // hidden ones are left out by name, whether or not a ray still meets a hidden object)
+                private _area = [_town, _tier] call OT_fnc_officeCompound;
+                if (_tier >= 3 && { _area isNotEqualTo [] }) then {
+                    private _barriers = ["Wall", "Fence", "HBarrier", "Barrier", "Gate", "Cnc"];
+                    private _solid = (_objects select { private _t = typeOf _x; (_barriers findIf { _x in _t }) > -1 }) + _parts + [_b]
+                        + ((nearestTerrainObjects [getPosATL _b, _terrainTypes, 120, false, true]) select { !isObjectHidden _x });
+                    private _gapGates = (_items select { (_x select 0) isEqualTo "gate" }) apply { [ASLToAGL (_x select 2), parseNumber (_x select 1)] };
+                    private _model = { ((_b worldToModel _this) select [0, 2]) apply { _x call _r1 } };
+                    private _hits = {
+                        params ["_f", "_t"];
+                        ((lineIntersectsSurfaces [_f, _t, objNull, objNull, true, 10, "GEOM", "NONE", true]) findIf {
+                            private _o = _x select 3; if (isNull _o) then { _o = _x select 2 };
+                            !isNull _o && { _o in _solid }
+                        }) > -1
+                    };
+                    private _gaps = [];
+                    private _n = count _area;
+                    for "_e" from 0 to _n - 1 do {
+                        private _a = (_area select _e) + [0];
+                        private _c = (_area select ((_e + 1) % _n)) + [0];
+                        private _len = _a distance2D _c;
+                        private _u = (_c vectorDiff _a) vectorMultiply (1 / (_len max 0.01));
+                        private _across = [_u select 1, -(_u select 0), 0];
+                        private _run = [];
+                        for "_k" from 0 to floor (_len * 10) do {
+                            private _p = _a vectorAdd (_u vectorMultiply (_k / 10));
+                            private _inGate = (_gapGates findIf { _x params ["_g", "_w"]; (_p distance2D _g) <= (_w / 2 + 0.3) }) > -1;
+                            // Open: neither ray across meets a wall, and no building stands over the point (a line run
+                            // deep through a house, its walls farther off than the rays reach)
+                            private _z = getTerrainHeightASL _p;
+                            private _open = !_inGate && {
+                                ([0.3, 0.8] findIf {
+                                    private _f = _p vectorAdd (_across vectorMultiply 2.5); _f set [2, _z + _x];
+                                    private _t = _p vectorAdd (_across vectorMultiply -2.5); _t set [2, _z + _x];
+                                    [_f, _t] call _hits
+                                }) isEqualTo -1
+                            } && { !([[_p select 0, _p select 1, _z + 15], [_p select 0, _p select 1, _z + 0.3]] call _hits) };
+                            if (_open) then { _run pushBack _p };
+                            if ((!_open || { _k isEqualTo floor (_len * 10) }) && { _run isNotEqualTo [] }) then {
+                                private _w = ((_run select 0) distance2D (_run select -1)) + 0.1;
+                                if (_w >= 0.8) then { _gaps pushBack [(_run select 0) call _model, (_run select -1) call _model, _w call _r1] };
+                                _run = [];
+                            };
+                        };
+                    };
+                    // One line per opening (an RPT line is cut at about 1 KB)
+                    { diag_log format ["OTGAP|%1|%2|%3|%4|%5", _town, _tier, _x select 0, _x select 1, _x select 2] } forEach _gaps;
+                    if (_gaps isEqualTo []) then { diag_log format ["OTGAP|%1|%2|none", _town, _tier] };
+                };
 
                 // Closure: can a man walk out? The engine's own route from the office's door to 8 points 60 m out
                 // (on a road where there's one). A route that gets there is a way out; where it passes closest to the

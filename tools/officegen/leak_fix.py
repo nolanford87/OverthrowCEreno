@@ -1,6 +1,7 @@
 """
 Closes the leaks a layout check found in a town's occupier compound (tools/officegen/COMPOUND_PLAN.md: leaks are closed
-by adding pieces, never by moving the ones there): each way out or in (OTPATH / OTPATHIN in the RPT) that doesn't go
+by adding pieces, never by moving the ones there): each opening the check's scan of the wall line found (OTGAP: fillers
+along the line over it), and each way out or in (OTPATH / OTPATHIN in the RPT) that doesn't go
 through a gate crosses the tier's line somewhere; where that's through a building it's a door (locked for players,
 OT_fnc_officeDoors) and left, elsewhere a filler goes on the line there, along it: T3 a 2-high H-barrier 1
 (Land_HBarrier_1_F, the upper layer 1.4 m up), T4+ a small concrete wall (Land_CncWall1_F), unless it would stand in
@@ -44,6 +45,18 @@ def crossings(rpt, town, tier, block, poly):
     return out
 
 
+def gaps(rpt, town, tier, block):
+    """[(from, to)] world [x, y]: the openings the layout check's scan found in the tier's wall line (OTGAP)."""
+    o, d = block.pos, block.dir
+    world = lambda x, y: (o[0] + blocklib.rot(x, y, d)[0], o[1] + blocklib.rot(x, y, d)[1])
+    out = []
+    for line in open(rpt, encoding="utf-8", errors="replace"):
+        m = re.search(r'"OTGAP\|' + re.escape(town) + r'\|' + str(tier) + r'\|\[([^\]]+)\]\|\[([^\]]+)\]\|', line)
+        if m:
+            out.append(tuple(world(*[float(v) for v in g.split(",")]) for g in m.groups()))
+    return out
+
+
 def main(argv):
     world = argv[argv.index("--world") + 1] if "--world" in argv else "Altis"
     args = [a for a in argv if not a.startswith("--") and a != world]
@@ -80,6 +93,20 @@ def main(argv):
                 for dz in (0.0, cg.UPPER):
                     items.append(["object", "Land_HBarrier_1_F", f"[{p[0]:.3f},{p[1]:.3f},{z + dz:.3f}]", cg.orient(u), "leakfix"])
             added += 1
+        # The scan's openings: fillers along the line over each, 0.3 m past both ends, a piece every 1.3 m
+        for a, c in gaps(rpt, town, tier, block):
+            u = cg.norm(cg.sub(c, a))
+            L = math.dist(a, c) + 0.6
+            k = max(1, math.ceil((L - 1.4) / 1.3) + 1)
+            for j in range(k):
+                p = cg.add(cg.sub(a, cg.mul(u, 0.3)), cg.mul(u, min(0.7 + 1.3 * j, L - 0.7) if L > 1.4 else L / 2))
+                if any(math.dist(p, g) < 2.1 for g in gates) or any(cg.seg_dist(p, r["beg"][:2], r["end"][:2]) < r["width"] / 2 for r in block.roads):
+                    skipped += 1
+                    continue
+                z = block.ground(*p)
+                for dz in ((0.0,) if tier >= 4 else (0.0, cg.UPPER)):
+                    items.append(["object", "Land_CncWall1_F" if tier >= 4 else "Land_HBarrier_1_F", f"[{p[0]:.3f},{p[1]:.3f},{z + dz:.3f}]", cg.orient(u), "ground,leakfix" if dz == 0 and tier >= 4 else "leakfix"])
+                added += 1
         print(f"{town} T{tier}: {added} leaks closed, {doors} through buildings (doors) left, {skipped} at a gate or on a road left")
     if "--dry" in argv:
         return
