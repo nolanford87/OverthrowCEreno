@@ -499,7 +499,7 @@ OTQA_townLayout_save = {
             // put with Zeus is open
             if ("open" in _was || { "_gate" in toLower typeOf _x && { isNil { _x getVariable "OT_officeItem" } } }) then { _extra pushBack "open" };
             // The generators' own pieces stay theirs (tools/officegen/tower_gen.py, gate_gen.py)
-            { if (_x in _was) then { _extra pushBack _x } } forEach ["lookout", "entrance"];
+            { if (_x in _was) then { _extra pushBack _x } } forEach ["lookout", "entrance", "props", "hole", "leakfix"];
             ["object", typeOf _x, getPosASL _x, [vectorDir _x, vectorUp _x], _extra]
         }
     };

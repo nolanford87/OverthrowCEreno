@@ -104,8 +104,10 @@ class Props:
             d = cg.norm(cg.sub(hq, c))
             self.put("object", "Land_CampingTable_F", c, d)
             side = (d[1], -d[0])
+            # A chair either side, its seat (model -y) to the table (the user turned them round at Paros)
             for s in (1, -1):
-                self.put("object", "Land_CampingChair_V2_F", cg.add(c, cg.mul(d, -0.9 if s > 0 else 0.9)), cg.mul(d, s))
+                at = cg.add(c, cg.mul(d, -0.9 if s > 0 else 0.9))
+                self.put("object", "Land_CampingChair_V2_F", at, cg.norm(cg.sub(at, c)))
             placed.append("table and chairs")
         # A few crates and the generator with fuel, along the inside a little in from the walls
         grid = []
