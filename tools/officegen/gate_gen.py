@@ -138,7 +138,25 @@ class Entrances:
                 self.items.append([it[0], it[1], it[2], it[3], ",".join(f for f in it[4].split(",") if f and f != "open")])
             else:
                 self.put("object", T3_GATE, gp, n, "ground")
-            self.notes.append(f"T{self.tier} gate at [{gp[0]:.1f}, {gp[1]:.1f}]: net-fence gate, shut")
+            # The opening kept clear: a wall piece reaching into the gate's span (a filler centred on a short
+            # remainder) slid back along the line to the gate's post (in play, men outside couldn't plan a way in
+            # through a gate narrowed 0.3 m at Rodopoli)
+            half = 4.1 / 2
+            slid = 0
+            for it in self.items:
+                if it[0] != "object" or not is_wall(it[1]):
+                    continue
+                p = vec(it[2])
+                rel = cg.sub(p[:2], gp)
+                t, off = cg.dot(rel, u), cg.dot(rel, n)
+                L = (tg.townlib.MEASURED.get(it[1]) or tg.townlib.CLASSES.get(it[1]) or (1.0, 1.0))[0]
+                if abs(off) > 1.5 or abs(t) - L / 2 >= half - 0.01:
+                    continue
+                shift = (half + L / 2 - abs(t)) * (1 if t > 0 else -1)
+                q = cg.add(p[:2], cg.mul(u, shift))
+                it[2] = f"[{q[0]:.3f},{q[1]:.3f},{p[2]:.3f}]"
+                slid += 1
+            self.notes.append(f"T{self.tier} gate at [{gp[0]:.1f}, {gp[1]:.1f}]: net-fence gate, shut" + (f", {slid} wall pieces slid out of its opening" if slid else ""))
             return
         # The way through's middle on the opening: the stub to whichever side has more wall to stand in
         mid = (T4_WAY[0] + T4_WAY[1]) / 2
