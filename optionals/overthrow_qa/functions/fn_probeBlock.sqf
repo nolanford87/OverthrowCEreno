@@ -12,6 +12,7 @@
         OTBLOCK|town|H|row|[height,...] the ground (ASL) every 3 m from -reach to reach (world axes: row j is
             y = office y + 3 * (j - half), the values x = office x + 3 * (i - half))
         OTBLOCK|town|END
+        OTBLOCK|town|SHOT|height|fov|[width, height] a screenshot straight down, north up, height m above the office
     run-qa.ps1 -Suite blockprobe -Only "town,..." (else every town with an office layout).
 
     Returns: ARRAY - [[name, code, seconds]]
@@ -67,6 +68,20 @@
                 diag_log format ["OTBLOCK|%1|H|%2|[%3]", _town, _j, _row joinString ","];
             };
             diag_log format ["OTBLOCK|%1|END", _town];
+            // A picture straight down on the office, north up, from a known height (OTB_<town>_top.png in the
+            // profile's Screenshots folder), to set against the probe's map (tools/officegen/blocklib.py)
+            private _cam = "camera" camCreate (ASLToAGL (_opos vectorAdd [0, 0, 120]));
+            _cam setVectorDirAndUp [[0, 0, -1], [0, 1, 0]];
+            _cam camSetFov 0.75;
+            _cam cameraEffect ["INTERNAL", "BACK"];
+            showCinemaBorder false;
+            cameraEffectEnableHUD false;
+            sleep 8; // The ground and the objects streamed in
+            screenshot format ["OTB_%1_top.png", (_town splitString " ") joinString "_"];
+            diag_log format ["OTBLOCK|%1|SHOT|120|0.75|%2", _town, getResolution select [0, 2]];
+            sleep 1;
+            _cam cameraEffect ["TERMINATE", "BACK"];
+            camDestroy _cam;
             _done = _done + 1;
         } forEach _towns;
         ["Block probe: towns probed", _done isEqualTo (count _towns), format ["%1 (OTBLOCK lines in the RPT)", _towns]] call OTQA_fnc_check;
