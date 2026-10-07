@@ -6,5 +6,5 @@ areas = mc.load_saved('Altis')['Chalkeia']['tiers']
 tag = sys.argv[1] if len(sys.argv) > 1 else 'walls'
 for k in (3, 4):
     out = f'P:/OT_chalkeia/tools/officegen/compounds/Chalkeia_T{k}_{tag}.svg'
-    hmap.make('Chalkeia', out, polygons={f'T{k}': areas[k]}, reach=58, scale=9, pieces=t['tiers'][k])
+    hmap.make('Chalkeia', out, polygons={f'T{k}': areas[k]}, reach=68, scale=8, pieces=t['tiers'][k])
     print(out)

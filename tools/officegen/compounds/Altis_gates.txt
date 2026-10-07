@@ -1,4 +1,4 @@
 OTGATE|Altis|Rodopoli|3|[18707.92,16574.01]|4.0
 OTGATE|Altis|Rodopoli|4|[18707.72,16573.86]|4.1
-OTGATE|Altis|Chalkeia|3|[20234.75,11660.00]|4.0
+OTGATE|Altis|Chalkeia|3|[20231.85,11655.40]|4.0
 OTGATE|Altis|Chalkeia|4|[20234.75,11660.00]|4.1

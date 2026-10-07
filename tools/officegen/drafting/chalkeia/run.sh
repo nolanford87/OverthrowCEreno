@@ -2,7 +2,7 @@
 set -e
 C=/c/Users/nolan/AppData/Local/Temp/claude/C--Users-nolan/9e22c7f3-aac1-4e9a-8953-51e91b75bfeb/scratchpad/opus/chalk
 cd /p/OT_chalkeia/tools/officegen
-(cd $C && python -c "import areas; areas.write()")
+# the areas are the user's (compound editor), merged from compounds/Chalkeia_user_areas.txt
 python compound_gen.py Chalkeia | grep -v "^wrote"
 [ -f $C/hand_walls.py ] && python $C/hand_walls.py
 python tower_gen.py Chalkeia | grep -v "^wrote"

@@ -14,5 +14,5 @@ for k in (3, 4):
             lab = AB.get(it[1], it[1].upper()) + ("-patrol" if "patrol" in it[4] else "") + ("^" if it[0] == 'guard' and p[2] - b.ground(*p[:2]) > 1.5 else "")
             marks[lab + ' ' * i] = p
     out = f'P:/OT_chalkeia/tools/officegen/compounds/Chalkeia_T{k}_opus.svg'
-    hmap.make('Chalkeia', out, polygons={f'T{k}': areas[k]}, reach=58, scale=9, pieces=items, marks=marks)
+    hmap.make('Chalkeia', out, polygons={f'T{k}': areas[k]}, reach=68, scale=8, pieces=items, marks=marks)
     print(out)
