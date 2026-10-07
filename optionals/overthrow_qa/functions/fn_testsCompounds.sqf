@@ -123,6 +123,7 @@ OTQA_cp_walkTest = {
     [format ["Walk (%1 T%2): an occupier soldier gets in through the shut gate", _town, _tier], (_inward select 0) && { _inward select 1 }, format ["gate shut first %1, in %2 in %3 s", _inward select 0, _inward select 1, _inward select 2]] call OTQA_fnc_check;
 };
 _tests pushBack ["Compounds: men walk out and in through a shut gate (Rodopoli T3)", { ["Rodopoli", 3] call OTQA_cp_walkTest }, 240];
+_tests pushBack ["Compounds: men walk out and in through a shut gate (Chalkeia T3)", { ["Chalkeia", 3] call OTQA_cp_walkTest }, 240];
 _tests pushBack ["Compounds: men walk out and in through a shut gate (Paros T3)", { ["Paros", 3] call OTQA_cp_walkTest }, 240];
 _tests pushBack ["Compounds: men walk out and in through a shut gate (Paros T4)", { ["Paros", 4] call OTQA_cp_walkTest }, 240];
 

@@ -33,7 +33,9 @@ MIL = ("Land_Mil_WallBig_4m_F", 4.0)   # The tall green military wall (T4+)
 MIL_JOINT = 0.1
 CNC = ("Land_CncWall1_F", 1.4)         # The small grey concrete wall (fills a run's remainder)
 JOINT = 0.3          # How far pieces run into each other
-SLOPE_DROP = 0.7     # The most the ground may fall along one H-barrier piece (its downhill end hangs half that)
+# On a slope a piece stands on the ground under its lowest point (nothing hangs) and sinks into the slope uphill:
+# at most this much (the user's: the 2-high H-barrier and the military wall stay above about 2 m), else shorter pieces
+SINK = {"HBarrier": 0.8, "Mil_WallBig": 1.0, "CncWall": 0.4}
 # How far inside a road's edge an edge along it is set, by tier (the user's): the deep H-barrier (T3) 0.25 m; the
 # thin military and concrete walls (T4+) right at the edge, no margin (only off the road surface: the AI walks
 # through walls standing on a road)
@@ -432,7 +434,8 @@ class Gen:
                 rest = L - t
                 if rest >= MIL[1] - 0.2:
                     p0, p1 = add(a, mul(u, t)), add(a, mul(u, min(t + MIL[1], L)))
-                    if abs(self.ground(*p0) - self.ground(*p1)) <= 0.5:
+                    lo, hi = self.span(add(a, mul(u, (t + min(t + MIL[1], L)) / 2)), u, MIL[1])
+                    if hi - lo <= SINK["Mil_WallBig"]:
                         if slope is not None:
                             self.lay_hb(add(a, mul(u, slope)), u, t - slope + JOINT)
                             slope = None
@@ -454,28 +457,32 @@ class Gen:
             return
         self.lay_hb(a, u, L, cnc_rest=self.tier == 3)
 
+    def span(self, p, u, l):
+        """The ground (lowest, highest) under a piece l long at p along u (its ends, quarters and middle)."""
+        zs = [self.ground(*add(p, mul(u, l * k / 4))) for k in (-2, -1, 0, 1, 2)]
+        return min(zs), max(zs)
+
     def piece(self, cls, p, u, upper=False):
-        z = self.ground(*p)
+        L = {c: n for c, n in HB + [MIL, CNC]}.get(cls, 1.0)
+        z = self.span(p, u, L)[0]   # On the ground under its lowest point: the uphill end sinks in
         self.items.append(["object", cls, f"[{p[0]:.3f},{p[1]:.3f},{z:.3f}]", orient(u), ""])
         if upper:
             self.items.append(["object", cls, f"[{p[0]:.3f},{p[1]:.3f},{z + UPPER:.3f}]", orient(u), ""])
 
     def lay_hb(self, a, u, L, cnc_rest=False):
         """2-high H-barrier along L; with cnc_rest, H-barrier 5s and 3s only and the remainder in small concrete wall.
-        On a slope (the ground falling more than SLOPE_DROP along a 5 m piece somewhere on the run) each piece is the
-        longest whose ends differ by at most SLOPE_DROP (a piece stands at the ground under its middle: its downhill
-        end hangs half that), down to the 1.4 m H-barrier on the steepest (Chalkeia's hillside)."""
+        On a slope (somewhere a 5.8 m piece would sink more than SINK into it) each piece is the longest that sinks no
+        more, down to the 1.4 m H-barrier on the steepest (Chalkeia's hillside)."""
         if L < 0.3:
             return
-        g = lambda t: self.ground(*add(a, mul(u, max(0.0, min(L, t)))))
-        if any(abs(g(t) - g(t + HB[0][1])) > SLOPE_DROP for t in [k * 0.5 for k in range(int(max(L - HB[0][1], 0) / 0.5) + 1)]):
+        sink = lambda t0, n: (lambda r: r[1] - r[0])(self.span(add(a, mul(u, t0 + n / 2)), u, n))
+        if any(sink(k * 0.5, min(HB[0][1], L)) > SINK["HBarrier"] for k in range(int(max(L - HB[0][1], 0) / 0.5) + 1)):
             t = 0.0
             while t < L - 0.05:
                 rest = L - t
                 # Judged over where it will stand (the last one runs back from the end of the run)
                 start = lambda n: t if n <= rest else max(L - n, 0.0)
-                hang = lambda n: max(abs(g(start(n)) - g(start(n) + n)) / 2, g(start(n) + n / 2) - min(g(start(n)), g(start(n) + n)))
-                cls, l = next(((c, n) for c, n in HB if hang(n) <= SLOPE_DROP / 2), HB[2])
+                cls, l = next(((c, n) for c, n in HB if sink(start(n), n) <= SINK["HBarrier"]), HB[2])
                 mid = start(l) + l / 2
                 self.piece(cls, add(a, mul(u, mid)), u, upper=True)
                 if l >= rest:

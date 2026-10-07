@@ -141,7 +141,8 @@ class Garrison:
             taken = set()
             options = []
             for t in self.b.buildings:
-                if sum(cg.inside(c, self.poly) for c in t.corners()) < 2:
+                # On the area (the HQ always: a line along a street can cut its box's corners off)
+                if sum(cg.inside(c, self.poly) for c in t.corners()) < 2 and math.dist(t.pos[:2], self.b.pos[:2]) >= 1:
                     continue
                 cls = t.model if t.model in self.places else "Land_" + t.model
                 for x, y, h in self.places.get(cls, []):

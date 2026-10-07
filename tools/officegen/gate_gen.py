@@ -297,9 +297,10 @@ class Entrances:
         if best:
             self.put("object", "Land_PortableLight_double_F", best[1], best[2])
             placed.append("floodlight")
-        # One sign outside, read from the street (its model +y in)
+        # One sign outside, read from the street (its model +y in); on the street's verge if the wall stands at its edge
+        # (2.5 m onto it: in front of a 1.7 m deep H-barrier at a track's edge, 1.5 m left no room, Chalkeia)
         c = self.near_spot(cg.add(gp, cg.mul(u, 4.0)), SIZE["Land_Sign_WarningMilitaryArea_F"], n,
-                           ring(gp, [x * s for x in (3.5, 4.5, 5.5, 6.5, 8.0) for s in (1, -1)], (-1.2, -1.8, -2.5, -3.2)), inside=False, lanes=lanes, verge=True)
+                           ring(gp, [x * s for x in (3.5, 4.5, 5.5, 6.5, 8.0) for s in (1, -1)], (-1.2, -1.8, -2.5, -3.2)), inside=False, lanes=lanes, verge=2.5)
         if c:
             self.put("object", "Land_Sign_WarningMilitaryArea_F", c, n)
             placed.append("sign")
