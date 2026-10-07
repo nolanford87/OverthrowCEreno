@@ -112,6 +112,7 @@ def orient(u):
 
 _PLANS = None
 HINTS = {}
+REAL_IN = 0.6        # How far inside a building's plan or roofed cells the line must run for the building to close it
 _FEET = None
 
 
@@ -314,19 +315,27 @@ class Gen:
         probed (tools/officegen/probe_offices.txt; a wall cell, or a floor cell under a roof: a porch is outside),
         else its roofed cells from the class probe (footprint_of; the Rodopoli shed's box is twice the shed),
         else at least deep metres in from every side of its box (a box is bigger than the walls: porches, a
-        garage's open front; an edge only grazing one gets a wall)."""
+        garage's open front; an edge only grazing one gets a wall). By plan or roofed cells the point must be inside
+        by REAL_IN all round (a line run along a house's end wall, or under its eaves, read as closed by it and left
+        a gap: Chalkeia). A ruin (d_ classes) is no wall: a holed shell."""
+        ring = [(dx, dy) for dx in (-REAL_IN, REAL_IN) for dy in (-REAL_IN, REAL_IN)]
         for t in self.solid:
+            if re.match(r"(Land_)?d_", t.model):
+                continue
             lx, ly = blocklib.rot(p[0] - t.pos[0], p[1] - t.pos[1], -t.dir)
             plan = plan_of(t.model)
             if plan is not None:
                 level = min(plan.levels)
-                c = plan.cell(level, lx, ly)
-                if c == "#" or (c == "." and (int(round(lx)), int(round(ly))) not in plan.opensky.get(level, set())):
+
+                def held(x, y):
+                    c = plan.cell(level, x, y)
+                    return c == "#" or (c == "." and (int(round(x)), int(round(y))) not in plan.opensky.get(level, set()))
+                if all(held(lx + dx, ly + dy) for dx, dy in ring):
                     return t
                 continue
             foot = footprint_of(t.model if t.model.startswith("Land_") else "Land_" + t.model)
             if foot is not None and lx <= foot[1] + 0.5:
-                if (int(round(lx)), int(round(ly))) in foot[0]:
+                if all((int(round(lx + dx)), int(round(ly + dy))) in foot[0] for dx, dy in ring):
                     return t
                 continue
             if t.box[0] + deep <= lx <= t.box[2] - deep and t.box[1] + deep <= ly <= t.box[3] - deep:
@@ -414,6 +423,12 @@ class Gen:
             if inside(p, self.poly) or min(seg_dist(p, a, b) for a, b in edges) < 1.5:
                 self.items.append(["hide", t.model, f"[{t.pos[0]:.3f},{t.pos[1]:.3f},{t.pos[2]:.3f}]", "[[0.0000,1.0000,0.0000],[0.0000,0.0000,1.0000]]", ""])
                 trees += 1
+        # A ruin on the line (d_ classes, a holed shell: no wall) hidden, the wall laid through its ground (it stays
+        # hidden at the tiers above: OT_fnc_officeHide)
+        for t in self.b.buildings:
+            if re.match(r"(Land_)?d_", t.model) and any(inside(add(a, mul(sub(b, a), k / 40)), t.corners()) for a, b in edges for k in range(41)):
+                self.items.append(["hide", t.model, f"[{t.pos[0]:.3f},{t.pos[1]:.3f},{t.pos[2]:.3f}]", "[[0.0000,1.0000,0.0000],[0.0000,0.0000,1.0000]]", ""])
+                self.notes.append(f"the ruin {t.model} on the line hidden")
         # A rock on the line: no piece stands on it (it can't be hidden); the area should go round it
         for r in getattr(self.b, "rocks", []):
             if any(self.on_rock(add(a, mul(sub(b, a), k / 20)), [r]) for a, b in edges for k in range(21)):

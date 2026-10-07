@@ -275,7 +275,8 @@
                     // through it (its floor under the point)
                     private _line = (_objects select { private _t = typeOf _x; (_barriers findIf { _x in _t }) > -1 })
                         + ((nearestTerrainObjects [getPosATL _b, ["WALL", "FENCE"], 120, false, true]) select { !isObjectHidden _x });
-                    private _houses = _parts + [_b] + ((nearestTerrainObjects [getPosATL _b, _terrainTypes - ["WALL", "FENCE"], 120, false, true]) select { !isObjectHidden _x });
+                    // (not a ruin: a holed shell's floor is no wall)
+                    private _houses = _parts + [_b] + ((nearestTerrainObjects [getPosATL _b, _terrainTypes - ["WALL", "FENCE"], 120, false, true]) select { !isObjectHidden _x && { !(((getModelInfo _x) select 0) select [0, 2] == "d_") } });
                     private _gapGates = (_items select { (_x select 0) isEqualTo "gate" }) apply { [ASLToAGL (_x select 2), parseNumber (_x select 1)] };
                     private _model = { ((_b worldToModel _this) select [0, 2]) apply { _x call _r1 } };
                     private _hits = {
