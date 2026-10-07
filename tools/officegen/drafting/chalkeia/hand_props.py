@@ -30,3 +30,16 @@ for tier in (3, 4):
     print(f"T{tier}: holes and sign set outside the gate")
 ml.write_saved('Altis', towns)
 ml.write_sqf('Altis', towns)
+
+# T3's net-fence gate turned round (its model +y out): its leaf swings away from a man walking out from inside. As
+# placed (+y in) a man starting 6 m in reached it while it was still swinging and stuck on it (the walk test failed
+# 2 runs in 4); turned, 3 runs of 3 passed
+towns = ml.load_saved('Altis')
+t = towns['Chalkeia']
+for it in t['tiers'][3]:
+    if it[1] == 'Land_NetFence_01_m_gate_F':
+        vd = [float(v) for v in it[3].split('],[')[0].strip('[]').split(',')]
+        it[3] = f"[[{-vd[0]:.4f},{-vd[1]:.4f},0.0000],[0.0000,0.0000,1.0000]]"
+        print("T3: the gate turned round")
+ml.write_saved('Altis', towns)
+ml.write_sqf('Altis', towns)

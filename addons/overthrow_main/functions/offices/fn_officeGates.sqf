@@ -51,12 +51,13 @@ if (isNil "OT_officeGates") then {
                 { if ("sound_source" in toLower _x) then { _g animateSource [_x, [0, 1] select _theirs] } } forEach (("true" configClasses (configOf _g >> "AnimationSources")) apply { configName _x });
             };
             // While it's open, one standing waiting with somewhere to go plans his way again (once every 8 s): a way
-            // planned while it was shut, or half shut, stops at it
+            // planned while it was shut, or half shut, stops at it (and the engine may then mark him "DoNotPlan": one
+            // still under a move order is planned again all the same)
             if (_open) then {
                 {
                     private _m = effectiveCommander _x;
                     private _to = (expectedDestination _m) select 0;
-                    if ((speed _x) < 0.5 && { (_to distance2D _m) > 5 } && { ((expectedDestination _m) select 1) isNotEqualTo "DoNotPlan" } && { time > (_m getVariable ["OT_gateReplanAt", 0]) }) then {
+                    if ((speed _x) < 0.5 && { (_to distance2D _m) > 5 } && { ((expectedDestination _m) select 1) isNotEqualTo "DoNotPlan" || { (currentCommand _m) isEqualTo "MOVE" } } && { time > (_m getVariable ["OT_gateReplanAt", 0]) }) then {
                         _m setVariable ["OT_gateReplanAt", time + 8];
                         private _grp = group _m;
                         if (_m isEqualTo leader _grp && { (count waypoints _grp) > (currentWaypoint _grp) } && { (currentWaypoint _grp) > 0 }) then {

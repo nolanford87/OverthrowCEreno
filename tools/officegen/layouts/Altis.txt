@@ -829,7 +829,7 @@ OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Land_CncWall1_F|[20243.713,11678.314,52.66
 OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Land_CncWall1_F|[20243.436,11678.699,52.618]|[[-0.8110,-0.5851,0.0000],[0.0000,0.0000,1.0000]]|
 OTLAYOUT|Altis|Chalkeia|ITEM|3|hide|t_oleae1s_f.p3d|[20224.280,11657.040,54.810]|[[0.0000,1.0000,0.0000],[0.0000,0.0000,1.0000]]|
 OTLAYOUT|Altis|Chalkeia|ITEM|3|hide|t_oleae1s_f.p3d|[20220.010,11679.940,50.280]|[[0.0000,1.0000,0.0000],[0.0000,0.0000,1.0000]]|
-OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Land_NetFence_01_m_gate_F|[20234.650,11660.062,54.789]|[[-0.8517,0.5241,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Land_NetFence_01_m_gate_F|[20234.650,11660.062,54.789]|[[0.8517,-0.5241,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Flag_NATO_F|[20234.951,11663.986,54.441]|[[-0.8517,0.5241,0.0000],[0.0000,0.0000,1.0000]]|ground,flag,entrance
 OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Land_PortableLight_double_F|[20234.028,11665.729,54.213]|[[-0.1092,0.9940,0.0000],[0.0000,0.0000,1.0000]]|ground,entrance
 OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Land_Sign_WarningMilitaryArea_F|[20237.444,11662.217,54.608]|[[-0.8517,0.5241,0.0000],[0.0000,0.0000,1.0000]]|ground,entrance
