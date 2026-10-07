@@ -6,7 +6,7 @@ Generates a town's occupier compound walls (tools/officegen/COMPOUND_PLAN.md) fr
       edge at T4+ (military and concrete walls), so no wall stands on a road (the AI walks through those);
     - a road crossing an edge is a gate of its width (3.5-8 m); a compound no road crosses gets a 4 m main gate on
       its road-facing edge nearest the HQ's door; gates set by hand (compounds/<world>_gates.txt) replace both;
-    - a building on an edge is part of the wall; a door of it opening outside the area is barricaded;
+    - a building on an edge is part of the wall; a door of it opening outside the area is locked in play;
     - the map's walls and fences along an edge or inside the area are hidden (our wall goes up on the edge's;
       the occupier cleared the compound);
     - the rest of every edge is wall: T3 2-high H-barrier (the upper layer 1.4 m up, each pair on the ground) with
@@ -33,6 +33,7 @@ MIL = ("Land_Mil_WallBig_4m_F", 4.0)   # The tall green military wall (T4+)
 MIL_JOINT = 0.1
 CNC = ("Land_CncWall1_F", 1.4)         # The small grey concrete wall (fills a run's remainder)
 JOINT = 0.3          # How far pieces run into each other
+SLOPE_DROP = 0.7     # The most the ground may fall along one H-barrier piece (its downhill end hangs half that)
 # How far inside a road's edge an edge along it is set, by tier (the user's): the deep H-barrier (T3) 0.25 m; the
 # thin military and concrete walls (T4+) right at the edge, no margin (only off the road surface: the AI walks
 # through walls standing on a road)
@@ -330,6 +331,14 @@ class Gen:
                 return t
         return None
 
+    def on_rock(self, p, rocks=None, inset=1.0):
+        """A rock under p: inside its box less inset metres all round (a box is bigger than the stone)."""
+        for r in (getattr(self.b, "rocks", []) if rocks is None else rocks):
+            lx, ly = blocklib.rot(p[0] - r.pos[0], p[1] - r.pos[1], -r.dir)
+            if r.box[0] + inset <= lx <= r.box[2] - inset and r.box[1] + inset <= ly <= r.box[3] - inset:
+                return r
+        return None
+
     def build(self):
         edges = self.edges()
         gates = self.gates(edges)
@@ -346,7 +355,7 @@ class Gen:
                 t = L * k / n
                 p = add(a, mul(u, t))
                 g = any(t0 <= t <= t1 for t0, t1, _, _ in gates.get(i, []))
-                kinds.append("gate" if g else ("bld" if self.on_building(p) else "wall"))
+                kinds.append("gate" if g else ("bld" if self.on_building(p) or self.on_rock(p) else "wall"))
             # Wall stretches, run 0.4 m into a building they meet (a joint), never into a gate
             runs, start = [], None
             for k, kd in enumerate(kinds + ["end"]):
@@ -373,10 +382,9 @@ class Gen:
                     out_dir = norm(sub(d, t.pos[:2]))
                     (ins if inside(add(d, mul(out_dir, 1.5)), self.poly) else outs).append((d, out_dir))
                 if ins and outs:
-                    for d, nrm in outs:
-                        side = (nrm[1], -nrm[0])
-                        self.lay(add(add(d, mul(nrm, 1.3)), mul(side, -1.8)), side, 3.6)
-                    self.notes.append(f"{len(outs)} outward doors of {t.model} (a way through) barricaded")
+                    # No barricade: the outward doors are locked in play (OT_fnc_officeDoors); the H-barrier pairs laid
+                    # outside them stood doubled (a door point per floor) and were taken out by hand at Rodopoli
+                    self.notes.append(f"{len(outs)} outward doors of {t.model} (a way through, locked in play)")
             # The map's walls and fences along the edge hidden
             for w in self.b.walls:
                 c = w.corners()
@@ -397,7 +405,18 @@ class Gen:
                 z = self.ground(*pos)
                 self.items.append(["gate", f"{w:.1f}", f"[{pos[0]:.3f},{pos[1]:.3f},{z:.3f}]", f"[[{u[0]:.4f},{u[1]:.4f},0.0000],[0.0000,0.0000,1.0000]]", ""])
                 self.items.append(["object", GATE_SMALL if w <= 4.8 else GATE_LARGE, f"[{pos[0]:.3f},{pos[1]:.3f},{z:.3f}]", orient(u), "ground,open"])
-        self.notes.append(f"{sum(1 for it in self.items if it[0] == 'hide')} map walls and fences hidden, {sum(1 for it in self.items if it[0] == 'gate')} gates")
+        # The trees on the line (within 1.5 m of an edge) or inside the area hidden: the compound needs the ground
+        trees = 0
+        for t in getattr(self.b, "trees", []):
+            p = tuple(t.pos[:2])
+            if inside(p, self.poly) or min(seg_dist(p, a, b) for a, b in edges) < 1.5:
+                self.items.append(["hide", t.model, f"[{t.pos[0]:.3f},{t.pos[1]:.3f},{t.pos[2]:.3f}]", "[[0.0000,1.0000,0.0000],[0.0000,0.0000,1.0000]]", ""])
+                trees += 1
+        # A rock on the line: no piece stands on it (it can't be hidden); the area should go round it
+        for r in getattr(self.b, "rocks", []):
+            if any(self.on_rock(add(a, mul(sub(b, a), k / 20)), [r]) for a, b in edges for k in range(21)):
+                self.notes.append(f"WARNING: a rock ({r.model}) on the line at [{r.pos[0]:.1f}, {r.pos[1]:.1f}]: draw the area round it")
+        self.notes.append(f"{sum(1 for it in self.items if it[0] == 'hide') - trees} map walls and fences hidden, {trees} trees hidden, {sum(1 for it in self.items if it[0] == 'gate')} gates")
         return self.items
 
     def lay(self, a, u, L):
@@ -442,8 +461,26 @@ class Gen:
             self.items.append(["object", cls, f"[{p[0]:.3f},{p[1]:.3f},{z + UPPER:.3f}]", orient(u), ""])
 
     def lay_hb(self, a, u, L, cnc_rest=False):
-        """2-high H-barrier along L; with cnc_rest, H-barrier 5s and 3s only and the remainder in small concrete wall."""
+        """2-high H-barrier along L; with cnc_rest, H-barrier 5s and 3s only and the remainder in small concrete wall.
+        On a slope (the ground falling more than SLOPE_DROP along a 5 m piece somewhere on the run) each piece is the
+        longest whose ends differ by at most SLOPE_DROP (a piece stands at the ground under its middle: its downhill
+        end hangs half that), down to the 1.4 m H-barrier on the steepest (Chalkeia's hillside)."""
         if L < 0.3:
+            return
+        g = lambda t: self.ground(*add(a, mul(u, max(0.0, min(L, t)))))
+        if any(abs(g(t) - g(t + HB[0][1])) > SLOPE_DROP for t in [k * 0.5 for k in range(int(max(L - HB[0][1], 0) / 0.5) + 1)]):
+            t = 0.0
+            while t < L - 0.05:
+                rest = L - t
+                # Judged over where it will stand (the last one runs back from the end of the run)
+                start = lambda n: t if n <= rest else max(L - n, 0.0)
+                hang = lambda n: max(abs(g(start(n)) - g(start(n) + n)) / 2, g(start(n) + n / 2) - min(g(start(n)), g(start(n) + n)))
+                cls, l = next(((c, n) for c, n in HB if hang(n) <= SLOPE_DROP / 2), HB[2])
+                mid = start(l) + l / 2
+                self.piece(cls, add(a, mul(u, mid)), u, upper=True)
+                if l >= rest:
+                    break
+                t += l - JOINT
             return
         if cnc_rest:
             best = None

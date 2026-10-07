@@ -36,3 +36,28 @@ if __name__ == '__main__':
     marks = {k: W(v) for k, v in {'GATE (main, on the track)': (12.0, 6.8), 'tower T3': (6.0, 24.0), 'tower T4 a': (8.0, 32.0), 'tower T4 b': (-33.0, -36.0)}.items()}
     hmap.make('Chalkeia', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'areas.svg'),
               polygons={f"T{k}": [W(q) for q in p] for k, p in pts.items()}, reach=65, scale=8, marks=marks)
+
+# The areas (checkpoint 2): on the HQ's side of the track; T3's north-west edge off the big rock (through
+# House_Small_01, the house and the rock its wall there), the ruin (holed walls) left outside it; T4 round the second rock, out to the west scarp
+FINAL = {
+    3: [(26.6, 30.2), (14.6, 10.7), (1.9, -9.5), (-9.2, -25.9), (-17.3, -35.0), (-27.5, -43.0), (-37.5, -33.5),
+        (-16.5, -16), (-10.5, -3.5), (-11.7, 8.4), (-3.1, 21.0), (-1.5, 31.5), (16.5, 44.2)],
+    4: [(27.5, 31.4), (14.8, 10.6), (2.1, -9.7), (-9.0, -26.1), (-17.1, -35.2), (-29.6, -45.2), (-39, -36), (-35.5, -8),
+        (-35, 7), (-20.5, 10.5), (-17, 30), (0, 38.5), (18, 45)],
+}
+# The main gate on the track's edge where it bends, opening into the north-east yard
+GATE = (16.4, 13.6)
+
+
+def write():
+    saved = merge_compounds.load_saved('Altis')
+    t = saved.setdefault('Chalkeia', {'tiers': {}})
+    for k, p in FINAL.items():
+        t['tiers'][k] = [W(q) for q in p]
+        print(f"T{k}: {round(area(p))} m2")
+    merge_compounds.write_saved('Altis', saved)
+    print('wrote', merge_compounds.write_sqf('Altis', saved))
+    path = 'P:/OT_chalkeia/tools/officegen/compounds/Altis_gates.txt'
+    lines = [l.rstrip('\n') for l in open(path, encoding='utf-8') if '|Chalkeia|' not in l] if os.path.exists(path) else []
+    lines += [f"OTGATE|Altis|Chalkeia|{k}|[{W(GATE)[0]:.2f},{W(GATE)[1]:.2f}]|{w}" for k, w in ((3, 4.0), (4, 4.1))]
+    open(path, 'w', encoding='utf-8', newline='\n').write('\n'.join(lines) + '\n')

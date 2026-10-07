@@ -4,7 +4,7 @@ picking and building occupier compounds (tools/officegen/COMPOUND_PLAN.md), and 
 
     import blocklib as bl
     b = bl.load()["Rodopoli"]
-    b.roads, b.buildings, b.walls, b.ground(x, y)      world x, y; positions ASL
+    b.roads, b.buildings, b.walls, b.rocks, b.trees, b.ground(x, y)      world x, y; positions ASL
     bl.svg(b, "out.svg", polygons={"T3": [[x, y], ...]}, reach=90)
 
     python tools/officegen/blocklib.py "Town" [out.svg]   a map of the block
@@ -56,6 +56,7 @@ class Block:
     def __init__(self, name):
         self.name = name
         self.roads, self.buildings, self.walls, self.rows = [], [], [], {}
+        self.rocks, self.trees = [], []
 
     def finish(self):
         self.half = (len(self.rows) - 1) // 2
@@ -93,6 +94,8 @@ def load(world="Altis"):
             b.buildings.append(Building(f[3], _vec(f[4]), float(f[5]), _vec(f[6]), doors, int(f[8])))
         elif what == "WALL":
             b.walls.append(Thing(f[3], _vec(f[4]), float(f[5]), _vec(f[6])))
+        elif what in ("ROCK", "TREE"):
+            (b.rocks if what == "ROCK" else b.trees).append(Thing(f[3], _vec(f[4]), float(f[5]), _vec(f[6])))
         elif what == "H":
             b.rows[int(f[3])] = _vec(f[4])
     for b in blocks.values():
@@ -102,7 +105,7 @@ def load(world="Altis"):
 
 def svg(b, path, polygons=None, reach=90, scale=6, marks=None, pieces=None):
     """A top-down map of the block (north up, the office at the middle, a 10 m grid): roads grey, buildings with
-    doors (red dots; buildings nobody can enter pale), walls and fences dark, the office blue, polygons (name ->
+    doors (red dots; buildings nobody can enter pale), walls and fences dark, rocks grey, trees green, the office blue, polygons (name ->
     world [x, y] list) drawn over in colour, marks (label -> world [x, y]) as labelled dots."""
     size = 2 * reach * scale
     P = lambda wx, wy: ((wx - b.pos[0] + reach) * scale, (reach - (wy - b.pos[1])) * scale)
@@ -128,6 +131,12 @@ def svg(b, path, polygons=None, reach=90, scale=6, marks=None, pieces=None):
         c = w.corners()
         a, z = P(*((c[0][0] + c[3][0]) / 2, (c[0][1] + c[3][1]) / 2)), P(*((c[1][0] + c[2][0]) / 2, (c[1][1] + c[2][1]) / 2))
         out.append(f'<line x1="{a[0]:.1f}" y1="{a[1]:.1f}" x2="{z[0]:.1f}" y2="{z[1]:.1f}" stroke="#3b3b3b" stroke-width="{0.6 * scale:.1f}"/>')
+    for r in getattr(b, "rocks", []):
+        pts = " ".join(f"{x:.1f},{y:.1f}" for x, y in (P(*c) for c in r.corners()))
+        out.append(f'<polygon points="{pts}" fill="#8a8f98" fill-opacity="0.55" stroke="#4b4f56" stroke-width="1"/>')
+    for t in getattr(b, "trees", []):
+        x, y = P(*t.pos[:2])
+        out.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{0.8 * scale:.1f}" fill="#3d8b3d" fill-opacity="0.8"/>')
     colours = ["#2e8b57", "#d4a017", "#c0392b", "#6a5acd"]
     for i, (name, poly) in enumerate((polygons or {}).items()):
         pts = " ".join(f"{x:.1f},{y:.1f}" for x, y in (P(*p[:2]) for p in poly))

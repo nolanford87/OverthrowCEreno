@@ -9,6 +9,7 @@
             every building: its box (model coordinates), its doors (model x, y of each Door_N_trigger) and the
             number of its exits (buildingExit), 0 for one nobody can enter
         OTBLOCK|town|WALL|model or class|[x,y,z]|direction|[min x,min y,max x,max y,min z,max z]  walls and fences
+        OTBLOCK|town|ROCK|model|[x,y,z]|direction|[box] and OTBLOCK|town|TREE|... rocks and trees, the same fields
         OTBLOCK|town|H|row|[height,...] the ground (ASL) every 3 m from -reach to reach (world axes: row j is
             y = office y + 3 * (j - half), the values x = office x + 3 * (i - half))
         OTBLOCK|town|END
@@ -38,6 +39,7 @@
             (([_town] call OT_fnc_officeLayout) select 0) params ["_class", "_opos", "_odir"];
             private _pos = ASLToAGL _opos;
             // The area streamed in round the host
+            player allowDamage false; // Put 50 m up he falls: a death (a grey screen, the camera taken) spoils the picture
             player setPosASL (_opos vectorAdd [0, 0, 50]);
             sleep 3;
             diag_log format ["OTBLOCK|%1|HEAD|%2|%3|%4|%5", _town, _class, [_opos, 3] call _n, _odir toFixed 2, _reach];
@@ -59,6 +61,11 @@
             {
                 diag_log format ["OTBLOCK|%1|WALL|%2|%3|%4|%5", _town, _x call _label, [getPosASL _x, 2] call _n, (getDir _x) toFixed 1, [_x] call _box];
             } forEach ((nearestTerrainObjects [_pos, ["WALL", "FENCE"], _reach, false, true]) select { !isObjectHidden _x });
+            // Rocks (a wall goes round them) and trees (hidden where a wall or the compound needs the ground)
+            {
+                _x params ["_kind", "_types"];
+                { diag_log format ["OTBLOCK|%1|%2|%3|%4|%5|%6", _town, _kind, _x call _label, [getPosASL _x, 2] call _n, (getDir _x) toFixed 1, [_x] call _box] } forEach ((nearestTerrainObjects [_pos, _types, _reach, false, true]) select { !isObjectHidden _x });
+            } forEach [["ROCK", ["ROCK", "ROCKS"]], ["TREE", ["TREE", "SMALL TREE"]]];
             private _half = ceil (_reach / 3);
             for "_j" from 0 to 2 * _half do {
                 private _row = [];
