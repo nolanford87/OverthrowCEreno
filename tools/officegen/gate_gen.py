@@ -258,14 +258,21 @@ class Entrances:
         if c:
             self.put("object", "Land_Sign_WarningMilitaryArea_F", c, n)
             placed.append("sign")
-        # Lamps along the wall inside, either side
+        # Lamps along the wall inside, either side; one side short of wall (a corner near the gate), both on the
+        # other, the second farther along
         if main:
-            for s in (1, -1):
+            lamps = 0
+            for s in (1, -1, 1, -1):
+                if lamps >= 2:
+                    break
+                lit = [vec(it[2])[:2] for it in self.items if it[1] == "Land_LampShabby_F"]
                 c = self.near_spot(cg.add(gp, cg.mul(u, s * 11.0)), SIZE["Land_LampShabby_F"], n,
-                                   ring(gp, [s * x for x in (9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 16.0)], (1.6, 2.2, 3.0)), lanes=lanes)
+                                   [q for q in ring(gp, [s * x for x in (9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 16.0, 18.0, 20.0, 22.0)], (1.6, 2.2, 3.0))
+                                    if all(math.dist(q, l) >= 7.0 for l in lit)], lanes=lanes)
                 if c:
                     self.put("object", "Land_LampShabby_F", c, n)
                     placed.append("lamp")
+                    lamps += 1
         self.notes.append(f"  {'main' if main else 'side'} gate: {', '.join(placed) or 'nothing fits'}")
 
 
