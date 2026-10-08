@@ -130,7 +130,7 @@ class Study:
                 w = t.to_world(x, y)
                 if not self.on_area(w):
                     continue
-                out.append((t.model, (w[0], w[1], t.pos[2] + h + EYE), t, "upper"))
+                out.append((t.model, (w[0], w[1], t.pos[2] + h + EYE), t, self.upper_kind(t, names, x, y, h)))
             fl = next((self.floors[k] for k in names if k in self.floors), None)
             if fl:
                 for (x, y), hs in fl.items():
@@ -146,6 +146,35 @@ class Study:
                             continue
                         out.append((t.model, (w[0], w[1], t.pos[2] + top + EYE), t, "roof"))
         return out
+
+    def upper_kind(self, t, names, x, y, h):
+        """An upper place's kind: "balcony" when the sky is open over it (no surface 1 m or more above it) and the
+        building goes on higher elsewhere (2 m or more above it: a storey over a balcony or terrace), "roof" when
+        open and nothing of the building is higher (its top), else "upper" (a room: a window).
+        From the class probe's floors (every up-facing surface over the 1 m cell, OTFLOORS, complete lines only), else
+        the office probe's plan (its open-sky cells at the storey nearest the place's height; the building higher
+        when the box's top is 2.5 m or more above that storey); "upper" when neither."""
+        fl = next((self.floors[k] for k in names if k in self.floors), None)
+        if fl:
+            hs = fl.get((int(round(x)), int(round(y))))
+            if hs is None:
+                return "upper"
+            top = max(max(v) for v in fl.values())
+            if any(z > h + 1.0 for z in hs):
+                return "upper"
+            return "balcony" if top > h + 2.0 else "roof"
+        plan = cg.plan_of(t.model)
+        if plan is not None and len(plan.levels) > 1:
+            lv = sorted(plan.levels)
+            level = min(lv, key=lambda z: abs((z - lv[0]) - h))
+            if level == lv[0]:
+                return "upper"
+            open_sky = (int(round(x)), int(round(y))) in plan.opensky.get(level, set())
+            if not open_sky:
+                return "upper"
+            # (the plans hold only the floors men stand on: the roof's ridge is the box's top)
+            return "balcony" if t.box[5] > level + 2.5 else "roof"
+        return "upper"
 
     def on_area(self, p):
         """Inside the area or on its line (within 1.5 m): a post in a building outside isn't the compound's."""
@@ -205,9 +234,14 @@ class Study:
         towers = [ci for ci, c in enumerate(C) if c[3] == "tower"]
         covered = set().union(*[cov[c] for c in towers]) if towers else set()
         chosen = []
+        # Balconies (and windows, as before) first; a roof only where none of them gives the coverage (the user's)
+        stage = {"balcony", "upper"}
         while True:
-            best = max((ci for ci in cov if ci not in towers and ci not in chosen), key=lambda ci: (len(cov[ci] - covered), -C[ci][1][2]), default=None)
+            best = max((ci for ci in cov if ci not in towers and ci not in chosen and C[ci][3] in stage), key=lambda ci: (len(cov[ci] - covered), -C[ci][1][2]), default=None)
             if best is None or len(cov[best] - covered) < min_gain or (room is not None and len(chosen) >= room):
+                if "roof" not in stage and (room is None or len(chosen) < room):
+                    stage = {"balcony", "upper", "roof"}
+                    continue
                 break
             chosen.append(best)
             covered |= cov[best]

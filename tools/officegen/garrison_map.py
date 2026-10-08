@@ -7,6 +7,7 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import blocklib  # noqa: E402
+import math  # noqa: E402
 import overlook  # noqa: E402
 import gate_gen as gg  # noqa: E402
 
@@ -22,11 +23,31 @@ st.candidates = lambda: cands
 S, C, towers, chosen, covered, reach = st.solve(room=0)
 AB = {"marksman": "MK", "autorifleman": "AR", "rifleman": "R", "at": "AT"}
 marks = {}
+bags = [gg.vec(it[2]) for it in st.items if "post" in str(it[4]).split(",")]
+
+
+def post_kind(p):
+    """An elevated man's post: "roof" with a post sandbag by him, else the balcony test (overlook.upper_kind) in the
+    building he stands in; "win" a window (an upper room), "twr" none (a tower)."""
+    if any(math.dist(p[:2], q[:2]) < 2.5 for q in bags):
+        return "roof"
+    t = own(p)
+    if t is None:
+        return "twr"
+    x, y = blocklib.rot(p[0] - t.pos[0], p[1] - t.pos[1], -t.dir)
+    k = st.upper_kind(t, overlook.norm_cls(t.model), x, y, p[2] - t.pos[2])
+    return {"upper": "win", "balcony": "bal"}.get(k, k)
+
+
+kinds = {}
 for i, m in enumerate(men):
     p = gg.vec(m[2])
     f = m[4].split(",")
     rk = next((x.split(":")[1] for x in f if x.startswith("reserve:")), None)
-    post = f"res{rk}" if rk is not None else ("pat" if "patrol" in f else ("elev" if "elevated" in f else ""))
+    post = f"res{rk}" if rk is not None else ("pat" if "patrol" in f else (post_kind(p) if "elevated" in f else ""))
+    if "elevated" in f:
+        kinds[post + ("(user)" if "user" in f else "")] = kinds.get(post + ("(user)" if "user" in f else ""), 0) + 1
+        post += "-usr" if "user" in f else ""
     marks[AB.get(m[1], m[1]) + ("-" + post if post else "") + ("^" if p[2] - st.b.ground(*p[:2]) > 1.5 else "") + " " * i] = p
 blocklib.svg(st.b, path, polygons={f"T{tier}": [list(p) for p in st.poly]}, reach=68, scale=8, pieces=st.items, marks=marks)
 P = lambda wx, wy: ((wx - st.b.pos[0] + 68) * 8, (68 - (wy - st.b.pos[1])) * 8)
@@ -37,4 +58,4 @@ for si, (p, tgt) in enumerate(S):
     dots.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="4" fill="{col}"/>')
 txt = open(path, encoding="utf-8").read().replace("</svg>", "\n".join(dots) + "\n</svg>")
 open(path, "w", encoding="utf-8").write(txt)
-print(path, f"{len(covered)} of {len(st.need)} wall samples overlooked")
+print(path, f"{len(covered)} of {len(st.need)} wall samples overlooked; elevated posts {kinds}")

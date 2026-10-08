@@ -7,15 +7,17 @@ and changing nothing else. One man per 150 m2 of the tier's area (the user's), p
     2. the main gate (the one nearest the HQ): an autorifleman, in the gate bunker if it has one; the HMG crew (a
        static is crewed in play, so it counts); from T4 an AT soldier near the main gate; a rifleman in each
        fighting hole outside it (props_gen.py);
-    3. elevated posts until every long wall stretch is overlooked (overlook.py: roofs and upper floors of the
-       buildings inside the area or on its line; a post earns its man with 10 m of wall more); a flat-roof post
-       gets a short sandbag ring piece ("post"); no ground sentries at the walls;
+    3. elevated posts until every long wall stretch is overlooked (overlook.py: balconies and upper windows of the
+       buildings inside the area or on its line first, roofs only where those don't give the coverage; a post earns
+       its man with 10 m of wall more); a flat-roof post gets a short sandbag piece ("post"), a balcony none; no
+       ground sentries at the walls;
     4. from T4 the patrol: a fireteam of four just inside the main gate, "patrol" (it walks the inside of the
        walls in play);
     5. all the men left: the reserve, a loose group 4-8 m out from the HQ's main door, "reserve" (it hunts inside
        the walls on the alarm, OT_fnc_officeGarrison).
 Heights and places from the class probe (probes/<world>_classes.txt: OTFLOORS, OTBPOS). A run replaces only its own:
-the guards flagged "garrison" and the "post" sandbags; everything else (the user's objects, towers, hides) stays.
+the guards flagged "garrison" and the "post" sandbags; everything else (the user's objects, towers, hides) stays, and
+so do guards and posts flagged "user" (placed by the user: they count as placed, elevated ones overlooking walls).
 
     python tools/officegen/garrison_gen.py "Town" [--world Altis] [--tiers 3,4] [--dry]
 """
@@ -72,7 +74,10 @@ class Garrison:
         self.b, self.poly, self.tier, self.town = block, [tuple(p[:2]) for p in poly], tier, town
         self.coverage = None
         # A run replaces only its own: the "garrison" guards and the "post" sandbags on roof posts
-        self.items = [list(it) for it in items if not (it[0] == "guard" and "garrison" in it[4]) and "post" not in str(it[4]).split(",")]
+        # (but never the user's: guards and posts flagged "user" stay where the user put them and count as placed)
+        user = lambda it: "user" in str(it[4]).split(",")
+        self.items = [list(it) for it in items if user(it) or (not (it[0] == "guard" and "garrison" in it[4]) and "post" not in str(it[4]).split(","))]
+        self.user_men = [it for it in self.items if it[0] == "guard" and user(it)]
         self.places = places
         self.count = round(area(self.poly) / PER_MAN)
         self.centre = (sum(p[0] for p in self.poly) / len(self.poly), sum(p[1] for p in self.poly) / len(self.poly))
@@ -89,13 +94,13 @@ class Garrison:
         self.notes = []
 
     def room(self):
-        return self.count - len(self.men) - sum(1 for it in self.items if it[0] == "static")
+        return self.count - len(self.men) - len(self.user_men) - sum(1 for it in self.items if it[0] == "static")
 
     def man(self, role, p, z, facing, flags):
         if self.room() <= 0:
             return False
         # Not on another man's spot (the HQ's places serve its windows and a window lookout)
-        if any(math.dist(p, gg.vec(m[2])[:2]) < 0.8 and abs(z - gg.vec(m[2])[2]) < 1.5 for m in self.men):
+        if any(math.dist(p, gg.vec(m[2])[:2]) < 0.8 and abs(z - gg.vec(m[2])[2]) < 1.5 for m in self.men + self.user_men):
             return False
         # Nor on a static weapon's (an HMG up a tower takes its autorifleman's place)
         if any(math.dist(p, gg.vec(it[2])[:2]) < 1.0 and abs(z - gg.vec(it[2])[2]) < 1.5 for it in self.items if it[0] == "static"):
@@ -212,7 +217,7 @@ class Garrison:
         if room > 0:
             import overlook
             st = overlook.Study(self.town, self.tier, self.items, self.b, self.poly)
-            seeds = [(gg.vec(m[2])[0], gg.vec(m[2])[1], gg.vec(m[2])[2] + overlook.EYE) for m in self.men if gg.vec(m[2])[2] - self.b.ground(*gg.vec(m[2])[:2]) > 2.0]
+            seeds = [(gg.vec(m[2])[0], gg.vec(m[2])[1], gg.vec(m[2])[2] + overlook.EYE) for m in self.men + self.user_men if gg.vec(m[2])[2] - self.b.ground(*gg.vec(m[2])[:2]) > 2.0]
             S, C, towers, chosen, covered, reach = st.solve(seeds=seeds, room=room)
             self.coverage = (len(covered), len(st.need), len(reach))
             for ci in chosen:
@@ -301,7 +306,7 @@ class Garrison:
                         put += 1
             self.notes.append(f"reserve groups {[len([m for m in self.men if f'reserve:{k}' in m[4].split(',')]) for k in range(len(anchors))]}")
         statics = sum(1 for it in self.items if it[0] == "static")
-        self.notes.append(f"{len(self.men)} men + {statics} static crew of {self.count} (one per {PER_MAN:.0f} m2): " +
+        self.notes.append((f"{len(self.user_men)} user-placed men + " if self.user_men else "") + f"{len(self.men)} men + {statics} static crew of {self.count} (one per {PER_MAN:.0f} m2): " +
                           ", ".join(f"{v} {k}" for k, v in placed.items()) +
                           (f"; walls overlooked {self.coverage[0]} of {self.coverage[1]} samples ({self.coverage[2]} coverable)" if self.coverage else ""))
         return self.items + self.men
