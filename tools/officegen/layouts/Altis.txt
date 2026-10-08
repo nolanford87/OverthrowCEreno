@@ -713,7 +713,7 @@ OTLAYOUT|Altis|Chalkeia|ITEM|2|object|Land_BagFence_Short_F|[20223.418,11647.246
 OTLAYOUT|Altis|Chalkeia|ITEM|2|object|Land_BagFence_Short_F|[20222.467,11645.719,56.050]|[[0.8488,-0.5287,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Chalkeia|ITEM|2|object|Land_BagFence_Long_F|[20224.764,11650.826,56.050]|[[0.5287,0.8488,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Chalkeia|ITEM|2|object|Land_BagFence_Long_F|[20209.013,11645.595,54.477]|[[-0.8488,0.5287,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Chalkeia|TIER|3|129
+OTLAYOUT|Altis|Chalkeia|TIER|3|125
 OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Land_BagFence_Short_F|[20223.418,11647.246,56.050]|[[0.8488,-0.5287,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Land_BagFence_Short_F|[20222.467,11645.719,56.050]|[[0.8488,-0.5287,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Land_BagFence_Long_F|[20224.764,11650.826,56.050]|[[0.5287,0.8488,0.0000],[0.0000,0.0000,1.0000]]|drop
@@ -821,8 +821,7 @@ OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Land_CncWall1_F|[20233.312,11657.901,54.89
 OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Land_CncWall1_F|[20233.506,11658.212,54.873]|[[-0.8485,0.5291,0.0000],[0.0000,0.0000,1.0000]]|
 OTLAYOUT|Altis|Chalkeia|ITEM|3|gate|4.0|[20231.780,11655.444,55.196]|[[0.5291,0.8485,0.0000],[0.0000,0.0000,1.0000]]|
 OTLAYOUT|Altis|Chalkeia|ITEM|3|hide|t_oleae1s_f.p3d|[20224.280,11657.040,54.810]|[[0.0000,1.0000,0.0000],[0.0000,0.0000,1.0000]]|
-OTLAYOUT|Altis|Chalkeia|ITEM|3|hide|Land_d_House_Small_01_V1_F|[20197.760,11635.130,56.190]|[[0.0000,1.0000,0.0000],[0.0000,0.0000,1.0000]]|
-OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Land_BagBunker_Tower_F|[20202.550,11632.400,55.973]|[[0.6580,0.7530,0.0000],[0.0000,0.0000,1.0000]]|ground,lookout
+OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Land_BagBunker_Tower_F|[20206.250,11630.700,56.120]|[[-0.8270,0.5630,0.0000],[0.0000,0.0000,1.0000]]|ground,lookout
 OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Land_NetFence_01_m_gate_F|[20231.780,11655.444,55.196]|[[0.8485,-0.5291,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Flag_NATO_F|[20228.401,11653.427,55.332]|[[-0.8485,0.5291,0.0000],[0.0000,0.0000,1.0000]]|ground,flag,entrance
 OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Land_PortableLight_double_F|[20226.429,11653.478,55.278]|[[-0.9386,-0.3449,0.0000],[0.0000,0.0000,1.0000]]|ground,entrance
@@ -831,13 +830,10 @@ OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Land_BagFence_Round_F|[20237.660,11658.259
 OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Land_CampingTable_F|[20207.725,11649.247,53.804]|[[0.9659,-0.2588,0.0000],[0.0000,0.0000,1.0000]]|ground,props
 OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Land_CampingChair_V2_F|[20206.855,11649.480,53.657]|[[-0.9659,0.2588,0.0000],[0.0000,0.0000,1.0000]]|ground,props
 OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Land_CampingChair_V2_F|[20208.594,11649.014,53.951]|[[0.9659,-0.2588,0.0000],[0.0000,0.0000,1.0000]]|ground,props
-OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Land_Pallet_MilBoxes_F|[20206.500,11626.870,56.251]|[[0.5187,0.8549,0.0000],[0.0000,0.0000,1.0000]]|ground,props
-OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Land_CratesWooden_F|[20208.500,11628.870,56.184]|[[0.4899,0.8718,0.0000],[0.0000,0.0000,1.0000]]|ground,props
-OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Land_WoodenCrate_01_stack_x3_F|[20209.500,11630.870,56.118]|[[0.4951,0.8688,0.0000],[0.0000,0.0000,1.0000]]|ground,props
-OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Land_PowerGenerator_F|[20204.500,11644.870,54.408]|[[0.0000,1.0000,0.0000],[0.0000,0.0000,1.0000]]|ground,props
-OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Land_CanisterFuel_F|[20205.500,11645.470,54.248]|[[0.0000,1.0000,0.0000],[0.0000,0.0000,1.0000]]|ground,props
-OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Land_CanisterFuel_F|[20205.500,11644.670,54.461]|[[1.0000,0.0000,0.0000],[0.0000,0.0000,1.0000]]|ground,props
-OTLAYOUT|Altis|Chalkeia|ITEM|3|guard|marksman|[20201.234,11630.894,58.723]|203.1|garrison
+OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Land_Pallet_MilBoxes_F|[20204.500,11644.870,54.408]|[[0.9940,0.1098,0.0000],[0.0000,0.0000,1.0000]]|ground,props
+OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Land_CratesWooden_F|[20206.500,11646.870,53.957]|[[0.9992,-0.0396,0.0000],[0.0000,0.0000,1.0000]]|ground,props
+OTLAYOUT|Altis|Chalkeia|ITEM|3|object|Land_WoodenCrate_01_stack_x3_F|[20222.500,11655.870,54.960]|[[-0.4014,-0.9159,0.0000],[0.0000,0.0000,1.0000]]|ground,props
+OTLAYOUT|Altis|Chalkeia|ITEM|3|guard|marksman|[20207.903,11629.575,58.870]|173.3|garrison
 OTLAYOUT|Altis|Chalkeia|ITEM|3|guard|autorifleman|[20227.118,11653.637,55.305]|98.0|garrison,ground
 OTLAYOUT|Altis|Chalkeia|ITEM|3|guard|rifleman|[20236.811,11658.788,54.874]|121.9|garrison,ground
 OTLAYOUT|Altis|Chalkeia|ITEM|3|guard|rifleman|[20221.406,11651.683,59.522]|31.9|garrison

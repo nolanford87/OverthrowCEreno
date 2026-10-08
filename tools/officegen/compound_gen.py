@@ -317,7 +317,7 @@ class Gen:
         else at least deep metres in from every side of its box (a box is bigger than the walls: porches, a
         garage's open front; an edge only grazing one gets a wall). By plan or roofed cells the point must be inside
         by REAL_IN all round (a line run along a house's end wall, or under its eaves, read as closed by it and left
-        a gap: Chalkeia). A ruin (d_ classes) is no wall: a holed shell."""
+        a gap: Chalkeia). A ruin (d_ classes) never closes the line: the wall is laid through it (the user's rule)."""
         ring = [(dx, dy) for dx in (-REAL_IN, REAL_IN) for dy in (-REAL_IN, REAL_IN)]
         for t in self.solid:
             if re.match(r"(Land_)?d_", t.model):
@@ -423,12 +423,8 @@ class Gen:
             if inside(p, self.poly) or min(seg_dist(p, a, b) for a, b in edges) < 1.5:
                 self.items.append(["hide", t.model, f"[{t.pos[0]:.3f},{t.pos[1]:.3f},{t.pos[2]:.3f}]", "[[0.0000,1.0000,0.0000],[0.0000,0.0000,1.0000]]", ""])
                 trees += 1
-        # A ruin on the line (d_ classes, a holed shell: no wall) hidden, the wall laid through its ground (it stays
-        # hidden at the tiers above: OT_fnc_officeHide)
-        for t in self.b.buildings:
-            if re.match(r"(Land_)?d_", t.model) and any(inside(add(a, mul(sub(b, a), k / 40)), t.corners()) for a, b in edges for k in range(41)):
-                self.items.append(["hide", t.model, f"[{t.pos[0]:.3f},{t.pos[1]:.3f},{t.pos[2]:.3f}]", "[[0.0000,1.0000,0.0000],[0.0000,0.0000,1.0000]]", ""])
-                self.notes.append(f"the ruin {t.model} on the line hidden")
+        # A ruin on the line (d_ classes) stays: the wall runs straight through it (the user's rule; on_building
+        # never counts one as closing the line)
         # A rock on the line: no piece stands on it (it can't be hidden); the area should go round it
         for r in getattr(self.b, "rocks", []):
             if any(self.on_rock(add(a, mul(sub(b, a), k / 20)), [r]) for a, b in edges for k in range(21)):

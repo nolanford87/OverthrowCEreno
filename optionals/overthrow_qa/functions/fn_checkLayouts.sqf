@@ -6,7 +6,7 @@
         OTCHECK|town|tier|items|guards|objects|statics|missing|clips|floating|moved|blind|blocked|views
             items: in the layout; missing: items not made (a class that doesn't exist)
             clips: [[class, what it cuts into, [x, y]], ...] a prop or fortification with a building, wall, rock or the
-                office's own walls running through it (two rays across its footprint)
+                office's own walls running through it (two rays across its footprint; a ruin, d_, doesn't count)
             floating: [[class, gap m, [x, y]], ...] standing more than 0.3 m above whatever is under it
             moved: [[role, m, [x, y]], ...] guards more than 1 m from their post after settling (pushed out of geometry)
             blind: [[role, m, [x, y]], ...] guards whose view (a 80 degree cone round their facing, at eye height) ends
@@ -199,7 +199,8 @@
                         private _hits = lineIntersectsSurfaces [_o modelToWorldWorld [_cx + (_a select 0) * _ix, _cy + (_a select 1) * _iy, _z], _o modelToWorldWorld [_cx + (_c select 0) * _ix, _cy + (_c select 1) * _iy, _z], _o, objNull, true, 3, "GEOM", "NONE"];
                         // A hit's object: its parent (a building's proxy part) or the object itself; terrain has neither
                         private _of = { private _h = _this select 3; if (isNull _h) then { _h = _this select 2 }; _h };
-                        private _bad = _hits select { private _h = _x call _of; !isNull _h && { (_h in _terrain) || { _h isEqualTo _b } || { _h in _parts } } };
+                        // (not a ruin: walls are built through ruins, the user's rule)
+                        private _bad = _hits select { private _h = _x call _of; !isNull _h && { (_h in _terrain) || { _h isEqualTo _b } || { _h in _parts } } && { !(((getModelInfo _h) select 0) select [0, 2] == "d_") } };
                         if (_bad isNotEqualTo []) exitWith {
                             private _h = (_bad select 0) call _of;
                             _clips pushBack [typeOf _o, [(getModelInfo _h) select 0, "office"] select (_h isEqualTo _b || { _h in _parts }), _o call _at];
