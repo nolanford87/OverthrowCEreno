@@ -847,7 +847,7 @@ OTLAYOUT|Altis|Chalkeia|ITEM|3|guard|rifleman|[20236.811,11658.788,54.874]|121.9
 OTLAYOUT|Altis|Chalkeia|ITEM|3|guard|rifleman|[20221.406,11651.683,59.522]|31.9|garrison
 OTLAYOUT|Altis|Chalkeia|ITEM|3|guard|rifleman|[20212.122,11643.211,59.452]|211.9|garrison
 OTLAYOUT|Altis|Chalkeia|ITEM|3|guard|rifleman|[20223.139,11647.658,59.452]|121.9|garrison
-OTLAYOUT|Altis|Chalkeia|TIER|4|228
+OTLAYOUT|Altis|Chalkeia|TIER|4|227
 OTLAYOUT|Altis|Chalkeia|ITEM|4|object|Land_BagFence_Short_F|[20223.418,11647.246,56.050]|[[0.8488,-0.5287,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Chalkeia|ITEM|4|object|Land_BagFence_Short_F|[20222.467,11645.719,56.050]|[[0.8488,-0.5287,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Chalkeia|ITEM|4|object|Land_BagFence_Long_F|[20224.764,11650.826,56.050]|[[0.5287,0.8488,0.0000],[0.0000,0.0000,1.0000]]|drop
@@ -1029,7 +1029,6 @@ OTLAYOUT|Altis|Chalkeia|ITEM|4|hide|t_oleae1s_f.p3d|[20214.770,11686.770,46.640]
 OTLAYOUT|Altis|Chalkeia|ITEM|4|hide|t_oleae1s_f.p3d|[20220.010,11679.940,50.280]|[[0.0000,1.0000,0.0000],[0.0000,0.0000,1.0000]]|
 OTLAYOUT|Altis|Chalkeia|ITEM|4|hide|stone_8md_f.p3d|[20184.380,11600.360,56.020]|[[0.0000,1.0000,0.0000],[0.0000,0.0000,1.0000]]|
 OTLAYOUT|Altis|Chalkeia|ITEM|4|hide|stone_pillar_f.p3d|[20187.380,11603.180,56.430]|[[0.0000,1.0000,0.0000],[0.0000,0.0000,1.0000]]|
-OTLAYOUT|Altis|Chalkeia|ITEM|4|hide|Land_i_Garage_V2_F|[20187.280,11607.970,56.450]|[[0.0000,1.0000,0.0000],[0.0000,0.0000,1.0000]]|
 OTLAYOUT|Altis|Chalkeia|ITEM|4|object|Land_Cargo_Patrol_V1_F|[20182.450,11672.700,44.016]|[[0.9910,0.1370,0.0000],[0.0000,0.0000,1.0000]]|ground,lookout
 OTLAYOUT|Altis|Chalkeia|ITEM|4|object|Land_Cargo_Patrol_V1_F|[20227.150,11656.000,55.131]|[[-0.8480,0.5300,0.0000],[0.0000,0.0000,1.0000]]|ground,lookout
 OTLAYOUT|Altis|Chalkeia|ITEM|4|object|Land_Cargo_Patrol_V1_F|[20219.621,11693.315,45.747]|[[-0.8126,-0.5828,0.0000],[0.0000,0.0000,1.0000]]|ground,lookout

@@ -78,7 +78,11 @@ OTQA_cp_walkTest = {
     _gate enableSimulationGlobal true;
     [_gate] call OT_fnc_officeGates;
     private _gp = ASLToAGL ((_marker select 0) select 2);
-    private _out = (_gp vectorDiff _hq) vectorMultiply (1 / ((_gp distance2D _hq) max 1));
+    // Straight out through the gate: across the wall line (the marker's direction runs along it), away from the HQ
+    // (along the HQ-to-gate line the point 6 m in fell in a pocket by the HQ's wall at Chalkeia T3: no route to it)
+    private _along = ((_marker select 0) select 3) select 0;
+    private _out = vectorNormalized [-(_along select 1), _along select 0, 0];
+    if (((_gp vectorAdd _out) distance2D _hq) < (_gp distance2D _hq)) then { _out = _out vectorMultiply -1 };
     // Places a man can stand on: 6 m in (not in the HQ, which can stand close to the gate), on the road 25 m out
     private _in = (_gp vectorAdd (_out vectorMultiply -6)) findEmptyPosition [0, 6, "B_Soldier_F"];
     if (_in isEqualTo []) then { _in = _gp vectorAdd (_out vectorMultiply -6) };
