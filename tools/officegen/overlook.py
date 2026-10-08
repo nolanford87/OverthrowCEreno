@@ -34,7 +34,7 @@ TARGET_H = 1.6
 EYE = 1.6
 TOP = {"HBarrier": 3.0, "Mil_WallBig": 4.7, "CncWall": 1.2, "ConcreteWall_01_l_gate": 3.0, "NetFence_01_m_gate": 2.6}
 PER_MAN = 150.0
-MIN_GAIN = 3          # A post must overlook at least this many more samples (6 m of wall) to be worth a man
+MIN_GAIN = 5          # A post must overlook at least this many more samples (10 m of wall) to be worth a man (the user's)
 ROOT = merge_layouts.ROOT
 
 
@@ -61,11 +61,11 @@ def vec(s):
 
 
 class Study:
-    def __init__(self, town, tier):
-        self.b = blocklib.load()[town]
+    def __init__(self, town, tier, items=None, block=None, poly=None):
+        self.b = block or blocklib.load()[town]
         self.town, self.tier = town, tier
-        self.poly = [tuple(p[:2]) for p in merge_compounds.load_saved("Altis")[town]["tiers"][tier]]
-        self.items = merge_layouts.load_saved("Altis")[town]["tiers"][tier]
+        self.poly = [tuple(p[:2]) for p in (poly or merge_compounds.load_saved("Altis")[town]["tiers"][tier])]
+        self.items = items if items is not None else merge_layouts.load_saved("Altis")[town]["tiers"][tier]
         self.places, self.floors = places()
         hid = [vec(it[2])[:2] for it in self.items if it[0] == "hide"]
         self.blds = [t for t in self.b.buildings if all(math.dist(t.pos[:2], h) > 0.5 for h in hid)
@@ -128,6 +128,8 @@ class Study:
                 if h < 2.0:
                     continue
                 w = t.to_world(x, y)
+                if not self.on_area(w):
+                    continue
                 out.append((t.model, (w[0], w[1], t.pos[2] + h + EYE), t, "upper"))
             fl = next((self.floors[k] for k in names if k in self.floors), None)
             if fl:
@@ -140,8 +142,15 @@ class Study:
                     edge = any(v is None or max(v) < top - 2 for v in nb)
                     if flat and edge:
                         w = t.to_world(x, y)
+                        if not self.on_area(w):
+                            continue
                         out.append((t.model, (w[0], w[1], t.pos[2] + top + EYE), t, "roof"))
         return out
+
+    def on_area(self, p):
+        """Inside the area or on its line (within 1.5 m): a post in a building outside isn't the compound's."""
+        n = len(self.poly)
+        return cg.inside(p, self.poly) or min(cg.seg_dist(p, self.poly[i], self.poly[(i + 1) % n]) for i in range(n)) < 1.5
 
     def in_bld(self, xy, t):
         """Inside a building's real footprint (office plan, complete roofed cells), else its box."""
@@ -181,19 +190,24 @@ class Study:
                     return False
         return True
 
-    def solve(self):
+    def solve(self, seeds=(), room=None, min_gain=None):
+        """The posts that overlook the walls: the towers (and seeds: eyes already manned) first, then greedily the
+        candidate adding most, while it adds min_gain samples or more and men are left (room)."""
+        min_gain = MIN_GAIN if min_gain is None else min_gain
         S = self.samples()
-        C = self.candidates()
+        # A man already up looks out of the building he stands in
+        C = self.candidates() + [("seed", e, next((t for t in self.blds if cg.inside(e[:2], t.corners())), None), "tower") for e in seeds]
         need = {si for si, (p, tgt) in enumerate(S) if tgt is not None}
         cov = {}
         for ci, (lab, eye, own, kind) in enumerate(C):
             cov[ci] = {si for si in need if self.sees(eye, S[si][1], own)}
+        self.seen = {ci: set(v) for ci, v in cov.items()}
         towers = [ci for ci, c in enumerate(C) if c[3] == "tower"]
         covered = set().union(*[cov[c] for c in towers]) if towers else set()
         chosen = []
         while True:
             best = max((ci for ci in cov if ci not in towers and ci not in chosen), key=lambda ci: (len(cov[ci] - covered), -C[ci][1][2]), default=None)
-            if best is None or len(cov[best] - covered) < MIN_GAIN:
+            if best is None or len(cov[best] - covered) < min_gain or (room is not None and len(chosen) >= room):
                 break
             chosen.append(best)
             covered |= cov[best]
@@ -203,6 +217,7 @@ class Study:
                     cov[ci] = set()
         reachable = set().union(*cov.values()) if cov else set()
         self.need = need
+        self.cov = cov
         return S, C, towers, chosen, covered, reachable
 
 

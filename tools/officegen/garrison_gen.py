@@ -1,21 +1,21 @@
 """
-The occupier compounds' garrison posts (tools/officegen/COMPOUND_PLAN.md, step 5 of the Rodopoli pilot), adding guards
-to the reviewed tiers 3+ and changing nothing else. One man per 200 m2 of the tier's area, posts included, filled in
-this order until the count is reached:
+The occupier compounds' garrison posts (tools/officegen/COMPOUND_PLAN.md), adding guards to the reviewed tiers 3+
+and changing nothing else. One man per 150 m2 of the tier's area (the user's), posts included, in this order:
     1. the lookout towers: a marksman each (and an autorifleman in each from T4), on the tower's floor; where the
        compound had no room for a tower (tower_gen.py's plan: T3 one, T4 two), a marksman at an upper window
        instead, in the building on the area that's nearest its line (the HQ when no other has an upper floor);
-    2. the main gate (the one nearest the HQ): an autorifleman, in the gate bunker if it has one;
-    3. the HMG crew (a static is crewed in play, so it counts);
-    4. from T4 an AT soldier near the main gate; a rifleman in each fighting hole outside it (props_gen.py);
-    5. the patrol: a fireteam of four (rifleman, autorifleman, two riflemen) just inside the main gate (every way
-       in and out goes through there, so it's never a pocket the walls cut off), "patrol" (it walks the inside of
-       the walls in play);
-    6. up to three at the HQ's upper windows (its buildingPos places);
-    7. a rifleman at each side gate;
-    8. more at the HQ's places.
-Heights and places from the class probe (probes/<world>_classes.txt: OTFLOORS, OTBPOS). The guards carry the
-"garrison" flag; running it again replaces only those.
+    2. the main gate (the one nearest the HQ): an autorifleman, in the gate bunker if it has one; the HMG crew (a
+       static is crewed in play, so it counts); from T4 an AT soldier near the main gate; a rifleman in each
+       fighting hole outside it (props_gen.py);
+    3. elevated posts until every long wall stretch is overlooked (overlook.py: roofs and upper floors of the
+       buildings inside the area or on its line; a post earns its man with 10 m of wall more); a flat-roof post
+       gets a short sandbag ring piece ("post"); no ground sentries at the walls;
+    4. from T4 the patrol: a fireteam of four just inside the main gate, "patrol" (it walks the inside of the
+       walls in play);
+    5. all the men left: the reserve, a loose group 4-8 m out from the HQ's main door, "reserve" (it hunts inside
+       the walls on the alarm, OT_fnc_officeGarrison).
+Heights and places from the class probe (probes/<world>_classes.txt: OTFLOORS, OTBPOS). A run replaces only its own:
+the guards flagged "garrison" and the "post" sandbags; everything else (the user's objects, towers, hides) stays.
 
     python tools/officegen/garrison_gen.py "Town" [--world Altis] [--tiers 3,4] [--dry]
 """
@@ -31,12 +31,13 @@ import gate_gen as gg  # noqa: E402
 import merge_compounds  # noqa: E402
 import merge_layouts  # noqa: E402
 
-PER_MAN = 200.0
+PER_MAN = 150.0
 # Where a man stands on a tower (model x, y, height above its base), the first the lookout
 TOWER_POSTS = {"Land_BagBunker_Tower_F": [(0.0, -2.0, 2.75)],
                "Land_Cargo_Patrol_V1_F": [(-2.3, 0.8, 4.44), (-2.0, -1.2, 4.14)]}
 BUNKER_POSTS = [(0.9, -1.2, 0.09), (-0.9, -1.2, 0.09)]   # Land_BagBunker_Small_F's firing places, its slit model -y
 PATROL = ["rifleman", "autorifleman", "rifleman", "rifleman"]
+RESERVE = ["rifleman", "autorifleman", "rifleman", "at", "rifleman", "marksman"]
 MAN = (0.8, 0.8)
 
 
@@ -67,9 +68,11 @@ def heading(a, b):
 
 
 class Garrison:
-    def __init__(self, block, poly, tier, items, places):
-        self.b, self.poly, self.tier = block, [tuple(p[:2]) for p in poly], tier
-        self.items = [list(it) for it in items if not (it[0] == "guard" and "garrison" in it[4])]
+    def __init__(self, block, poly, tier, items, places, town=""):
+        self.b, self.poly, self.tier, self.town = block, [tuple(p[:2]) for p in poly], tier, town
+        self.coverage = None
+        # A run replaces only its own: the "garrison" guards and the "post" sandbags on roof posts
+        self.items = [list(it) for it in items if not (it[0] == "guard" and "garrison" in it[4]) and "post" not in str(it[4]).split(",")]
         self.places = places
         self.count = round(area(self.poly) / PER_MAN)
         self.centre = (sum(p[0] for p in self.poly) / len(self.poly), sum(p[1] for p in self.poly) / len(self.poly))
@@ -114,6 +117,18 @@ class Garrison:
         c = best[1]
         face = heading(c, facing_to) if facing_to else heading(self.centre, c)
         return self.man(role, c, self.b.ground(*c), face, ["ground"] + list(flags))
+
+    def main_door(self):
+        """The HQ's main door (the town probe's), world x, y; the HQ's middle when not probed."""
+        import townlib
+        try:
+            t = townlib.load()[self.town]
+            d = t.door("main")
+            if d:
+                return tuple(d["pos"][:2])
+        except Exception:
+            pass
+        return tuple(self.b.pos[:2])
 
     def build(self):
         gates = [it for it in self.items if it[0] == "gate"]
@@ -201,55 +216,80 @@ class Garrison:
             p = cg.add(pos[:2], cg.mul(vd, 1.0))
             if self.man("rifleman", p, self.b.ground(*p), heading(p, cg.sub(p, vd)), ["ground"]):
                 note("fighting hole rifleman")
-        # 5. The patrol fireteam just inside the main gate, beside its lane
-        if main and self.room() >= len(PATROL):
+        # 5. Elevated posts until the walls are overlooked (overlook.py: an approach band 6-20 m out, seen from
+        # within 50 m): the towers and the men already up (window lookouts) first, then the roof and upper-floor
+        # spot adding most, each earning its man with 10 m (5 samples) of wall more; a flat-roof post gets a short
+        # sandbag ring piece at its edge ("post")
+        room = self.room() - (len(PATROL) if self.tier >= 4 else 0)
+        if room > 0:
+            import overlook
+            st = overlook.Study(self.town, self.tier, self.items, self.b, self.poly)
+            seeds = [(gg.vec(m[2])[0], gg.vec(m[2])[1], gg.vec(m[2])[2] + overlook.EYE) for m in self.men if gg.vec(m[2])[2] - self.b.ground(*gg.vec(m[2])[:2]) > 2.0]
+            S, C, towers, chosen, covered, reach = st.solve(seeds=seeds, room=room)
+            self.coverage = (len(covered), len(st.need), len(reach))
+            for ci in chosen:
+                lab, eye, own, kind = C[ci]
+                seen = [S[si][1][0] for si in st.seen[ci] if S[si][1]]
+                look = (sum(t[0] for t in seen) / len(seen), sum(t[1] for t in seen) / len(seen)) if seen else self.centre
+                p, z = (eye[0], eye[1]), eye[2] - overlook.EYE
+                face = heading(p, look)
+                if self.man("rifleman", p, z, face, ["elevated"]):
+                    note("elevated " + kind)
+                    if kind == "roof":
+                        d = cg.norm(cg.sub(look, p))
+                        q = cg.add(p, cg.mul(d, 0.9))
+                        self.items.append(["object", "Land_BagFence_Short_F", f"[{q[0]:.3f},{q[1]:.3f},{z:.3f}]", gg.orient_dir(d), "post"])
+        # 6. The patrol fireteam (T4) just inside the main gate, beside its lane
+        if main and self.tier >= 4 and self.room() >= len(PATROL):
             cands = [cg.add(cg.add(gp, cg.mul(u, a)), cg.mul(n, i)) for a in (-6, -5, -4, -3, 3, 4, 5, 6) for i in (6, 7, 8, 9, 10, 11, 12)]
             for role in PATROL:
                 if self.ground_man(role, cg.add(gp, cg.mul(n, 9)), cands, None, ["patrol"]):
                     note("patrol " + role)
-        # 6. The HQ's upper windows: the three places nearest its outer sides (a side each where it can), facing out
-        # through the nearest side
-        places = self.places.get(self.b.office, [])
-        vd_hq = (math.sin(math.radians(self.b.dir)), math.cos(math.radians(self.b.dir)))
+        # 7. All the men left are the reserve: a loose group 4-8 m out from the HQ's main door, facing out (they hunt
+        # inside the walls on the alarm, OT_fnc_officeGarrison)
+        door = self.main_door()
+        out = cg.norm(cg.sub(door, hq)) if math.dist(door, hq) > 0.5 else (0.0, 1.0)
+        ring = []
+        # In front of the door first (within 80 degrees of straight out), then round it, then out to 16 m where the
+        # ground near the door is taken (a crowded yard)
+        for r, span in [(r, 80) for r in (4.0, 5.0, 6.0, 7.0, 8.0)] + [(r, 180) for r in (4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 14.0, 16.0)]:
+            for a in range(-span, span + 1, 15):
+                d = (out[0] * math.cos(math.radians(a)) - out[1] * math.sin(math.radians(a)), out[0] * math.sin(math.radians(a)) + out[1] * math.cos(math.radians(a)))
+                ring.append(cg.add(door, cg.mul(d, r)))
+        ring = [c for c in ring if cg.inside(c, self.poly)]
+        # Free ground for a man: off the buildings' real walls (a box takes in porches and yards: at Chalkeia it left
+        # two spots), the pieces and the lanes, level enough
+        import overlook
+        st = overlook.Study(self.town, self.tier, self.items, self.b, self.poly)
+        pieces = [gg.tg.piece_rect(it) for it in self.items if it[0] in ("object", "static", "vehicle")]
+
         office = min(self.b.buildings, key=lambda t: math.dist(t.pos[:2], hq))
-        bx = office.box
 
-        def side(q):
-            """The nearest side of the HQ's box to a place: (distance, outward model direction)."""
-            return min([(q[0] - bx[0], (-1, 0)), (bx[2] - q[0], (1, 0)), (q[1] - bx[1], (0, -1)), (bx[3] - q[1], (0, 1))])
-
-        upper = sorted([p for p in places if p[2] > 2.0], key=lambda q: side(q)[0])
-        chosen = []
-        for q in upper:  # One a side first
-            if len(chosen) < 3 and side(q)[1] not in [side(c)[1] for c in chosen]:
-                chosen.append(q)
-        chosen += [q for q in upper if q not in chosen][:3 - len(chosen)]
-        for x, y, h in chosen:
-            p = to_world(hq, vd_hq, x, y)
-            out = side((x, y))[1]
-            if self.man("rifleman", p, self.b.pos[2] + h, heading(p, to_world(hq, vd_hq, x + out[0], y + out[1])), []):
-                note("HQ window")
-        # 7. A rifleman at each side gate
-        for g in gates:
-            if g is main:
-                continue
-            sp = gg.vec(g[2])[:2]
-            su = cg.norm(gg.vdir(g[3])[:2])
-            sn = (-su[1], su[0])
-            if not cg.inside(cg.add(sp, sn), self.poly):
-                sn = (su[1], -su[0])
-            cands = [cg.add(cg.add(sp, cg.mul(su, a)), cg.mul(sn, i)) for a in (-5, -4, -3, 3, 4, 5) for i in (2, 3, 4)]
-            if self.ground_man("rifleman", cg.add(sp, cg.mul(sn, 3)), cands, cg.add(sp, cg.mul(sn, -20))):
-                note("side gate rifleman")
-        # 8. The rest at the HQ's other places
-        for x, y, h in [p for p in places if p not in chosen]:
-            p = to_world(hq, vd_hq, x, y)
-            out = side((x, y))[1]
-            if self.man("rifleman", p, self.b.pos[2] + h, heading(p, to_world(hq, vd_hq, x + out[0], y + out[1])), []):
-                note("HQ")
+        def open_ground(c):
+            # Not in the HQ's box (its door opens on its porch: the plan alone let men stand inside it, Paros), nor
+            # in another building's real walls
+            if cg.inside(c, office.corners()) or any(st.in_bld(c, t) for t in st.blds if cg.inside(c, t.corners())):
+                return False
+            box = gg.tg.rect(c, (0, 1), (MAN[0] + 0.6, MAN[1] + 0.6))
+            if any(gg.tg.overlap(box, q) for q in pieces + self.lanes):
+                return False
+            zs = [self.b.ground(*q) for q in box]
+            return max(zs) - min(zs) < 0.8
+        ring = [c for c in ring if open_ground(c)]
+        while self.room() > 0:
+            role = RESERVE[len([m for m in self.men if "reserve" in m[4]]) % len(RESERVE)]
+            taken = [gg.vec(m[2])[:2] for m in self.men]
+            cands = [c for c in ring if all(math.dist(c, t) >= 1.5 for t in taken)]
+            if not cands:
+                break
+            c = min(cands, key=lambda q: math.dist(q, door))   # Nearest the door
+            if not self.man(role, c, self.b.ground(*c), heading(c, cg.add(door, cg.mul(out, 30))), ["ground", "reserve"]):
+                break
+            note("reserve " + role)
         statics = sum(1 for it in self.items if it[0] == "static")
         self.notes.append(f"{len(self.men)} men + {statics} static crew of {self.count} (one per {PER_MAN:.0f} m2): " +
-                          ", ".join(f"{v} {k}" for k, v in placed.items()))
+                          ", ".join(f"{v} {k}" for k, v in placed.items()) +
+                          (f"; walls overlooked {self.coverage[0]} of {self.coverage[1]} samples ({self.coverage[2]} coverable)" if self.coverage else ""))
         return self.items + self.men
 
 
@@ -265,7 +305,7 @@ def main(argv):
     for tier in only:
         if tier not in areas or tier not in t["tiers"]:
             continue
-        g = Garrison(block, areas[tier], tier, t["tiers"][tier], places)
+        g = Garrison(block, areas[tier], tier, t["tiers"][tier], places, town)
         t["tiers"][tier] = g.build()
         print(f"{town} T{tier}: " + "; ".join(g.notes))
         marks = {f"{m[1][:2]}{i}": gg.vec(m[2]) for i, m in enumerate(g.men)}

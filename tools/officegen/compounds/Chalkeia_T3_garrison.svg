@@ -1055,11 +1055,16 @@
 <polygon points="365.4,504.8 366.4,513.7 375.3,512.7 374.3,503.8" fill="#555" stroke="#222" stroke-width="0.6"/>
 <polygon points="384.0,486.1 383.7,495.1 392.7,495.4 393.0,486.5" fill="#555" stroke="#222" stroke-width="0.6"/>
 <polygon points="538.3,407.5 530.0,403.8 526.4,412.1 534.7,415.7" fill="#555" stroke="#222" stroke-width="0.6"/>
+<polygon points="392.2,403.1 388.1,390.2 383.8,391.6 387.9,404.4" fill="#555" stroke="#222" stroke-width="0.6"/>
+<polygon points="208.3,676.9 221.7,676.0 221.4,671.5 208.0,672.4" fill="#555" stroke="#222" stroke-width="0.6"/>
+<polygon points="444.0,618.5 446.0,631.8 450.4,631.1 448.5,617.8" fill="#555" stroke="#222" stroke-width="0.6"/>
 <circle cx="401.0" cy="646.4" r="6" fill="#111"/><text x="409.0" y="651.4" font-size="15" font-weight="bold">ma0</text>
 <circle cx="573.9" cy="429.9" r="6" fill="#111"/><text x="581.9" y="434.9" font-size="15" font-weight="bold">au1</text>
 <circle cx="661.1" cy="383.5" r="6" fill="#111"/><text x="669.1" y="388.5" font-size="15" font-weight="bold">ri2</text>
-<circle cx="522.5" cy="447.5" r="6" fill="#111"/><text x="530.5" y="452.5" font-size="15" font-weight="bold">ri3</text>
-<circle cx="438.9" cy="523.7" r="6" fill="#111"/><text x="446.9" y="528.7" font-size="15" font-weight="bold">ri4</text>
-<circle cx="538.1" cy="483.7" r="6" fill="#111"/><text x="546.1" y="488.7" font-size="15" font-weight="bold">ri5</text>
+<circle cx="395.7" cy="394.9" r="6" fill="#111"/><text x="403.7" y="399.9" font-size="15" font-weight="bold">ri3</text>
+<circle cx="215.4" cy="682.3" r="6" fill="#111"/><text x="223.4" y="687.3" font-size="15" font-weight="bold">ri4</text>
+<circle cx="439.2" cy="626.0" r="6" fill="#111"/><text x="447.2" y="631.0" font-size="15" font-weight="bold">ri5</text>
+<circle cx="535.1" cy="424.7" r="6" fill="#111"/><text x="543.1" y="429.7" font-size="15" font-weight="bold">ri6</text>
+<circle cx="552.8" cy="418.7" r="6" fill="#111"/><text x="560.8" y="423.7" font-size="15" font-weight="bold">au7</text>
 <text x="10" y="24" font-size="20" font-weight="bold">Chalkeia: north up, 10 m grid, office blue, doors red</text>
 </svg>

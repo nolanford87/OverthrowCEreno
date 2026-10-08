@@ -696,14 +696,19 @@
 <polygon points="527.3,355.0 536.3,355.0 536.3,346.0 527.3,346.0" fill="#555" stroke="#222" stroke-width="0.6"/>
 <polygon points="536.3,349.6 545.3,349.6 545.3,340.6 536.3,340.6" fill="#555" stroke="#222" stroke-width="0.6"/>
 <polygon points="536.3,347.8 536.3,356.8 545.3,356.8 545.3,347.8" fill="#555" stroke="#222" stroke-width="0.6"/>
+<polygon points="643.6,415.8 640.2,402.7 635.9,403.8 639.2,416.9" fill="#555" stroke="#222" stroke-width="0.6"/>
+<polygon points="667.1,495.0 655.1,488.8 653.0,492.8 665.0,499.0" fill="#555" stroke="#222" stroke-width="0.6"/>
 <circle cx="271.7" cy="537.6" r="6" fill="#111"/><text x="279.7" y="542.6" font-size="15" font-weight="bold">ma0</text>
 <circle cx="352.1" cy="675.6" r="6" fill="#111"/><text x="360.1" y="680.6" font-size="15" font-weight="bold">au1</text>
 <circle cx="370.2" cy="780.7" r="6" fill="#111"/><text x="378.2" y="785.7" font-size="15" font-weight="bold">ri2</text>
 <circle cx="316.9" cy="708.2" r="6" fill="#111"/><text x="324.9" y="713.2" font-size="15" font-weight="bold">ri3</text>
-<circle cx="402.0" cy="656.8" r="6" fill="#111"/><text x="410.0" y="661.8" font-size="15" font-weight="bold">ri4</text>
-<circle cx="429.1" cy="648.1" r="6" fill="#111"/><text x="437.1" y="653.1" font-size="15" font-weight="bold">au5</text>
-<circle cx="461.1" cy="691.6" r="6" fill="#111"/><text x="469.1" y="696.6" font-size="15" font-weight="bold">ri6</text>
-<circle cx="387.5" cy="667.5" r="6" fill="#111"/><text x="395.5" y="672.5" font-size="15" font-weight="bold">ri7</text>
-<circle cx="538.8" cy="461.9" r="6" fill="#111"/><text x="546.8" y="466.9" font-size="15" font-weight="bold">ri8</text>
+<circle cx="647.6" cy="407.8" r="6" fill="#111"/><text x="655.6" y="412.8" font-size="15" font-weight="bold">ri4</text>
+<circle cx="663.8" cy="486.7" r="6" fill="#111"/><text x="671.8" y="491.7" font-size="15" font-weight="bold">ri5</text>
+<circle cx="599.0" cy="495.7" r="6" fill="#111"/><text x="607.0" y="500.7" font-size="15" font-weight="bold">ri6</text>
+<circle cx="599.7" cy="468.1" r="6" fill="#111"/><text x="607.7" y="473.1" font-size="15" font-weight="bold">au7</text>
+<circle cx="601.1" cy="509.3" r="6" fill="#111"/><text x="609.1" y="514.3" font-size="15" font-weight="bold">ri8</text>
+<circle cx="610.6" cy="488.0" r="6" fill="#111"/><text x="618.6" y="493.0" font-size="15" font-weight="bold">at9</text>
+<circle cx="600.1" cy="451.5" r="6" fill="#111"/><text x="608.1" y="456.5" font-size="15" font-weight="bold">ri10</text>
+<circle cx="582.3" cy="523.1" r="6" fill="#111"/><text x="590.3" y="528.1" font-size="15" font-weight="bold">ma11</text>
 <text x="10" y="24" font-size="20" font-weight="bold">Rodopoli: north up, 10 m grid, office blue, doors red</text>
 </svg>
