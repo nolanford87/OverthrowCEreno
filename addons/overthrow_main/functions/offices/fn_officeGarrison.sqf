@@ -83,6 +83,9 @@ private _posts = _guards - _patrol - _reserve;
 private _area = ([_town, [_town] call OT_fnc_officeTier] call OT_fnc_officeCompound) apply { [_x select 0, _x select 1, 0] };
 private _loop = [];
 private _n = count _area;
+// The gates' openings (the layout's "gate" markers): no loop point within 7 m of one (a man sent to a point by a
+// gate stepped out through it shut, Paros T3: the AI's moves pass a shut gate's panel, its rays block)
+private _gates = (((([_town] call OT_fnc_officeLayout) param [1, []]) param [([_town] call OT_fnc_officeTier) - 1, []]) select { (_x select 0) isEqualTo "gate" }) apply { ASLToAGL (_x select 2) };
 for "_i" from 0 to _n - 1 do {
     private _a = _area select _i;
     private _edge = (_area select ((_i + 1) mod _n)) vectorDiff _a;
@@ -95,7 +98,17 @@ for "_i" from 0 to _n - 1 do {
         private _p = _a vectorAdd (_u vectorMultiply _t) vectorAdd (_in vectorMultiply 3.5);
         private _top = (AGLToASL _p) vectorAdd [0, 0, 8];
         private _hit = lineIntersectsSurfaces [_top, _top vectorAdd [0, 0, -10], objNull, objNull, true, 1, "GEOM", "NONE"];
-        if ((_hit isEqualTo [] || { isNull ((_hit select 0) select 2) }) && { _p inPolygon _area }) then { _loop pushBack _p };
+        // 3 m or more from every wall line, not only its own: near a sharp corner a point 3.5 m in from one line
+        // stands on the next (Chalkeia, Rodopoli, Paros): the path finding reached it from outside, via the gate
+        private _clear = true;
+        for "_j" from 0 to _n - 1 do {
+            private _c = _area select _j;
+            private _cd = (_area select ((_j + 1) mod _n)) vectorDiff _c;
+            private _cl = (vectorMagnitude _cd) max 0.01;
+            private _s = 0 max (_cl min (((_p vectorDiff _c) vectorDotProduct _cd) / _cl));
+            if (((_c vectorAdd (_cd vectorMultiply (_s / _cl))) distance2D _p) < 3) exitWith { _clear = false };
+        };
+        if (_clear && { (_gates findIf { (_x distance2D _p) < 7 }) < 0 } && { _hit isEqualTo [] || { isNull ((_hit select 0) select 2) } } && { _p inPolygon _area }) then { _loop pushBack _p };
     };
 };
 private _walk = {

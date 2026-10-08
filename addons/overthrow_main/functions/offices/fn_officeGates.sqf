@@ -6,7 +6,7 @@
     out, or a truck outside ordered in, would never come up to it), and shuts again 10 s after the last (while it's
     open, one standing waiting plans his way again: one planned while it was shut stops at it); never
     for the compound's own garrison (its patrol stays inside the walls, even chasing someone; one that's ended up
-    outside it does get back in), the town's
+    outside it does get back in, but not a post outside holding his place, a fighting hole's rifleman), the town's
     gendarmerie (it comes to the gate from the street) or a static weapon's crew; players can't open it (it stays locked, OT_fnc_officeBreach blows it open). A gate
     unlocked (breached, or the town taken: OT_fnc_officeDoors) is left alone. One check a second for all of
     them (OT_officeGates). Server.
@@ -36,9 +36,10 @@ if (isNil "OT_officeGates") then {
                 alive _x && { (side _x) isEqualTo blufor } && { !(_x isKindOf "StaticWeapon") } && { !isNull _who }
                     && { (_who getVariable ["garrison", ""]) isEqualTo "" }
                     && {
-                        // A compound guard only to come back in, if he's ended up outside his compound
+                        // A compound guard only to come back in, if he's ended up outside his compound (not one
+                        // posted outside it, holding his place: the fighting holes' riflemen by the main gate)
                         private _home = _who getVariable ["OT_compoundGuard", ""];
-                        _home isEqualTo "" || { [getPosATL _who, server getVariable [format ["compoundarea%1", _home], []]] call OT_fnc_officeOutside }
+                        _home isEqualTo "" || { _who checkAIFeature "PATH" && { [getPosATL _who, server getVariable [format ["compoundarea%1", _home], []]] call OT_fnc_officeOutside } }
                     }
             };
             private _theirs = (_near findIf {
