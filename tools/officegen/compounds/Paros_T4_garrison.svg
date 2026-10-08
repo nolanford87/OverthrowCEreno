@@ -1063,14 +1063,14 @@
 <path d="M319.9520000000193,339.85599999999977L331.9520000000193,351.85599999999977M319.9520000000193,351.85599999999977L331.9520000000193,339.85599999999977" stroke="#9b59b6" stroke-width="3"/>
 <path d="M480.64000000001397,252.4639999999781L492.64000000001397,264.4639999999781M480.64000000001397,264.4639999999781L492.64000000001397,252.4639999999781" stroke="#9b59b6" stroke-width="3"/>
 <path d="M465.20800000001327,249.47999999998137L477.20800000001327,261.4799999999814M465.20800000001327,261.4799999999814L477.20800000001327,249.47999999998137" stroke="#9b59b6" stroke-width="3"/>
-<polygon points="371.6,269.1 374.9,280.7 378.8,279.5 375.4,268.0" fill="#555" stroke="#222" stroke-width="0.6"/>
-<circle cx="462.4" cy="298.8" r="6" fill="#111"/><text x="470.4" y="303.8" font-size="15" font-weight="bold">MK^</text>
-<circle cx="688.4" cy="282.7" r="6" fill="#111"/><text x="696.4" y="287.7" font-size="15" font-weight="bold">MK^ </text>
-<circle cx="412.3" cy="535.9" r="6" fill="#111"/><text x="420.3" y="540.9" font-size="15" font-weight="bold">AT  </text>
-<circle cx="592.2" cy="536.2" r="6" fill="#111"/><text x="600.2" y="541.2" font-size="15" font-weight="bold">R-win^   </text>
-<circle cx="370.8" cy="602.0" r="6" fill="#111"/><text x="378.8" y="607.0" font-size="15" font-weight="bold">R-bal^    </text>
-<circle cx="778.7" cy="344.9" r="6" fill="#111"/><text x="786.7" y="349.9" font-size="15" font-weight="bold">R-win^     </text>
-<circle cx="367.2" cy="273.8" r="6" fill="#111"/><text x="375.2" y="278.8" font-size="15" font-weight="bold">R-roof^      </text>
+<polygon points="363.6,267.5 375.4,269.8 376.2,265.8 364.4,263.6" fill="#555" stroke="#222" stroke-width="0.6"/>
+<circle cx="367.2" cy="273.8" r="6" fill="#111"/><text x="375.2" y="278.8" font-size="15" font-weight="bold">R-roof-usr^</text>
+<circle cx="462.4" cy="298.8" r="6" fill="#111"/><text x="470.4" y="303.8" font-size="15" font-weight="bold">MK^ </text>
+<circle cx="688.4" cy="282.7" r="6" fill="#111"/><text x="696.4" y="287.7" font-size="15" font-weight="bold">MK^  </text>
+<circle cx="412.3" cy="535.9" r="6" fill="#111"/><text x="420.3" y="540.9" font-size="15" font-weight="bold">AT   </text>
+<circle cx="592.2" cy="536.2" r="6" fill="#111"/><text x="600.2" y="541.2" font-size="15" font-weight="bold">R-win^    </text>
+<circle cx="370.8" cy="602.0" r="6" fill="#111"/><text x="378.8" y="607.0" font-size="15" font-weight="bold">R-bal^     </text>
+<circle cx="778.7" cy="344.9" r="6" fill="#111"/><text x="786.7" y="349.9" font-size="15" font-weight="bold">R-win^      </text>
 <circle cx="420.3" cy="551.9" r="6" fill="#111"/><text x="428.3" y="556.9" font-size="15" font-weight="bold">R-pat       </text>
 <circle cx="428.3" cy="519.9" r="6" fill="#111"/><text x="436.3" y="524.9" font-size="15" font-weight="bold">AR-pat        </text>
 <circle cx="420.3" cy="567.9" r="6" fill="#111"/><text x="428.3" y="572.9" font-size="15" font-weight="bold">R-pat         </text>

@@ -1061,13 +1061,12 @@
 <polygon points="428.8,552.7 429.7,560.7 437.6,559.8 436.7,551.8" fill="#555" stroke="#222" stroke-width="0.6"/>
 <polygon points="445.4,536.1 445.0,544.1 453.0,544.4 453.4,536.4" fill="#555" stroke="#222" stroke-width="0.6"/>
 <polygon points="582.5,466.2 575.1,463.0 571.9,470.3 579.3,473.5" fill="#555" stroke="#222" stroke-width="0.6"/>
-<polygon points="289.5,712.7 301.5,712.2 301.4,708.2 289.4,708.7" fill="#555" stroke="#222" stroke-width="0.6"/>
 <circle cx="470.0" cy="442.5" r="6" fill="#111"/><text x="478.0" y="447.5" font-size="15" font-weight="bold">R-roof-usr^</text>
 <circle cx="494.0" cy="652.4" r="6" fill="#111"/><text x="502.0" y="657.4" font-size="15" font-weight="bold">R-roof-usr^ </text>
-<circle cx="460.4" cy="678.6" r="6" fill="#111"/><text x="468.4" y="683.6" font-size="15" font-weight="bold">MK^  </text>
-<circle cx="614.1" cy="486.1" r="6" fill="#111"/><text x="622.1" y="491.1" font-size="15" font-weight="bold">AR   </text>
-<circle cx="691.7" cy="444.9" r="6" fill="#111"/><text x="699.7" y="449.9" font-size="15" font-weight="bold">R    </text>
-<circle cx="292.6" cy="717.9" r="6" fill="#111"/><text x="300.6" y="722.9" font-size="15" font-weight="bold">R-roof^     </text>
+<circle cx="309.8" cy="756.8" r="6" fill="#111"/><text x="317.8" y="761.8" font-size="15" font-weight="bold">R-bal-usr^  </text>
+<circle cx="460.4" cy="678.6" r="6" fill="#111"/><text x="468.4" y="683.6" font-size="15" font-weight="bold">MK^   </text>
+<circle cx="614.1" cy="486.1" r="6" fill="#111"/><text x="622.1" y="491.1" font-size="15" font-weight="bold">AR    </text>
+<circle cx="691.7" cy="444.9" r="6" fill="#111"/><text x="699.7" y="449.9" font-size="15" font-weight="bold">R     </text>
 <circle cx="469.2" cy="512.2" r="6" fill="#111"/><text x="477.2" y="517.2" font-size="15" font-weight="bold">R-res0      </text>
 <circle cx="469.2" cy="500.2" r="6" fill="#111"/><text x="477.2" y="505.2" font-size="15" font-weight="bold">AR-res0       </text>
 <text x="10" y="24" font-size="20" font-weight="bold">Chalkeia: north up, 10 m grid, office blue, doors red</text>
@@ -1094,8 +1093,8 @@
 <circle cx="358.4" cy="717.2" r="4" fill="#1e9e3a"/>
 <circle cx="347.9" cy="729.2" r="4" fill="#1e9e3a"/>
 <circle cx="337.4" cy="741.3" r="4" fill="#1e9e3a"/>
-<circle cx="335.0" cy="744.0" r="4" fill="#1e9e3a"/>
-<circle cx="322.8" cy="733.6" r="4" fill="#1e9e3a"/>
+<circle cx="335.0" cy="744.0" r="4" fill="#d0021b"/>
+<circle cx="322.8" cy="733.6" r="4" fill="#d0021b"/>
 <circle cx="310.6" cy="723.3" r="4" fill="#1e9e3a"/>
 <circle cx="298.4" cy="712.9" r="4" fill="#1e9e3a"/>
 <circle cx="286.2" cy="702.6" r="4" fill="#1e9e3a"/>

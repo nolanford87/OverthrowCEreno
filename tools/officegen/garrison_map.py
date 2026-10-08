@@ -31,12 +31,14 @@ def post_kind(p):
     building he stands in; "win" a window (an upper room), "twr" none (a tower)."""
     if any(math.dist(p[:2], q[:2]) < 2.5 for q in bags):
         return "roof"
-    t = own(p)
-    if t is None:
+    # (every building he stands in: a balcony over an addon's roof is the house's balcony)
+    ks = set()
+    for t in [t for t in st.blds if cg.inside(p[:2], t.corners())]:
+        x, y = blocklib.rot(p[0] - t.pos[0], p[1] - t.pos[1], -t.dir)
+        ks.add(st.upper_kind(t, overlook.norm_cls(t.model), x, y, p[2] - t.pos[2]))
+    if not ks:
         return "twr"
-    x, y = blocklib.rot(p[0] - t.pos[0], p[1] - t.pos[1], -t.dir)
-    k = st.upper_kind(t, overlook.norm_cls(t.model), x, y, p[2] - t.pos[2])
-    return {"upper": "win", "balcony": "bal"}.get(k, k)
+    return "bal" if "balcony" in ks else ("win" if "upper" in ks else "roof")
 
 
 kinds = {}
