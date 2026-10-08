@@ -1046,6 +1046,7 @@
 <polygon points="664.1,458.9 670.1,449.4 663.3,445.1 657.3,454.6" fill="#555" stroke="#222" stroke-width="0.6"/>
 <polygon points="665.7,456.4 671.6,446.9 664.8,442.6 658.9,452.1" fill="#555" stroke="#222" stroke-width="0.6"/>
 <path d="M585.4400000000023,452.8799999999901L597.4400000000023,464.8799999999901M585.4400000000023,464.8799999999901L597.4400000000023,452.8799999999901" stroke="#9b59b6" stroke-width="3"/>
+<polygon points="482.7,401.4 476.4,410.6 483.0,415.1 489.3,405.9" fill="#555" stroke="#222" stroke-width="0.6"/>
 <polygon points="465.3,712.9 494.1,670.6 429.1,626.3 400.3,668.6" fill="#555" stroke="#222" stroke-width="0.6"/>
 <polygon points="659.1,457.1 641.7,484.9 643.8,486.2 661.1,458.4" fill="#2ecc71" stroke="#222" stroke-width="0.6"/>
 <polygon points="625.2,491.1 627.7,487.0 623.6,484.5 621.1,488.6" fill="#e67e22" stroke="#222" stroke-width="0.6"/>
@@ -1058,12 +1059,12 @@
 <polygon points="428.8,552.7 429.7,560.7 437.6,559.8 436.7,551.8" fill="#555" stroke="#222" stroke-width="0.6"/>
 <polygon points="445.4,536.1 445.0,544.1 453.0,544.4 453.4,536.4" fill="#555" stroke="#222" stroke-width="0.6"/>
 <polygon points="582.5,466.2 575.1,463.0 571.9,470.3 579.3,473.5" fill="#555" stroke="#222" stroke-width="0.6"/>
-<circle cx="460.4" cy="678.6" r="6" fill="#111"/><text x="468.4" y="683.6" font-size="15" font-weight="bold">MK^                                                                                                                              </text>
-<circle cx="614.1" cy="486.1" r="6" fill="#111"/><text x="622.1" y="491.1" font-size="15" font-weight="bold">AR                                                                                                                               </text>
-<circle cx="691.7" cy="444.9" r="6" fill="#111"/><text x="699.7" y="449.9" font-size="15" font-weight="bold">R                                                                                                                                </text>
-<circle cx="568.4" cy="501.7" r="6" fill="#111"/><text x="576.4" y="506.7" font-size="15" font-weight="bold">R^                                                                                                                                 </text>
-<circle cx="494.2" cy="569.5" r="6" fill="#111"/><text x="502.2" y="574.5" font-size="15" font-weight="bold">R^                                                                                                                                  </text>
-<circle cx="582.3" cy="533.9" r="6" fill="#111"/><text x="590.3" y="538.9" font-size="15" font-weight="bold">R^                                                                                                                                   </text>
+<circle cx="460.4" cy="678.6" r="6" fill="#111"/><text x="468.4" y="683.6" font-size="15" font-weight="bold">MK^                                                                                                                               </text>
+<circle cx="614.1" cy="486.1" r="6" fill="#111"/><text x="622.1" y="491.1" font-size="15" font-weight="bold">AR                                                                                                                                </text>
+<circle cx="691.7" cy="444.9" r="6" fill="#111"/><text x="699.7" y="449.9" font-size="15" font-weight="bold">R                                                                                                                                 </text>
+<circle cx="568.4" cy="501.7" r="6" fill="#111"/><text x="576.4" y="506.7" font-size="15" font-weight="bold">R^                                                                                                                                  </text>
+<circle cx="494.2" cy="569.5" r="6" fill="#111"/><text x="502.2" y="574.5" font-size="15" font-weight="bold">R^                                                                                                                                   </text>
+<circle cx="582.3" cy="533.9" r="6" fill="#111"/><text x="590.3" y="538.9" font-size="15" font-weight="bold">R^                                                                                                                                    </text>
 <text x="10" y="24" font-size="20" font-weight="bold">Chalkeia: north up, 10 m grid, office blue, doors red</text>
 <line x1="184.0" y1="120.0" x2="172.0" y2="116.0" stroke="#1a5fb4" stroke-opacity="0.35" stroke-width="1"/>
 <line x1="196.0" y1="126.4" x2="192.0" y2="124.0" stroke="#1a5fb4" stroke-opacity="0.35" stroke-width="1"/>
