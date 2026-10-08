@@ -342,9 +342,9 @@ class Gen:
                 return t
         return None
 
-    def on_rock(self, p, rocks=None, inset=3.0):
+    def on_rock(self, p, rocks=None, inset=3.5):
         """A rock under p: inside its box less inset metres all round (a box is bigger than the stone: at Chalkeia
-        the layout check's scan found open ground up to 3 m inside a big stone's box, 1 m left gaps)."""
+        the layout check's scan found open ground up to 3.1 m inside a big stone's box)."""
         for r in (getattr(self.b, "rocks", []) if rocks is None else rocks):
             lx, ly = blocklib.rot(p[0] - r.pos[0], p[1] - r.pos[1], -r.dir)
             if r.box[0] + inset <= lx <= r.box[2] - inset and r.box[1] + inset <= ly <= r.box[3] - inset:
