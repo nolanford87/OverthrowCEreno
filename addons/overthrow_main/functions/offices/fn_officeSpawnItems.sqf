@@ -48,7 +48,8 @@ private _reserveGroups = createHashMap; // And each of its reserve's small group
         private _unit = [_what, _p, _orient, _in, _placeholders] call OT_fnc_officeGuard;
         // A post the garrison generator put (tools/officegen/garrison_gen.py) turned to its longest clear view
         // within 90 degrees of its way: a window, the bunker's slit, over the wall
-        if ("garrison" in _extra && { !("patrol" in _extra) } && { !("reserve" in _extra) }) then {
+        // (the patrol and the reserve too: they start facing their longest view, not a wall a step off)
+        if ("garrison" in _extra) then {
             private _eye = (getPosASL _unit) vectorAdd [0, 0, 1.6];
             private _best = [-1, _orient];
             for "_a" from -90 to 90 step 15 do {

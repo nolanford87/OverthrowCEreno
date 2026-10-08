@@ -1059,13 +1059,13 @@
 <path d="M243.69600000002174,266.08799999999974L255.69600000002174,278.08799999999974M243.69600000002174,278.08799999999974L255.69600000002174,266.08799999999974" stroke="#9b59b6" stroke-width="3"/>
 <path d="M424.4700000000157,167.77199999997538L436.4700000000157,179.77199999997538M424.4700000000157,179.77199999997538L436.4700000000157,167.77199999997538" stroke="#9b59b6" stroke-width="3"/>
 <path d="M407.10900000001493,164.41499999997905L419.10900000001493,176.41499999997905M407.10900000001493,176.41499999997905L419.10900000001493,164.41499999997905" stroke="#9b59b6" stroke-width="3"/>
-<polygon points="308.6,183.4 312.7,196.2 317.0,194.8 312.8,182.0" fill="#555" stroke="#222" stroke-width="0.6"/>
+<polygon points="301.0,185.8 304.8,198.7 309.1,197.5 305.4,184.5" fill="#555" stroke="#222" stroke-width="0.6"/>
 <circle cx="403.3" cy="219.1" r="6" fill="#111"/><text x="411.3" y="224.1" font-size="15" font-weight="bold">ma0</text>
 <circle cx="657.4" cy="201.1" r="6" fill="#111"/><text x="665.4" y="206.1" font-size="15" font-weight="bold">ma1</text>
 <circle cx="346.8" cy="485.9" r="6" fill="#111"/><text x="354.8" y="490.9" font-size="15" font-weight="bold">at2</text>
 <circle cx="549.2" cy="486.3" r="6" fill="#111"/><text x="557.2" y="491.3" font-size="15" font-weight="bold">ri3</text>
 <circle cx="300.2" cy="560.2" r="6" fill="#111"/><text x="308.2" y="565.2" font-size="15" font-weight="bold">ri4</text>
-<circle cx="305.1" cy="191.6" r="6" fill="#111"/><text x="313.1" y="196.6" font-size="15" font-weight="bold">ri5</text>
+<circle cx="296.1" cy="191.0" r="6" fill="#111"/><text x="304.1" y="196.0" font-size="15" font-weight="bold">ri5</text>
 <circle cx="759.0" cy="271.0" r="6" fill="#111"/><text x="767.0" y="276.0" font-size="15" font-weight="bold">ri6</text>
 <circle cx="355.8" cy="503.9" r="6" fill="#111"/><text x="363.8" y="508.9" font-size="15" font-weight="bold">ri7</text>
 <circle cx="364.8" cy="467.9" r="6" fill="#111"/><text x="372.8" y="472.9" font-size="15" font-weight="bold">au8</text>

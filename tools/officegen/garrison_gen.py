@@ -221,12 +221,16 @@ class Garrison:
                 look = (sum(t[0] for t in seen) / len(seen), sum(t[1] for t in seen) / len(seen)) if seen else self.centre
                 p, z = (eye[0], eye[1]), eye[2] - overlook.EYE
                 face = heading(p, look)
+                edge = p
+                if kind == "roof" and own is not None:
+                    # A roof post: the sandbags on the roof's edge cell (the spot found), the man a metre in behind them
+                    # (put in front of him they went over the edge and hung in the air)
+                    p = cg.add(edge, cg.mul(cg.norm(cg.sub(own.pos[:2], edge)), 1.0))
                 if self.man("rifleman", p, z, face, ["elevated"]):
                     note("elevated " + kind)
                     if kind == "roof":
                         d = cg.norm(cg.sub(look, p))
-                        q = cg.add(p, cg.mul(d, 0.9))
-                        self.items.append(["object", "Land_BagFence_Short_F", f"[{q[0]:.3f},{q[1]:.3f},{z:.3f}]", gg.orient_dir(d), "post"])
+                        self.items.append(["object", "Land_BagFence_Short_F", f"[{edge[0]:.3f},{edge[1]:.3f},{z:.3f}]", gg.orient_dir(d), "post"])
         # 6. The patrol fireteam (T4) just inside the main gate, beside its lane
         if main and self.tier >= 4 and self.room() >= len(PATROL):
             cands = [cg.add(cg.add(gp, cg.mul(u, a)), cg.mul(n, i)) for a in (-6, -5, -4, -3, 3, 4, 5, 6) for i in (6, 7, 8, 9, 10, 11, 12)]

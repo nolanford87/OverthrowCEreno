@@ -1024,10 +1024,10 @@
 <path d="M536.0970000000016,313.445999999989L548.0970000000016,325.445999999989M536.0970000000016,325.445999999989L548.0970000000016,313.445999999989" stroke="#9b59b6" stroke-width="3"/>
 <path d="M535.0890000000254,266.4569999999767L547.0890000000254,278.4569999999767M535.0890000000254,278.4569999999767L547.0890000000254,266.4569999999767" stroke="#9b59b6" stroke-width="3"/>
 <path d="M535.0170000000107,248.96999999998297L547.0170000000107,260.969999999983M535.0170000000107,260.969999999983L547.0170000000107,248.96999999998297" stroke="#9b59b6" stroke-width="3"/>
-<polygon points="538.0,258.1 536.8,244.7 532.3,245.1 533.5,258.5" fill="#555" stroke="#222" stroke-width="0.6"/>
+<polygon points="546.7,257.1 544.1,243.8 539.7,244.7 542.3,257.9" fill="#555" stroke="#222" stroke-width="0.6"/>
 <circle cx="450.9" cy="533.3" r="6" fill="#111"/><text x="458.9" y="538.3" font-size="15" font-weight="bold">ma0</text>
 <circle cx="355.6" cy="528.6" r="6" fill="#111"/><text x="363.6" y="533.6" font-size="15" font-weight="bold">au1</text>
-<circle cx="543.2" cy="250.9" r="6" fill="#111"/><text x="551.2" y="255.9" font-size="15" font-weight="bold">ri2</text>
+<circle cx="536.9" cy="244.4" r="6" fill="#111"/><text x="544.9" y="249.4" font-size="15" font-weight="bold">ri2</text>
 <circle cx="300.2" cy="560.2" r="6" fill="#111"/><text x="308.2" y="565.2" font-size="15" font-weight="bold">ri3</text>
 <circle cx="594.1" cy="452.2" r="6" fill="#111"/><text x="602.1" y="457.2" font-size="15" font-weight="bold">ri4</text>
 <circle cx="580.6" cy="452.2" r="6" fill="#111"/><text x="588.6" y="457.2" font-size="15" font-weight="bold">au5</text>
