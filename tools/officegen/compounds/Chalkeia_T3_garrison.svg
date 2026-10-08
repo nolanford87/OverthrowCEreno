@@ -1064,7 +1064,7 @@
 <circle cx="395.7" cy="394.9" r="6" fill="#111"/><text x="403.7" y="399.9" font-size="15" font-weight="bold">ri3</text>
 <circle cx="215.4" cy="682.3" r="6" fill="#111"/><text x="223.4" y="687.3" font-size="15" font-weight="bold">ri4</text>
 <circle cx="439.2" cy="626.0" r="6" fill="#111"/><text x="447.2" y="631.0" font-size="15" font-weight="bold">ri5</text>
-<circle cx="535.1" cy="424.7" r="6" fill="#111"/><text x="543.1" y="429.7" font-size="15" font-weight="bold">ri6</text>
-<circle cx="552.8" cy="418.7" r="6" fill="#111"/><text x="560.8" y="423.7" font-size="15" font-weight="bold">au7</text>
+<circle cx="410.9" cy="459.3" r="6" fill="#111"/><text x="418.9" y="464.3" font-size="15" font-weight="bold">ri6</text>
+<circle cx="410.9" cy="445.8" r="6" fill="#111"/><text x="418.9" y="450.8" font-size="15" font-weight="bold">au7</text>
 <text x="10" y="24" font-size="20" font-weight="bold">Chalkeia: north up, 10 m grid, office blue, doors red</text>
 </svg>

@@ -1182,16 +1182,16 @@
 <circle cx="549.1" cy="356.6" r="6" fill="#111"/><text x="557.1" y="361.6" font-size="15" font-weight="bold">au14</text>
 <circle cx="538.0" cy="339.8" r="6" fill="#111"/><text x="546.0" y="344.8" font-size="15" font-weight="bold">ri15</text>
 <circle cx="565.2" cy="293.1" r="6" fill="#111"/><text x="573.2" y="298.1" font-size="15" font-weight="bold">ri16</text>
-<circle cx="535.1" cy="424.7" r="6" fill="#111"/><text x="543.1" y="429.7" font-size="15" font-weight="bold">ri17</text>
-<circle cx="584.8" cy="420.7" r="6" fill="#111"/><text x="592.8" y="425.7" font-size="15" font-weight="bold">au18</text>
-<circle cx="552.2" cy="409.7" r="6" fill="#111"/><text x="560.2" y="414.7" font-size="15" font-weight="bold">ri19</text>
-<circle cx="525.1" cy="409.8" r="6" fill="#111"/><text x="533.1" y="414.8" font-size="15" font-weight="bold">at20</text>
-<circle cx="537.8" cy="403.5" r="6" fill="#111"/><text x="545.8" y="408.5" font-size="15" font-weight="bold">ri21</text>
-<circle cx="583.0" cy="398.0" r="6" fill="#111"/><text x="591.0" y="403.0" font-size="15" font-weight="bold">ma22</text>
-<circle cx="567.4" cy="392.8" r="6" fill="#111"/><text x="575.4" y="397.8" font-size="15" font-weight="bold">ri23</text>
-<circle cx="596.7" cy="407.1" r="6" fill="#111"/><text x="604.7" y="412.1" font-size="15" font-weight="bold">au24</text>
-<circle cx="551.0" cy="391.7" r="6" fill="#111"/><text x="559.0" y="396.7" font-size="15" font-weight="bold">ri25</text>
-<circle cx="531.9" cy="386.5" r="6" fill="#111"/><text x="539.9" y="391.5" font-size="15" font-weight="bold">at26</text>
-<circle cx="515.1" cy="394.8" r="6" fill="#111"/><text x="523.1" y="399.8" font-size="15" font-weight="bold">ri27</text>
+<circle cx="404.7" cy="452.2" r="6" fill="#111"/><text x="412.7" y="457.2" font-size="15" font-weight="bold">ri17</text>
+<circle cx="391.2" cy="452.2" r="6" fill="#111"/><text x="399.2" y="457.2" font-size="15" font-weight="bold">au18</text>
+<circle cx="404.7" cy="438.8" r="6" fill="#111"/><text x="412.7" y="443.8" font-size="15" font-weight="bold">ri19</text>
+<circle cx="418.2" cy="452.2" r="6" fill="#111"/><text x="426.2" y="457.2" font-size="15" font-weight="bold">at20</text>
+<circle cx="80.7" cy="911.2" r="6" fill="#111"/><text x="88.7" y="916.2" font-size="15" font-weight="bold">ri21</text>
+<circle cx="80.7" cy="924.8" r="6" fill="#111"/><text x="88.7" y="929.8" font-size="15" font-weight="bold">ma22</text>
+<circle cx="80.7" cy="897.8" r="6" fill="#111"/><text x="88.7" y="902.8" font-size="15" font-weight="bold">ri23</text>
+<circle cx="94.2" cy="897.8" r="6" fill="#111"/><text x="102.2" y="902.8" font-size="15" font-weight="bold">au24</text>
+<circle cx="121.2" cy="587.2" r="6" fill="#111"/><text x="129.2" y="592.2" font-size="15" font-weight="bold">ri25</text>
+<circle cx="121.2" cy="600.8" r="6" fill="#111"/><text x="129.2" y="605.8" font-size="15" font-weight="bold">at26</text>
+<circle cx="121.2" cy="573.8" r="6" fill="#111"/><text x="129.2" y="578.8" font-size="15" font-weight="bold">ri27</text>
 <text x="10" y="24" font-size="20" font-weight="bold">Chalkeia: north up, 10 m grid, office blue, doors red</text>
 </svg>

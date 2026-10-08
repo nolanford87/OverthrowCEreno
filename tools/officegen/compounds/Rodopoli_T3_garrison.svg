@@ -704,11 +704,11 @@
 <circle cx="316.9" cy="708.2" r="6" fill="#111"/><text x="324.9" y="713.2" font-size="15" font-weight="bold">ri3</text>
 <circle cx="647.6" cy="407.8" r="6" fill="#111"/><text x="655.6" y="412.8" font-size="15" font-weight="bold">ri4</text>
 <circle cx="663.8" cy="486.7" r="6" fill="#111"/><text x="671.8" y="491.7" font-size="15" font-weight="bold">ri5</text>
-<circle cx="599.0" cy="495.7" r="6" fill="#111"/><text x="607.0" y="500.7" font-size="15" font-weight="bold">ri6</text>
-<circle cx="599.7" cy="468.1" r="6" fill="#111"/><text x="607.7" y="473.1" font-size="15" font-weight="bold">au7</text>
-<circle cx="601.1" cy="509.3" r="6" fill="#111"/><text x="609.1" y="514.3" font-size="15" font-weight="bold">ri8</text>
-<circle cx="610.6" cy="488.0" r="6" fill="#111"/><text x="618.6" y="493.0" font-size="15" font-weight="bold">at9</text>
-<circle cx="600.1" cy="451.5" r="6" fill="#111"/><text x="608.1" y="456.5" font-size="15" font-weight="bold">ri10</text>
-<circle cx="582.3" cy="523.1" r="6" fill="#111"/><text x="590.3" y="528.1" font-size="15" font-weight="bold">ma11</text>
+<circle cx="504.8" cy="584.5" r="6" fill="#111"/><text x="512.8" y="589.5" font-size="15" font-weight="bold">ri6</text>
+<circle cx="504.8" cy="598.0" r="6" fill="#111"/><text x="512.8" y="603.0" font-size="15" font-weight="bold">au7</text>
+<circle cx="491.3" cy="598.0" r="6" fill="#111"/><text x="499.3" y="603.0" font-size="15" font-weight="bold">ri8</text>
+<circle cx="518.3" cy="355.0" r="6" fill="#111"/><text x="526.3" y="360.0" font-size="15" font-weight="bold">at9</text>
+<circle cx="518.3" cy="368.5" r="6" fill="#111"/><text x="526.3" y="373.5" font-size="15" font-weight="bold">ri10</text>
+<circle cx="518.3" cy="341.5" r="6" fill="#111"/><text x="526.3" y="346.5" font-size="15" font-weight="bold">ma11</text>
 <text x="10" y="24" font-size="20" font-weight="bold">Rodopoli: north up, 10 m grid, office blue, doors red</text>
 </svg>

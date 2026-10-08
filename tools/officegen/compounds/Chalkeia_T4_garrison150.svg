@@ -1186,17 +1186,17 @@
 <circle cx="592.1" cy="421.0" r="6" fill="#111"/><text x="600.1" y="426.0" font-size="15" font-weight="bold">AR-pat              </text>
 <circle cx="582.2" cy="406.1" r="6" fill="#111"/><text x="590.2" y="411.1" font-size="15" font-weight="bold">R-pat               </text>
 <circle cx="606.4" cy="364.6" r="6" fill="#111"/><text x="614.4" y="369.6" font-size="15" font-weight="bold">R-pat                </text>
-<circle cx="579.7" cy="481.5" r="6" fill="#111"/><text x="587.7" y="486.5" font-size="15" font-weight="bold">R-res                 </text>
-<circle cx="623.8" cy="478.0" r="6" fill="#111"/><text x="631.8" y="483.0" font-size="15" font-weight="bold">AR-res                  </text>
-<circle cx="594.8" cy="468.2" r="6" fill="#111"/><text x="602.8" y="473.2" font-size="15" font-weight="bold">R-res                   </text>
-<circle cx="570.8" cy="468.2" r="6" fill="#111"/><text x="578.8" y="473.2" font-size="15" font-weight="bold">AT-res                    </text>
-<circle cx="582.0" cy="462.7" r="6" fill="#111"/><text x="590.0" y="467.7" font-size="15" font-weight="bold">R-res                     </text>
-<circle cx="622.2" cy="457.8" r="6" fill="#111"/><text x="630.2" y="462.8" font-size="15" font-weight="bold">MK-res                      </text>
-<circle cx="608.3" cy="453.1" r="6" fill="#111"/><text x="616.3" y="458.1" font-size="15" font-weight="bold">R-res                       </text>
-<circle cx="634.4" cy="465.9" r="6" fill="#111"/><text x="642.4" y="470.9" font-size="15" font-weight="bold">AR-res                        </text>
-<circle cx="593.7" cy="452.2" r="6" fill="#111"/><text x="601.7" y="457.2" font-size="15" font-weight="bold">R-res                         </text>
-<circle cx="576.8" cy="447.5" r="6" fill="#111"/><text x="584.8" y="452.5" font-size="15" font-weight="bold">AT-res                          </text>
-<circle cx="561.9" cy="454.9" r="6" fill="#111"/><text x="569.9" y="459.9" font-size="15" font-weight="bold">R-res                           </text>
+<circle cx="463.8" cy="506.0" r="6" fill="#111"/><text x="471.8" y="511.0" font-size="15" font-weight="bold">R-res0                 </text>
+<circle cx="451.8" cy="506.0" r="6" fill="#111"/><text x="459.8" y="511.0" font-size="15" font-weight="bold">AR-res0                  </text>
+<circle cx="463.8" cy="494.0" r="6" fill="#111"/><text x="471.8" y="499.0" font-size="15" font-weight="bold">R-res0                   </text>
+<circle cx="475.8" cy="506.0" r="6" fill="#111"/><text x="483.8" y="511.0" font-size="15" font-weight="bold">AT-res0                    </text>
+<circle cx="175.8" cy="914.0" r="6" fill="#111"/><text x="183.8" y="919.0" font-size="15" font-weight="bold">R-res1                     </text>
+<circle cx="175.8" cy="926.0" r="6" fill="#111"/><text x="183.8" y="931.0" font-size="15" font-weight="bold">MK-res1                      </text>
+<circle cx="175.8" cy="902.0" r="6" fill="#111"/><text x="183.8" y="907.0" font-size="15" font-weight="bold">R-res1                       </text>
+<circle cx="187.8" cy="902.0" r="6" fill="#111"/><text x="195.8" y="907.0" font-size="15" font-weight="bold">AR-res1                        </text>
+<circle cx="211.8" cy="626.0" r="6" fill="#111"/><text x="219.8" y="631.0" font-size="15" font-weight="bold">R-res2                         </text>
+<circle cx="211.8" cy="638.0" r="6" fill="#111"/><text x="219.8" y="643.0" font-size="15" font-weight="bold">AT-res2                          </text>
+<circle cx="211.8" cy="614.0" r="6" fill="#111"/><text x="219.8" y="619.0" font-size="15" font-weight="bold">R-res2                           </text>
 <text x="10" y="24" font-size="20" font-weight="bold">Chalkeia: north up, 10 m grid, office blue, doors red</text>
 <circle cx="713.5" cy="371.2" r="4" fill="#1e9e3a"/>
 <circle cx="705.5" cy="385.0" r="4" fill="#1e9e3a"/>

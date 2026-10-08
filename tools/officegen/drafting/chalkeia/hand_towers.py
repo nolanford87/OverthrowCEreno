@@ -2,8 +2,9 @@
 flattest spots against the walls, stairs in (towersearch.py: real footprints, off the pieces, rocks, gate lanes):
 T3 the sandbag tower against the track's wall at the south-west, by the shed (0.41 m fall); T4 two cargo patrol towers, one at the
 north-west over the lower town and the west road (1.2 m fall), one in the north-east yard by the track (0.94 m)."""
+import os
 import sys
-sys.path.insert(0, 'P:/OT_chalkeia/tools/officegen')
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))  # tools/officegen
 import merge_layouts as ml, blocklib as bl
 b = bl.load()['Chalkeia']
 towns = ml.load_saved('Altis')

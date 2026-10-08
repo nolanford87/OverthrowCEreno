@@ -118,18 +118,6 @@ class Garrison:
         face = heading(c, facing_to) if facing_to else heading(self.centre, c)
         return self.man(role, c, self.b.ground(*c), face, ["ground"] + list(flags))
 
-    def main_door(self):
-        """The HQ's main door (the town probe's), world x, y; the HQ's middle when not probed."""
-        import townlib
-        try:
-            t = townlib.load()[self.town]
-            d = t.door("main")
-            if d:
-                return tuple(d["pos"][:2])
-        except Exception:
-            pass
-        return tuple(self.b.pos[:2])
-
     def build(self):
         gates = [it for it in self.items if it[0] == "gate"]
         hq = tuple(self.b.pos[:2])
@@ -245,29 +233,20 @@ class Garrison:
             for role in PATROL:
                 if self.ground_man(role, cg.add(gp, cg.mul(n, 9)), cands, None, ["patrol"]):
                     note("patrol " + role)
-        # 7. All the men left are the reserve: a loose group 4-8 m out from the HQ's main door, facing out (they hunt
-        # inside the walls on the alarm, OT_fnc_officeGarrison)
-        door = self.main_door()
-        out = cg.norm(cg.sub(door, hq)) if math.dist(door, hq) > 0.5 else (0.0, 1.0)
-        ring = []
-        # In front of the door first (within 80 degrees of straight out), then round it, then out to 16 m where the
-        # ground near the door is taken (a crowded yard)
-        for r, span in [(r, 80) for r in (4.0, 5.0, 6.0, 7.0, 8.0)] + [(r, 180) for r in (4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 14.0, 16.0)]:
-            for a in range(-span, span + 1, 15):
-                d = (out[0] * math.cos(math.radians(a)) - out[1] * math.sin(math.radians(a)), out[0] * math.sin(math.radians(a)) + out[1] * math.cos(math.radians(a)))
-                ring.append(cg.add(door, cg.mul(d, r)))
-        ring = [c for c in ring if cg.inside(c, self.poly)]
-        # Free ground for a man: off the buildings' real walls (a box takes in porches and yards: at Chalkeia it left
-        # two spots), the pieces and the lanes, level enough
+        # 7. All the men left are the reserve, in small groups of 2-4 ("reserve:<n>", a group each in play) round the
+        # open yard: by the table, by the stores, then the open spots farthest from the others, each 10 m or more
+        # from the gates' lanes and from each other where there's room (less where there isn't), standing loosely,
+        # facing out; on the alarm every group hunts inside the walls (OT_fnc_officeGarrison)
         import overlook
         st = overlook.Study(self.town, self.tier, self.items, self.b, self.poly)
-        pieces = [gg.tg.piece_rect(it) for it in self.items if it[0] in ("object", "static", "vehicle")]
-
+        # (towers at their real size: their class isn't in the pieces' size tables, which made them 1 m squares)
+        pieces = [gg.tg.rect(gg.vec(it[2])[:2], cg.norm(gg.vdir(it[3])[:2]), gg.tg.TOWERS[it[1]]) if it[1] in gg.tg.TOWERS else gg.tg.piece_rect(it)
+                  for it in self.items if it[0] in ("object", "static", "vehicle")]
         office = min(self.b.buildings, key=lambda t: math.dist(t.pos[:2], hq))
 
         def open_ground(c):
             # Not in the HQ's box (its door opens on its porch: the plan alone let men stand inside it, Paros), nor
-            # in another building's real walls
+            # in another building's real walls, nor on a piece, level
             if cg.inside(c, office.corners()) or any(st.in_bld(c, t) for t in st.blds if cg.inside(c, t.corners())):
                 return False
             box = gg.tg.rect(c, (0, 1), (MAN[0] + 0.6, MAN[1] + 0.6))
@@ -275,17 +254,48 @@ class Garrison:
                 return False
             zs = [self.b.ground(*q) for q in box]
             return max(zs) - min(zs) < 0.8
-        ring = [c for c in ring if open_ground(c)]
-        while self.room() > 0:
-            role = RESERVE[len([m for m in self.men if "reserve" in m[4]]) % len(RESERVE)]
-            taken = [gg.vec(m[2])[:2] for m in self.men]
-            cands = [c for c in ring if all(math.dist(c, t) >= 1.5 for t in taken)]
-            if not cands:
-                break
-            c = min(cands, key=lambda q: math.dist(q, door))   # Nearest the door
-            if not self.man(role, c, self.b.ground(*c), heading(c, cg.add(door, cg.mul(out, 30))), ["ground", "reserve"]):
-                break
-            note("reserve " + role)
+
+        def lane_dist(c):
+            return min((0.0 if cg.inside(c, r) else min(cg.seg_dist(c, r[k], r[(k + 1) % 4]) for k in range(4))) for r in self.lanes) if self.lanes else 99.0
+
+        R = self.room()
+        if R > 0:
+            n = max(1, math.ceil(R / 4))
+            sizes = [R // n + (1 if k < R % n else 0) for k in range(n)]
+            xs, ys = [p[0] for p in self.poly], [p[1] for p in self.poly]
+            grid = [(x, y) for x in [min(xs) + 1.5 * k for k in range(int((max(xs) - min(xs)) / 1.5) + 1)]
+                    for y in [min(ys) + 1.5 * k for k in range(int((max(ys) - min(ys)) / 1.5) + 1)]]
+            grid = [c for c in grid if cg.inside(c, self.poly) and self.e.edge_dist(c) >= 2.5 and open_ground(c)
+                    and all(math.dist(c, gg.vec(m[2])[:2]) >= 2.0 for m in self.men)]
+            near = lambda names: [gg.vec(it[2])[:2] for it in self.items if it[0] == "object" and any(k in it[1] for k in names)]
+            wants = [near(["CampingTable"]), near(["Pallet_MilBoxes", "CratesWooden", "WoodenCrate", "PowerGenerator"])]
+            anchors = []
+            for spacing in (10.0, 6.0, 3.0):
+                for k in range(len(sizes)):
+                    if len(anchors) >= len(sizes):
+                        break
+                    ok = [c for c in grid if lane_dist(c) >= spacing and all(math.dist(c, a) >= spacing for a in anchors)]
+                    if not ok:
+                        continue
+                    by = wants[len(anchors)] if len(anchors) < len(wants) and wants[len(anchors)] else None
+                    if by:
+                        c = min(ok, key=lambda q: min(math.dist(q, w) for w in by))
+                    else:
+                        c = max(ok, key=lambda q: min([math.dist(q, a) for a in anchors] + [lane_dist(q)]))
+                    anchors.append(c)
+            for k, (a, size) in enumerate(zip(anchors, sizes)):
+                spots = sorted([c for c in grid if 0 <= math.dist(c, a) <= 3.2], key=lambda q: math.dist(q, a))
+                put = 0
+                for c in spots:
+                    if put >= size:
+                        break
+                    if any(math.dist(c, gg.vec(m[2])[:2]) < 1.4 for m in self.men):
+                        continue
+                    role = RESERVE[len([m for m in self.men if "reserve" in m[4]]) % len(RESERVE)]
+                    if self.man(role, c, self.b.ground(*c), heading(self.centre, c), ["ground", "reserve", f"reserve:{k}"]):
+                        note("reserve " + role)
+                        put += 1
+            self.notes.append(f"reserve groups {[len([m for m in self.men if f'reserve:{k}' in m[4].split(',')]) for k in range(len(anchors))]}")
         statics = sum(1 for it in self.items if it[0] == "static")
         self.notes.append(f"{len(self.men)} men + {statics} static crew of {self.count} (one per {PER_MAN:.0f} m2): " +
                           ", ".join(f"{v} {k}" for k, v in placed.items()) +

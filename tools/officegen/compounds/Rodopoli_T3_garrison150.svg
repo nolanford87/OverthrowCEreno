@@ -708,12 +708,12 @@
 <circle cx="385.7" cy="733.5" r="6" fill="#111"/><text x="393.7" y="738.5" font-size="15" font-weight="bold">R   </text>
 <circle cx="679.6" cy="466.5" r="6" fill="#111"/><text x="687.6" y="471.5" font-size="15" font-weight="bold">R-elev^    </text>
 <circle cx="694.0" cy="536.7" r="6" fill="#111"/><text x="702.0" y="541.7" font-size="15" font-weight="bold">R-elev^     </text>
-<circle cx="636.5" cy="544.6" r="6" fill="#111"/><text x="644.5" y="549.6" font-size="15" font-weight="bold">R-res      </text>
-<circle cx="637.1" cy="520.1" r="6" fill="#111"/><text x="645.1" y="525.1" font-size="15" font-weight="bold">AR-res       </text>
-<circle cx="638.4" cy="556.7" r="6" fill="#111"/><text x="646.4" y="561.7" font-size="15" font-weight="bold">R-res        </text>
-<circle cx="646.8" cy="537.8" r="6" fill="#111"/><text x="654.8" y="542.8" font-size="15" font-weight="bold">AT-res         </text>
-<circle cx="637.4" cy="505.3" r="6" fill="#111"/><text x="645.4" y="510.3" font-size="15" font-weight="bold">R-res          </text>
-<circle cx="621.6" cy="568.9" r="6" fill="#111"/><text x="629.6" y="573.9" font-size="15" font-weight="bold">MK-res           </text>
+<circle cx="552.7" cy="623.5" r="6" fill="#111"/><text x="560.7" y="628.5" font-size="15" font-weight="bold">R-res0      </text>
+<circle cx="552.7" cy="635.5" r="6" fill="#111"/><text x="560.7" y="640.5" font-size="15" font-weight="bold">AR-res0       </text>
+<circle cx="540.7" cy="635.5" r="6" fill="#111"/><text x="548.7" y="640.5" font-size="15" font-weight="bold">R-res0        </text>
+<circle cx="564.7" cy="419.5" r="6" fill="#111"/><text x="572.7" y="424.5" font-size="15" font-weight="bold">AT-res1         </text>
+<circle cx="564.7" cy="431.5" r="6" fill="#111"/><text x="572.7" y="436.5" font-size="15" font-weight="bold">R-res1          </text>
+<circle cx="564.7" cy="407.5" r="6" fill="#111"/><text x="572.7" y="412.5" font-size="15" font-weight="bold">MK-res1           </text>
 <text x="10" y="24" font-size="20" font-weight="bold">Rodopoli: north up, 10 m grid, office blue, doors red</text>
 <circle cx="288.7" cy="575.1" r="4" fill="#1e9e3a"/>
 <circle cx="301.1" cy="565.0" r="4" fill="#1e9e3a"/>

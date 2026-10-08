@@ -1,5 +1,6 @@
+import os
 import sys, math
-sys.path.insert(0, 'P:/OT_chalkeia/tools/officegen')
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))  # tools/officegen
 import blocklib as bl, compound_gen as cg
 from PIL import Image, ImageDraw
 town, shot, ppm, half, out = sys.argv[1], sys.argv[2], float(sys.argv[3]), float(sys.argv[4]), sys.argv[5]

@@ -25,7 +25,8 @@ marks = {}
 for i, m in enumerate(men):
     p = gg.vec(m[2])
     f = m[4].split(",")
-    post = "res" if "reserve" in f else ("pat" if "patrol" in f else ("elev" if "elevated" in f else ""))
+    rk = next((x.split(":")[1] for x in f if x.startswith("reserve:")), None)
+    post = f"res{rk}" if rk is not None else ("pat" if "patrol" in f else ("elev" if "elevated" in f else ""))
     marks[AB.get(m[1], m[1]) + ("-" + post if post else "") + ("^" if p[2] - st.b.ground(*p[:2]) > 1.5 else "") + " " * i] = p
 blocklib.svg(st.b, path, polygons={f"T{tier}": [list(p) for p in st.poly]}, reach=68, scale=8, pieces=st.items, marks=marks)
 P = lambda wx, wy: ((wx - st.b.pos[0] + 68) * 8, (68 - (wy - st.b.pos[1])) * 8)

@@ -1,6 +1,7 @@
 """The tier's walls, gate and hides drawn over the top-down screenshot."""
+import os
 import sys, math
-sys.path.insert(0, 'P:/OT_chalkeia/tools/officegen')
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))  # tools/officegen
 import blocklib as bl, merge_layouts as ml, merge_compounds as mc, townlib
 from PIL import Image, ImageDraw
 town, shot, ppm, half, tier, out = sys.argv[1], sys.argv[2], float(sys.argv[3]), float(sys.argv[4]), int(sys.argv[5]), sys.argv[6]

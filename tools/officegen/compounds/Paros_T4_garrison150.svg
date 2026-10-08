@@ -1075,14 +1075,14 @@
 <circle cx="428.3" cy="519.9" r="6" fill="#111"/><text x="436.3" y="524.9" font-size="15" font-weight="bold">AR-pat        </text>
 <circle cx="420.3" cy="567.9" r="6" fill="#111"/><text x="428.3" y="572.9" font-size="15" font-weight="bold">R-pat         </text>
 <circle cx="412.3" cy="519.9" r="6" fill="#111"/><text x="420.3" y="524.9" font-size="15" font-weight="bold">R-pat          </text>
-<circle cx="635.3" cy="574.7" r="6" fill="#111"/><text x="643.3" y="579.7" font-size="15" font-weight="bold">R-res           </text>
-<circle cx="637.3" cy="558.3" r="6" fill="#111"/><text x="645.3" y="563.3" font-size="15" font-weight="bold">AR-res            </text>
-<circle cx="622.6" cy="535.6" r="6" fill="#111"/><text x="630.6" y="540.6" font-size="15" font-weight="bold">R-res             </text>
-<circle cx="625.4" cy="587.9" r="6" fill="#111"/><text x="633.4" y="592.9" font-size="15" font-weight="bold">AT-res              </text>
-<circle cx="637.1" cy="538.1" r="6" fill="#111"/><text x="645.1" y="543.1" font-size="15" font-weight="bold">R-res               </text>
-<circle cx="611.3" cy="602.4" r="6" fill="#111"/><text x="619.3" y="607.4" font-size="15" font-weight="bold">MK-res                </text>
-<circle cx="637.6" cy="586.8" r="6" fill="#111"/><text x="645.6" y="591.8" font-size="15" font-weight="bold">R-res                 </text>
-<circle cx="645.4" cy="567.6" r="6" fill="#111"/><text x="653.4" y="572.6" font-size="15" font-weight="bold">AR-res                  </text>
+<circle cx="624.0" cy="510.0" r="6" fill="#111"/><text x="632.0" y="515.0" font-size="15" font-weight="bold">R-res0           </text>
+<circle cx="612.0" cy="510.0" r="6" fill="#111"/><text x="620.0" y="515.0" font-size="15" font-weight="bold">AR-res0            </text>
+<circle cx="624.0" cy="498.0" r="6" fill="#111"/><text x="632.0" y="503.0" font-size="15" font-weight="bold">R-res0             </text>
+<circle cx="636.0" cy="510.0" r="6" fill="#111"/><text x="644.0" y="515.0" font-size="15" font-weight="bold">AT-res0              </text>
+<circle cx="264.0" cy="570.0" r="6" fill="#111"/><text x="272.0" y="575.0" font-size="15" font-weight="bold">R-res1               </text>
+<circle cx="264.0" cy="582.0" r="6" fill="#111"/><text x="272.0" y="587.0" font-size="15" font-weight="bold">MK-res1                </text>
+<circle cx="264.0" cy="558.0" r="6" fill="#111"/><text x="272.0" y="563.0" font-size="15" font-weight="bold">R-res1                 </text>
+<circle cx="252.0" cy="558.0" r="6" fill="#111"/><text x="260.0" y="563.0" font-size="15" font-weight="bold">AR-res1                  </text>
 <text x="10" y="24" font-size="20" font-weight="bold">Paros: north up, 10 m grid, office blue, doors red</text>
 <circle cx="380.0" cy="626.0" r="4" fill="#1e9e3a"/>
 <circle cx="396.0" cy="626.0" r="4" fill="#1e9e3a"/>

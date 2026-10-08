@@ -4,11 +4,13 @@
     - its losses first: a guard killed stays lost (server variable "compoundlost<town>": [lost, since]) until the
       occupier pays to replace him, one every 10 minutes for 10 resources each; the guards still lost aren't made;
     - always aware (never safe: relaxed men walk through pieces on roads), weapons free when they see a threat;
-      the posts hold where they stand, the patrol ("patrol" guards, a group of their own) walks a loop just
-      inside the compound's walls;
+      the posts hold where they stand, the patrol ("patrol" guards, a group of their own, T4) walks a loop just
+      inside the compound's walls; the reserve ("reserve" guards, small groups of their own: "reserve:<n>") stands
+      at ease round the yard, weapons lowered (relaxed, standing, holding their places);
     - flashlights rather than night vision, on after dark;
-    - in a fight the posts hold and the patrol goes after the nearest threat it knows of, but never out of the
-      walls (to the nearest point of its loop instead); a minute after the last contact it walks its loop again;
+    - in a fight the posts hold and the patrol and every reserve group go after the nearest threat they know of,
+      but never out of the walls (to the nearest point of the loop instead); a minute after the last contact the
+      patrol walks its loop again and the reserve goes back to its places;
       at the first contact the town's gendarmerie comes to the compound's main gate from the street (15 m out:
       the gate doesn't open for it, a man can't plan a way to a place behind a shut gate); a patrol man found
       outside the walls is sent straight back to his loop. The first contact also sounds the alarm: a siren from
@@ -40,18 +42,21 @@ if (_lost > 0) then {
     };
     server setVariable [_lostVar, [_lost, _since]];
 };
-// The ones still lost: patrol men first, then posts at random (not a static's gunner)
+private _flags = { ((_this getVariable ["OT_officeItem", []]) param [3, []]) param [4, []] };
+// The ones still lost: the reserve's men first, then the patrol's, then posts at random (not a static's gunner)
 if (_lost > 0) then {
-    private _order = (_guards select { "patrol" in (((_x getVariable ["OT_officeItem", []]) param [3, []]) param [4, []]) })
-        + ((_guards select { !("patrol" in (((_x getVariable ["OT_officeItem", []]) param [3, []]) param [4, []])) && { isNull objectParent _x } }) call BIS_fnc_arrayShuffle);
+    private _order = (_guards select { "reserve" in (_x call _flags) }) + (_guards select { "patrol" in (_x call _flags) })
+        + ((_guards select { !("patrol" in (_x call _flags)) && { !("reserve" in (_x call _flags)) } && { isNull objectParent _x } }) call BIS_fnc_arrayShuffle);
     private _gone = _order select [0, _lost min (count _order)];
     { deleteVehicle _x } forEach _gone;
     _guards = _guards - _gone;
 };
 if (_guards isEqualTo []) exitWith { [] };
 
-private _patrol = _guards select { "patrol" in (((_x getVariable ["OT_officeItem", []]) param [3, []]) param [4, []]) };
-private _posts = _guards - _patrol;
+private _patrol = _guards select { "patrol" in (_x call _flags) };
+private _reserve = _guards select { "reserve" in (_x call _flags) };
+private _reserveGroups = (_reserve apply { group _x }) arrayIntersect (_reserve apply { group _x });
+private _posts = _guards - _patrol - _reserve;
 {
     private _unit = _x;
     _unit setVariable ["OT_compoundGuard", _town];
@@ -116,9 +121,20 @@ if (!isNull _patrolGroup && { count _loop > 1 }) then {
     { _x enableAI "PATH"; _x doFollow (leader _patrolGroup) } forEach _patrol; // Off the post OT_fnc_officeGuard holds them at
     [_patrolGroup, _loop] call _walk;
 };
+// The reserve: the patrol's handling (its own moves, no attack orders), at ease in its places till the alarm
+private _ease = {
+    params ["_group"];
+    _group setBehaviour "SAFE"; // Weapons lowered; they stand still (relaxed men only walk through road pieces)
+    { doStop _x; _x setUnitPos "UP" } forEach units _group;
+};
+{
+    _x setVariable ["lambs_danger_disableGroupAI", true, true];
+    { _x disableAI "TARGET"; _x setVariable ["OT_reserveHome", getPosATL _x] } forEach units _x;
+    [_x] call _ease;
+} forEach _reserveGroups;
 
-[_town, _guards, _patrolGroup, _loop, _walk] spawn {
-    params ["_town", "_guards", "_patrolGroup", "_loop", "_walk"];
+[_town, _guards, _patrolGroup, _loop, _walk, _reserveGroups, _ease] spawn {
+    params ["_town", "_guards", "_patrolGroup", "_loop", "_walk", "_reserveGroups", "_ease"];
     private _alerted = false;
     private _lastContact = -1e9;
     private _hunting = false;
@@ -168,28 +184,47 @@ if (!isNull _patrolGroup && { count _loop > 1 }) then {
                 _wp setWaypointSpeed "FULL";
             } forEach ((_gendarmes apply { group _x }) arrayIntersect (_gendarmes apply { group _x }));
         };
-        // The patrol hunts the nearest threat it knows of, inside the walls only; one outside straight back in
-        private _leader = leader _patrolGroup;
+        // The patrol and the reserve hunt the nearest threat they know of, inside the walls only; one outside
+        // straight back in. A minute after the last contact the patrol walks its loop again, the reserve goes back
+        // to its places and stands at ease
         private _area = ([_town, [_town] call OT_fnc_officeTier] call OT_fnc_officeCompound) apply { [_x select 0, _x select 1, 0] };
         if (_area isNotEqualTo [] && { count _loop > 1 }) then {
-            { if (alive _x && { [getPosATL _x, _area] call OT_fnc_officeOutside }) then { private _m = _x; _m doMove (([_loop, [], { _x distance2D _m }, "ASCEND"] call BIS_fnc_sortBy) select 0) } } forEach (units _patrolGroup);
+            {
+                { if (alive _x && { [getPosATL _x, _area] call OT_fnc_officeOutside }) then { private _m = _x; _m doMove (([_loop, [], { _x distance2D _m }, "ASCEND"] call BIS_fnc_sortBy) select 0) } } forEach (units _x);
+            } forEach ([_patrolGroup] + _reserveGroups);
         };
-        if (!isNull _patrolGroup && { alive _leader } && { count _loop > 1 }) then {
+        private _ended = _hunting && { time > _lastContact + 60 };
+        {
+            private _grp = _x;
+            private _leader = leader _grp;
+            if (isNull _grp || { !alive _leader } || { count _loop < 2 }) then { continue };
             private _threats = (_leader targets [true, 300]) select { alive _x };
-            if (_threats isNotEqualTo []) then {
+            if (_threats isNotEqualTo [] && { _contact || { _grp isEqualTo _patrolGroup } }) then {
                 private _t = [_threats, [], { _leader distance _x }, "ASCEND"] call BIS_fnc_sortBy;
                 private _seen = _leader getHideFrom (_t select 0);
                 private _go = if (_seen inPolygon _area) then { _seen } else { ([_loop, [], { _x distance2D _seen }, "ASCEND"] call BIS_fnc_sortBy) select 0 };
-                { deleteWaypoint _x } forEach ((waypoints _patrolGroup) select { (_x select 1) > 0 });
-                { _x doMove _go } forEach (units _patrolGroup);
+                { deleteWaypoint _x } forEach ((waypoints _grp) select { (_x select 1) > 0 });
+                if (_grp isNotEqualTo _patrolGroup) then { _grp setBehaviour "AWARE" };
+                { _x doMove _go } forEach (units _grp);
                 _hunting = true;
             } else {
-                if (_hunting && { time > _lastContact + 60 }) then {
-                    _hunting = false;
-                    { _x doFollow _leader } forEach (units _patrolGroup);
-                    [_patrolGroup, _loop] call _walk;
+                if (_ended) then {
+                    if (_grp isEqualTo _patrolGroup) then {
+                        { _x doFollow _leader } forEach (units _grp);
+                        [_grp, _loop] call _walk;
+                    } else {
+                        { _x doMove (_x getVariable ["OT_reserveHome", getPosATL _x]) } forEach (units _grp);
+                    };
                 };
             };
+        } forEach ([_patrolGroup] + _reserveGroups);
+        if (_ended) then { _hunting = false };
+        // A reserve back at its places stands at ease again
+        if (!_hunting) then {
+            {
+                private _grp = _x;
+                if ((behaviour (leader _grp)) isNotEqualTo "SAFE" && { ((units _grp) findIf { alive _x && { (_x distance2D (_x getVariable ["OT_reserveHome", getPosATL _x])) > 2 } }) < 0 }) then { [_grp] call _ease };
+            } forEach _reserveGroups;
         };
     };
 };

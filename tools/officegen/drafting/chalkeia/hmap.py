@@ -1,6 +1,7 @@
 """A block map with the ground: 1 m contours (bold every 5 m) and spot heights, plus areas, marks."""
+import os
 import sys, math, json
-sys.path.insert(0, 'P:/OT_chalkeia/tools/officegen')
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))  # tools/officegen
 import blocklib as bl
 def make(town, out, polygons=None, marks=None, reach=70, scale=7, pieces=None, contours=True):
     b = bl.load()[town]

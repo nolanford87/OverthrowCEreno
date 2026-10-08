@@ -2,8 +2,9 @@
 and 3.5 m out (their men 2.5 m out: a man's way along the wall stays open), the sign by the gate post (3.3 m along,
 1.25 m out, clear of the H-barrier's face). At 2 m out the holes' men stood against the wall and a man walking out
 of the T3 gate stuck between them, the sign and the wall."""
+import os
 import sys
-sys.path.insert(0, 'P:/OT_chalkeia/tools/officegen')
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))  # tools/officegen
 import merge_layouts as ml, blocklib as bl, merge_compounds as mc, compound_gen as cg
 b = bl.load()['Chalkeia']
 towns = ml.load_saved('Altis')

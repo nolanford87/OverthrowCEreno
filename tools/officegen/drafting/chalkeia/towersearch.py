@@ -1,5 +1,6 @@
+import os
 import sys, math
-sys.path.insert(0, 'P:/OT_chalkeia/tools/officegen')
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))  # tools/officegen
 import tower_gen as tg, blocklib as bl, merge_compounds as mc, merge_layouts as ml, compound_gen as cg
 b = bl.load()['Chalkeia']
 areas = mc.load_saved('Altis')['Chalkeia']['tiers']

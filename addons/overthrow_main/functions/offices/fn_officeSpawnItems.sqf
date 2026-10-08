@@ -23,15 +23,23 @@ private _objects = [];
 private _guards = [];
 private _group = grpNull;
 private _patrolGroup = grpNull; // A compound's patrol walks as a group of its own (OT_fnc_officeGarrison)
+private _reserveGroups = createHashMap; // And each of its reserve's small groups ("reserve:<n>")
 {
     private _item = _x;
     _item params ["_kind", "_what", "_at", "_orient", ["_extra", []]];
     if (_kind in ["hide", "gate"]) then { continue }; // A map object removed (OT_fnc_officeHide), a gate's opening (a marker)
     if (_kind isEqualTo "guard") then {
-        private _in = if ("patrol" in _extra) then {
-            if (isNull _patrolGroup) then { _patrolGroup = createGroup [_side, true] };
-            _patrolGroup
-        } else {
+        private _res = _extra findIf { (_x select [0, 8]) isEqualTo "reserve:" };
+        private _in = call {
+            if ("patrol" in _extra) exitWith {
+                if (isNull _patrolGroup) then { _patrolGroup = createGroup [_side, true] };
+                _patrolGroup
+            };
+            if (_res > -1) exitWith {
+                private _key = _extra select _res;
+                if (isNull (_reserveGroups getOrDefault [_key, grpNull])) then { _reserveGroups set [_key, createGroup [_side, true]] };
+                _reserveGroups get _key
+            };
             if (isNull _group) then { _group = createGroup [_side, true] };
             _group
         };
@@ -40,7 +48,7 @@ private _patrolGroup = grpNull; // A compound's patrol walks as a group of its o
         private _unit = [_what, _p, _orient, _in, _placeholders] call OT_fnc_officeGuard;
         // A post the garrison generator put (tools/officegen/garrison_gen.py) turned to its longest clear view
         // within 90 degrees of its way: a window, the bunker's slit, over the wall
-        if ("garrison" in _extra && { !("patrol" in _extra) }) then {
+        if ("garrison" in _extra && { !("patrol" in _extra) } && { !("reserve" in _extra) }) then {
             private _eye = (getPosASL _unit) vectorAdd [0, 0, 1.6];
             private _best = [-1, _orient];
             for "_a" from -90 to 90 step 15 do {

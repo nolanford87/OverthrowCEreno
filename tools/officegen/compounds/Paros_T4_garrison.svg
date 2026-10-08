@@ -1071,13 +1071,13 @@
 <circle cx="364.8" cy="467.9" r="6" fill="#111"/><text x="372.8" y="472.9" font-size="15" font-weight="bold">au8</text>
 <circle cx="355.8" cy="521.9" r="6" fill="#111"/><text x="363.8" y="526.9" font-size="15" font-weight="bold">ri9</text>
 <circle cx="346.8" cy="467.9" r="6" fill="#111"/><text x="354.8" y="472.9" font-size="15" font-weight="bold">ri10</text>
-<circle cx="597.8" cy="529.5" r="6" fill="#111"/><text x="605.8" y="534.5" font-size="15" font-weight="bold">ri11</text>
-<circle cx="600.0" cy="511.0" r="6" fill="#111"/><text x="608.0" y="516.0" font-size="15" font-weight="bold">au12</text>
-<circle cx="583.4" cy="485.5" r="6" fill="#111"/><text x="591.4" y="490.5" font-size="15" font-weight="bold">ri13</text>
-<circle cx="586.6" cy="544.4" r="6" fill="#111"/><text x="594.6" y="549.4" font-size="15" font-weight="bold">at14</text>
-<circle cx="599.8" cy="488.3" r="6" fill="#111"/><text x="607.8" y="493.3" font-size="15" font-weight="bold">ri15</text>
-<circle cx="570.7" cy="560.6" r="6" fill="#111"/><text x="578.7" y="565.6" font-size="15" font-weight="bold">ma16</text>
-<circle cx="600.3" cy="543.1" r="6" fill="#111"/><text x="608.3" y="548.1" font-size="15" font-weight="bold">ri17</text>
-<circle cx="609.0" cy="521.5" r="6" fill="#111"/><text x="617.0" y="526.5" font-size="15" font-weight="bold">au18</text>
+<circle cx="585.1" cy="456.7" r="6" fill="#111"/><text x="593.1" y="461.7" font-size="15" font-weight="bold">ri11</text>
+<circle cx="571.6" cy="456.7" r="6" fill="#111"/><text x="579.6" y="461.7" font-size="15" font-weight="bold">au12</text>
+<circle cx="585.1" cy="443.2" r="6" fill="#111"/><text x="593.1" y="448.2" font-size="15" font-weight="bold">ri13</text>
+<circle cx="598.6" cy="456.7" r="6" fill="#111"/><text x="606.6" y="461.7" font-size="15" font-weight="bold">at14</text>
+<circle cx="180.1" cy="524.2" r="6" fill="#111"/><text x="188.1" y="529.2" font-size="15" font-weight="bold">ri15</text>
+<circle cx="180.1" cy="537.7" r="6" fill="#111"/><text x="188.1" y="542.7" font-size="15" font-weight="bold">ma16</text>
+<circle cx="180.1" cy="510.7" r="6" fill="#111"/><text x="188.1" y="515.7" font-size="15" font-weight="bold">ri17</text>
+<circle cx="166.6" cy="510.7" r="6" fill="#111"/><text x="174.6" y="515.7" font-size="15" font-weight="bold">au18</text>
 <text x="10" y="24" font-size="20" font-weight="bold">Paros: north up, 10 m grid, office blue, doors red</text>
 </svg>

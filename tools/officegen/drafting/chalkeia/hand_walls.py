@@ -1,6 +1,7 @@
 """Chalkeia hand edits after compound_gen.py: the old stone wall and pillar at T4's south-west corner ."""
+import os
 import sys, math
-sys.path.insert(0, 'P:/OT_chalkeia/tools/officegen')
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))  # tools/officegen
 import merge_layouts as ml, blocklib as bl
 b = bl.load()['Chalkeia']
 towns = ml.load_saved('Altis')
