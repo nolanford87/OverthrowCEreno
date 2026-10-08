@@ -1057,5 +1057,6 @@
 <polygon points="631.3,474.3 635.7,467.2 630.6,464.0 626.2,471.1" fill="#555" stroke="#222" stroke-width="0.6"/>
 <polygon points="614.8,496.6 627.9,475.8 626.3,474.8 613.3,495.7" fill="#2ecc71" stroke="#222" stroke-width="0.6"/>
 <path d="M569.5800000000017,470.1599999999926L581.5800000000017,482.1599999999926M569.5800000000017,482.1599999999926L581.5800000000017,470.1599999999926" stroke="#9b59b6" stroke-width="3"/>
+<polygon points="494.0,433.0 489.3,440.0 494.3,443.3 499.0,436.4" fill="#555" stroke="#222" stroke-width="0.6"/>
 <text x="10" y="24" font-size="20" font-weight="bold">Chalkeia: north up, 10 m grid, office blue, doors red</text>
 </svg>
