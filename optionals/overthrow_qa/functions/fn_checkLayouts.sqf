@@ -16,7 +16,7 @@
         OTPATH|town|tier|bearing|[x, y]|[[x, y], ...] a way out: a man's route (the engine's path finding, planned
             in "combat"; OTPATHSAFE|town|tier|n of 8 the ways out not through a gate planned in "safe") from the
             office's door to a point 60 m out at that bearing from the office's front, [x, y] where it last passes
-            within 3 m of a fortification (the gap), and the route every ~5 m out to 45 m, then |gate [x, y] when it
+            within 3 m of a fortification (the gap), and the route every ~5 m out to 70 m, then |gate [x, y] when it
             goes out through one of the tier's gates (a "gate" item, within its half width + 1 m), else |none (a gap
             the layout didn't mean); OTPATH|town|tier|closed
             when every route was computed and none gets out, "unknown (...)" when some weren't computed
@@ -358,7 +358,7 @@
                         private _trace = [];
                         {
                             private _p = _x;
-                            if ((_p distance2D _b) < 45) then {
+                            if ((_p distance2D _b) < 70) then { // out to 70 m: a big compound (Chalkeia T4) reaches past 60
                                 if ((_props findIf { (_x distance2D _p) < 3 }) > -1) then { _gap = _p };
                                 if (_trace isEqualTo [] || { ((_trace select -1) distance2D _p) > 5 }) then { _trace pushBack _p };
                             };
@@ -418,7 +418,7 @@
                         private _trace = [];
                         {
                             private _p = _x;
-                            if ((_p distance2D _b) < 45) then {
+                            if ((_p distance2D _b) < 70) then { // out to 70 m: a big compound (Chalkeia T4) reaches past 60
                                 if (_gap isEqualTo [] && { (_props findIf { (_x distance2D _p) < 3 }) > -1 }) then { _gap = _p };
                                 if (_trace isEqualTo [] || { ((_trace select -1) distance2D _p) > 5 }) then { _trace pushBack _p };
                             };
