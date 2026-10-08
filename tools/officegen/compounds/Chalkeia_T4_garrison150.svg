@@ -1166,9 +1166,9 @@
 <polygon points="215.8,926.0 223.8,926.0 223.8,918.0 215.8,918.0" fill="#555" stroke="#222" stroke-width="0.6"/>
 <polygon points="223.8,921.2 231.8,921.2 231.8,913.2 223.8,913.2" fill="#555" stroke="#222" stroke-width="0.6"/>
 <polygon points="223.8,919.6 223.8,927.6 231.8,927.6 231.8,919.6" fill="#555" stroke="#222" stroke-width="0.6"/>
-<polygon points="307.0,884.2 309.2,872.4 305.2,871.7 303.0,883.5" fill="#555" stroke="#222" stroke-width="0.6"/>
-<polygon points="558.4,105.9 555.3,94.3 551.4,95.3 554.5,106.9" fill="#555" stroke="#222" stroke-width="0.6"/>
-<polygon points="667.9,318.9 673.8,329.4 677.3,327.4 671.3,317.0" fill="#555" stroke="#222" stroke-width="0.6"/>
+<polygon points="314.6,885.4 315.8,873.5 311.8,873.1 310.6,885.0" fill="#555" stroke="#222" stroke-width="0.6"/>
+<polygon points="565.5,103.9 562.0,92.4 558.2,93.6 561.7,105.0" fill="#555" stroke="#222" stroke-width="0.6"/>
+<polygon points="662.0,322.1 667.0,333.0 670.7,331.3 665.6,320.4" fill="#555" stroke="#222" stroke-width="0.6"/>
 <circle cx="260.6" cy="314.5" r="6" fill="#111"/><text x="268.6" y="319.5" font-size="15" font-weight="bold">MK^</text>
 <circle cx="245.1" cy="319.1" r="6" fill="#111"/><text x="253.1" y="324.1" font-size="15" font-weight="bold">AR^ </text>
 <circle cx="599.2" cy="479.4" r="6" fill="#111"/><text x="607.2" y="484.4" font-size="15" font-weight="bold">MK^  </text>
@@ -1179,9 +1179,9 @@
 <circle cx="601.9" cy="436.0" r="6" fill="#111"/><text x="609.9" y="441.0" font-size="15" font-weight="bold">AT       </text>
 <circle cx="716.7" cy="405.5" r="6" fill="#111"/><text x="724.7" y="410.5" font-size="15" font-weight="bold">R        </text>
 <circle cx="672.5" cy="481.6" r="6" fill="#111"/><text x="680.5" y="486.6" font-size="15" font-weight="bold">R         </text>
-<circle cx="313.2" cy="879.2" r="6" fill="#111"/><text x="321.2" y="884.2" font-size="15" font-weight="bold">R-elev^          </text>
-<circle cx="561.9" cy="98.7" r="6" fill="#111"/><text x="569.9" y="103.7" font-size="15" font-weight="bold">R-elev^           </text>
-<circle cx="666.3" cy="326.7" r="6" fill="#111"/><text x="674.3" y="331.7" font-size="15" font-weight="bold">R-elev^            </text>
+<circle cx="308.9" cy="872.5" r="6" fill="#111"/><text x="316.9" y="877.5" font-size="15" font-weight="bold">R-elev^          </text>
+<circle cx="553.9" cy="97.7" r="6" fill="#111"/><text x="561.9" y="102.7" font-size="15" font-weight="bold">R-elev^           </text>
+<circle cx="670.9" cy="320.2" r="6" fill="#111"/><text x="678.9" y="325.2" font-size="15" font-weight="bold">R-elev^            </text>
 <circle cx="631.1" cy="369.7" r="6" fill="#111"/><text x="639.1" y="374.7" font-size="15" font-weight="bold">R-pat             </text>
 <circle cx="592.1" cy="421.0" r="6" fill="#111"/><text x="600.1" y="426.0" font-size="15" font-weight="bold">AR-pat              </text>
 <circle cx="582.2" cy="406.1" r="6" fill="#111"/><text x="590.2" y="411.1" font-size="15" font-weight="bold">R-pat               </text>
@@ -1252,9 +1252,9 @@
 <circle cx="231.0" cy="964.0" r="4" fill="#1e9e3a"/>
 <circle cx="218.3" cy="973.8" r="4" fill="#1e9e3a"/>
 <circle cx="205.6" cy="983.5" r="4" fill="#1e9e3a"/>
-<circle cx="192.9" cy="993.2" r="4" fill="#1e9e3a"/>
-<circle cx="180.2" cy="1003.0" r="4" fill="#1e9e3a"/>
-<circle cx="167.5" cy="1012.7" r="4" fill="#1e9e3a"/>
+<circle cx="192.9" cy="993.2" r="4" fill="#d0021b"/>
+<circle cx="180.2" cy="1003.0" r="4" fill="#d0021b"/>
+<circle cx="167.5" cy="1012.7" r="4" fill="#d0021b"/>
 <circle cx="154.8" cy="1022.4" r="4" fill="#d0021b"/>
 <circle cx="142.1" cy="1032.2" r="4" fill="#d0021b"/>
 <circle cx="139.8" cy="1034.0" r="4" fill="#1e9e3a"/>
