@@ -394,7 +394,7 @@ OTQA_townLayout_show = {
 // the towns confirmed in the review. Read at the start for towns the mod has no layout for; per map. The tests keep out of it
 OTQA_townLayout_profileVar = { format ["OTQA_townLayouts_%1", worldName] };
 // Confirmations count per review pass (each pass is reviewed afresh): set the pass when starting a new review
-OTQA_townLayout_pass = "pass2a";
+OTQA_townLayout_pass = "compounds";
 OTQA_townLayout_confirmedVar = { format ["OTQA_townLayoutsConfirmed_%1_%2", worldName, OTQA_townLayout_pass] };
 OTQA_townLayout_loadProfile = {
     [""] call OT_fnc_officeLayout; // The mod's layouts read first (OT_officeLayouts)
