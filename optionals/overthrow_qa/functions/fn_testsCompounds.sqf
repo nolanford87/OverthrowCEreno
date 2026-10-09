@@ -159,6 +159,9 @@ _tests pushBack ["Compounds: men walk out and in through a shut gate (Rodopoli T
 _tests pushBack ["Compounds: men walk out and in through a shut gate (Chalkeia T3)", { ["Chalkeia", 3] call OTQA_cp_walkTest }, 240];
 _tests pushBack ["Compounds: men walk out and in through a shut gate (Paros T3)", { ["Paros", 3] call OTQA_cp_walkTest }, 240];
 _tests pushBack ["Compounds: men walk out and in through a shut gate (Paros T4)", { ["Paros", 4] call OTQA_cp_walkTest }, 240];
+{
+    _tests pushBack [format ["Compounds: men walk out and in through a shut gate (%1 T3)", _x], compile format ["[%1, 3] call OTQA_cp_walkTest", str _x], 240];
+} forEach ["Neochori", "Kalochori", "Sofia", "Therisa"];
 
 _tests pushBack ["Office: static weapons by role", {
     private _hmg = ["hmg"] call OT_fnc_officeStatic;
@@ -170,7 +173,7 @@ _tests pushBack ["Office: static weapons by role", {
 }, 10];
 
 // The compounds tested: every town with a generated compound, at T3 and T4
-OTQA_cp_cases = [["Rodopoli", 3], ["Rodopoli", 4], ["Paros", 3], ["Paros", 4], ["Chalkeia", 3], ["Chalkeia", 4]];
+OTQA_cp_cases = [["Rodopoli", 3], ["Rodopoli", 4], ["Paros", 3], ["Paros", 4], ["Chalkeia", 3], ["Chalkeia", 4], ["Neochori", 3], ["Neochori", 4], ["Kalochori", 3], ["Kalochori", 4], ["Sofia", 3], ["Sofia", 4], ["Therisa", 3], ["Therisa", 4]];
 
 // A town's compound spawned by the game's own spawner at a tier, [guards, things, spawner id, town]
 OTQA_cp_spawn = {
@@ -254,7 +257,13 @@ OTQA_cp_garrisonTest = {
     private _nvg = { hmd _x isNotEqualTo "" } count _guards;
     private _dark = { primaryWeapon _x isNotEqualTo "" && { ((primaryWeaponItems _x) select 1) isEqualTo "" } } count _guards;
     private _size = [_town, _tier] call OTQA_cp_size;
-    [format ["Garrison %1: one man per 150 m2 (static crews among them)", _tag], (count _guards) isEqualTo _size, format ["%1 of %2", count _guards, _size]] call OTQA_fnc_check;
+    // (within rounding: an area at a half, Neochori T4's 24.5 men, comes out either way between the tools and the game)
+    private _exact = _size;
+    private _p = [_town, _tier] call OT_fnc_officeCompound;
+    private _a = 0;
+    { private _v = _p select ((_forEachIndex + 1) mod (count _p)); _a = _a + (_x select 0) * (_v select 1) - (_v select 0) * (_x select 1) } forEach _p;
+    _exact = (abs _a) / 2 / 150;
+    [format ["Garrison %1: one man per 150 m2 (static crews among them)", _tag], (abs ((count _guards) - _exact)) <= 0.51, format ["%1 of %2", count _guards, (round (_exact * 100)) / 100]] call OTQA_fnc_check;
     private _sizes = _rgroups apply { count units _x };
     _sizes sort true;
     private _apart = ((_reserve apply { group _x }) findIf { _x isEqualTo (group (_posts param [0, objNull])) || { _x isEqualTo _pg } }) < 0;

@@ -99,7 +99,8 @@ class Entrances:
             return False
         padded = tg.rect(c, d, size, pad)
         for t in self.b.buildings:
-            if tg.overlap(padded, t.corners()) or any(math.dist(c, q) < max(size) / 2 + 2.0 for q in t.door_points()):
+            # (its real footprint where the class probe knows it whole: the box takes in porches and yards)
+            if (tg.overlap(padded, t.corners()) and tg.on_building(t, tg.rect(c, d, size, pad + 0.5))) or any(math.dist(c, q) < max(size) / 2 + 2.0 for q in t.door_points()):
                 return False
         if any(tg.overlap(padded, q) for q in self.pieces()):
             return False
@@ -152,11 +153,14 @@ class Entrances:
             self.items.remove(it)
         if self.tier < 4:
             same = [it for it in objs if it[1] == T3_GATE]
-            if same:  # Where it stands (the user's), only shut
+            # Its model +y out: the leaf swings away from a man walking out from inside (as placed +y in, a man
+            # starting 6 m in reached it still swinging and stuck on it, Chalkeia's walk test)
+            out = (-n[0], -n[1])
+            if same:  # Where it stands (the user's), only shut and turned
                 it = same[0]
-                self.items.append([it[0], it[1], it[2], it[3], ",".join(f for f in it[4].split(",") if f and f != "open")])
+                self.items.append([it[0], it[1], it[2], orient_dir(out), ",".join(f for f in it[4].split(",") if f and f != "open")])
             else:
-                self.put("object", T3_GATE, gp, n, "ground")
+                self.put("object", T3_GATE, gp, out, "ground")
             # The opening kept clear: a wall piece reaching into the gate's span (a filler centred on a short
             # remainder) slid back along the line to the gate's post (in play, men outside couldn't plan a way in
             # through a gate narrowed 0.3 m at Rodopoli)

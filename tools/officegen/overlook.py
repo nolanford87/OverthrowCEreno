@@ -85,7 +85,8 @@ class Study:
         self.area = abs(sum(self.poly[i][0] * self.poly[(i + 1) % len(self.poly)][1] - self.poly[(i + 1) % len(self.poly)][0] * self.poly[i][1] for i in range(len(self.poly)))) / 2
 
     def samples(self):
-        """Points every STEP m along the line where a wall piece stands, with their outward target."""
+        """Points every STEP m along the line where a wall piece stands (within 2.2 m: an edge along a road is set up to
+        1.8 m inside it), with their outward target."""
         out = []
         n = len(self.poly)
         for i in range(n):
@@ -98,7 +99,7 @@ class Study:
             k = 0.0
             while k <= L:
                 p = cg.add(a, cg.mul(u, k))
-                if any(cg.inside(p, r) or min(cg.seg_dist(p, r[j], r[(j + 1) % 4]) for j in range(4)) < 0.8 for r, _ in self.walls):
+                if any(cg.inside(p, r) or min(cg.seg_dist(p, r[j], r[(j + 1) % 4]) for j in range(4)) < 2.2 for r, _ in self.walls):
                     # The approach: a man standing on open ground 6 to 20 m out (none when buildings stand there)
                     tgts = []
                     for o in BAND:

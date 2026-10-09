@@ -38,6 +38,15 @@ def rect(c, u, size, pad=0.0):
     return [cg.add(cg.add(c, cg.mul(v, sx * hx)), cg.mul(u, sy * hy)) for sx, sy in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
 
 
+def on_building(t, area):
+    """Does a building stand in the area: its real footprint (the class probe's covered cells) where it's known
+    whole, else its box (the box takes in porches and yards: Sofia and Kalochori had no room for a tower)."""
+    fp = cg.footprint_of(t.model if t.model.startswith("Land_") else "Land_" + t.model)
+    if not fp or fp[1] != 999:
+        return True
+    return any(cg.inside(t.to_world(x, y), area) for x, y in fp[0])
+
+
 def overlap(p, q):
     """Do two convex polygons overlap (separating axes)?"""
     for poly in (p, q):
@@ -91,7 +100,7 @@ class Towers:
             return False
         pad = rect(c, u, size, 0.5)
         for t in self.blds:
-            if overlap(pad, t.corners()):
+            if overlap(pad, t.corners()) and on_building(t, rect(c, u, size, 1.0)):
                 return False
             if any(math.dist(c, d) < max(size) / 2 + 3.0 for d in t.door_points()):
                 return False

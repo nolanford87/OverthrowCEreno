@@ -239,6 +239,11 @@ class Garrison:
         # 6. The patrol fireteam (T4) just inside the main gate, beside its lane
         if main and self.tier >= 4 and self.room() >= len(PATROL):
             cands = [cg.add(cg.add(gp, cg.mul(u, a)), cg.mul(n, i)) for a in (-6, -5, -4, -3, 3, 4, 5, 6) for i in (6, 7, 8, 9, 10, 11, 12)]
+            # (else the open ground nearest that, where the gate's inside is cramped: Kalochori's T4 found no room there)
+            xs, ys = [p[0] for p in self.poly], [p[1] for p in self.poly]
+            cands += [(x, y) for x in [min(xs) + 1.5 * k for k in range(int((max(xs) - min(xs)) / 1.5) + 1)]
+                      for y in [min(ys) + 1.5 * k for k in range(int((max(ys) - min(ys)) / 1.5) + 1)]
+                      if cg.inside((x, y), self.poly) and self.e.edge_dist((x, y)) >= 2.5]
             for role in PATROL:
                 if self.ground_man(role, cg.add(gp, cg.mul(n, 9)), cands, None, ["patrol"]):
                     note("patrol " + role)
@@ -293,7 +298,9 @@ class Garrison:
                         c = max(ok, key=lambda q: min([math.dist(q, a) for a in anchors] + [lane_dist(q)]))
                     anchors.append(c)
             for k, (a, size) in enumerate(zip(anchors, sizes)):
-                spots = sorted([c for c in grid if 0 <= math.dist(c, a) <= 3.2], key=lambda q: math.dist(q, a))
+                # The open spots nearest the anchor (within 3.2 m where there's room; further where it's cluttered,
+                # by the stores: Neochori's groups came out of one man)
+                spots = sorted(grid, key=lambda q: math.dist(q, a))
                 put = 0
                 for c in spots:
                     if put >= size:
