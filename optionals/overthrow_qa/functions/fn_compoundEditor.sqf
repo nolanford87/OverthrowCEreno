@@ -156,11 +156,22 @@ OTQA_compound_show = {
     OTQA_compound set ["verts", _verts];
     OTQA_compound set ["walls", [[_ox, _oy, 0]] call OTQA_compound_findWalls];
     [call OTQA_compound_stageTiers] call OTQA_compound_setVisible;
-    // The host south of the office, the Zeus camera high above it looking down
+    // The host south of the office, the Zeus camera high above it looking down: now if Zeus is open, else the next
+    // time it's opened (once per town, so it doesn't pull the camera back while flying round)
     player setPosATL [_ox, _oy - 30, 0];
-    if (!isNull curatorCamera) then {
-        curatorCamera setPosASL [_ox, _oy - 45, (getTerrainHeightASL [_ox, _oy]) + 70];
-        curatorCamera setVectorDirAndUp [[0, 0.55, -0.83], [0, 0.83, 0.55]];
+    OTQA_compound set ["camTo", [_ox, _oy - 45, (getTerrainHeightASL [_ox, _oy]) + 70]];
+    if (isNil "OTQA_compound_camLoop") then {
+        OTQA_compound_camLoop = [] spawn {
+            while { true } do {
+                sleep 0.5;
+                private _to = OTQA_compound getOrDefault ["camTo", []];
+                if (_to isNotEqualTo [] && { !isNull curatorCamera }) then {
+                    curatorCamera setPosASL _to;
+                    curatorCamera setVectorDirAndUp [[0, 0.55, -0.83], [0, 0.83, 0.55]];
+                    OTQA_compound set ["camTo", []];
+                };
+            };
+        };
     };
     private _towns = OTQA_compound get "towns";
     hint format ["Compound editor: %1 (%2 of %3)\nShowing T%4. Drag the arrows with Zeus (T3 green, T4 yellow, T5 red); add or delete vertices, confirm each tier and filter with your actions (out of Zeus).", _town, (_towns find _town) + 1, count _towns, (OTQA_compound get "visible") joinString ", T"];
