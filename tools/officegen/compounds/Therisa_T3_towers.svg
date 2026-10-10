@@ -803,13 +803,14 @@
 <polygon points="631.5,495.4 625.1,490.0 621.2,494.6 627.7,500.0" fill="#555" stroke="#222" stroke-width="0.6"/>
 <polygon points="629.4,493.6 623.0,488.2 619.1,492.8 625.6,498.2" fill="#555" stroke="#222" stroke-width="0.6"/>
 <polygon points="580.7,452.7 574.3,447.3 570.4,451.9 576.8,457.3" fill="#555" stroke="#222" stroke-width="0.6"/>
-<polygon points="555.9,429.2 529.2,406.8 522.7,414.6 549.3,437.0" fill="#8e7d5a" stroke="#222" stroke-width="0.6"/>
+<polygon points="556.1,429.3 529.4,407.0 522.9,414.8 549.5,437.2" fill="#8e7d5a" stroke="#222" stroke-width="0.6"/>
 <polygon points="530.8,408.1 504.1,385.8 497.6,393.6 524.2,415.9" fill="#8e7d5a" stroke="#222" stroke-width="0.6"/>
 <polygon points="505.5,386.9 478.9,364.6 472.3,372.4 499.0,394.7" fill="#8e7d5a" stroke="#222" stroke-width="0.6"/>
 <polygon points="480.2,365.7 463.7,351.8 457.1,359.6 473.7,373.5" fill="#8e7d5a" stroke="#222" stroke-width="0.6"/>
 <polygon points="465.3,355.9 458.9,350.5 455.0,355.1 461.5,360.5" fill="#555" stroke="#222" stroke-width="0.6"/>
 <path d="M639.6359999999986,494.93399999999747L651.6359999999986,506.93399999999747M639.6359999999986,506.93399999999747L651.6359999999986,494.93399999999747" stroke="#9b59b6" stroke-width="3"/>
 <path d="M671.6159999999982,521.6340000000018L683.6159999999982,533.6340000000018M671.6159999999982,533.6340000000018L683.6159999999982,521.6340000000018" stroke="#9b59b6" stroke-width="3"/>
+<polygon points="572.0,448.2 553.2,432.4 552.0,433.8 570.9,449.6" fill="#2ecc71" stroke="#222" stroke-width="0.6"/>
 <polygon points="454.6,350.9 432.3,377.6 440.1,384.1 462.5,357.4" fill="#8e7d5a" stroke="#222" stroke-width="0.6"/>
 <polygon points="433.4,376.2 411.1,402.9 418.9,409.4 441.3,382.7" fill="#8e7d5a" stroke="#222" stroke-width="0.6"/>
 <polygon points="412.2,401.5 389.9,428.1 397.7,434.7 420.1,408.0" fill="#8e7d5a" stroke="#222" stroke-width="0.6"/>
@@ -833,39 +834,23 @@
 <path d="M448.2960000000021,622.2540000000045L460.2960000000021,634.2540000000045M448.2960000000021,634.2540000000045L460.2960000000021,622.2540000000045" stroke="#9b59b6" stroke-width="3"/>
 <path d="M611.9759999999951,523.5540000000001L623.9759999999951,535.5540000000001M611.9759999999951,535.5540000000001L623.9759999999951,523.5540000000001" stroke="#9b59b6" stroke-width="3"/>
 <path d="M425.31600000000253,386.63400000000183L437.31600000000253,398.63400000000183M425.31600000000253,398.63400000000183L437.31600000000253,386.63400000000183" stroke="#9b59b6" stroke-width="3"/>
-<polygon points="572.0,448.2 553.2,432.4 552.0,433.8 570.9,449.6" fill="#2ecc71" stroke="#222" stroke-width="0.6"/>
-<polygon points="537.3,433.2 514.3,413.9 492.3,440.0 515.3,459.3" fill="#e67e22" stroke="#222" stroke-width="0.6"/>
-<polygon points="541.5,435.5 538.8,433.2 536.5,436.0 539.2,438.3" fill="#e67e22" stroke="#222" stroke-width="0.6"/>
-<polygon points="514.8,463.1 511.9,455.5 506.2,457.7 509.1,465.3" fill="#e67e22" stroke="#222" stroke-width="0.6"/>
-<polygon points="549.1,414.8 539.5,406.8 538.3,408.2 547.9,416.2" fill="#e67e22" stroke="#222" stroke-width="0.6"/>
-<polygon points="506.1,408.2 502.9,405.5 499.8,409.2 503.0,411.9" fill="#e67e22" stroke="#222" stroke-width="0.6"/>
-<polygon points="618.0,508.3 614.7,505.6 611.7,509.3 614.9,512.0" fill="#e67e22" stroke="#222" stroke-width="0.6"/>
-<polygon points="493.3,489.1 489.1,493.3 493.3,497.6 497.6,493.3" fill="#555" stroke="#222" stroke-width="0.6"/>
-<polygon points="489.5,493.8 493.8,489.5 489.5,485.3 485.3,489.5" fill="#555" stroke="#222" stroke-width="0.6"/>
-<polygon points="497.1,492.9 492.9,497.1 497.1,501.4 501.4,497.1" fill="#555" stroke="#222" stroke-width="0.6"/>
-<polygon points="518.1,644.1 524.0,645.2 525.1,639.3 519.2,638.2" fill="#555" stroke="#222" stroke-width="0.6"/>
-<polygon points="524.2,632.3 530.2,633.1 531.0,627.1 525.1,626.3" fill="#555" stroke="#222" stroke-width="0.6"/>
-<polygon points="536.6,626.7 542.6,626.7 542.6,620.7 536.6,620.7" fill="#555" stroke="#222" stroke-width="0.6"/>
-<polygon points="506.6,632.7 512.6,632.7 512.6,626.7 506.6,626.7" fill="#555" stroke="#222" stroke-width="0.6"/>
-<polygon points="512.6,629.1 518.6,629.1 518.6,623.1 512.6,623.1" fill="#555" stroke="#222" stroke-width="0.6"/>
-<polygon points="512.6,627.9 512.6,633.9 518.6,633.9 518.6,627.9" fill="#555" stroke="#222" stroke-width="0.6"/>
-<polygon points="609.6,587.4 614.6,579.9 612.2,578.3 607.1,585.7" fill="#555" stroke="#222" stroke-width="0.6"/>
-<polygon points="393.1,462.1 368.4,491.6 413.6,529.5 438.3,500.0" fill="#555" stroke="#222" stroke-width="0.6"/>
-<circle cx="507.2" cy="245.1" r="6" fill="#111"/><text x="515.2" y="250.1" font-size="15" font-weight="bold">v30</text>
-<circle cx="267.1" cy="494.0" r="6" fill="#111"/><text x="275.1" y="499.0" font-size="15" font-weight="bold">v57</text>
+<polygon points="495.4,410.2 466.0,385.5 428.1,430.7 457.5,455.4" fill="#555" stroke="#222" stroke-width="0.6"/>
+<circle cx="452.3" cy="301.6" r="6" fill="#111"/><text x="460.3" y="306.6" font-size="15" font-weight="bold">v27</text>
+<circle cx="470.6" cy="282.7" r="6" fill="#111"/><text x="478.6" y="287.7" font-size="15" font-weight="bold">v28</text>
+<circle cx="543.8" cy="207.5" r="6" fill="#111"/><text x="551.8" y="212.5" font-size="15" font-weight="bold">v32</text>
+<circle cx="562.1" cy="188.7" r="6" fill="#111"/><text x="570.1" y="193.7" font-size="15" font-weight="bold">v33</text>
+<circle cx="562.1" cy="188.7" r="6" fill="#111"/><text x="570.1" y="193.7" font-size="15" font-weight="bold">v34</text>
 <circle cx="286.5" cy="474.5" r="6" fill="#111"/><text x="294.5" y="479.5" font-size="15" font-weight="bold">v58</text>
 <circle cx="305.8" cy="454.9" r="6" fill="#111"/><text x="313.8" y="459.9" font-size="15" font-weight="bold">v59</text>
+<circle cx="325.2" cy="435.4" r="6" fill="#111"/><text x="333.2" y="440.4" font-size="15" font-weight="bold">v60</text>
+<circle cx="344.5" cy="415.8" r="6" fill="#111"/><text x="352.5" y="420.8" font-size="15" font-weight="bold">v61</text>
 <circle cx="363.9" cy="396.2" r="6" fill="#111"/><text x="371.9" y="401.2" font-size="15" font-weight="bold">v62</text>
 <circle cx="363.9" cy="396.2" r="6" fill="#111"/><text x="371.9" y="401.2" font-size="15" font-weight="bold">v63</text>
-<circle cx="381.6" cy="377.3" r="6" fill="#111"/><text x="389.6" y="382.3" font-size="15" font-weight="bold">v64</text>
-<circle cx="399.3" cy="358.4" r="6" fill="#111"/><text x="407.3" y="363.4" font-size="15" font-weight="bold">v65</text>
 <circle cx="416.9" cy="339.4" r="6" fill="#111"/><text x="424.9" y="344.4" font-size="15" font-weight="bold">v66</text>
 <circle cx="434.6" cy="320.5" r="6" fill="#111"/><text x="442.6" y="325.5" font-size="15" font-weight="bold">v67</text>
-<circle cx="267.1" cy="494.0" r="6" fill="#111"/><text x="275.1" y="499.0" font-size="15" font-weight="bold">v175</text>
+<circle cx="452.3" cy="301.6" r="6" fill="#111"/><text x="460.3" y="306.6" font-size="15" font-weight="bold">v68</text>
 <circle cx="234.3" cy="454.0" r="6" fill="#111"/><text x="242.3" y="459.0" font-size="15" font-weight="bold">v180</text>
 <circle cx="253.1" cy="478.0" r="6" fill="#111"/><text x="261.1" y="483.0" font-size="15" font-weight="bold">v181</text>
-<circle cx="271.9" cy="501.9" r="6" fill="#111"/><text x="279.9" y="506.9" font-size="15" font-weight="bold">v182</text>
-<circle cx="199.4" cy="410.5" r="6" fill="#111"/><text x="207.4" y="415.5" font-size="15" font-weight="bold">v201</text>
 <circle cx="216.9" cy="432.3" r="6" fill="#111"/><text x="224.9" y="437.3" font-size="15" font-weight="bold">v202</text>
 <circle cx="234.3" cy="454.0" r="6" fill="#111"/><text x="242.3" y="459.0" font-size="15" font-weight="bold">v203</text>
 <text x="10" y="24" font-size="20" font-weight="bold">Therisa: north up, 10 m grid, office blue, doors red</text>

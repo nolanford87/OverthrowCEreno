@@ -819,7 +819,7 @@
 <path d="M360.44400000000314,621.3810000000067L372.44400000000314,633.3810000000067M360.44400000000314,633.3810000000067L372.44400000000314,621.3810000000067" stroke="#9b59b6" stroke-width="3"/>
 <path d="M605.9639999999927,473.33100000000013L617.9639999999927,485.33100000000013M605.9639999999927,485.33100000000013L617.9639999999927,473.33100000000013" stroke="#9b59b6" stroke-width="3"/>
 <path d="M325.9740000000038,267.95100000000275L337.9740000000038,279.95100000000275M325.9740000000038,279.95100000000275L337.9740000000038,267.95100000000275" stroke="#9b59b6" stroke-width="3"/>
-<polygon points="274.6,378.2 237.6,422.3 305.4,479.2 342.4,435.0" fill="#555" stroke="#222" stroke-width="0.6"/>
+<polygon points="428.2,300.3 384.0,263.3 327.2,331.0 371.3,368.1" fill="#555" stroke="#222" stroke-width="0.6"/>
 <polygon points="513.0,335.7 541.3,359.4 543.0,357.3 514.8,333.6" fill="#2ecc71" stroke="#222" stroke-width="0.6"/>
 <polygon points="490.9,334.8 456.4,305.8 423.5,345.1 458.0,374.0" fill="#e67e22" stroke="#222" stroke-width="0.6"/>
 <polygon points="497.3,338.3 493.2,334.8 489.7,339.0 493.8,342.4" fill="#e67e22" stroke="#222" stroke-width="0.6"/>
@@ -838,10 +838,10 @@
 <polygon points="579.9,619.6 588.9,619.6 588.9,610.6 579.9,610.6" fill="#555" stroke="#222" stroke-width="0.6"/>
 <polygon points="579.9,617.8 579.9,626.8 588.9,626.8 588.9,617.8" fill="#555" stroke="#222" stroke-width="0.6"/>
 <polygon points="599.4,566.1 606.9,554.9 603.2,552.4 595.6,563.5" fill="#555" stroke="#222" stroke-width="0.6"/>
-<circle cx="276.2" cy="417.1" r="6" fill="#111"/><text x="284.2" y="422.1" font-size="15" font-weight="bold">ma0</text>
+<circle cx="389.2" cy="301.9" r="6" fill="#111"/><text x="397.2" y="306.9" font-size="15" font-weight="bold">ma0</text>
 <circle cx="470.3" cy="336.8" r="6" fill="#111"/><text x="478.3" y="341.8" font-size="15" font-weight="bold">au1</text>
 <circle cx="494.8" cy="295.1" r="6" fill="#111"/><text x="502.8" y="300.1" font-size="15" font-weight="bold">ri2</text>
-<circle cx="515.6" cy="481.1" r="6" fill="#111"/><text x="523.6" y="486.1" font-size="15" font-weight="bold">ri3</text>
+<circle cx="552.5" cy="504.9" r="6" fill="#111"/><text x="560.5" y="509.9" font-size="15" font-weight="bold">ri3</text>
 <circle cx="511.8" cy="555.7" r="6" fill="#111"/><text x="519.8" y="560.7" font-size="15" font-weight="bold">ri4</text>
 <circle cx="604.8" cy="567.5" r="6" fill="#111"/><text x="612.8" y="572.5" font-size="15" font-weight="bold">ri5</text>
 <circle cx="561.9" cy="580.0" r="6" fill="#111"/><text x="569.9" y="585.0" font-size="15" font-weight="bold">ri6</text>

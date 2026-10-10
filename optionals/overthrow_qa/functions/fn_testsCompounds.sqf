@@ -257,13 +257,13 @@ OTQA_cp_garrisonTest = {
     private _nvg = { hmd _x isNotEqualTo "" } count _guards;
     private _dark = { primaryWeapon _x isNotEqualTo "" && { ((primaryWeaponItems _x) select 1) isEqualTo "" } } count _guards;
     private _size = [_town, _tier] call OTQA_cp_size;
-    // (within rounding: an area at a half, Neochori T4's 24.5 men, comes out either way between the tools and the game)
+    // (within rounding: an area near a half, Neochori T4 at 24.5 men in the tools and 24.48 in the game, comes out either way)
     private _exact = _size;
     private _p = [_town, _tier] call OT_fnc_officeCompound;
     private _a = 0;
     { private _v = _p select ((_forEachIndex + 1) mod (count _p)); _a = _a + (_x select 0) * (_v select 1) - (_v select 0) * (_x select 1) } forEach _p;
     _exact = (abs _a) / 2 / 150;
-    [format ["Garrison %1: one man per 150 m2 (static crews among them)", _tag], (abs ((count _guards) - _exact)) <= 0.51, format ["%1 of %2", count _guards, (round (_exact * 100)) / 100]] call OTQA_fnc_check;
+    [format ["Garrison %1: one man per 150 m2 (static crews among them)", _tag], (abs ((count _guards) - _exact)) <= 0.6, format ["%1 of %2", count _guards, (round (_exact * 100)) / 100]] call OTQA_fnc_check;
     private _sizes = _rgroups apply { count units _x };
     _sizes sort true;
     private _apart = ((_reserve apply { group _x }) findIf { _x isEqualTo (group (_posts param [0, objNull])) || { _x isEqualTo _pg } }) < 0;
