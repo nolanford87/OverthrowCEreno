@@ -2440,7 +2440,7 @@ OTLAYOUT|Altis|Molos|ITEM|2|object|Land_BagFence_Short_F|[26982.050,23271.471,20
 OTLAYOUT|Altis|Molos|ITEM|2|object|Land_BagFence_Long_F|[26980.350,23268.771,20.200]|[[-0.9400,-0.3400,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Molos|ITEM|2|object|Land_BagFence_Short_F|[26986.350,23265.171,20.261]|[[0.0000,-1.0000,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Molos|ITEM|2|object|Land_BagFence_Short_F|[27010.050,23271.971,20.873]|[[1.0000,0.0000,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Molos|TIER|3|119
+OTLAYOUT|Altis|Molos|TIER|3|122
 OTLAYOUT|Altis|Molos|ITEM|3|object|Land_BagFence_Short_F|[26982.050,23271.471,20.323]|[[-1.0000,0.0000,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Molos|ITEM|3|object|Land_BagFence_Short_F|[26986.350,23265.171,20.261]|[[0.0000,-1.0000,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Molos|ITEM|3|object|Land_BagFence_Short_F|[27010.050,23271.971,20.873]|[[1.0000,0.0000,0.0000],[0.0000,0.0000,1.0000]]|ground
@@ -2550,7 +2550,11 @@ OTLAYOUT|Altis|Molos|ITEM|3|guard|rifleman|[27010.250,23274.571,20.949]|45.0|gar
 OTLAYOUT|Altis|Molos|ITEM|3|guard|autorifleman|[26983.250,23271.371,20.360]|270.0|garrison,ground,hand
 OTLAYOUT|Altis|Molos|ITEM|3|guard|marksman|[26992.550,23269.071,21.140]|270.0|garrison,hand,reserve,reserve:9
 OTLAYOUT|Altis|Molos|ITEM|3|guard|rifleman|[27001.450,23274.971,21.140]|270.0|garrison,hand,reserve,reserve:9
-OTLAYOUT|Altis|Molos|ITEM|3|object|Land_BagFence_Short_F|[27007.850,23272.970,25.850]|[[-0.1276,0.9918,0.0000],[0.0000,0.0000,1.0000]]|post
+OTLAYOUT|Altis|Molos|ITEM|3|object|Land_CncWall1_F|[26989.322,23278.947,20.603]|[[0.5760,-0.8174,0.0000],[0.0000,0.0000,1.0000]]|user
+OTLAYOUT|Altis|Molos|ITEM|3|object|Land_CncWall1_F|[26988.428,23278.250,20.598]|[[0.5760,-0.8174,0.0000],[0.0000,0.0000,1.0000]]|user
+OTLAYOUT|Altis|Molos|ITEM|3|object|Land_CncWall1_F|[27017.910,23276.371,21.307]|[[0.6376,0.7704,0.0000],[0.0000,0.0000,1.0000]]|user
+OTLAYOUT|Altis|Molos|ITEM|3|guard|rifleman|[27006.623,23272.787,26.406]|30.5|garrison,elevated,user
+OTLAYOUT|Altis|Molos|ITEM|3|object|Land_BagFence_Short_F|[27007.850,23272.970,25.850]|[[-0.1276,0.9918,0.0000],[0.0000,0.0000,1.0000]]|post,user
 OTLAYOUT|Altis|Molos|ITEM|3|object|Land_BagFence_Short_F|[26984.950,23240.137,27.750]|[[-0.3039,0.9527,0.0000],[0.0000,0.0000,1.0000]]|post
 OTLAYOUT|Altis|Molos|ITEM|3|guard|marksman|[26982.009,23255.464,22.750]|240.9|garrison
 OTLAYOUT|Altis|Molos|ITEM|3|guard|autorifleman|[26974.417,23264.400,20.072]|324.8|garrison
@@ -2558,9 +2562,8 @@ OTLAYOUT|Altis|Molos|ITEM|3|guard|rifleman|[26972.840,23268.550,20.033]|324.8|ga
 OTLAYOUT|Altis|Molos|ITEM|3|guard|rifleman|[26980.196,23273.734,20.346]|324.8|garrison,ground
 OTLAYOUT|Altis|Molos|ITEM|3|guard|rifleman|[27011.822,23247.843,24.350]|98.6|garrison,elevated
 OTLAYOUT|Altis|Molos|ITEM|3|guard|rifleman|[26983.044,23243.497,24.360]|351.8|garrison,elevated
-OTLAYOUT|Altis|Molos|ITEM|3|guard|rifleman|[27006.853,23272.887,25.850]|345.5|garrison,elevated
 OTLAYOUT|Altis|Molos|ITEM|3|guard|rifleman|[26983.950,23240.133,27.750]|338.3|garrison,elevated
-OTLAYOUT|Altis|Molos|TIER|4|156
+OTLAYOUT|Altis|Molos|TIER|4|158
 OTLAYOUT|Altis|Molos|ITEM|4|object|Land_BagFence_Short_F|[26986.350,23265.171,20.261]|[[0.0000,-1.0000,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Molos|ITEM|4|object|Land_BagFence_Short_F|[27010.050,23271.971,20.873]|[[1.0000,0.0000,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Molos|ITEM|4|object|Land_Mil_WallBig_4m_F|[26992.611,23211.807,20.300]|[[-0.6720,0.7405,0.0000],[0.0000,0.0000,1.0000]]|
@@ -2699,6 +2702,8 @@ OTLAYOUT|Altis|Molos|ITEM|4|guard|autorifleman|[26983.250,23271.371,20.360]|270.
 OTLAYOUT|Altis|Molos|ITEM|4|guard|rifleman|[26987.250,23276.371,20.554]|315.0|garrison,ground,hand,reserve,reserve:9
 OTLAYOUT|Altis|Molos|ITEM|4|guard|marksman|[26992.550,23269.071,21.140]|270.0|garrison,hand,reserve,reserve:9
 OTLAYOUT|Altis|Molos|ITEM|4|guard|rifleman|[27001.450,23274.971,21.140]|270.0|garrison,hand,reserve,reserve:9
+OTLAYOUT|Altis|Molos|ITEM|4|object|Land_CncWall1_F|[26989.098,23279.213,20.605]|[[0.5782,-0.8159,0.0000],[0.0000,0.0000,1.0000]]|user
+OTLAYOUT|Altis|Molos|ITEM|4|object|Land_CncWall1_F|[26988.641,23278.914,20.603]|[[0.5782,-0.8159,0.0000],[0.0000,0.0000,1.0000]]|user
 OTLAYOUT|Altis|Molos|ITEM|4|object|Land_BagFence_Short_F|[26974.692,23244.583,29.000]|[[-0.7404,0.6722,0.0000],[0.0000,0.0000,1.0000]]|post
 OTLAYOUT|Altis|Molos|ITEM|4|object|Land_BagFence_Short_F|[27007.850,23270.970,25.840]|[[-0.9846,0.1747,0.0000],[0.0000,0.0000,1.0000]]|post
 OTLAYOUT|Altis|Molos|ITEM|4|guard|marksman|[26989.171,23217.502,24.532]|201.8|garrison

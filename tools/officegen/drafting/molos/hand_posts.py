@@ -23,6 +23,15 @@ POSTS = [
     ("guard", "marksman", -3.3, -2.9, -1, 0, True, (3, 4)),                  # in the nave (its places): a reserve group
     ("guard", "rifleman", 5.6, 3.0, -1, 0, True, (3, 4)),                    # of their own, at ease, out on the alarm
 ]
+# The user's edits in the layout editor (review, 2026-10-10), kept through regens ("user"): small concrete wall closing
+# the chapel's north-west corner (T3, T4) and one more on T3's east line; T3's roof rifleman moved, his sandbag as it was
+USER = {3: [["object", "Land_CncWall1_F", "[26989.322,23278.947,20.603]", "[[0.5760,-0.8174,0.0000],[0.0000,0.0000,1.0000]]", "user"],
+            ["object", "Land_CncWall1_F", "[26988.428,23278.250,20.598]", "[[0.5760,-0.8174,0.0000],[0.0000,0.0000,1.0000]]", "user"],
+            ["object", "Land_CncWall1_F", "[27017.910,23276.371,21.307]", "[[0.6376,0.7704,0.0000],[0.0000,0.0000,1.0000]]", "user"],
+            ["guard", "rifleman", "[27006.623,23272.787,26.406]", "30.5", "garrison,elevated,user"],
+            ["object", "Land_BagFence_Short_F", "[27007.850,23272.970,25.850]", "[[-0.1276,0.9918,0.0000],[0.0000,0.0000,1.0000]]", "post,user"]],
+        4: [["object", "Land_CncWall1_F", "[26989.098,23279.213,20.605]", "[[0.5782,-0.8159,0.0000],[0.0000,0.0000,1.0000]]", "user"],
+            ["object", "Land_CncWall1_F", "[26988.641,23278.914,20.603]", "[[0.5782,-0.8159,0.0000],[0.0000,0.0000,1.0000]]", "user"]]}
 towns = ml.load_saved('Altis')
 t = towns['Molos']
 for tier in (3, 4):
@@ -48,6 +57,9 @@ for tier in (3, 4):
             # T4 door's north post joins them
             res = inside or (tier == 4 and (x, y) == (-8.6, 4.4))
             items.append(["guard", what, f"[{w[0]:.3f},{w[1]:.3f},{z:.3f}]", f"{hdg:.1f}", ("garrison,hand" if inside else "garrison,ground,hand") + (",reserve,reserve:9" if res else "")])
+    items = [it for it in items if 'user' not in it[4].split(',')
+             and not (tier == 3 and it[1] == "Land_BagFence_Short_F" and it[4] == "post" and it[2].startswith("[27007.850,23272.97"))]
+    items += [list(it) for it in USER[tier]]
     t['tiers'][tier] = items
     print(f"T{tier}: {sum(1 for p in POSTS if p[0] == 'guard' and tier in p[7])} men and {sum(1 for p in POSTS if p[0] == 'object' and tier in p[7])} sandbags round and in the chapel")
 ml.write_saved('Altis', towns)
