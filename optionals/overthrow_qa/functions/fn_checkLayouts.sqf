@@ -123,7 +123,8 @@
             // the main door (office model [x, y], the designers' word): the first that gets out on the bare site
             private _fixed = (createHashMapFromArray [
                 ["Athira", [[-5.5, -6.6]]], ["Zaros", [[-5, 2.5]]], ["Neochori", [[-0.7, -0.5]]],
-                ["Kavala", [[-9.85, 9.0]]], ["Paros", [[0.7, 5.8]]]
+                ["Kavala", [[-9.85, 9.0]]], ["Paros", [[0.7, 5.8]]],
+                ["Molos", [[-10.2, 0.5]]]  // Outside the chapel's one door (a route can't be planned into its nave)
             ]) getOrDefault [_town, []];
             if (!isNull _site) then {
                 {

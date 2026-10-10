@@ -74,8 +74,9 @@ class Garrison:
         self.b, self.poly, self.tier, self.town = block, [tuple(p[:2]) for p in poly], tier, town
         self.coverage = None
         # A run replaces only its own: the "garrison" guards and the "post" sandbags on roof posts
-        # (but never the user's: guards and posts flagged "user" stay where the user put them and count as placed)
-        user = lambda it: "user" in str(it[4]).split(",")
+        # (but never the user's, nor a town's hand-placed posts: guards and posts flagged "user" or "hand" stay where they
+        # were put and count as placed)
+        user = lambda it: bool({"user", "hand"} & set(str(it[4]).split(",")))
         self.items = [list(it) for it in items if user(it) or (not (it[0] == "guard" and "garrison" in it[4]) and "post" not in str(it[4]).split(","))]
         self.user_men = [it for it in self.items if it[0] == "guard" and user(it)]
         self.places = places
@@ -273,6 +274,17 @@ class Garrison:
             return min((0.0 if cg.inside(c, r) else min(cg.seg_dist(c, r[k], r[(k + 1) % 4]) for k in range(4))) for r in self.lanes) if self.lanes else 99.0
 
         R = self.room()
+        if R == 1:
+            # One man left is no group (they're 2-4): he stands by the HQ's door instead (Molos T4, its hand posts
+            # taking six)
+            hqb = min(self.b.buildings, key=lambda t: math.dist(t.pos[:2], hq))
+            door = (hqb.door_points() or [hq])[0]
+            xs, ys = [p[0] for p in self.poly], [p[1] for p in self.poly]
+            near = [(x, y) for x in [door[0] + 0.5 * k for k in range(-16, 17)] for y in [door[1] + 0.5 * k for k in range(-16, 17)]
+                    if cg.inside((x, y), self.poly) and open_ground((x, y)) and math.dist((x, y), door) >= 2.0]
+            if self.ground_man("rifleman", door, near, None, ["door"]):
+                note("HQ door rifleman")
+            R = self.room()
         if R > 0:
             n = max(1, math.ceil(R / 4))
             sizes = [R // n + (1 if k < R % n else 0) for k in range(n)]

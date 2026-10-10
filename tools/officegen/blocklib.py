@@ -9,6 +9,7 @@ picking and building occupier compounds (tools/officegen/COMPOUND_PLAN.md), and 
 
     python tools/officegen/blocklib.py "Town" [out.svg]   a map of the block
 """
+import json
 import math
 import os
 import re
@@ -49,7 +50,27 @@ class Building(Thing):
         self.exits = exits
 
     def door_points(self):
-        return [self.to_world(x, y) for x, y in self.doors]
+        # A building without door triggers (the Molos chapel): its ways in from the class probe (OTBEXIT), the
+        # one nearest the building standing for its door
+        doors = self.doors or exits().get(self.model, [])[:1]
+        return [self.to_world(x, y) for x, y in doors]
+
+
+_EXITS = None
+
+
+def exits():
+    """{class: [[model x, y], ...]} the class probe's buildingExit points (OTBEXIT), nearest the building first."""
+    global _EXITS
+    if _EXITS is None:
+        _EXITS = {}
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "probes", "Altis_classes.txt")
+        if os.path.exists(path):
+            for line in open(path, encoding="utf-8"):
+                f = line.rstrip().split("|")
+                if f[0] == "OTBEXIT" and len(f) > 2:
+                    _EXITS[f[1]] = json.loads(f[2])
+    return _EXITS
 
 
 class Block:
