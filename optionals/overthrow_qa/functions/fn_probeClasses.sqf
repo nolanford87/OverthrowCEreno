@@ -9,6 +9,7 @@
         OTFLOORS|class|[[model x, model y, [heights above the model's base a man can stand on]], ...] on a 1 m
             grid over the box (every surface a line down meets, highest first), a line per column of the grid
         OTBPOS|class|[[model x, model y, height above the base], ...] its buildingPos places
+        OTBEXIT|class|[[model x, model y], ...] its ways in (buildingExit)
 
     Returns: ARRAY - [[name, code, seconds]]
 */
@@ -49,6 +50,10 @@
                     if (_floors isNotEqualTo []) then { diag_log format ["OTFLOORS|%1|%2", _x, _floors] };
                 };
                 // The building's own places for a man (buildingPos), model x, y and height above its base
+                // Its ways in (buildingExit, model x, y): a building without door triggers (the Molos chapel) has these
+                private _exits = [];
+                for "_e" from 0 to 15 do { private _p = _o buildingExit _e; if (_p isEqualTo [0, 0, 0]) exitWith {}; private _m = _o worldToModel _p; _exits pushBack [(round ((_m select 0) * 10)) / 10, (round ((_m select 1) * 10)) / 10] };
+                diag_log format ["OTBEXIT|%1|%2", _x, _exits];
                 diag_log format ["OTBPOS|%1|%2", _x, (_o buildingPos -1) apply { private _m = _o worldToModel _x; [(round ((_m select 0) * 10)) / 10, (round ((_m select 1) * 10)) / 10, (round ((((AGLToASL _x) select 2) - _base) * 100)) / 100] }];
                 // A gate's way through: the stretches of model x a line along y at 1 m up meets nothing, shut and
                 // swung open (its door sources at 1)
