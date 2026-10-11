@@ -113,7 +113,7 @@ def load(world="Altis"):
         elif what == "BLD":
             doors = [_vec(p) for p in re.findall(r"\[[^\[\]]+\]", f[7])]
             b.buildings.append(Building(f[3], _vec(f[4]), float(f[5]), _vec(f[6]), doors, int(f[8])))
-        elif what == "WALL":
+        elif what in ("WALL", "GATE"):   # a map gate (any type) counts as a wall: hidden like one
             b.walls.append(Thing(f[3], _vec(f[4]), float(f[5]), _vec(f[6])))
         elif what in ("ROCK", "TREE"):
             (b.rocks if what == "ROCK" else b.trees).append(Thing(f[3], _vec(f[4]), float(f[5]), _vec(f[6])))

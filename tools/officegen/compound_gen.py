@@ -7,7 +7,8 @@ Generates a town's occupier compound walls (tools/officegen/COMPOUND_PLAN.md) fr
     - a road crossing an edge is a gate of its width (3.5-8 m); a compound no road crosses gets a 4 m main gate on
       its road-facing edge nearest the HQ's door; gates set by hand (compounds/<world>_gates.txt) replace both;
     - a building on an edge is part of the wall; a door of it opening outside the area is locked in play;
-    - the map's walls and fences along an edge or inside the area are hidden (our wall goes up on the edge's;
+    - the map's walls, fences and gates (the block probe's WALL and GATE lines: a map gate of any type) along an
+      edge or inside the area are hidden (our wall goes up on the edge's;
       the occupier cleared the compound);
     - the rest of every edge is wall: T3 2-high H-barrier (the upper layer 1.4 m up, each pair on the ground) with
       small concrete wall for the remainders; T4+ mostly the tall military wall, small concrete wall for the
@@ -112,7 +113,8 @@ def orient(u):
 
 _PLANS = None
 HINTS = {}
-REAL_IN = 0.6        # How far inside a building's plan or roofed cells the line must run for the building to close it
+REAL_IN = 1.0        # How far inside a building's plan or roofed cells the line must run for the building to close it
+# (0.6 left a way under a house's eaves where the line cut its corner: Panochori, 16 m west of the HQ)
 _FEET = None
 
 

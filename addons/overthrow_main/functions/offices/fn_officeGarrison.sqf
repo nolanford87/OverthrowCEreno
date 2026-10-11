@@ -186,6 +186,16 @@ private _ease = {
             if (_gates isNotEqualTo []) then {
                 private _gate = ([_gates, [], { _x distance2D _hq }, "ASCEND"] call BIS_fnc_sortBy) select 0;
                 _at = (getPosATL _gate) vectorAdd ((vectorNormalized ((getPosATL _gate) vectorDiff _hq)) vectorMultiply 15);
+                // Out from the gate across its wall, on the side outside the compound (straight on from the HQ came
+                // back inside where the HQ isn't behind the gate: Charkia's T4 gate on a track's end)
+                private _cArea = ([_town, [_town] call OT_fnc_officeTier] call OT_fnc_officeCompound) apply { [_x select 0, _x select 1, 0] };
+                if (_cArea isNotEqualTo []) then {
+                    private _d = vectorDir _gate;
+                    _d = vectorNormalized [_d select 0, _d select 1, 0];
+                    private _side = [_d select 1, -(_d select 0), 0];
+                    private _outs = ([_d, _d vectorMultiply -1, _side, _side vectorMultiply -1] apply { (getPosATL _gate) vectorAdd (_x vectorMultiply 15) }) select { [_x, _cArea] call OT_fnc_officeOutside };
+                    if (_outs isNotEqualTo [] && { !([_at, _cArea] call OT_fnc_officeOutside) }) then { _at = _outs select 0 };
+                };
             };
             private _gendarmes = allUnits select { alive _x && { (_x getVariable ["garrison", ""]) isEqualTo _town } };
             {

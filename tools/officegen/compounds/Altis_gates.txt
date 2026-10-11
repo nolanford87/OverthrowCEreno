@@ -5,3 +5,4 @@ OTGATE|Altis|Chalkeia|4|[20234.75,11660.00]|4.1
 OTGATE|Altis|Sofia|3|[25669.00,21368.00]|4.0
 OTGATE|Altis|Therisa|4|[10642.60,12224.16]|4.1
 OTGATE|Altis|Panochori|4|[4997.54,11309.49]|4.1
+OTGATE|Altis|Panochori|3|[4995.07,11300.07]|4.0

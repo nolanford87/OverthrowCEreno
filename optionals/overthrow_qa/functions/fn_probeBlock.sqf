@@ -9,6 +9,7 @@
             every building: its box (model coordinates), its doors (model x, y of each Door_N_trigger) and the
             number of its exits (buildingExit), 0 for one nobody can enter
         OTBLOCK|town|WALL|model or class|[x,y,z]|direction|[min x,min y,max x,max y,min z,max z]  walls and fences
+        OTBLOCK|town|GATE|... the same fields: the map's gates not typed WALL or FENCE (hidden like walls)
         OTBLOCK|town|ROCK|model|[x,y,z]|direction|[box] and OTBLOCK|town|TREE|... rocks and trees, the same fields
         OTBLOCK|town|H|row|[height,...] the ground (ASL) every 3 m from -reach to reach (world axes: row j is
             y = office y + 3 * (j - half), the values x = office x + 3 * (i - half))
@@ -61,6 +62,12 @@
             {
                 diag_log format ["OTBLOCK|%1|WALL|%2|%3|%4|%5", _town, _x call _label, [getPosASL _x, 2] call _n, (getDir _x) toFixed 1, [_x] call _box];
             } forEach ((nearestTerrainObjects [_pos, ["WALL", "FENCE"], _reach, false, true]) select { !isObjectHidden _x });
+            // The map's own gates, of whatever type the map gave them (not WALL or FENCE: Neri's stood on in a
+            // compound): their model or class named a gate
+            private _walls = nearestTerrainObjects [_pos, ["WALL", "FENCE"], _reach, false, true];
+            {
+                diag_log format ["OTBLOCK|%1|GATE|%2|%3|%4|%5", _town, _x call _label, [getPosASL _x, 2] call _n, (getDir _x) toFixed 1, [_x] call _box];
+            } forEach ((nearestTerrainObjects [_pos, [], _reach, false, true]) select { !isObjectHidden _x && { !(_x in _walls) } && { "gate" in toLower (((getModelInfo _x) select 0) + typeOf _x) } });
             // Rocks (a wall goes round them) and trees (hidden where a wall or the compound needs the ground)
             {
                 _x params ["_kind", "_types"];
