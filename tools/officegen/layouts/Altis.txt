@@ -2847,7 +2847,7 @@ OTLAYOUT|Altis|Molos|ITEM|3|guard|rifleman|[26980.196,23273.734,20.346]|324.8|ga
 OTLAYOUT|Altis|Molos|ITEM|3|guard|rifleman|[27011.822,23247.843,24.350]|98.6|garrison,elevated
 OTLAYOUT|Altis|Molos|ITEM|3|guard|rifleman|[26983.044,23243.497,24.360]|351.8|garrison,elevated
 OTLAYOUT|Altis|Molos|ITEM|3|guard|rifleman|[26983.950,23240.133,27.750]|338.3|garrison,elevated
-OTLAYOUT|Altis|Molos|TIER|4|158
+OTLAYOUT|Altis|Molos|TIER|4|159
 OTLAYOUT|Altis|Molos|ITEM|4|object|Land_BagFence_Short_F|[26986.350,23265.171,20.261]|[[0.0000,-1.0000,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Molos|ITEM|4|object|Land_BagFence_Short_F|[27010.050,23271.971,20.873]|[[1.0000,0.0000,0.0000],[0.0000,0.0000,1.0000]]|ground
 OTLAYOUT|Altis|Molos|ITEM|4|object|Land_Mil_WallBig_4m_F|[26992.611,23211.807,20.300]|[[-0.6720,0.7405,0.0000],[0.0000,0.0000,1.0000]]|
@@ -3006,6 +3006,7 @@ OTLAYOUT|Altis|Molos|ITEM|4|guard|autorifleman|[26985.930,23262.410,20.181]|288.
 OTLAYOUT|Altis|Molos|ITEM|4|guard|rifleman|[26982.930,23259.410,20.081]|278.3|garrison,ground,patrol
 OTLAYOUT|Altis|Molos|ITEM|4|guard|rifleman|[26981.430,23259.410,20.081]|277.7|garrison,ground,patrol
 OTLAYOUT|Altis|Molos|ITEM|4|guard|rifleman|[26983.150,23273.270,20.420]|308.3|garrison,ground,door
+OTLAYOUT|Altis|Molos|ITEM|4|hide|Land_City_Gate_F|[27026.510,23247.240,20.960]|[[0.0000,1.0000,0.0000],[0.0000,0.0000,1.0000]]|
 OTLAYOUT|Altis|Negades|OFFICE|Land_i_Stone_HouseBig_V2_F|[4854.883,16205.997,72.927]|207.67|false
 OTLAYOUT|Altis|Negades|CONFIRMED
 OTLAYOUT|Altis|Negades|TIER|1|6

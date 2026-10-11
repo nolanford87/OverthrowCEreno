@@ -296,8 +296,11 @@ OTQA_cp_garrisonTest = {
     if (_tier >= 4) then {
         private _from = getPosATL leader _pg;
         [leader _pg, [0, -14, 16]] call OTQA_og_camera;
-        for "_i" from 1 to 20 do {
+        // Until its leader is 5 m on, at most 45 s (a loaded suite's patrol set off late: 20 s stalled it)
+        private _t0 = time;
+        for "_i" from 1 to 45 do {
             sleep 1;
+            if (((leader _pg) distance2D _from) > 5 && { (time - _t0) > 20 }) exitWith {};
             {
                 if (!(_x getVariable ["OTQA_out", false]) && { [getPosATL _x, _area] call OT_fnc_officeOutside }) then {
                     _x setVariable ["OTQA_out", true];
@@ -308,7 +311,7 @@ OTQA_cp_garrisonTest = {
         };
         private _moved = (leader _pg) distance2D _from;
         private _inside = ((units _pg) findIf { [getPosATL _x, _area] call OT_fnc_officeOutside }) < 0;
-        [format ["Garrison %1: the patrol walks its loop, inside the walls", _tag], _moved > 4 && _inside, format ["leader %1 m on, all inside %2", round _moved, _inside]] call OTQA_fnc_check;
+        [format ["Garrison %1: the patrol walks its loop, inside the walls", _tag], _moved > 4 && _inside, format ["leader %1 m on in %3 s, all inside %2", round _moved, _inside, round (time - _t0)]] call OTQA_fnc_check;
     };
     // The hunt
     { _x allowDamage false } forEach _guards;
