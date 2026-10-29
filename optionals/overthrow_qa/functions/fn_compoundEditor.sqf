@@ -16,7 +16,8 @@
     Saved lines, merged with tools/officegen/merge_compounds.py:
         OTCOMPOUND|world|town|tier|[[x,y],...]
         OTCOMPOUND|world|town|CONFIRMED
-    run-qa.ps1 -Suite compounds -Only "town,..." (else every town with an area).
+    run-qa.ps1 -Suite compounds -Only "town,..." (else every town with an area). A draft variant to pick from is an
+    entry named "<town> (B)": shown at its town's office, saved under its own name.
 
     Returns: ARRAY - [[name, code, seconds]]
 */
@@ -146,7 +147,9 @@ OTQA_compound_show = {
     call OTQA_compound_clear;
     OTQA_compound set ["town", _town];
     [""] call OT_fnc_officeLayout;
-    (((OT_officeLayouts getOrDefault [_town, []]) param [0, []]) param [1, [0, 0, 0]]) params ["_ox", "_oy"];
+    // A variant drafted for the host to pick, "<town> (B)", stands at its town's office (saved under its own name)
+    private _site = [_town, _town select [0, _town find " ("]] select ((_town find " (") > 0);
+    (((OT_officeLayouts getOrDefault [_site, []]) param [0, []]) param [1, [0, 0, 0]]) params ["_ox", "_oy"];
     private _verts = [[], [], []];
     {
         private _tier = _x;
