@@ -11,7 +11,6 @@
 
 [
     ["Office layouts: the editor's save keeps a compound's layout, the user's edits flagged", {
-        call OTQA_fnc_officeReview;
         call OTQA_fnc_townLayout;
         OTQA_townLayout set ["noProfile", true]; // The host's saved progress isn't touched
         private _town = "Stavros";

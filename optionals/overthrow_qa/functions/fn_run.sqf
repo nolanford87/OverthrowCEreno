@@ -7,7 +7,7 @@
     Parameters:
         _this # 0: STRING - Suite to run: "current" (tests for the changes since the last archive) or
             "archive" (every test that passed before); its parts "bugfixes", "followups" and "occupiers"
-            also run on their own; the surveys "towns" and "offices"; "officereview" and "townlayout" (by hand)
+            also run on their own; the surveys "towns" and "offices"; "townlayout" and "compounds" (by hand)
 
     Usage: ["current"] spawn OTQA_fnc_run;
 */
@@ -31,8 +31,6 @@ private _suites = createHashMapFromArray [
     ["blockprobe", ["Block probe", OTQA_fnc_probeBlock]],
     // Shaping each town's occupier compound areas by hand with Zeus (ends when the author picks "Compound: finished")
     ["compounds", ["Occupier compounds", OTQA_fnc_compoundEditor]],
-    // The review by hand of the mayor's office defence templates (ends when the reviewer picks "Review: finished")
-    ["officereview", ["Mayor's office template review", OTQA_fnc_officeReview]],
     // Laying out each town's mayor's office by hand with Zeus (ends when the author picks "Layout: finished")
     ["townlayout", ["Mayor's office town layouts", OTQA_fnc_townLayout]],
     // A game set up for the host to play: taking Rodopoli's compound (the live capture test)
@@ -55,7 +53,7 @@ if (isNil "OT_NATOInitDone") exitWith {
 OTQA_running = true;
 // Look-around modes (reviews, probes, surveys): the host can't be seen or heard by the occupier
 // and stays undercover for the whole run. Not for the test suites: some test losing cover.
-if (_suite in ["officereview", "townlayout", "offices", "towns", "townprobe", "layoutcheck", "classprobe", "roadpath", "blockprobe", "compounds"]) then {
+if (_suite in ["townlayout", "offices", "towns", "townprobe", "layoutcheck", "classprobe", "roadpath", "blockprobe", "compounds"]) then {
     [] spawn {
         while { !isNil "OTQA_running" } do {
             player setUnitTrait ["camouflageCoef", 0];

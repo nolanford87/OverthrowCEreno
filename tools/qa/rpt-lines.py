@@ -1,7 +1,6 @@
 """
 Prints the lines of an Arma RPT worth sending back from a QA run: the suite START/DONE lines, every
-OT_QA FAIL and MANUAL, and the OTFEEDBACK lines (the template review's votes). The rest (engine and
-mod noise, passes) is left out.
+OT_QA FAIL and MANUAL. The rest (engine and mod noise, passes) is left out.
 
 Usage: python tools/qa/rpt-lines.py [rpt] [--pass] [--probe] [-o out.txt]
     rpt      the RPT file; the newest one in %LOCALAPPDATA%\\Arma 3 when left out
@@ -29,7 +28,7 @@ else:
         sys.exit("no RPT given and none found in %LOCALAPPDATA%\\Arma 3")
     rpt = max(found, key=os.path.getmtime)
 
-keep = ["OT_QA ===== ", "OT_QA FAIL", "OT_QA MANUAL", "OTFEEDBACK|"]
+keep = ["OT_QA ===== ", "OT_QA FAIL", "OT_QA MANUAL"]
 if want_pass:
     keep.append("OT_QA PASS")
 if want_probe:
@@ -37,7 +36,7 @@ if want_probe:
 
 lines = []
 for line in open(rpt, encoding="utf-8", errors="replace"):
-    m = re.search(r'"((?:OT_QA|OTFEEDBACK|OTPROBE2).*)"\s*$', line)
+    m = re.search(r'"((?:OT_QA|OTPROBE2).*)"\s*$', line)
     if m and m.group(1).startswith(tuple(keep)):
         lines.append(line.rstrip("\r\n"))
 

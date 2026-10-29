@@ -1,12 +1,12 @@
 /*
     Description:
-    Spawns a mayor's office building for the template review and tests: the main building and, for
+    Spawns a mayor's office building for the layout editor: the main building and, for
     a multi-piece one (OT_fnc_officeParts), its other pieces where they stand on the map, facing a
     direction, with the ground floor (the lowest building position: the model's origin sits above
     it) on the ground. Server.
 
     Parameters:
-        _this # 0: STRING - Template key (OT_fnc_officeTemplateKey), the class is "Land_" + key
+        _this # 0: STRING - Office key (OT_fnc_officeKey), the class is "Land_" + key
         _this # 1: ARRAY - Position
         _this # 2: NUMBER - (Optional) Direction, default 0
 

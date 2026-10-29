@@ -37,7 +37,6 @@
 
 [
     ["Office layout check", {
-        call OTQA_fnc_officeReview;
         call OTQA_fnc_townLayout;
         [""] call OT_fnc_officeLayout;
         private _only = missionNamespace getVariable ["OTQA_only", []];
@@ -174,7 +173,7 @@
                     };
                 } forEach _objects;
                 sleep 3; // Settled
-                private _parts = [[_b] call OT_fnc_officeTemplateKey, _b] call OTQA_officeReview_realParts;
+                private _parts = [_b] call OTQA_townLayout_parts;
                 private _terrain = ((nearestTerrainObjects [getPosATL _b, _terrainTypes, 70, false, true]) - _parts) select { !isObjectHidden _x }; // Not the ones the tier removes
                 private _statics = _objects select { _x isKindOf "StaticWeapon" };
                 private _props = _objects - _statics;
@@ -471,7 +470,7 @@
                     screenshot format ["OTL_%1_T%2_street.png", _name, _tier];
                     sleep 0.5;
                 };
-                [_b] call OT_fnc_officeClearTemplate;
+                [_b] call OT_fnc_officeClear;
                 sleep 1.5;
             };
             [_town, [_town] call OT_fnc_officeTier] call OT_fnc_officeHide; // The map objects back as its tier in play has them

@@ -7,7 +7,7 @@ python tools/officegen/merge_layouts.py <that file> merges it into the mod's lay
 opens the town in its review, where it's checked and fixed by hand.
 
 Coordinates: Town.to_world(x, y, z) takes the office's MODEL coordinates (x right, y forward out of the model's
-front, as the templates in functions/offices/templates use them; z above the model origin) and gives world ASL.
+front, as the office probe and OTQA_fnc_officeDoorways use them; z above the model origin) and gives world ASL.
 Directions are compass degrees; a model-relative direction d is world direction town.dir + d.
 z=None puts a thing on the ground (and flags it "ground", so the game puts it on the terrain exactly).
 
@@ -28,7 +28,7 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PROBES = os.path.join(ROOT, "tools", "officegen", "probes")
 DRAFTS = os.path.join(ROOT, "tools", "officegen", "layouts", "drafts")
-TEMPLATES = os.path.join(ROOT, "addons", "overthrow_main", "functions", "offices", "templates")
+DOORWAYS = os.path.join(ROOT, "optionals", "overthrow_qa", "functions", "fn_officeDoorways.sqf")
 SAVED = os.path.join(ROOT, "tools", "officegen", "layouts")
 
 # Classes a draft may use (vanilla and its free platform data, so every player has them): [length across (model x),
@@ -88,13 +88,12 @@ def rot(x, y, d):
     return (x * math.cos(t) + y * math.sin(t), y * math.cos(t) - x * math.sin(t))
 
 
-def template(key):
-    """A building's generated template: [tier 1 items, ..., tier 5 items], each [kind, what, [x, y, z], dir, extra]."""
-    path = os.path.join(TEMPLATES, f"fn_officeTpl_{key}.sqf")
-    text = open(path, encoding="utf-8").read()
-    text = text[text.index("*/") + 2:]
-    text = re.sub(r"//[^\n]*", "", text)
-    return ast.literal_eval(text.strip().rstrip(";"))
+def doorways(key):
+    """An office building's real entrances (the QA addon's OTQA_fnc_officeDoorways), in its model coordinates:
+    [[role, [x, y, z], outward dir, [width, door index]], ...], [] for a key not listed."""
+    text = open(DOORWAYS, encoding="utf-8").read()
+    table = re.search(r"createHashMapFromArray\s*(\[.*\])\s*\)\s*getOrDefault", text, re.S).group(1)
+    return dict(ast.literal_eval(table)).get(key, [])
 
 
 class Town:
@@ -107,17 +106,16 @@ class Town:
     def finish(self):
         n = len(self.rows)
         self.grid = [self.rows[j] for j in range(n)]
-        # The model origin: the template's doorway markers were logged at modelToWorld, so the origin is a logged
-        # door minus its turned model position (getPosASL can sit off the model origin, mostly in height)
+        # The model origin: the doorways were logged at modelToWorld, so the origin is a logged door minus its
+        # turned model position (getPosASL can sit off the model origin, mostly in height)
         self.origin = list(self.pos)
         try:
-            tpl = template(self.key)
-            marks = [it for t in tpl for it in t if it[0] == "doorway"]
+            marks = doorways(self.key)
             if marks and self.doors:
                 m, d = marks[0], self.doors[0]
-                dx, dy = rot(m[2][0], m[2][1], self.dir)
-                self.origin = [d["pos"][0] - dx, d["pos"][1] - dy, d["pos"][2] - m[2][2]]
-        except (OSError, ValueError, SyntaxError):
+                dx, dy = rot(m[1][0], m[1][1], self.dir)
+                self.origin = [d["pos"][0] - dx, d["pos"][1] - dy, d["pos"][2] - m[1][2]]
+        except (OSError, ValueError, SyntaxError, AttributeError):
             pass
         # The office's floors: its building positions' heights (model z), merged within 1 m
         zs = sorted(p[2] - self.origin[2] for p in self.bpos)
@@ -362,22 +360,6 @@ def baseline(town, world="Altis"):
         for kind, what, p, o, extra in t["tiers"].get(n, []):
             items.append([kind, what, _vec(p), float(o) if kind == "guard" else ast.literal_eval(o), [e for e in extra.split(",") if e]])
         out.append(items)
-    return out
-
-
-def from_template(town, tier):
-    """The generated template's additions for a tier on this office (doorway markers left out): outside things on
-    the ground, inside ones on their floor."""
-    out = []
-    for kind, what, p, d, extra in template(town.key)[tier - 1]:
-        if kind == "doorway":
-            continue
-        z = None if "outside" in extra else p[2]
-        if kind == "guard":
-            out.append(guard(town, what, p[0], p[1], z, d))
-        else:
-            out.append(obj(town, what, p[0], p[1], z, d, flag="flag" in extra) if what in CLASSES else
-                       ["object", what, town.to_world(p[0], p[1], z), _up_dir((town.dir + d) % 360), (["ground"] if z is None else ["drop"]) + (["flag"] if "flag" in extra else [])])
     return out
 
 

@@ -2,11 +2,10 @@
     Description:
     The other pieces of a mayor's office building made of several map objects (the Altis hospital's
     two wings): where each stands relative to the main building, as the office probe read them off
-    the real one on the map. The templates of such buildings are in the main building's coordinates
-    and cover every piece. Any machine.
+    the real one on the map. Any machine.
 
     Parameters:
-        _this # 0: STRING - Template key (OT_fnc_officeTemplateKey)
+        _this # 0: STRING - Office key (OT_fnc_officeKey)
 
     Usage: { _x params ["_class", "_offset", "_dir"]; ... } forEach (["Hospital_main_F"] call OT_fnc_officeParts);
 

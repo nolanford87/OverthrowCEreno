@@ -1,28 +1,28 @@
 /*
     Description:
     The mayor's office layout editor (OTQA_fnc_townLayout), through its own code paths in a real town that
-    has one of its bracket's candidate buildings: the town shown with that building as the office, the
-    generator's tier 1 on it and the host on the street in front of it; a thing placed as Zeus would
-    (counted as the town's); tier 1 saved (an OFFICE line, a TIER line with the count, one ITEM line per thing
-    at its exact position, kept as the town's layout) and on to tier 2 (what stood plus the generator's
-    tier 2 additions); saved on to the town's highest tier and into the review; tier 1 shown again in the
-    review where it was saved, and saved again there without leaving it; the town confirmed (shown again, a
-    town with every tier saved going straight to the review); and the town cleared with its real office
-    building still standing, unhidden. Part of the current QA tests. Moves the host to the town and back;
-    the saved layouts in play are left as they were.
+    has one of its bracket's candidate buildings: the town shown with that building as the office, an empty
+    tier 1 on it (no saved layout, no other town's to start from) and the host on the street in front of it;
+    things placed as Zeus would (counted as the town's); tier 1 saved (an OFFICE line, a TIER line with the
+    count, one ITEM line per thing at its exact position, kept as the town's layout) and on to tier 2 (what
+    stood, nothing added); one more placed and saved on to the town's highest tier and into the review; tier 1
+    shown again in the review where it was saved, and saved again there without leaving it; the town
+    confirmed (shown again, a town with every tier saved going straight to the review, at its top tier but at
+    most tier 3); the town cleared with its real office building still standing, unhidden; and another town
+    with the same building starting from this one's layout. Part of the archived QA tests. Moves the host to
+    the town and back; the saved layouts in play are left as they were.
 
     Returns: ARRAY - [[name, code, seconds], ...]
 */
 
 [
     ["Office layouts: the editor's loop in a real town", {
-        call OTQA_fnc_officeReview;
         call OTQA_fnc_townLayout;
         OTQA_townLayout set ["noProfile", true]; // The host's saved progress isn't touched
         private _from = getPosASL player;
         private _hadLayouts = !isNil "OT_officeLayouts";
         private _layouts = missionNamespace getVariable ["OT_officeLayouts", createHashMap];
-        OT_officeLayouts = createHashMap; // No saved layouts while it runs: the guess and the generator's draft
+        OT_officeLayouts = createHashMap; // No saved layouts while it runs: the guess and an empty tier 1
         player allowDamage false;
 
         // A town of bracket 2 or 3 (3 or 4 tiers) with a candidate building of its own
@@ -39,19 +39,15 @@
             OT_officeLayouts = [nil, _layouts] select _hadLayouts;
             format ["Office layouts: no bracket 2-3 town with a candidate building on %1", worldName] call OTQA_fnc_manual;
         };
-        private _key = [_office] call OT_fnc_officeTemplateKey;
-        private _count = {
-            params ["_tier"];
-            { (_x select 0) isEqualTo "guard" || { (_x select 0) isEqualTo "object" && { isClass (configFile >> "CfgVehicles" >> (_x select 1)) } } } count (([_key] call OT_fnc_officeTemplate) select (_tier - 1))
-        };
+        private _key = [_office] call OT_fnc_officeKey;
         private _cap = [_town] call OTQA_townLayout_cap;
 
-        // Shown: the guessed office, the generator's tier 1, the host on the street in front
+        // Shown: the guessed office, an empty tier 1, the host on the street in front
         OTQA_townLayout set ["towns", [_town]];
         [_town] call OTQA_townLayout_show;
         private _things = call OTQA_townLayout_live;
         ["Office layouts: the town shown with its candidate building as the office", (OTQA_townLayout get "building") isEqualTo _office && { !(OTQA_townLayout get "spawned") } && { (OTQA_townLayout get "cap") isEqualTo _cap }, format ["%1 (population %2, %3 tiers): %4 at %5", _town, server getVariable [format ["population%1", _town], 0], _cap, typeOf _office, (getPosATL _office) apply { round _x }]] call OTQA_fnc_check;
-        ["Office layouts: the generator's tier 1 on it", (count _things) isEqualTo ([1] call _count) && { (OTQA_townLayout get "tier") isEqualTo 1 }, format ["%1 things, the template's tier 1 has %2", count _things, [1] call _count]] call OTQA_fnc_check;
+        ["Office layouts: tier 1 starts empty (nothing saved, no other town to start from)", _things isEqualTo [] && { (OTQA_townLayout get "tier") isEqualTo 1 } && { (OTQA_townLayout get "baseline") isEqualTo [] }, format ["%1 things, tier %2, baseline %3", count _things, OTQA_townLayout get "tier", OTQA_townLayout get "baseline"]] call OTQA_fnc_check;
         private _m = "OTQA_townLayout_office";
         ["Office layouts: a red 30 m circle on the map round the office", (markerShape _m) isEqualTo "ELLIPSE" && { (markerSize _m) isEqualTo [30, 30] } && { (markerColor _m) isEqualTo "ColorRed" } && { ((markerPos _m) distance2D _office) < 1 }, format ["%1 %2 %3, %4 m from the office", markerShape _m, markerSize _m, markerColor _m, round ((markerPos _m) distance2D _office)]] call OTQA_fnc_check;
         private _roadsNear = (_office nearRoads 50) isNotEqualTo [];
@@ -77,12 +73,15 @@
             if (((parseSimpleArray (_f select 7)) distance (getPosASL _o)) > 0.002 || { (_f select 5) isNotEqualTo _kind }) then { _off pushBack [_forEachIndex, _f select 6] };
         } forEach _items;
         ["Office layouts: the save logs the office, the count and every thing at its exact position (a static weapon by role), kept as the town's tier 1",
-            ((_lines select 0) find (format ["|%1|OFFICE|%2|", _town, typeOf _office])) > -1 && { (parseNumber (((_lines select 1) splitString "|") select 5)) isEqualTo (count _saved) } && { (count _items) isEqualTo (count _saved) } && { (count _saved) isEqualTo (([1] call _count) + 2) } && { (count _snapshot) isEqualTo (count _saved) } && { _off isEqualTo [] } && { (_items findIf { "|static|gmg|" in _x }) > -1 },
-            format ["%1 lines, %2 things (tier 1 + the 2 placed: %3), %4 kept, off: %5, the GMG as static gmg: %6", count _lines, count _saved, ([1] call _count) + 2, count _snapshot, _off, (_items findIf { "|static|gmg|" in _x }) > -1]] call OTQA_fnc_check;
+            ((_lines select 0) find (format ["|%1|OFFICE|%2|", _town, typeOf _office])) > -1 && { (parseNumber (((_lines select 1) splitString "|") select 5)) isEqualTo (count _saved) } && { (count _items) isEqualTo (count _saved) } && { (count _saved) isEqualTo 2 } && { (count _snapshot) isEqualTo (count _saved) } && { _off isEqualTo [] } && { (_items findIf { "|static|gmg|" in _x }) > -1 },
+            format ["%1 lines, %2 things (the 2 placed), %3 kept, off: %4, the GMG as static gmg: %5", count _lines, count _saved, count _snapshot, _off, (_items findIf { "|static|gmg|" in _x }) > -1]] call OTQA_fnc_check;
         private _now = count (call OTQA_townLayout_live);
-        ["Office layouts: saving goes on to tier 2 with the generator's additions on top", (OTQA_townLayout get "tier") isEqualTo 2 && { !(OTQA_townLayout get "review") } && { _now isEqualTo ((count _saved) + ([2] call _count)) }, format ["tier %1, %2 things (%3 + %4)", OTQA_townLayout get "tier", _now, count _saved, [2] call _count]] call OTQA_fnc_check;
+        ["Office layouts: saving goes on to tier 2 with what stood, nothing added", (OTQA_townLayout get "tier") isEqualTo 2 && { !(OTQA_townLayout get "review") } && { _now isEqualTo (count _saved) }, format ["tier %1, %2 things (%3 saved)", OTQA_townLayout get "tier", _now, count _saved]] call OTQA_fnc_check;
 
-        // Saved on to the highest tier, then the review
+        // One more placed at tier 2 (what the next town's tier 2 adds), saved on to the highest tier, then the review
+        private _extra2 = createVehicle ["Land_BagFence_Round_F", _office getPos [13, 120], [], 0, "CAN_COLLIDE"];
+        (OTQA_townLayout get "things") pushBack _extra2;
+        sleep 1;
         for "_i" from 1 to 5 do {
             if (OTQA_townLayout get "review") exitWith {};
             call OTQA_townLayout_saveAndGo;
@@ -107,16 +106,19 @@
         call OTQA_townLayout_saveAndGo;
         ["Office layouts: a tier saved again in the review stays shown", (OTQA_townLayout get "review") && { (OTQA_townLayout get "tier") isEqualTo 1 } && { (count (((OT_officeLayouts get _town) select 1) select 0)) isEqualTo (count _snapshot) }, format ["review %1, tier %2", OTQA_townLayout get "review", OTQA_townLayout get "tier"]] call OTQA_fnc_check;
 
-        // Confirmed: on to the next town (the same one here, every tier saved: straight to the review)
+        // Confirmed: on to the next town (the same one here, every tier saved: straight to the review, at its top
+        // tier but at most tier 3, the compound tiers' first)
         [1] call OTQA_townLayout_step;
-        ["Office layouts: a town with every tier saved opens in the review", (OTQA_townLayout get "town") isEqualTo _town && { OTQA_townLayout get "review" } && { (OTQA_townLayout get "building") isEqualTo _office } && { (count (call OTQA_townLayout_live)) isEqualTo (count _snapshot) }, format ["%1, review %2, %3 things", OTQA_townLayout get "town", OTQA_townLayout get "review", count (call OTQA_townLayout_live)]] call OTQA_fnc_check;
+        private _opens = _cap min 3;
+        private _opensCount = count (((OT_officeLayouts get _town) select 1) select (_opens - 1));
+        ["Office layouts: a town with every tier saved opens in the review at its top tier, at most tier 3", (OTQA_townLayout get "town") isEqualTo _town && { OTQA_townLayout get "review" } && { (OTQA_townLayout get "tier") isEqualTo _opens } && { (OTQA_townLayout get "building") isEqualTo _office } && { (count (call OTQA_townLayout_live)) isEqualTo _opensCount }, format ["%1, review %2, tier %3 (expected %4), %5 things of %6", OTQA_townLayout get "town", OTQA_townLayout get "review", OTQA_townLayout get "tier", _opens, count (call OTQA_townLayout_live), _opensCount]] call OTQA_fnc_check;
 
         // Cleared: the things gone, the real office standing as it was, the circle gone
         private _gone = call OTQA_townLayout_live;
         call OTQA_townLayout_clear;
         OTQA_townLayout deleteAt "town";
         sleep 2.5;
-        private _left = (_gone + [_extra, _gmg]) select { !isNull _x && { !isObjectHidden _x } };
+        private _left = (_gone + [_extra, _gmg, _extra2]) select { !isNull _x && { !isObjectHidden _x } };
         ["Office layouts: cleared, the real office still standing", _left isEqualTo [] && { alive _office } && { !isObjectHidden _office } && { (markerShape _m) isEqualTo "" }, format ["%1 things left, office alive %2, hidden %3, circle %4", count _left, alive _office, isObjectHidden _office, markerShape _m]] call OTQA_fnc_check;
 
         // Another town with the same building starts from this town's layout, moved onto its office, and its next
@@ -127,7 +129,7 @@
             if (_x isNotEqualTo _town) then {
                 ([_x] call OTQA_townLayout_guess) params ["_b", "_parts", "_spawned"];
                 if (_spawned) then { { deleteVehicle _x } forEach ([_b] + _parts) } else {
-                    if (([_b] call OT_fnc_officeTemplateKey) isEqualTo _key) then { _second = _x; _office2 = _b };
+                    if (([_b] call OT_fnc_officeKey) isEqualTo _key) then { _second = _x; _office2 = _b };
                 };
             };
             if (_second isNotEqualTo "") exitWith {};

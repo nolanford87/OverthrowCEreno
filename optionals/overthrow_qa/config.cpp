@@ -51,11 +51,9 @@ class CfgFunctions {
             class probeBuilding {}; // Zeus helper: a building's floor plan to the RPT
             class dumpTowns {};
             class probeOffices {}; // Survey: maps each mayor's office candidate building, ["offices"] spawn OTQA_fnc_run // Survey: town populations and buildings near their centres, ["towns"] spawn OTQA_fnc_run
-            // Mayor's office defence templates: the review by hand (["officereview"] spawn OTQA_fnc_run), its building spawner, the automatic tests
-            class officeReview {};
+            // Mayor's office buildings: a spawner for the layout editor, their real entrances
             class officeSpawn {};
-            class testsOfficeTemplates {};
-            class testsOfficeReviewTown {}; // The review's real town step
+            class officeDoorways {};
             class townLayout {}; // The mayor's office layout editor, ["townlayout"] spawn OTQA_fnc_run
             class compoundEditor {}; // The occupier compound area editor, ["compounds"] spawn OTQA_fnc_run
             class testsTownLayout {};
@@ -104,10 +102,6 @@ class zen_context_menu_actions {
         class OTQA_archive {
             displayName = "Run archived QA tests";
             statement = "['archive'] spawn OTQA_fnc_run";
-        };
-        class OTQA_officeReview {
-            displayName = "Review the mayor's office templates";
-            statement = "['officereview'] spawn OTQA_fnc_run";
         };
         class OTQA_probeShed {
             displayName = "Map the industrial shed's floor plan to RPT";

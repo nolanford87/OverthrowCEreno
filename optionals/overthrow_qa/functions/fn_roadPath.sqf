@@ -243,7 +243,7 @@
               sleep 1;
             } forEach _liveVariants;
 
-            [_office] call OT_fnc_officeClearTemplate;
+            [_office] call OT_fnc_officeClear;
             [_town, [_town] call OT_fnc_officeTier] call OT_fnc_officeHide;
             sleep 2;
         } forEach _towns;

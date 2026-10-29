@@ -4,9 +4,9 @@
     the towns asked for), the data to draft its layout away from the game (tools/officegen/townlib.py).
     The office is the layout editor's (OTQA_townLayout_guess: the bracket's candidate standing in the town,
     else one spawned near the centre, at a spot recorded here and taken away again). Lines, positions ASL:
-        OTTOWN|town|HEAD|template key|class|[x,y,z]|direction|spawned|population|bracket|highest tier
+        OTTOWN|town|HEAD|office key|class|[x,y,z]|direction|spawned|population|bracket|highest tier
         OTTOWN|town|BOX|[min x,min y,max x,max y,min z,max z] the office's bounding box, model coordinates
-        OTTOWN|town|DOOR|main/back/side|[x,y,z]|outward direction|width (the template's doorway markers)
+        OTTOWN|town|DOOR|main/back/side|[x,y,z]|outward direction|width (the office's entrances, OTQA_fnc_officeDoorways)
         OTTOWN|town|BPOS|[[x,y,z],...] the office's building positions (floors), ten to a line
         OTTOWN|town|OBJ|building/wall/tree/rock/part|model|[x,y,z]|direction|[min x,min y,max x,max y,min z,max z]
             every terrain object of those kinds within 45 m of the office (more round a big one: OTTOWN|town|REACH|m) (a part: the office's other pieces)
@@ -21,7 +21,6 @@
 
 [
     ["Town office probe", {
-        call OTQA_fnc_officeReview;
         call OTQA_fnc_townLayout;
         private _only = missionNamespace getVariable ["OTQA_only", []];
         private _towns = if (_only isNotEqualTo []) then { _only select { _x in OT_allTowns } } else { OT_allTowns select { [_x] call OTQA_townLayout_unfinished } };
@@ -49,7 +48,7 @@
                 _b = (nearestObjects [ASLToAGL _pos, [_class], 3, true]) param [0, objNull];
                 if (isNull _b) then { _b = createVehicle [_class, [0, 0, 0], [], 0, "CAN_COLLIDE"]; _b setDir _dir; _b setPosASL _pos };
                 _spawned = _wasSpawned;
-                _parts = [[_b] call OT_fnc_officeTemplateKey, _b] call OTQA_officeReview_realParts;
+                _parts = [_b] call OTQA_townLayout_parts;
             } else {
                 ([_town] call OTQA_townLayout_guess) params ["_g", "_gParts", "_gSpawned"];
                 _b = _g;
@@ -57,7 +56,7 @@
                 _spawned = _gSpawned;
             };
             if (isNull _b) then { diag_log format ["OTTOWN|%1|NONE", _town]; continue };
-            private _key = [_b] call OT_fnc_officeTemplateKey;
+            private _key = [_b] call OT_fnc_officeKey;
             private _pos = getPosASL _b;
             diag_log format ["OTTOWN|%1|HEAD|%2|%3|%4|%5|%6|%7|%8|%9", _town, _key, typeOf _b, [_pos, 3] call _n, (getDir _b) toFixed 2, _spawned,
                 server getVariable [format ["population%1", _town], 0], [_town] call OTQA_townLayout_bracket, [_town] call OTQA_townLayout_cap];
@@ -67,13 +66,9 @@
             private _half = ceil (_reach / 2);
             diag_log format ["OTTOWN|%1|REACH|%2", _town, round _reach];
             {
-                {
-                    if ((_x select 0) isEqualTo "doorway") then {
-                        _x params ["", "_role", "_p", "_d", ["_extra", []]];
-                        diag_log format ["OTTOWN|%1|DOOR|%2|%3|%4|%5", _town, _role, [AGLToASL (_b modelToWorld _p), 2] call _n, ((getDir _b) + _d) toFixed 1, (_extra param [0, 0]) toFixed 2];
-                    };
-                } forEach _x;
-            } forEach ([_key] call OT_fnc_officeTemplate);
+                _x params ["_role", "_p", "_d", ["_extra", []]];
+                diag_log format ["OTTOWN|%1|DOOR|%2|%3|%4|%5", _town, _role, [AGLToASL (_b modelToWorld _p), 2] call _n, ((getDir _b) + _d) toFixed 1, (_extra param [0, 0]) toFixed 2];
+            } forEach ([_key] call OTQA_fnc_officeDoorways);
             private _bpos = (_b buildingPos -1) apply { AGLToASL _x };
             for "_i" from 0 to (count _bpos - 1) step 10 do {
                 diag_log format ["OTTOWN|%1|BPOS|[%2]", _town, ((_bpos select [_i, 10]) apply { [_x, 2] call _n }) joinString ","];

@@ -8,11 +8,11 @@
            on the map, tier 1 on it: the saved tier 1; else, when another town's office is the same building and
            laid out already, that layout's tier 1 moved onto this office (OTQA_townLayout_baseline, the same
            place and turn relative to the building), and its later tiers add what that town's tiers added;
-           else the building's generator template for tier 1 (OT_fnc_officeApplyTemplate).
+           else nothing: the host places tier 1 with Zeus.
         3. The host moves things and places more with Zeus (everything placed counts as the town's; guards are
            placeholders that stand still, men placed with Zeus are made to stand still too).
         4. "Layout editor: save <town> tier N" saves everything there as tier N (a full snapshot) and goes on to tier
-           N+1: the saved tier N+1 when there is one, else what stands plus the generator's additions for N+1.
+           N+1: the saved tier N+1 when there is one, else what stands (plus the baseline town's additions for N+1).
            Up to the town's highest tier: its bracket + 1, at most 5.
         5. Once the highest tier is saved: the review. "Layout editor: show tier N" puts any saved tier up again (it can
            be changed and saved again), "Layout editor: confirm <town>, next town" goes on to the next town and back to 1.
@@ -34,7 +34,7 @@
 
 OTQA_townLayout = createHashMap; // The editor's state: towns, the town shown, its office, tier, things, review
 
-// The office candidates on Altis by population bracket, best first (the mayor's office design), as template keys
+// The office candidates on Altis by population bracket, best first (the mayor's office design), as office keys (OT_fnc_officeKey)
 OTQA_townLayout_candidates = createHashMapFromArray [
     [1, ["i_Stone_HouseBig_V1_F", "i_House_Big_02_V1_F", "i_Shop_01_V1_F"]],
     [2, ["i_House_Big_02_V1_F", "i_Shop_01_V1_F", "i_House_Big_01_V1_F"]],
@@ -66,6 +66,55 @@ OTQA_townLayout_unfinished = {
     ([[_town] call OT_fnc_officeLayout] call OTQA_townLayout_top) < ([_town] call OTQA_townLayout_cap)
 };
 
+// A town's spread (OT_fnc_isInTown's: 350 m from the centre, 1000 m for capitals and sprawling towns)
+OTQA_townLayout_townRadius = {
+    params ["_town"];
+    [350, 1000] select (_town in (OT_capitals + OT_sprawling))
+};
+
+// A multi-piece building's real other pieces (the hospital's wings), found by it on the map as the office probe does
+OTQA_townLayout_parts = {
+    params ["_b"];
+    private _classes = ([[_b] call OT_fnc_officeKey] call OT_fnc_officeParts) apply { _x select 0 };
+    if (_classes isEqualTo []) exitWith { [] };
+    private _near = nearestObjects [_b, [], 80];
+    private _parts = [];
+    {
+        private _class = _x;
+        private _part = (_near select { (typeOf _x) isEqualTo _class }) param [0, objNull];
+        if (!isNull _part) then { _parts pushBack _part };
+    } forEach _classes;
+    _parts
+};
+
+// Somewhere for the host to stand outside a building: beyond its pieces' corners plus 8 m, towards the
+// town's centre first then round the compass, on land where a man fits
+OTQA_townLayout_outside = {
+    params ["_b", "_parts", "_centre"];
+    private _r = 0;
+    {
+        private _o = _x;
+        (boundingBoxReal _o) params ["_min", "_max"];
+        {
+            _r = _r max (_b distance2D (_o modelToWorld _x));
+        } forEach [_min, _max, [_min select 0, _max select 1, 0], [_max select 0, _min select 1, 0]];
+    } forEach ([_b] + _parts);
+    _r = _r + 8;
+    private _dir = _b getDir _centre;
+    private _stand = [];
+    {
+        if (_stand isEqualTo []) then {
+            private _p = _b getPos [_r, _dir + _x];
+            if (!surfaceIsWater _p) then {
+                private _empty = _p findEmptyPosition [0, 8, "CAManBase"];
+                if (_empty isNotEqualTo []) then { _stand = _empty };
+            };
+        };
+    } forEach [0, 45, -45, 90, -90, 135, -135, 180];
+    if (_stand isEqualTo []) then { _stand = _b getPos [_r, _dir] };
+    [_stand select 0, _stand select 1, 0]
+};
+
 // A guess at a town's office: [building, its real other pieces, spawned]
 // Towns whose office is a landmark rather than the first of their bracket's candidates (the user's choice)
 OTQA_townLayout_landmarks = createHashMapFromArray [["Kavala", "Hospital_main_F"]];
@@ -73,7 +122,7 @@ OTQA_townLayout_landmarks = createHashMapFromArray [["Kavala", "Hospital_main_F"
 OTQA_townLayout_guess = {
     params ["_town"];
     private _centre = server getVariable [_town, [0, 0, 0]];
-    private _near = (nearestObjects [_centre, ["House", "Building"], [_town] call OTQA_officeReview_townRadius]) select {
+    private _near = (nearestObjects [_centre, ["House", "Building"], [_town] call OTQA_townLayout_townRadius]) select {
         alive _x && { !isObjectHidden _x } && { ((getPos _x) call OT_fnc_nearestTown) isEqualTo _town }
     };
     private _bracket = [_town] call OTQA_townLayout_bracket;
@@ -81,19 +130,19 @@ OTQA_townLayout_guess = {
     // A town's own landmark first (the user's choice), then its bracket's candidates
     private _own = OTQA_townLayout_landmarks getOrDefault [_town, ""];
     if (_own isNotEqualTo "") then {
-        private _i = _near findIf { ([_x] call OT_fnc_officeTemplateKey) isEqualTo _own };
+        private _i = _near findIf { ([_x] call OT_fnc_officeKey) isEqualTo _own };
         if (_i > -1) then { _b = _near select _i };
     };
     for "_br" from _bracket to 1 step -1 do {
         if (!isNull _b) exitWith {};
         {
             private _key = _x;
-            private _i = _near findIf { ([_x] call OT_fnc_officeTemplateKey) isEqualTo _key };
+            private _i = _near findIf { ([_x] call OT_fnc_officeKey) isEqualTo _key };
             if (_i > -1) exitWith { _b = _near select _i };
         } forEach (OTQA_townLayout_candidates get _br);
         if (!isNull _b) exitWith {};
     };
-    if (!isNull _b) exitWith { [_b, [[_b] call OT_fnc_officeTemplateKey, _b] call OTQA_officeReview_realParts, false] };
+    if (!isNull _b) exitWith { [_b, [_b] call OTQA_townLayout_parts, false] };
     private _key = (OTQA_townLayout_candidates get _bracket) select 0;
     private _pos = _centre findEmptyPosition [5, 150, "Land_" + _key];
     if (_pos isEqualTo []) then { _pos = _centre };
@@ -101,23 +150,19 @@ OTQA_townLayout_guess = {
     [_spawned, _parts, true]
 };
 
-// Where the host stands: on the street in front of the office's main door (its template's "main" doorway marker),
+// Where the host stands: on the street in front of the office's main door (OTQA_fnc_officeDoorways),
 // the first road straight out from the door, else the road nearest the door; with no road within 40 m, outside
 // the building towards the town's centre. [position ATL, the point looked at]
 OTQA_townLayout_front = {
     params ["_b", "_parts", "_town"];
     private _centre = server getVariable [_town, getPosATL _b];
-    private _door = [];
-    {
-        private _items = _x;
-        private _i = _items findIf { (_x select 0) isEqualTo "doorway" && { (_x select 1) isEqualTo "main" } };
-        if (_i > -1) exitWith { _door = _items select _i };
-    } forEach ([[_b] call OT_fnc_officeTemplateKey] call OT_fnc_officeTemplate);
+    private _doors = [[_b] call OT_fnc_officeKey] call OTQA_fnc_officeDoorways;
+    private _door = _doors param [_doors findIf { (_x select 0) isEqualTo "main" }, []];
     private _from = getPosATL _b;
     private _out = _b getDir _centre;
     if (_door isNotEqualTo []) then {
-        _from = _b modelToWorld (_door select 2);
-        _out = (getDir _b) + (_door select 3);
+        _from = _b modelToWorld (_door select 1);
+        _out = (getDir _b) + (_door select 2);
     };
     private _stand = [];
     for "_d" from 2 to 40 do {
@@ -129,7 +174,7 @@ OTQA_townLayout_front = {
         _roads sort true;
         if (_roads isNotEqualTo []) then { _stand = getPosATL ((_roads select 0) select 1) };
     };
-    if (_stand isEqualTo []) exitWith { [[_b, _parts, _centre] call OTQA_officeReview_realStand, _from] };
+    if (_stand isEqualTo []) exitWith { [[_b, _parts, _centre] call OTQA_townLayout_outside, _from] };
     private _empty = _stand findEmptyPosition [0, 6, "CAManBase"];
     if (_empty isNotEqualTo []) then { _stand = _empty };
     [[_stand select 0, _stand select 1, 0], _from]
@@ -196,17 +241,17 @@ OTQA_townLayout_marker = {
     _m setMarkerColorLocal "ColorRed";
 };
 
-// Another town's layout for the same building (template key) as this office, to start from instead of the
-// template: the town saved most recently in this run, else the one with the most tiers saved. [town, office, tiers], [] with none
+// Another town's layout for the same building (office key) as this office, to start from instead of an empty
+// tier: the town saved most recently in this run, else the one with the most tiers saved. [town, office, tiers], [] with none
 OTQA_townLayout_baseline = {
     params ["_b", "_town"];
-    private _key = [_b] call OT_fnc_officeTemplateKey;
+    private _key = [_b] call OT_fnc_officeKey;
     if (_key isEqualTo "") exitWith { [] };
     [""] call OT_fnc_officeLayout; // The saved layouts read (OT_officeLayouts)
     private _fits = {
         params ["_t"];
         private _l = OT_officeLayouts getOrDefault [_t, []];
-        _t isNotEqualTo _town && { _l isNotEqualTo [] } && { ([(_l select 0) select 0] call OT_fnc_officeTemplateKey) isEqualTo _key } && { ([_l] call OTQA_townLayout_top) > 0 }
+        _t isNotEqualTo _town && { _l isNotEqualTo [] } && { ([(_l select 0) select 0] call OT_fnc_officeKey) isEqualTo _key } && { ([_l] call OTQA_townLayout_top) > 0 }
     };
     private _recent = +(OTQA_townLayout getOrDefault ["recent", []]);
     reverse _recent;
@@ -297,7 +342,7 @@ OTQA_townLayout_startReview = {
     hint format ["Layout editor: %1, all %2 tiers saved\nShow each tier to check it (your actions), change one and save it again if needed, then confirm the town to go on to the next.", OTQA_townLayout get "town", OTQA_townLayout get "cap"];
 };
 
-// A town shown: its office, the host on the street in front, tier 1 (saved or the generator's); a town with every
+// A town shown: its office, the host on the street in front, tier 1 (saved, a baseline's or empty); a town with every
 // tier saved goes straight to the review. Scheduled
 OTQA_townLayout_show = {
     params ["_town"];
@@ -320,7 +365,7 @@ OTQA_townLayout_show = {
         _b = _office;
         _things = _objects + _guards;
         _spawned = (_layout select 0) param [3, false];
-        _parts = [[_b] call OT_fnc_officeTemplateKey, _b] call OTQA_officeReview_realParts;
+        _parts = [_b] call OTQA_townLayout_parts;
     } else {
         ([_town] call OTQA_townLayout_guess) params ["_guessed", "_guessedParts", "_guessedSpawned"];
         _b = _guessed;
@@ -330,16 +375,11 @@ OTQA_townLayout_show = {
     if (isNull _b) exitWith { hint format ["Layout editor: no office for %1", _town] };
     private _savedFirst = _things isNotEqualTo [];
     // Another town's layout for the same building to start from (tier 1 when nothing's saved here, and the
-    // later tiers' additions), else the template
+    // later tiers' additions), else an empty tier 1
     private _baseline = [_b, _town] call OTQA_townLayout_baseline;
-    if (!_savedFirst) then {
-        if (_baseline isNotEqualTo []) then {
-            ([[(_baseline select 2) select 0, _baseline select 1, _b] call OTQA_townLayout_moveItems, west, true, [_town, 1]] call OT_fnc_officeSpawnItems) params ["_objects", "_guards"];
-            _things = _objects + _guards;
-        } else {
-            ([_b, 1, west, _parts, true] call OT_fnc_officeApplyTemplate) params ["_objects", "_guards"];
-            _things = _objects + _guards;
-        };
+    if (!_savedFirst && { _baseline isNotEqualTo [] }) then {
+        ([[(_baseline select 2) select 0, _baseline select 1, _b] call OTQA_townLayout_moveItems, west, true, [_town, 1]] call OT_fnc_officeSpawnItems) params ["_objects", "_guards"];
+        _things = _objects + _guards;
     };
     OTQA_townLayout set ["baseline", _baseline];
     OTQA_townLayout set ["town", _town];
@@ -385,7 +425,7 @@ OTQA_townLayout_show = {
     };
     private _towns = OTQA_townLayout getOrDefault ["towns", [_town]];
     private _start = if (_savedFirst) then { "your saved tier 1" } else {
-        if (_baseline isNotEqualTo []) then { format ["%1's tier 1 (the same building)", _baseline select 0] } else { "the template's tier 1" }
+        if (_baseline isNotEqualTo []) then { format ["%1's tier 1 (the same building)", _baseline select 0] } else { "nothing yet" }
     };
     hint format ["Layout editor: %1 (%2 of %3), population %4: tier 1 of %5\nOffice: %6%7, with %8.\nMove things and place more with Zeus, then save the tier.", _town, (_towns find _town) + 1, count _towns, server getVariable [format ["population%1", _town], 0], OTQA_townLayout get "cap", typeOf _b, ["", " (spawned, no fitting building here)"] select _spawned, _start];
 };
@@ -445,7 +485,7 @@ OTQA_townLayout_vec = {
     format ["[%1]", (_v apply { _x toFixed _decimals }) joinString ","]
 };
 
-// A guard's role: the template's or the layout's when it was put there by them, else from the unit's class
+// A guard's role: the layout's when it was put there by one, else from the unit's class
 OTQA_townLayout_role = {
     params ["_unit"];
     private _item = _unit getVariable ["OT_officeItem", []];
@@ -488,8 +528,8 @@ OTQA_townLayout_save = {
         // tilts with it, up to 0.15 m and 3 degrees of heading: no edit).
         // Moved, it's the user's ("user", which the generators keep, tools/officegen/garrison_gen.py) with its
         // flags but not its placement ("ground", "drop": it stays where it was put, as
-        // tools/officegen/stack_hbarriers.py does). Placed with Zeus, it's the user's; a generator template's piece
-        // (OT_fnc_officeApplyTemplate, at a spot relative to the building) keeps the flags the layouts use
+        // tools/officegen/stack_hbarriers.py does). Placed with Zeus, it's the user's; one tagged by anything else
+        // keeps only the flags the layouts use
         private _tagged = _x getVariable ["OT_officeItem", []];
         private _was = _tagged param [3, []];
         private _man = _x isKindOf "CAManBase";
@@ -553,7 +593,7 @@ OTQA_townLayout_save = {
     _lines
 };
 
-// After a save: on to the next tier (saved, else what stands plus the generator's additions for it), or the review
+// After a save: on to the next tier (saved, else what stands plus the baseline town's additions for it), or the review
 // once the highest is saved; in the review, it stays on the tier saved again. Scheduled
 OTQA_townLayout_advance = {
     private _town = OTQA_townLayout get "town";
@@ -566,23 +606,21 @@ OTQA_townLayout_advance = {
         [_tier] call OTQA_townLayout_putSaved;
         hint format ["Layout editor: %1 tier %2 of %3: your saved tier %2\nChange it with Zeus, then save the tier.", _town, _tier, OTQA_townLayout get "cap"];
     };
-    // The additions for the tier: what the baseline town's tier added there, moved here, else the template's
+    // The additions for the tier: what the baseline town's tier added there, moved here, else none (what stands stays)
     private _baseline = OTQA_townLayout getOrDefault ["baseline", []];
     private _fromTown = "";
-    private _made = [];
+    private _made = [[], []];
     if (_baseline isNotEqualTo [] && { ((_baseline select 2) select (_tier - 1)) isNotEqualTo [] }) then {
         private _added = [(_baseline select 2) select (_tier - 1), (_baseline select 2) select (_tier - 2)] call OTQA_townLayout_added;
         _made = [[_added, _baseline select 1, OTQA_townLayout get "building"] call OTQA_townLayout_moveItems, west, true, [_town, _tier]] call OT_fnc_officeSpawnItems;
         _fromTown = _baseline select 0;
-    } else {
-        _made = [OTQA_townLayout get "building", _tier, west, OTQA_townLayout get "parts", true, _tier] call OT_fnc_officeApplyTemplate;
     };
     _made params ["_objects", "_guards"];
     (OTQA_townLayout get "things") append (_objects + _guards);
     [_objects + _guards] call OTQA_townLayout_editable;
     OTQA_townLayout set ["tier", _tier];
     call OTQA_townLayout_actionText;
-    hint format ["Layout editor: %1 tier %2 of %3\nYour tier %4 plus %5's %6 additions for tier %2.\nChange it with Zeus, then save the tier.", _town, _tier, OTQA_townLayout get "cap", _tier - 1, ["the template", _fromTown] select (_fromTown isNotEqualTo ""), count (_objects + _guards)];
+    hint format ["Layout editor: %1 tier %2 of %3\nYour tier %4%5.\nChange it with Zeus, then save the tier.", _town, _tier, OTQA_townLayout get "cap", _tier - 1, ["", format [" plus %1's %2 additions for tier %3", _fromTown, count (_objects + _guards), _tier]] select (_fromTown isNotEqualTo "")];
 };
 OTQA_townLayout_saveAndGo = {
     private _lines = call OTQA_townLayout_save;
@@ -626,7 +664,7 @@ OTQA_townLayout_setOffice = {
     private _old = OTQA_townLayout get "building";
     if (OTQA_townLayout get "spawned") then { { deleteVehicle _x } forEach ([_old] + (OTQA_townLayout get "parts")) };
     OTQA_townLayout set ["building", _o];
-    OTQA_townLayout set ["parts", [[_o] call OT_fnc_officeTemplateKey, _o] call OTQA_officeReview_realParts];
+    OTQA_townLayout set ["parts", [_o] call OTQA_townLayout_parts];
     OTQA_townLayout set ["spawned", false];
     (boundingBoxReal _o) params ["", "_max"];
     OTQA_townLayout set ["label", (getPosATL _o) vectorAdd [0, 0, (_max select 2) + 4]];
@@ -652,7 +690,6 @@ OTQA_townLayout_run = {
 
 [
     ["Mayor's office town layouts", {
-        call OTQA_fnc_officeReview; // Its helpers: the brackets, a town's spread, a building's real pieces, where to stand
         private _towns = missionNamespace getVariable ["OTQA_only", []];
         if (_towns isEqualTo []) then { _towns = +OT_allTowns };
         _towns = _towns select { _x in OT_allTowns };

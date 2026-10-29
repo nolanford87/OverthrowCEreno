@@ -23,5 +23,5 @@ private _radius = 30 max (((boundingBoxReal _b) select 2) + 5);
 {
     (_x select 1) params ["_x2", "_y2"];
     _radius = _radius max ((vectorMagnitude [_x2, _y2, 0]) + 15);
-} forEach ([[_b] call OT_fnc_officeTemplateKey] call OT_fnc_officeParts);
+} forEach ([[_b] call OT_fnc_officeKey] call OT_fnc_officeParts);
 _radius

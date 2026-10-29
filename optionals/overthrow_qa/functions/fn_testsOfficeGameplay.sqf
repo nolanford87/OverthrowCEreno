@@ -345,7 +345,7 @@ _tests pushBack ["Office: a tier removes map objects, others bring them back", {
     ([_town, 1, west, true] call OT_fnc_officeApplyLayout) params ["_office", "_objects", "_guards"];
     private _hidden = isObjectHidden _a;
     private _made = count (_objects + _guards);
-    [_office] call OT_fnc_officeClearTemplate;
+    [_office] call OT_fnc_officeClear;
     _layout set [1, _keep];
     [_town, [_town] call OT_fnc_officeTier] call OT_fnc_officeHide;
     // A removal holds at the tiers above it: _a removed at tier 1 only stays hidden at tier 3

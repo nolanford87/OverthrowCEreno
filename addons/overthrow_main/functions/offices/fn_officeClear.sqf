@@ -1,7 +1,7 @@
 /*
     Description:
-    Takes a mayor's office defence template off a building: deletes the guards and the props and
-    fortifications OT_fnc_officeApplyTemplate put there (the building's "OT_officeGuards" and
+    Takes a mayor's office tier off its building: deletes the guards and the props and
+    fortifications OT_fnc_officeApplyLayout put there (the building's "OT_officeGuards" and
     "OT_officeObjects"), the guards first and, when it can wait, the things they stood in a moment
     later (deleted things are gone only at the end of the frame). Some House objects (seen with the
     gate bunkers) ignore deleteVehicle until they're hidden: a script tries again for a few seconds,
@@ -10,7 +10,7 @@
     Parameters:
         _this # 0: OBJECT - The building
 
-    Usage: [_building] call OT_fnc_officeClearTemplate;
+    Usage: [_building] call OT_fnc_officeClear;
 
     Returns: ARRAY - [objects, guards] being deleted (null once gone)
 */

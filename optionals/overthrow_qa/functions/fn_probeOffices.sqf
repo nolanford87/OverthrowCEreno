@@ -1,7 +1,7 @@
 /*
     Description:
-    Probes every mayor's office candidate building (all four maps) on Altis, for the office
-    templates: moves the host to open, flat ground on the main airfield away from the occupier's
+    Probes every mayor's office candidate building (all four maps) on Altis, for their floor plans
+    (tools/officegen/probe_offices.txt, read by tools/officegen/officegen_lib.py): moves the host to open, flat ground on the main airfield away from the occupier's
     men, then for each class spawns it, maps it to the RPT and deletes it before the next. Run as
     the "offices" QA suite. Lines start "OTPROBE2|", all in the building's own coordinates:
         OTPROBE2|START|class|bbox min|bbox max

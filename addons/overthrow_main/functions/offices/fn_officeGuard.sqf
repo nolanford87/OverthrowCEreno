@@ -1,9 +1,9 @@
 /*
     Description:
-    One mayor's office guard put at his post (OT_fnc_officeApplyTemplate, OT_fnc_officeApplyLayout):
+    One mayor's office guard put at his post (OT_fnc_officeSpawnItems):
     made in the group, standing, facing his way and holding the post. Nothing hurts him for his first
     moments (a man put down on an upper floor now and then dies of the knock the engine gives him
-    settling on the floor). Placeholders (the template review and the layout editor) stand still,
+    settling on the floor). Placeholders (the layout editor) stand still,
     unarmed, can't be hurt and don't fight. Server.
 
     Parameters:

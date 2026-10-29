@@ -5,7 +5,7 @@
     everything of that tier's snapshot exactly where it was saved, and the map objects it removes hidden
     (OT_fnc_officeHide). Props and fortifications have no simulation. Each thing made remembers its item ("OT_officeItem": [town, tier, index, item]) and the
     building remembers them ("OT_officeObjects", "OT_officeGuards", "OT_officeTier"), so
-    OT_fnc_officeClearTemplate takes them off again. Server.
+    OT_fnc_officeClear takes them off again. Server.
 
     Parameters:
         _this # 0: STRING - Town
