@@ -155,13 +155,15 @@ OTQA_cp_walkTest = {
     [format ["Walk (%1 T%2): an occupier soldier gets out through the shut gate", _town, _tier], (_outward select 0) && { _outward select 1 }, format ["gate shut first %1, out %2 in %3 s", _outward select 0, _outward select 1, _outward select 2]] call OTQA_fnc_check;
     [format ["Walk (%1 T%2): an occupier soldier gets in through the shut gate", _town, _tier], (_inward select 0) && { _inward select 1 }, format ["gate shut first %1, in %2 in %3 s", _inward select 0, _inward select 1, _inward select 2]] call OTQA_fnc_check;
 };
-_tests pushBack ["Compounds: men walk out and in through a shut gate (Rodopoli T3)", { ["Rodopoli", 3] call OTQA_cp_walkTest }, 240];
-_tests pushBack ["Compounds: men walk out and in through a shut gate (Chalkeia T3)", { ["Chalkeia", 3] call OTQA_cp_walkTest }, 240];
-_tests pushBack ["Compounds: men walk out and in through a shut gate (Paros T3)", { ["Paros", 3] call OTQA_cp_walkTest }, 240];
-_tests pushBack ["Compounds: men walk out and in through a shut gate (Paros T4)", { ["Paros", 4] call OTQA_cp_walkTest }, 240];
+// run-qa.ps1 -Only "town,..." limits the per-town tests (walks, garrisons) to those towns
+OTQA_cp_only = missionNamespace getVariable ["OTQA_only", []];
+OTQA_cp_wanted = { params ["_town"]; OTQA_cp_only isEqualTo [] || { _town in OTQA_cp_only } };
 {
-    _tests pushBack [format ["Compounds: men walk out and in through a shut gate (%1 T3)", _x], compile format ["[%1, 3] call OTQA_cp_walkTest", str _x], 240];
-} forEach ["Neochori", "Kalochori", "Sofia", "Therisa", "Molos", "Panochori", "Charkia", "Neri"];
+    _x params ["_town", "_tier"];
+    if !([_town] call OTQA_cp_wanted) then { continue };
+    _tests pushBack [format ["Compounds: men walk out and in through a shut gate (%1 T%2)", _town, _tier], compile format ["[%1, %2] call OTQA_cp_walkTest", str _town, _tier], 240];
+} forEach [["Rodopoli", 3], ["Chalkeia", 3], ["Paros", 3], ["Paros", 4], ["Neochori", 3], ["Kalochori", 3], ["Sofia", 3], ["Therisa", 3],
+    ["Molos", 3], ["Panochori", 3], ["Charkia", 3], ["Neri", 3], ["Agios Dionysios", 3], ["Gravia", 3], ["Poliakko", 3], ["Stavros", 3]];
 
 _tests pushBack ["Office: static weapons by role", {
     private _hmg = ["hmg"] call OT_fnc_officeStatic;
@@ -173,7 +175,7 @@ _tests pushBack ["Office: static weapons by role", {
 }, 10];
 
 // The compounds tested: every town with a generated compound, at T3 and T4
-OTQA_cp_cases = [["Rodopoli", 3], ["Rodopoli", 4], ["Paros", 3], ["Paros", 4], ["Chalkeia", 3], ["Chalkeia", 4], ["Neochori", 3], ["Neochori", 4], ["Kalochori", 3], ["Kalochori", 4], ["Sofia", 3], ["Sofia", 4], ["Therisa", 3], ["Therisa", 4], ["Molos", 3], ["Molos", 4], ["Panochori", 3], ["Panochori", 4], ["Charkia", 3], ["Charkia", 4], ["Neri", 3]];
+OTQA_cp_cases = [["Rodopoli", 3], ["Rodopoli", 4], ["Paros", 3], ["Paros", 4], ["Chalkeia", 3], ["Chalkeia", 4], ["Neochori", 3], ["Neochori", 4], ["Kalochori", 3], ["Kalochori", 4], ["Sofia", 3], ["Sofia", 4], ["Therisa", 3], ["Therisa", 4], ["Molos", 3], ["Molos", 4], ["Panochori", 3], ["Panochori", 4], ["Charkia", 3], ["Charkia", 4], ["Neri", 3], ["Agios Dionysios", 3], ["Agios Dionysios", 4], ["Gravia", 3], ["Poliakko", 3], ["Stavros", 3]];
 
 // A town's compound spawned by the game's own spawner at a tier, [guards, things, spawner id, town]
 OTQA_cp_spawn = {
@@ -378,6 +380,7 @@ OTQA_cp_garrisonTest = {
 };
 {
     _x params ["_town", "_tier"];
+    if !([_town] call OTQA_cp_wanted) then { continue };
     _tests pushBack [format ["Compounds: the garrison at work and its hunt (%1 T%2)", _town, _tier], compile format ["[%1, %2] call OTQA_cp_garrisonTest", str _town, _tier], 120];
 } forEach OTQA_cp_cases;
 
