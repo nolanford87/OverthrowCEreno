@@ -6,3 +6,8 @@ OTGATE|Altis|Sofia|3|[25669.00,21368.00]|4.0
 OTGATE|Altis|Therisa|4|[10642.60,12224.16]|4.1
 OTGATE|Altis|Panochori|4|[4997.54,11309.49]|4.1
 OTGATE|Altis|Panochori|3|[4995.07,11300.07]|4.0
+OTGATE|Altis|Agios Dionysios|3|[9221.34,15950.17]|4.0
+OTGATE|Altis|Agios Dionysios|4|[9221.34,15950.17]|4.1
+OTGATE|Altis|Gravia|3|[14500.15,17645.64]|4.0
+OTGATE|Altis|Poliakko|3|[10946.08,13439.05]|4.0
+OTGATE|Altis|Stavros|3|[12878.41,15061.95]|4.0
