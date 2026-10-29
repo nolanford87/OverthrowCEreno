@@ -163,7 +163,8 @@ OTQA_cp_wanted = { params ["_town"]; OTQA_cp_only isEqualTo [] || { _town in OTQ
     if !([_town] call OTQA_cp_wanted) then { continue };
     _tests pushBack [format ["Compounds: men walk out and in through a shut gate (%1 T%2)", _town, _tier], compile format ["[%1, %2] call OTQA_cp_walkTest", str _town, _tier], 240];
 } forEach [["Rodopoli", 3], ["Chalkeia", 3], ["Paros", 3], ["Paros", 4], ["Neochori", 3], ["Kalochori", 3], ["Sofia", 3], ["Therisa", 3],
-    ["Molos", 3], ["Panochori", 3], ["Charkia", 3], ["Neri", 3], ["Agios Dionysios", 3], ["Gravia", 3], ["Poliakko", 3], ["Stavros", 3]];
+    ["Molos", 3], ["Panochori", 3], ["Charkia", 3], ["Neri", 3], ["Agios Dionysios", 3], ["Gravia", 3], ["Poliakko", 3], ["Stavros", 3],
+    ["Lakka", 3], ["Alikampos", 3], ["Kore", 3], ["Telos", 3], ["Dorida", 3], ["Selakano", 3]];
 
 _tests pushBack ["Office: static weapons by role", {
     private _hmg = ["hmg"] call OT_fnc_officeStatic;
@@ -175,7 +176,7 @@ _tests pushBack ["Office: static weapons by role", {
 }, 10];
 
 // The compounds tested: every town with a generated compound, at T3 and T4
-OTQA_cp_cases = [["Rodopoli", 3], ["Rodopoli", 4], ["Paros", 3], ["Paros", 4], ["Chalkeia", 3], ["Chalkeia", 4], ["Neochori", 3], ["Neochori", 4], ["Kalochori", 3], ["Kalochori", 4], ["Sofia", 3], ["Sofia", 4], ["Therisa", 3], ["Therisa", 4], ["Molos", 3], ["Molos", 4], ["Panochori", 3], ["Panochori", 4], ["Charkia", 3], ["Charkia", 4], ["Neri", 3], ["Agios Dionysios", 3], ["Agios Dionysios", 4], ["Gravia", 3], ["Poliakko", 3], ["Stavros", 3]];
+OTQA_cp_cases = [["Rodopoli", 3], ["Rodopoli", 4], ["Paros", 3], ["Paros", 4], ["Chalkeia", 3], ["Chalkeia", 4], ["Neochori", 3], ["Neochori", 4], ["Kalochori", 3], ["Kalochori", 4], ["Sofia", 3], ["Sofia", 4], ["Therisa", 3], ["Therisa", 4], ["Molos", 3], ["Molos", 4], ["Panochori", 3], ["Panochori", 4], ["Charkia", 3], ["Charkia", 4], ["Neri", 3], ["Agios Dionysios", 3], ["Agios Dionysios", 4], ["Gravia", 3], ["Poliakko", 3], ["Stavros", 3], ["Lakka", 3], ["Alikampos", 3], ["Kore", 3], ["Telos", 3], ["Dorida", 3], ["Selakano", 3]];
 
 // A town's compound spawned by the game's own spawner at a tier, [guards, things, spawner id, town]
 OTQA_cp_spawn = {
