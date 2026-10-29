@@ -60,3 +60,9 @@ tools/qa/mods.local.txt
 __pycache__/
 
 tools/officegen/review/_incoming/
+
+# Generated review images under tools/officegen (overlays, garrison maps, generator SVGs): regenerable, not tracked
+tools/officegen/**/*.svg
+tools/officegen/**/*.png
+tools/officegen/**/*.jpg
+tools/officegen/**/*.jpeg
