@@ -119,9 +119,26 @@ def load(world="Altis"):
             (b.rocks if what == "ROCK" else b.trees).append(Thing(f[3], _vec(f[4]), float(f[5]), _vec(f[6])))
         elif what == "H":
             b.rows[int(f[3])] = _vec(f[4])
+    # A building the user had removed (a "hide" item flagged user in the town's layout, e.g. Selakano's damaged
+    # garage on its T3 line) is gone for the generators: no wall ties into it, no post stands on it
+    gone = user_hidden(world)
     for b in blocks.values():
+        b.buildings = [t for t in b.buildings if not any(m == t.model and math.dist(p, t.pos[:2]) < 1.0 for m, p in gone.get(b.name, []))]
         b.finish()
     return blocks
+
+
+def user_hidden(world="Altis"):
+    """{town: [(model or class, (x, y)), ...]} the map objects the user removed in a layout (tools/officegen/layouts/
+    <world>.txt: "hide" items flagged user)."""
+    out = {}
+    path = os.path.join(ROOT, "tools", "officegen", "layouts", f"{world}.txt")
+    if os.path.exists(path):
+        for line in open(path, encoding="utf-8"):
+            f = line.rstrip("\n").split("|")
+            if len(f) >= 10 and f[3] == "ITEM" and f[5] == "hide" and "user" in f[9].split(","):
+                out.setdefault(f[2], []).append((f[6], tuple(_vec(f[7])[:2])))
+    return out
 
 
 def svg(b, path, polygons=None, reach=90, scale=6, marks=None, pieces=None):

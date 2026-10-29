@@ -551,8 +551,10 @@ def main(argv):
             continue
         g = Gen(block, areas[tier], town, tier)
         items = g.build()
-        print(f"{town} T{tier}: {sum(1 for it in items if it[0] == 'object')} pieces; " + "; ".join(g.notes))
-        t["tiers"][tier] = [list(it) for it in base] + items
+        # The user's removals stay (a hide flagged user: blocklib.load leaves such a building out of the block)
+        kept = [list(it) for it in t["tiers"].get(tier, []) if it[0] == "hide" and "user" in str(it[4] if len(it) > 4 else "").split(",")]
+        print(f"{town} T{tier}: {sum(1 for it in items if it[0] == 'object')} pieces; " + "; ".join(g.notes) + (f"; {len(kept)} of the user's removals kept" if kept else ""))
+        t["tiers"][tier] = [list(it) for it in base] + items + kept
         polys[f"T{tier}"] = areas[tier]
         out = os.path.join(ROOT, "tools", "officegen", "compounds", f"{town}_T{tier}_walls.svg")
         blocklib.svg(block, out, polygons={f"T{tier}": areas[tier]}, reach=65, scale=8, pieces=t["tiers"][tier])
