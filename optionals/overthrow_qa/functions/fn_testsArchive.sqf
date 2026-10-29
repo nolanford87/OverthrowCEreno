@@ -41,6 +41,7 @@ private _tests = [];
     OTQA_fnc_testsOccupiers,
     OTQA_fnc_testsBugFixes,
     OTQA_fnc_testsTownLayout,
+    OTQA_fnc_testsLayoutSave,
     OTQA_fnc_testsCounterattacks,
     OTQA_fnc_testsDrugRaids
 ];

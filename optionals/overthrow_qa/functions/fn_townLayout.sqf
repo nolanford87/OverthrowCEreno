@@ -482,31 +482,49 @@ OTQA_townLayout_save = {
         systemChat format ["Layout editor: %1 pieces moved since tier %2 was shown, more than a few edits would move. Saved anyway; tell Claude if you didn't move them.", count _moved, _tier];
     };
     private _spawned = OTQA_townLayout get "spawned";
-    private _items = ((call OTQA_townLayout_live) select { !(_x isKindOf "CAManBase") || { alive _x } }) apply {
-        if (_x isKindOf "CAManBase") then {
-            // The garrison generator's flags stay (tools/officegen/garrison_gen.py: "patrol", "garrison")
-            private _was = ((_x getVariable ["OT_officeItem", []]) param [3, []]) param [4, []];
-            ["guard", [_x] call OTQA_townLayout_role, getPosASL _x, getDir _x, _was select { _x in ["patrol", "garrison"] }]
-        } else {
-            // A vehicle the layout put by role stays one (tools/officegen/props_gen.py's armed car)
-            private _was = (_x getVariable ["OT_officeItem", []]) param [3, []];
-            if ((_was param [0, ""]) isEqualTo "vehicle") exitWith { ["vehicle", _was select 1, getPosASL _x, [vectorDir _x, vectorUp _x], (_was param [4, []]) select { _x in ["props", "ground"] }] };
-            private _static = [_x] call OT_fnc_officeStatic;
-            if (_static isNotEqualTo "") exitWith { ["static", _static, getPosASL _x, [vectorDir _x, vectorUp _x], (((_x getVariable ["OT_officeItem", []]) param [3, []]) param [4, []]) select { _x in ["entrance", "garrison"] }] };
-            private _extra = [[], ["flag"]] select (_x isKindOf "FlagCarrier");
-            private _was = ((_x getVariable ["OT_officeItem", []]) param [3, []]) param [4, []];
-            // A gate the layout put keeps its state (a compound's shut gate stays shut, OT_fnc_officeGates); one
-            // put with Zeus is open
-            if ("open" in _was || { "_gate" in toLower typeOf _x && { isNil { _x getVariable "OT_officeItem" } } }) then { _extra pushBack "open" };
-            // The generators' own pieces stay theirs (tools/officegen/tower_gen.py, gate_gen.py)
-            { if (_x in _was) then { _extra pushBack _x } } forEach ["lookout", "entrance", "props", "hole", "leakfix"];
-            ["object", typeOf _x, getPosASL _x, [vectorDir _x, vectorUp _x], _extra]
-        }
-    };
-    // The map objects removed here (OT_fnc_officeHide's, the ones removed since included)
-    _items append ((OT_officeHidden getOrDefault [_town, []]) select { !isNull _x } apply { ["hide", (getModelInfo _x) select 0, getPosASL _x, [vectorDir _x, vectorUp _x], []] });
-    // The gates' markers (nothing stands for them): this tier's as saved, else the tier below's
+    private _items = ((call OTQA_townLayout_live) select { !(_x isKindOf "CAManBase") || { alive _x } }) apply { call {
+        // What the town's layout put here (OT_fnc_officeSpawnItems, tagged with the town) and still stands where it
+        // put it is saved as it was, every flag kept (a guard shuffles and turns, a piece on the ground settles and
+        // tilts with it, up to 0.15 m and 3 degrees of heading: no edit).
+        // Moved, it's the user's ("user", which the generators keep, tools/officegen/garrison_gen.py) with its
+        // flags but not its placement ("ground", "drop": it stays where it was put, as
+        // tools/officegen/stack_hbarriers.py does). Placed with Zeus, it's the user's; a generator template's piece
+        // (OT_fnc_officeApplyTemplate, at a spot relative to the building) keeps the flags the layouts use
+        private _tagged = _x getVariable ["OT_officeItem", []];
+        private _was = _tagged param [3, []];
+        private _man = _x isKindOf "CAManBase";
+        private _layout = ((_tagged param [0, ""]) isEqualTo _town) && { _man isEqualTo ((_was select 0) isEqualTo "guard") };
+        if (_layout && {
+            ((getPosASL _x) distance2D (_was select 2)) < ([0.15, 0.5] select _man)
+            && { _man || { private _v = (_was select 3) select 0; (abs ((((getDir _x) - ((_v select 0) atan2 (_v select 1))) + 540) mod 360 - 180)) < 3 } }
+        }) exitWith { +_was };
+        private _user = call {
+            if (_layout) exitWith { ((_was param [4, []]) - ["ground", "drop", "user"]) + ["user"] };
+            if (_was isEqualTo []) exitWith { ["user"] };
+            (_was param [4, []]) select { _x in ["patrol", "garrison", "lookout", "entrance", "props", "hole", "leakfix", "open"] }
+        };
+        if (_man) exitWith { ["guard", [_x] call OTQA_townLayout_role, getPosASL _x, getDir _x, _user] };
+        // A vehicle the layout put by role stays one (tools/officegen/props_gen.py's armed car)
+        if ((_was param [0, ""]) isEqualTo "vehicle") exitWith { ["vehicle", _was select 1, getPosASL _x, [vectorDir _x, vectorUp _x], _user] };
+        private _static = [_x] call OT_fnc_officeStatic;
+        if (_static isNotEqualTo "") exitWith { ["static", _static, getPosASL _x, [vectorDir _x, vectorUp _x], _user] };
+        // A flag, and a gate put with Zeus open (a compound's shut gate stays shut, OT_fnc_officeGates)
+        if (_x isKindOf "FlagCarrier") then { _user pushBackUnique "flag" };
+        if (_was isEqualTo [] && { "_gate" in toLower typeOf _x }) then { _user pushBack "open" };
+        ["object", typeOf _x, getPosASL _x, [vectorDir _x, vectorUp _x], _user]
+    } };
+    // The map objects removed here (OT_fnc_officeHide's, the ones removed since included): one the layout removed is
+    // saved as it was (its flags kept), one removed here is the user's
     private _saved = ([_town] call OT_fnc_officeLayout) param [1, []];
+    private _hides = [];
+    { _hides append (_x select { (_x select 0) isEqualTo "hide" }) } forEach _saved;
+    _items append ((OT_officeHidden getOrDefault [_town, []]) select { !isNull _x } apply {
+        private _o = _x;
+        private _model = (getModelInfo _o) select 0;
+        private _i = _hides findIf { (_x select 1) isEqualTo _model && { ((_x select 2) distance2D (getPosASL _o)) < 0.5 } };
+        if (_i > -1) then { +(_hides select _i) } else { ["hide", _model, getPosASL _o, [vectorDir _o, vectorUp _o], ["user"]] }
+    });
+    // The gates' markers (nothing stands for them): this tier's as saved, else the tier below's
     private _gates = ((_saved param [_tier - 1, []]) select { (_x select 0) isEqualTo "gate" });
     if (_gates isEqualTo [] && { _tier > 1 }) then { _gates = (_saved param [_tier - 2, []]) select { (_x select 0) isEqualTo "gate" } };
     _items append _gates;

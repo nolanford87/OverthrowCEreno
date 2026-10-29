@@ -59,6 +59,7 @@ class CfgFunctions {
             class townLayout {}; // The mayor's office layout editor, ["townlayout"] spawn OTQA_fnc_run
             class compoundEditor {}; // The occupier compound area editor, ["compounds"] spawn OTQA_fnc_run
             class testsTownLayout {};
+            class testsLayoutSave {};
             class testsOfficeGameplay {};
             class testsOfficeHelpers {};
             class testsCompounds {};
