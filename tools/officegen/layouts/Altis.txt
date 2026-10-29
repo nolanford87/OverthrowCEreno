@@ -5801,7 +5801,7 @@ OTLAYOUT|Altis|Stavros|TIER|2|3
 OTLAYOUT|Altis|Stavros|ITEM|2|object|Land_BagFence_Long_F|[12886.638,15050.353,33.100]|[[0.5569,0.8306,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Stavros|ITEM|2|object|Land_BagFence_Short_F|[12884.120,15052.523,33.100]|[[0.8306,-0.5569,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Stavros|ITEM|2|object|Land_BagFence_Long_F|[12895.624,15060.702,32.313]|[[0.5569,0.8306,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Stavros|TIER|3|176
+OTLAYOUT|Altis|Stavros|TIER|3|179
 OTLAYOUT|Altis|Stavros|ITEM|3|object|Land_BagFence_Long_F|[12886.638,15050.353,33.100]|[[0.5569,0.8306,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Stavros|ITEM|3|object|Land_BagFence_Short_F|[12884.120,15052.523,33.100]|[[0.8306,-0.5569,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Stavros|ITEM|3|object|Land_BagFence_Long_F|[12895.624,15060.702,32.313]|[[0.5569,0.8306,0.0000],[0.0000,0.0000,1.0000]]|ground
@@ -5978,6 +5978,9 @@ OTLAYOUT|Altis|Stavros|ITEM|3|guard|rifleman|[12899.110,15066.550,31.773]|216.1|
 OTLAYOUT|Altis|Stavros|ITEM|3|guard|at|[12912.610,15044.050,30.575]|150.2|garrison,ground,reserve,reserve:1
 OTLAYOUT|Altis|Stavros|ITEM|3|guard|rifleman|[12911.110,15044.050,30.720]|153.1|garrison,ground,reserve,reserve:1
 OTLAYOUT|Altis|Stavros|ITEM|3|guard|marksman|[12912.610,15042.550,30.570]|151.8|garrison,ground,reserve,reserve:1
+OTLAYOUT|Altis|Stavros|ITEM|3|hide|wreck_car3_f.p3d|[12879.527,15063.358,33.075]|[[-0.5443,-0.8389,0.0386],[0.0005,0.0000,1.0000]]|user
+OTLAYOUT|Altis|Stavros|ITEM|3|hide|pallets_f.p3d|[12877.323,15063.494,33.211]|[[0.7876,0.6528,0.0060],[0.0419,-0.0599,1.0204]]|user
+OTLAYOUT|Altis|Stavros|ITEM|3|hide|pallet_f.p3d|[12878.021,15064.448,33.088]|[[-0.9997,0.0497,0.1421],[0.1503,0.2752,0.9611]]|user
 OTLAYOUT|Altis|Syrta|OFFICE|Land_i_Stone_HouseBig_V3_F|[8623.375,18350.381,176.473]|168.09|false
 OTLAYOUT|Altis|Syrta|CONFIRMED
 OTLAYOUT|Altis|Syrta|TIER|1|6
