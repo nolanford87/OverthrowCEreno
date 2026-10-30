@@ -62,6 +62,7 @@ class CfgFunctions {
             class testsOfficeHelpers {};
             class testsCompounds {};
             class testsHamlets {};
+            class testsStartTiers {};
             class captureTest {}; // The live capture test, ["capturetest"] spawn OTQA_fnc_run
             class probeClasses {}; // Survey: the real size of every gate-like class, ["classprobe"] spawn OTQA_fnc_run
             class roadPath {}; // Survey: why path finding walks through layout pieces on roads, ["roadpath"] spawn OTQA_fnc_run

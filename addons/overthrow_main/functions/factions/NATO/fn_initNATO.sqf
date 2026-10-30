@@ -341,6 +341,7 @@ if ((server getVariable "StartupType") == "NEW" || (server getVariable ["NATOver
         };
         server setVariable [format ["garrison%1", _x], _garrison, true];
     } forEach (OT_allTowns);
+    call OT_fnc_officeStartTiers; // The mayor's offices' defence tiers, by this game's populations
 };
 diag_log "Overthrow: NATO Init Done";
 

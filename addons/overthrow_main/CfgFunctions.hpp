@@ -861,6 +861,7 @@ class CfgFunctions {
             class officeSpawnItems {};
             class officeApplyLayout {};
             class officeTier {};
+            class officeStartTiers {};
             class officeBracket {};
             class officeHide {};
             class officeCapture {};

@@ -1,9 +1,10 @@
 /*
     Description:
     A town's mayor's office defence tier (1-5): what the occupier has built up there, saved in the server
-    variable "officetier<town>". Until the occupier's spending raises it, a town starts by its population
-    bracket (OT_fnc_officeBracket, locked per town: under 50, 50-99, 100-199, 200-399, 400+: tier 1, 1, 2, 3, 4). Never above its bracket + 1 or the
-    highest tier its layout has. Server.
+    variable "officetier<town>", set at a new game (OT_fnc_officeStartTiers) and raised by the occupier's spending;
+    without one (a game from before), by its population bracket (OT_fnc_officeBracket, locked per town: under 50,
+    50-99, 100-199, 200-399, 400+: tier 1, 1, 2, 3, 4). Never above its bracket + 1 or the highest tier its layout
+    has. Server.
 
     Parameters:
         _this # 0: STRING - Town
