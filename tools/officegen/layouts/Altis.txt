@@ -1,9 +1,29 @@
 OTLAYOUT|Altis|Abdera|OFFICE|Land_i_House_Big_02_V1_F|[9441.804,20259.166,126.191]|244.77|false
 OTLAYOUT|Altis|Abdera|CONFIRMED
-OTLAYOUT|Altis|Abdera|TIER|1|0
-OTLAYOUT|Altis|Abdera|TIER|2|2
-OTLAYOUT|Altis|Abdera|ITEM|2|object|Land_BagFence_Long_F|[9447.906,20260.277,126.610]|[[-0.9046,-0.4263,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Abdera|ITEM|2|object|Land_BagFence_Short_F|[9448.951,20257.121,126.610]|[[-0.4263,0.9046,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Abdera|TIER|1|8
+OTLAYOUT|Altis|Abdera|ITEM|1|object|Land_TableDesk_F|[9441.010,20256.153,130.024]|[[0.4262,-0.9046,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Abdera|ITEM|1|object|Land_OfficeChair_01_F|[9441.693,20254.706,130.026]|[[0.4262,-0.9046,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Abdera|ITEM|1|object|Land_MapBoard_F|[9438.777,20254.954,130.310]|[[-0.5797,-0.8148,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Abdera|ITEM|1|guard|gendarme|[9444.780,20260.670,126.610]|63.3|garrison
+OTLAYOUT|Altis|Abdera|ITEM|1|guard|gendarme|[9434.710,20259.450,130.060]|272.3|garrison
+OTLAYOUT|Altis|Abdera|ITEM|1|guard|gendarme|[9440.150,20257.640,130.060]|227.2|garrison
+OTLAYOUT|Altis|Abdera|ITEM|1|guard|gendarme|[9445.450,20264.800,126.600]|33.0|garrison
+OTLAYOUT|Altis|Abdera|ITEM|1|object|Flag_NATO_F|[9447.146,20264.006,125.942]|[[0.4263,-0.9046,0.0000],[0.0000,0.0000,1.0000]]|flag,user
+OTLAYOUT|Altis|Abdera|TIER|2|14
+OTLAYOUT|Altis|Abdera|ITEM|2|object|Land_TableDesk_F|[9441.010,20256.153,130.024]|[[0.4262,-0.9046,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Abdera|ITEM|2|object|Land_OfficeChair_01_F|[9441.693,20254.706,130.026]|[[0.4262,-0.9046,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Abdera|ITEM|2|object|Land_MapBoard_F|[9438.777,20254.954,130.310]|[[-0.5797,-0.8148,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Abdera|ITEM|2|guard|gendarme|[9444.780,20260.670,126.610]|63.3|garrison
+OTLAYOUT|Altis|Abdera|ITEM|2|guard|gendarme|[9434.710,20259.450,130.060]|272.3|garrison
+OTLAYOUT|Altis|Abdera|ITEM|2|guard|gendarme|[9440.150,20257.640,130.060]|227.2|garrison
+OTLAYOUT|Altis|Abdera|ITEM|2|guard|gendarme|[9445.450,20264.800,126.600]|33.0|garrison
+OTLAYOUT|Altis|Abdera|ITEM|2|object|Flag_NATO_F|[9447.146,20264.006,125.942]|[[0.4263,-0.9046,0.0000],[0.0000,0.0000,1.0000]]|flag,user
+OTLAYOUT|Altis|Abdera|ITEM|2|guard|gendarme|[9466.983,20255.193,127.660]|334.8|ground,patrol,patrol:1
+OTLAYOUT|Altis|Abdera|ITEM|2|guard|gendarme|[9449.316,20278.551,125.562]|244.8|ground,patrol,patrol:1
+OTLAYOUT|Altis|Abdera|ITEM|2|guard|gendarme|[9447.499,20277.694,125.482]|244.8|ground,patrol,patrol:1
+OTLAYOUT|Altis|Abdera|ITEM|2|guard|gendarme|[9416.610,20263.140,119.935]|334.8|ground,patrol,patrol:2
+OTLAYOUT|Altis|Abdera|ITEM|2|guard|gendarme|[9418.427,20263.996,120.213]|64.8|ground,patrol,patrol:2
+OTLAYOUT|Altis|Abdera|ITEM|2|guard|gendarme|[9420.244,20264.852,120.620]|64.8|ground,patrol,patrol:2
 OTLAYOUT|Altis|Aggelochori|OFFICE|Land_u_House_Big_01_V1_F|[3655.147,13731.991,8.778]|286.52|false
 OTLAYOUT|Altis|Aggelochori|CONFIRMED
 OTLAYOUT|Altis|Aggelochori|TIER|1|6
@@ -222,38 +242,33 @@ OTLAYOUT|Altis|Aggelochori|ITEM|5|static|at|[3663.950,13713.945,8.891]|[[-0.2589
 OTLAYOUT|Altis|Aggelochori|ITEM|5|object|Land_BagFence_Round_F|[3663.728,13712.567,8.815]|[[-0.0022,0.9997,0.0224],[-0.0969,-0.0226,0.9950]]|
 OTLAYOUT|Altis|Agia Triada|OFFICE|Land_i_Stone_HouseBig_V1_F|[16531.814,20299.816,6.939]|1.02|false
 OTLAYOUT|Altis|Agia Triada|CONFIRMED
-OTLAYOUT|Altis|Agia Triada|TIER|1|6
+OTLAYOUT|Altis|Agia Triada|TIER|1|9
 OTLAYOUT|Altis|Agia Triada|ITEM|1|object|Land_TableDesk_F|[16532.824,20300.245,7.440]|[[0.0178,0.9998,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Agia Triada|ITEM|1|object|Land_OfficeChair_01_F|[16532.844,20301.345,7.440]|[[0.0178,0.9998,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Agia Triada|ITEM|1|object|Land_MapBoard_F|[16532.794,20298.545,7.440]|[[0.0178,0.9998,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Agia Triada|ITEM|1|guard|gendarme|[16531.457,20302.120,7.440]|141.0|
-OTLAYOUT|Altis|Agia Triada|ITEM|1|object|Flag_NATO_F|[16538.055,20296.301,6.247]|[[-0.0178,-0.9998,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Agia Triada|ITEM|1|guard|gendarme|[16536.159,20296.585,6.399]|181.0|ground
-OTLAYOUT|Altis|Agia Triada|TIER|2|24
+OTLAYOUT|Altis|Agia Triada|ITEM|1|object|Land_MapBoard_F|[16532.793,20298.546,7.440]|[[0.0178,0.9998,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Agia Triada|ITEM|1|object|Flag_NATO_F|[16538.054,20296.302,6.247]|[[-0.0178,-0.9998,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
+OTLAYOUT|Altis|Agia Triada|ITEM|1|object|Box_NATO_Ammo_F|[16533.363,20296.785,6.605]|[[-0.0175,-0.9998,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Agia Triada|ITEM|1|guard|gendarme|[16535.640,20301.420,7.440]|67.2|garrison
+OTLAYOUT|Altis|Agia Triada|ITEM|1|guard|gendarme|[16530.960,20302.990,10.280]|344.9|garrison
+OTLAYOUT|Altis|Agia Triada|ITEM|1|guard|gendarme|[16535.960,20304.510,10.220]|41.4|garrison
+OTLAYOUT|Altis|Agia Triada|ITEM|1|guard|gendarme|[16534.050,20299.000,10.270]|110.0|garrison
+OTLAYOUT|Altis|Agia Triada|TIER|2|16
 OTLAYOUT|Altis|Agia Triada|ITEM|2|object|Land_TableDesk_F|[16532.824,20300.245,7.440]|[[0.0178,0.9998,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Agia Triada|ITEM|2|object|Land_OfficeChair_01_F|[16532.844,20301.345,7.440]|[[0.0178,0.9998,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Agia Triada|ITEM|2|object|Land_MapBoard_F|[16532.794,20298.545,7.440]|[[0.0178,0.9998,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Agia Triada|ITEM|2|guard|gendarme|[16531.457,20302.120,7.440]|141.0|
-OTLAYOUT|Altis|Agia Triada|ITEM|2|object|Flag_NATO_F|[16538.055,20296.301,6.247]|[[-0.0178,-0.9998,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Agia Triada|ITEM|2|guard|gendarme|[16536.159,20296.585,6.399]|181.0|ground
-OTLAYOUT|Altis|Agia Triada|ITEM|2|object|Land_BagFence_Long_F|[16530.317,20294.239,6.767]|[[-0.0178,-0.9998,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Agia Triada|ITEM|2|object|Land_BagFence_Short_F|[16529.104,20295.231,6.864]|[[-0.9998,0.0178,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Agia Triada|ITEM|2|object|Land_BagFence_Short_F|[16531.564,20295.187,6.700]|[[-0.9998,0.0178,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Agia Triada|ITEM|2|guard|rifleman|[16530.935,20295.278,6.744]|181.0|ground
-OTLAYOUT|Altis|Agia Triada|ITEM|2|guard|autorifleman|[16529.735,20295.299,6.825]|181.0|ground
-OTLAYOUT|Altis|Agia Triada|ITEM|2|object|Land_HBarrier_3_F|[16535.007,20293.655,6.446]|[[-0.0178,-0.9998,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Agia Triada|ITEM|2|object|Land_HBarrier_3_F|[16535.007,20293.655,8.196]|[[-0.0178,-0.9998,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Agia Triada|ITEM|2|object|Land_BagFence_Short_F|[16536.140,20295.485,6.383]|[[-0.0178,-0.9998,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Agia Triada|ITEM|2|object|Land_BagBunker_Tower_F|[16528.507,20307.362,6.900]|[[-0.4917,0.8708,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Agia Triada|ITEM|2|object|Flag_NATO_F|[16525.554,20307.303,7.043]|[[-0.4917,0.8708,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Agia Triada|ITEM|2|object|Land_CncBarrier_stripes_F|[16523.492,20309.124,7.090]|[[0.8708,0.4917,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Agia Triada|ITEM|2|object|Land_CncBarrier_stripes_F|[16522.214,20311.388,7.106]|[[0.8708,0.4917,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Agia Triada|ITEM|2|object|Land_CncBarrier_stripes_F|[16526.048,20318.836,6.858]|[[0.8708,0.4917,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Agia Triada|ITEM|2|object|Land_CncBarrier_stripes_F|[16527.326,20316.572,6.807]|[[0.8708,0.4917,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Agia Triada|ITEM|2|guard|rifleman|[16528.359,20307.623,10.300]|330.5|
-OTLAYOUT|Altis|Agia Triada|ITEM|2|object|Land_Razorwire_F|[16526.635,20300.905,7.148]|[[0.9998,-0.0178,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Agia Triada|ITEM|2|guard|marksman|[16534.892,20298.408,10.260]|181.0|
-OTLAYOUT|Altis|Agia Triada|ITEM|2|guard|rifleman|[16537.860,20302.206,10.260]|21.0|
+OTLAYOUT|Altis|Agia Triada|ITEM|2|object|Land_MapBoard_F|[16532.793,20298.546,7.440]|[[0.0178,0.9998,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Agia Triada|ITEM|2|object|Flag_NATO_F|[16538.054,20296.302,6.247]|[[-0.0178,-0.9998,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
+OTLAYOUT|Altis|Agia Triada|ITEM|2|object|Box_NATO_Ammo_F|[16533.363,20296.785,6.605]|[[-0.0175,-0.9998,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Agia Triada|ITEM|2|guard|gendarme|[16535.640,20301.420,7.440]|67.2|garrison
+OTLAYOUT|Altis|Agia Triada|ITEM|2|guard|gendarme|[16530.960,20302.990,10.280]|344.9|garrison
+OTLAYOUT|Altis|Agia Triada|ITEM|2|guard|gendarme|[16535.960,20304.510,10.220]|41.4|garrison
+OTLAYOUT|Altis|Agia Triada|ITEM|2|guard|gendarme|[16534.050,20299.000,10.270]|110.0|garrison
+OTLAYOUT|Altis|Agia Triada|ITEM|2|object|Land_PortableLight_single_F|[16533.045,20295.790,6.604]|[[-0.0175,-0.9998,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Agia Triada|ITEM|2|guard|gendarme|[16515.769,20284.936,6.900]|91.0|ground,patrol,patrol:1
+OTLAYOUT|Altis|Agia Triada|ITEM|2|guard|gendarme|[16517.872,20284.899,6.890]|91.0|ground,patrol,patrol:1
+OTLAYOUT|Altis|Agia Triada|ITEM|2|guard|gendarme|[16522.080,20284.824,6.816]|91.0|ground,patrol,patrol:1
+OTLAYOUT|Altis|Agia Triada|ITEM|2|guard|gendarme|[16547.863,20314.690,5.401]|91.0|ground,patrol,patrol:2
+OTLAYOUT|Altis|Agia Triada|ITEM|2|guard|gendarme|[16547.827,20312.669,5.477]|181.0|ground,patrol,patrol:2
+OTLAYOUT|Altis|Agia Triada|ITEM|2|guard|gendarme|[16547.791,20310.648,5.592]|181.0|ground,patrol,patrol:2
 OTLAYOUT|Altis|Agios Dionysios|OFFICE|Land_u_House_Big_01_V1_F|[9240.742,15948.170,117.964]|21.71|false
 OTLAYOUT|Altis|Agios Dionysios|CONFIRMED
 OTLAYOUT|Altis|Agios Dionysios|TIER|1|0
@@ -604,42 +619,62 @@ OTLAYOUT|Altis|Agios Dionysios|ITEM|4|guard|marksman|[9220.740,15912.070,121.278
 OTLAYOUT|Altis|Agios Dionysios|ITEM|4|guard|rifleman|[9222.240,15910.570,121.191]|207.5|garrison,ground,reserve,reserve:3
 OTLAYOUT|Altis|Agios Konstantinos|OFFICE|Land_u_House_Big_02_V1_F|[3950.367,17305.805,11.475]|53.80|false
 OTLAYOUT|Altis|Agios Konstantinos|CONFIRMED
-OTLAYOUT|Altis|Agios Konstantinos|TIER|1|0
-OTLAYOUT|Altis|Agios Konstantinos|TIER|2|4
-OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|object|Land_BagFence_Long_F|[3944.579,17303.549,11.890]|[[0.8070,0.5906,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|object|Land_BagFence_Short_F|[3943.248,17306.045,11.890]|[[0.5906,-0.8070,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|object|Land_BagFence_Long_F|[3956.557,17310.210,11.726]|[[0.8070,0.5906,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|object|Land_BagFence_Long_F|[3956.190,17302.753,11.727]|[[0.5906,-0.8070,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Agios Konstantinos|TIER|1|9
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|1|object|Land_TableDesk_F|[3950.564,17308.910,15.104]|[[-0.5905,0.8070,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|1|object|Land_OfficeChair_01_F|[3949.619,17310.200,15.106]|[[-0.5906,0.8070,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|1|object|Land_MapBoard_F|[3952.528,17310.511,15.390]|[[0.4141,0.9102,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|1|object|Flag_NATO_F|[3939.389,17304.764,10.017]|[[-0.5906,0.8069,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|1|object|Box_NATO_Ammo_F|[3944.188,17308.282,10.614]|[[-0.5906,0.8070,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|1|guard|gendarme|[3947.760,17303.710,11.900]|231.2|garrison
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|1|guard|gendarme|[3957.430,17306.830,15.330]|81.7|garrison
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|1|guard|gendarme|[3951.740,17307.570,15.340]|37.9|garrison
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|1|guard|gendarme|[3947.890,17299.540,11.900]|201.6|garrison
+OTLAYOUT|Altis|Agios Konstantinos|TIER|2|16
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|object|Land_TableDesk_F|[3950.564,17308.910,15.104]|[[-0.5905,0.8070,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|object|Land_OfficeChair_01_F|[3949.619,17310.200,15.106]|[[-0.5906,0.8070,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|object|Land_MapBoard_F|[3952.528,17310.511,15.390]|[[0.4141,0.9102,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|object|Flag_NATO_F|[3939.389,17304.764,10.017]|[[-0.5906,0.8069,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|object|Box_NATO_Ammo_F|[3944.188,17308.282,10.614]|[[-0.5906,0.8070,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|guard|gendarme|[3947.760,17303.710,11.900]|231.2|garrison
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|guard|gendarme|[3957.430,17306.830,15.330]|81.7|garrison
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|guard|gendarme|[3951.740,17307.570,15.340]|37.9|garrison
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|guard|gendarme|[3947.890,17299.540,11.900]|201.6|garrison
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|object|Land_PortableLight_single_F|[3943.839,17309.266,10.624]|[[-0.5906,0.8070,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|guard|gendarme|[3924.919,17304.861,9.041]|143.8|ground,patrol,patrol:1
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|guard|gendarme|[3926.123,17303.216,9.051]|143.8|ground,patrol,patrol:1
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|guard|gendarme|[3927.327,17301.571,9.047]|143.8|ground,patrol,patrol:1
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|guard|gendarme|[3975.812,17306.742,17.963]|143.8|ground,patrol,patrol:2
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|guard|gendarme|[3974.191,17305.556,17.225]|233.8|ground,patrol,patrol:2
+OTLAYOUT|Altis|Agios Konstantinos|ITEM|2|guard|gendarme|[3972.570,17304.370,16.342]|233.8|ground,patrol,patrol:2
 OTLAYOUT|Altis|Agios Petros|OFFICE|Land_i_Stone_HouseBig_V1_F|[19339.219,17642.344,36.924]|349.00|true
 OTLAYOUT|Altis|Agios Petros|CONFIRMED
-OTLAYOUT|Altis|Agios Petros|TIER|1|6
-OTLAYOUT|Altis|Agios Petros|ITEM|1|object|Land_TableDesk_F|[19340.109,17642.973,37.420]|[[-0.1908,0.9816,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Agios Petros|ITEM|1|object|Land_OfficeChair_01_F|[19339.899,17644.053,37.420]|[[-0.1908,0.9816,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Agios Petros|ITEM|1|object|Land_MapBoard_F|[19340.434,17641.305,37.420]|[[-0.1908,0.9816,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Agios Petros|ITEM|1|guard|gendarme|[19338.382,17644.522,37.420]|129.0|
-OTLAYOUT|Altis|Agios Petros|ITEM|1|object|Flag_NATO_F|[19346.047,17640.205,37.551]|[[0.1908,-0.9816,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Agios Petros|ITEM|1|guard|gendarme|[19344.134,17640.088,37.493]|169.0|ground
-OTLAYOUT|Altis|Agios Petros|TIER|2|20
-OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Land_TableDesk_F|[19340.109,17642.973,37.420]|[[-0.1908,0.9816,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Land_OfficeChair_01_F|[19339.899,17644.053,37.420]|[[-0.1908,0.9816,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Land_MapBoard_F|[19340.434,17641.305,37.420]|[[-0.1908,0.9816,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Agios Petros|ITEM|2|guard|gendarme|[19338.382,17644.522,37.420]|129.0|
-OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Flag_NATO_F|[19346.047,17640.205,37.551]|[[0.1908,-0.9816,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Agios Petros|ITEM|2|guard|gendarme|[19344.134,17640.088,37.493]|169.0|ground
-OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Land_BagFence_Long_F|[19345.719,17637.697,37.644]|[[0.1908,-0.9816,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Land_BagFence_Short_F|[19344.327,17638.414,37.546]|[[-0.9816,-0.1908,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Land_BagFence_Short_F|[19346.741,17638.884,37.631]|[[-0.9816,-0.1908,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Agios Petros|ITEM|2|guard|rifleman|[19346.108,17638.842,37.614]|169.0|ground
-OTLAYOUT|Altis|Agios Petros|ITEM|2|guard|autorifleman|[19344.930,17638.613,37.579]|169.0|ground
-OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Land_HBarrier_3_F|[19341.555,17636.582,37.352]|[[0.1908,-0.9816,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Land_HBarrier_3_F|[19341.555,17636.582,39.102]|[[0.1908,-0.9816,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Land_BagBunker_Tower_F|[19349.822,17645.734,37.770]|[[-0.8490,0.5284,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Flag_NATO_F|[19350.008,17648.681,37.794]|[[-0.8490,0.5284,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Land_CncBarrier_stripes_F|[19348.276,17650.819,37.748]|[[0.5284,0.8490,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Land_CncBarrier_stripes_F|[19346.068,17652.193,37.741]|[[0.5284,0.8490,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Agios Petros|ITEM|2|guard|rifleman|[19349.568,17645.892,41.170]|301.9|
-OTLAYOUT|Altis|Agios Petros|ITEM|2|guard|marksman|[19342.514,17641.607,40.240]|169.0|
-OTLAYOUT|Altis|Agios Petros|ITEM|2|guard|rifleman|[19344.626,17645.940,40.240]|9.0|
+OTLAYOUT|Altis|Agios Petros|TIER|1|9
+OTLAYOUT|Altis|Agios Petros|ITEM|1|object|Land_TableDesk_F|[19340.109,17642.973,37.430]|[[-0.1908,0.9816,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Agios Petros|ITEM|1|object|Land_OfficeChair_01_F|[19339.899,17644.053,37.430]|[[-0.1908,0.9816,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Agios Petros|ITEM|1|object|Land_MapBoard_F|[19340.433,17641.305,37.430]|[[-0.1908,0.9816,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Agios Petros|ITEM|1|object|Flag_NATO_F|[19346.046,17640.205,37.551]|[[0.1908,-0.9816,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
+OTLAYOUT|Altis|Agios Petros|ITEM|1|object|Box_NATO_Ammo_F|[19341.357,17639.701,37.408]|[[0.1908,-0.9816,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Agios Petros|ITEM|1|guard|gendarme|[19342.620,17644.710,37.420]|55.2|garrison
+OTLAYOUT|Altis|Agios Petros|ITEM|1|guard|gendarme|[19337.720,17645.270,40.260]|333.0|garrison
+OTLAYOUT|Altis|Agios Petros|ITEM|1|guard|gendarme|[19342.300,17647.790,40.210]|29.5|garrison
+OTLAYOUT|Altis|Agios Petros|ITEM|1|guard|gendarme|[19341.580,17642.010,40.260]|98.0|garrison
+OTLAYOUT|Altis|Agios Petros|TIER|2|16
+OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Land_TableDesk_F|[19340.109,17642.973,37.430]|[[-0.1908,0.9816,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Land_OfficeChair_01_F|[19339.899,17644.053,37.430]|[[-0.1908,0.9816,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Land_MapBoard_F|[19340.433,17641.305,37.430]|[[-0.1908,0.9816,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Flag_NATO_F|[19346.046,17640.205,37.551]|[[0.1908,-0.9816,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
+OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Box_NATO_Ammo_F|[19341.357,17639.701,37.408]|[[0.1908,-0.9816,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Agios Petros|ITEM|2|guard|gendarme|[19342.620,17644.710,37.420]|55.2|garrison
+OTLAYOUT|Altis|Agios Petros|ITEM|2|guard|gendarme|[19337.720,17645.270,40.260]|333.0|garrison
+OTLAYOUT|Altis|Agios Petros|ITEM|2|guard|gendarme|[19342.300,17647.790,40.210]|29.5|garrison
+OTLAYOUT|Altis|Agios Petros|ITEM|2|guard|gendarme|[19341.580,17642.010,40.260]|98.0|garrison
+OTLAYOUT|Altis|Agios Petros|ITEM|2|object|Land_PortableLight_single_F|[19341.253,17638.662,37.379]|[[0.1908,-0.9816,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Agios Petros|ITEM|2|guard|gendarme|[19326.616,17624.448,36.779]|79.0|ground,patrol,patrol:1
+OTLAYOUT|Altis|Agios Petros|ITEM|2|guard|gendarme|[19328.681,17624.850,36.850]|79.0|ground,patrol,patrol:1
+OTLAYOUT|Altis|Agios Petros|ITEM|2|guard|gendarme|[19330.747,17625.251,36.907]|79.0|ground,patrol,patrol:1
+OTLAYOUT|Altis|Agios Petros|ITEM|2|guard|gendarme|[19351.811,17660.233,38.237]|79.0|ground,patrol,patrol:2
+OTLAYOUT|Altis|Agios Petros|ITEM|2|guard|gendarme|[19352.197,17658.249,38.136]|169.0|ground,patrol,patrol:2
+OTLAYOUT|Altis|Agios Petros|ITEM|2|guard|gendarme|[19352.582,17656.265,38.025]|169.0|ground,patrol,patrol:2
 OTLAYOUT|Altis|Alikampos|OFFICE|Land_i_House_Big_02_V2_F|[11117.867,14578.930,43.694]|359.24|false
 OTLAYOUT|Altis|Alikampos|CONFIRMED
 OTLAYOUT|Altis|Alikampos|TIER|1|0
@@ -795,72 +830,62 @@ OTLAYOUT|Altis|Alikampos|ITEM|3|guard|marksman|[11081.970,14577.430,42.853]|219.
 OTLAYOUT|Altis|Alikampos|ITEM|3|guard|rifleman|[11083.470,14578.930,43.053]|219.2|garrison,ground,reserve,reserve:1
 OTLAYOUT|Altis|Anthrakia|OFFICE|Land_i_Stone_HouseBig_V3_F|[16551.629,16131.479,14.557]|296.24|false
 OTLAYOUT|Altis|Anthrakia|CONFIRMED
-OTLAYOUT|Altis|Anthrakia|TIER|1|6
+OTLAYOUT|Altis|Anthrakia|TIER|1|9
 OTLAYOUT|Altis|Anthrakia|ITEM|1|object|Land_TableDesk_F|[16551.668,16132.579,15.060]|[[-0.8969,0.4421,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Anthrakia|ITEM|1|object|Land_OfficeChair_01_F|[16550.682,16133.066,15.060]|[[-0.8969,0.4421,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Anthrakia|ITEM|1|object|Land_MapBoard_F|[16553.193,16131.828,15.060]|[[-0.8969,0.4421,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Anthrakia|ITEM|1|guard|gendarme|[16549.390,16132.142,15.060]|76.2|
+OTLAYOUT|Altis|Anthrakia|ITEM|1|object|Land_MapBoard_F|[16553.192,16131.828,15.060]|[[-0.8969,0.4421,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Anthrakia|ITEM|1|object|Flag_NATO_F|[16557.465,16135.631,14.627]|[[0.8969,-0.4421,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Anthrakia|ITEM|1|guard|gendarme|[16556.400,16134.037,14.619]|116.2|ground
-OTLAYOUT|Altis|Anthrakia|TIER|2|24
+OTLAYOUT|Altis|Anthrakia|ITEM|1|object|Box_NATO_Ammo_F|[16555.029,16131.592,14.607]|[[0.8973,-0.4415,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Anthrakia|ITEM|1|guard|gendarme|[16551.810,16135.620,15.060]|2.5|garrison
+OTLAYOUT|Altis|Anthrakia|ITEM|1|guard|gendarme|[16548.390,16132.060,17.890]|280.1|garrison
+OTLAYOUT|Altis|Anthrakia|ITEM|1|guard|gendarme|[16549.150,16137.230,17.840]|336.7|garrison
+OTLAYOUT|Altis|Anthrakia|ITEM|1|guard|gendarme|[16553.320,16133.150,17.890]|45.4|garrison
+OTLAYOUT|Altis|Anthrakia|TIER|2|16
 OTLAYOUT|Altis|Anthrakia|ITEM|2|object|Land_TableDesk_F|[16551.668,16132.579,15.060]|[[-0.8969,0.4421,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Anthrakia|ITEM|2|object|Land_OfficeChair_01_F|[16550.682,16133.066,15.060]|[[-0.8969,0.4421,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Anthrakia|ITEM|2|object|Land_MapBoard_F|[16553.193,16131.828,15.060]|[[-0.8969,0.4421,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Anthrakia|ITEM|2|guard|gendarme|[16549.390,16132.142,15.060]|76.2|
+OTLAYOUT|Altis|Anthrakia|ITEM|2|object|Land_MapBoard_F|[16553.192,16131.828,15.060]|[[-0.8969,0.4421,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Anthrakia|ITEM|2|object|Flag_NATO_F|[16557.465,16135.631,14.627]|[[0.8969,-0.4421,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Anthrakia|ITEM|2|guard|gendarme|[16556.400,16134.037,14.619]|116.2|ground
-OTLAYOUT|Altis|Anthrakia|ITEM|2|object|Land_BagFence_Long_F|[16556.034,16127.752,14.642]|[[0.8969,-0.4421,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Anthrakia|ITEM|2|object|Land_BagFence_Short_F|[16554.620,16127.077,14.628]|[[-0.4421,-0.8969,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Anthrakia|ITEM|2|object|Land_BagFence_Short_F|[16555.707,16129.284,14.623]|[[-0.4421,-0.8969,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Anthrakia|ITEM|2|guard|rifleman|[16555.357,16128.754,14.624]|116.2|ground
-OTLAYOUT|Altis|Anthrakia|ITEM|2|guard|autorifleman|[16554.827,16127.678,14.626]|116.2|ground
-OTLAYOUT|Altis|Anthrakia|ITEM|2|object|Land_HBarrier_3_F|[16558.560,16131.746,14.667]|[[0.8969,-0.4421,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Anthrakia|ITEM|2|object|Land_HBarrier_3_F|[16558.560,16131.746,16.417]|[[0.8969,-0.4421,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Anthrakia|ITEM|2|object|Land_BagFence_Short_F|[16557.387,16133.551,14.636]|[[0.8969,-0.4421,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Anthrakia|ITEM|2|object|Land_BagBunker_Tower_F|[16543.647,16140.312,14.356]|[[0.4229,0.9062,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Anthrakia|ITEM|2|object|Flag_NATO_F|[16546.595,16140.481,14.414]|[[0.4229,0.9062,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Anthrakia|ITEM|2|object|Land_CncBarrier_stripes_F|[16548.510,16142.457,14.436]|[[0.9062,-0.4229,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Anthrakia|ITEM|2|object|Land_CncBarrier_stripes_F|[16549.609,16144.813,14.443]|[[0.9062,-0.4229,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Anthrakia|ITEM|2|object|Land_CncBarrier_stripes_F|[16545.211,16151.941,14.321]|[[0.9062,-0.4229,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Anthrakia|ITEM|2|object|Land_CncBarrier_stripes_F|[16544.112,16149.585,14.317]|[[0.9062,-0.4229,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Anthrakia|ITEM|2|guard|rifleman|[16543.774,16140.584,17.756]|25.0|
-OTLAYOUT|Altis|Anthrakia|ITEM|2|object|Land_Razorwire_F|[16547.537,16127.704,14.497]|[[0.4421,0.8969,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Anthrakia|ITEM|2|guard|marksman|[16554.211,16133.667,17.870]|116.2|
-OTLAYOUT|Altis|Anthrakia|ITEM|2|guard|rifleman|[16552.040,16137.970,17.870]|30.2|
+OTLAYOUT|Altis|Anthrakia|ITEM|2|object|Box_NATO_Ammo_F|[16555.029,16131.592,14.607]|[[0.8973,-0.4415,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Anthrakia|ITEM|2|guard|gendarme|[16551.810,16135.620,15.060]|2.5|garrison
+OTLAYOUT|Altis|Anthrakia|ITEM|2|guard|gendarme|[16548.390,16132.060,17.890]|280.1|garrison
+OTLAYOUT|Altis|Anthrakia|ITEM|2|guard|gendarme|[16549.150,16137.230,17.840]|336.7|garrison
+OTLAYOUT|Altis|Anthrakia|ITEM|2|guard|gendarme|[16553.320,16133.150,17.890]|45.4|garrison
+OTLAYOUT|Altis|Anthrakia|ITEM|2|object|Land_PortableLight_single_F|[16555.794,16130.882,14.623]|[[0.8973,-0.4415,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Anthrakia|ITEM|2|guard|gendarme|[16558.251,16110.627,14.464]|26.2|ground,patrol,patrol:1
+OTLAYOUT|Altis|Anthrakia|ITEM|2|guard|gendarme|[16559.181,16112.514,14.546]|26.2|ground,patrol,patrol:1
+OTLAYOUT|Altis|Anthrakia|ITEM|2|guard|gendarme|[16560.111,16114.401,14.659]|26.2|ground,patrol,patrol:1
+OTLAYOUT|Altis|Anthrakia|ITEM|2|guard|gendarme|[16545.009,16152.340,14.315]|26.2|ground,patrol,patrol:2
+OTLAYOUT|Altis|Anthrakia|ITEM|2|guard|gendarme|[16546.822,16151.446,14.354]|116.2|ground,patrol,patrol:2
+OTLAYOUT|Altis|Anthrakia|ITEM|2|guard|gendarme|[16548.635,16150.553,14.392]|116.2|ground,patrol,patrol:2
 OTLAYOUT|Altis|Athanos|OFFICE|Land_i_Stone_HouseBig_V3_F|[3524.965,10275.319,26.379]|164.31|false
 OTLAYOUT|Altis|Athanos|CONFIRMED
-OTLAYOUT|Altis|Athanos|TIER|1|6
+OTLAYOUT|Altis|Athanos|TIER|1|9
 OTLAYOUT|Altis|Athanos|ITEM|1|object|Land_TableDesk_F|[3524.118,10274.612,26.880]|[[0.2704,-0.9627,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Athanos|ITEM|1|object|Land_OfficeChair_01_F|[3524.416,10273.553,26.880]|[[0.2704,-0.9627,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Athanos|ITEM|1|object|Land_MapBoard_F|[3523.658,10276.249,26.880]|[[0.2704,-0.9627,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Athanos|ITEM|1|guard|gendarme|[3525.966,10273.210,26.880]|304.3|
-OTLAYOUT|Altis|Athanos|ITEM|1|object|Flag_NATO_F|[3517.974,10276.885,26.411]|[[-0.2704,0.9627,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Athanos|ITEM|1|guard|gendarme|[3519.871,10277.159,26.366]|344.3|ground
-OTLAYOUT|Altis|Athanos|TIER|2|24
+OTLAYOUT|Altis|Athanos|ITEM|1|object|Land_OfficeChair_01_F|[3524.415,10273.553,26.880]|[[0.2704,-0.9627,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Athanos|ITEM|1|object|Land_MapBoard_F|[3523.659,10276.248,26.880]|[[0.2704,-0.9627,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Athanos|ITEM|1|object|Flag_NATO_F|[3517.975,10276.885,26.411]|[[-0.2704,0.9627,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
+OTLAYOUT|Altis|Athanos|ITEM|1|object|Box_NATO_Ammo_F|[3522.607,10277.772,26.264]|[[-0.2706,0.9627,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Athanos|ITEM|1|guard|gendarme|[3521.760,10272.690,26.880]|230.6|garrison
+OTLAYOUT|Altis|Athanos|ITEM|1|guard|gendarme|[3526.690,10272.520,29.710]|148.2|garrison
+OTLAYOUT|Altis|Athanos|ITEM|1|guard|gendarme|[3522.340,10269.640,29.670]|204.8|garrison
+OTLAYOUT|Altis|Athanos|ITEM|1|guard|gendarme|[3522.590,10275.460,29.710]|273.5|garrison
+OTLAYOUT|Altis|Athanos|TIER|2|16
 OTLAYOUT|Altis|Athanos|ITEM|2|object|Land_TableDesk_F|[3524.118,10274.612,26.880]|[[0.2704,-0.9627,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Athanos|ITEM|2|object|Land_OfficeChair_01_F|[3524.416,10273.553,26.880]|[[0.2704,-0.9627,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Athanos|ITEM|2|object|Land_MapBoard_F|[3523.658,10276.249,26.880]|[[0.2704,-0.9627,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Athanos|ITEM|2|guard|gendarme|[3525.966,10273.210,26.880]|304.3|
-OTLAYOUT|Altis|Athanos|ITEM|2|object|Flag_NATO_F|[3517.974,10276.885,26.411]|[[-0.2704,0.9627,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Athanos|ITEM|2|guard|gendarme|[3519.871,10277.159,26.366]|344.3|ground
-OTLAYOUT|Altis|Athanos|ITEM|2|object|Land_BagFence_Long_F|[3524.792,10281.086,25.934]|[[-0.2704,0.9627,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Athanos|ITEM|2|object|Land_BagFence_Short_F|[3526.239,10280.485,25.905]|[[0.9627,0.2704,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Athanos|ITEM|2|object|Land_BagFence_Short_F|[3523.871,10279.819,26.066]|[[0.9627,0.2704,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Athanos|ITEM|2|guard|rifleman|[3524.499,10279.913,26.022]|344.3|ground
-OTLAYOUT|Altis|Athanos|ITEM|2|guard|autorifleman|[3525.654,10280.237,25.946]|344.3|ground
-OTLAYOUT|Altis|Athanos|ITEM|2|object|Land_HBarrier_3_F|[3520.132,10280.296,26.252]|[[-0.2704,0.9627,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Athanos|ITEM|2|object|Land_HBarrier_3_F|[3520.132,10280.296,28.002]|[[-0.2704,0.9627,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Athanos|ITEM|2|object|Land_BagFence_Short_F|[3519.574,10278.218,26.344]|[[-0.2704,0.9627,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Athanos|ITEM|2|object|Land_BagBunker_Tower_F|[3524.845,10285.015,25.766]|[[-0.4398,0.8981,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Athanos|ITEM|2|object|Flag_NATO_F|[3526.564,10287.415,25.617]|[[-0.4398,0.8981,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Athanos|ITEM|2|object|Land_CncBarrier_stripes_F|[3526.229,10290.146,25.547]|[[0.8981,0.4398,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Athanos|ITEM|2|object|Land_CncBarrier_stripes_F|[3525.085,10292.481,25.554]|[[0.8981,0.4398,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Athanos|ITEM|2|object|Land_CncBarrier_stripes_F|[3516.776,10293.534,26.134]|[[0.8981,0.4398,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Athanos|ITEM|2|object|Land_CncBarrier_stripes_F|[3517.919,10291.199,26.023]|[[0.8981,0.4398,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Athanos|ITEM|2|guard|rifleman|[3524.713,10285.284,29.166]|333.9|
-OTLAYOUT|Altis|Athanos|ITEM|2|object|Land_Razorwire_F|[3530.506,10274.797,26.084]|[[-0.9627,-0.2704,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Athanos|ITEM|2|guard|marksman|[3521.610,10275.777,29.700]|344.3|
-OTLAYOUT|Altis|Athanos|ITEM|2|guard|rifleman|[3519.859,10271.286,29.700]|244.3|
+OTLAYOUT|Altis|Athanos|ITEM|2|object|Land_OfficeChair_01_F|[3524.415,10273.553,26.880]|[[0.2704,-0.9627,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Athanos|ITEM|2|object|Land_MapBoard_F|[3523.659,10276.248,26.880]|[[0.2704,-0.9627,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Athanos|ITEM|2|object|Flag_NATO_F|[3517.975,10276.885,26.411]|[[-0.2704,0.9627,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
+OTLAYOUT|Altis|Athanos|ITEM|2|object|Box_NATO_Ammo_F|[3522.607,10277.772,26.264]|[[-0.2706,0.9627,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Athanos|ITEM|2|guard|gendarme|[3521.760,10272.690,26.880]|230.6|garrison
+OTLAYOUT|Altis|Athanos|ITEM|2|guard|gendarme|[3526.690,10272.520,29.710]|148.2|garrison
+OTLAYOUT|Altis|Athanos|ITEM|2|guard|gendarme|[3522.340,10269.640,29.670]|204.8|garrison
+OTLAYOUT|Altis|Athanos|ITEM|2|guard|gendarme|[3522.590,10275.460,29.710]|273.5|garrison
+OTLAYOUT|Altis|Athanos|ITEM|2|object|Land_PortableLight_single_F|[3522.625,10278.815,26.202]|[[-0.2706,0.9627,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Athanos|ITEM|2|guard|gendarme|[3536.051,10294.178,24.981]|254.3|ground,patrol,patrol:1
+OTLAYOUT|Altis|Athanos|ITEM|2|guard|gendarme|[3534.026,10293.609,25.081]|254.3|ground,patrol,patrol:1
+OTLAYOUT|Altis|Athanos|ITEM|2|guard|gendarme|[3532.000,10293.040,25.175]|254.3|ground,patrol,patrol:1
+OTLAYOUT|Altis|Athanos|ITEM|2|guard|gendarme|[3513.867,10256.453,26.972]|254.3|ground,patrol,patrol:2
+OTLAYOUT|Altis|Athanos|ITEM|2|guard|gendarme|[3513.320,10258.399,26.953]|344.3|ground,patrol,patrol:2
+OTLAYOUT|Altis|Athanos|ITEM|2|guard|gendarme|[3512.774,10260.345,26.946]|344.3|ground,patrol,patrol:2
 OTLAYOUT|Altis|Athira|OFFICE|Land_i_House_Big_01_V3_F|[14010.835,18684.309,26.424]|299.54|false
 OTLAYOUT|Altis|Athira|CONFIRMED
 OTLAYOUT|Altis|Athira|TIER|1|0
@@ -1829,38 +1854,33 @@ OTLAYOUT|Altis|Charkia|ITEM|4|object|Land_CncWall1_F|[17959.289,15306.129,34.192
 OTLAYOUT|Altis|Charkia|ITEM|4|object|Land_CncWall1_F|[17959.593,15306.662,34.200]|[[-0.8686,0.4955,0.0000],[0.0000,0.0000,1.0000]]|ground,leakfix
 OTLAYOUT|Altis|Delfinaki|OFFICE|Land_i_Stone_HouseBig_V1_F|[23908.594,20144.531,13.571]|334.00|true
 OTLAYOUT|Altis|Delfinaki|CONFIRMED
-OTLAYOUT|Altis|Delfinaki|TIER|1|6
+OTLAYOUT|Altis|Delfinaki|TIER|1|9
 OTLAYOUT|Altis|Delfinaki|ITEM|1|object|Land_TableDesk_F|[23909.298,20145.375,14.070]|[[-0.4384,0.8988,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Delfinaki|ITEM|1|object|Land_OfficeChair_01_F|[23908.816,20146.364,14.070]|[[-0.4384,0.8988,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Delfinaki|ITEM|1|object|Land_MapBoard_F|[23910.044,20143.847,14.070]|[[-0.4384,0.8988,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Delfinaki|ITEM|1|guard|gendarme|[23907.229,20146.424,14.070]|114.0|
+OTLAYOUT|Altis|Delfinaki|ITEM|1|object|Land_MapBoard_F|[23910.043,20143.848,14.070]|[[-0.4384,0.8988,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Delfinaki|ITEM|1|object|Flag_NATO_F|[23915.750,20144.238,14.123]|[[0.4384,-0.8988,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Delfinaki|ITEM|1|guard|gendarme|[23913.932,20143.630,14.086]|154.0|ground
-OTLAYOUT|Altis|Delfinaki|TIER|2|24
+OTLAYOUT|Altis|Delfinaki|ITEM|1|object|Box_NATO_Ammo_F|[23911.350,20142.537,14.022]|[[0.4384,-0.8988,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Delfinaki|ITEM|1|guard|gendarme|[23911.270,20147.690,14.070]|40.3|garrison
+OTLAYOUT|Altis|Delfinaki|ITEM|1|guard|gendarme|[23906.390,20146.970,16.910]|317.8|garrison
+OTLAYOUT|Altis|Delfinaki|ITEM|1|guard|gendarme|[23910.160,20150.590,16.860]|14.5|garrison
+OTLAYOUT|Altis|Delfinaki|ITEM|1|guard|gendarme|[23910.960,20144.820,16.910]|83.1|garrison
+OTLAYOUT|Altis|Delfinaki|TIER|2|16
 OTLAYOUT|Altis|Delfinaki|ITEM|2|object|Land_TableDesk_F|[23909.298,20145.375,14.070]|[[-0.4384,0.8988,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Delfinaki|ITEM|2|object|Land_OfficeChair_01_F|[23908.816,20146.364,14.070]|[[-0.4384,0.8988,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Delfinaki|ITEM|2|object|Land_MapBoard_F|[23910.044,20143.847,14.070]|[[-0.4384,0.8988,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Delfinaki|ITEM|2|guard|gendarme|[23907.229,20146.424,14.070]|114.0|
+OTLAYOUT|Altis|Delfinaki|ITEM|2|object|Land_MapBoard_F|[23910.043,20143.848,14.070]|[[-0.4384,0.8988,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Delfinaki|ITEM|2|object|Flag_NATO_F|[23915.750,20144.238,14.123]|[[0.4384,-0.8988,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Delfinaki|ITEM|2|guard|gendarme|[23913.932,20143.630,14.086]|154.0|ground
-OTLAYOUT|Altis|Delfinaki|ITEM|2|object|Land_BagFence_Long_F|[23909.793,20138.886,13.878]|[[0.4384,-0.8988,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Delfinaki|ITEM|2|object|Land_BagFence_Short_F|[23908.263,20139.218,13.884]|[[-0.8988,-0.4384,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Delfinaki|ITEM|2|object|Land_BagFence_Short_F|[23910.474,20140.297,13.931]|[[-0.8988,-0.4384,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Delfinaki|ITEM|2|guard|rifleman|[23909.872,20140.092,13.921]|154.0|ground
-OTLAYOUT|Altis|Delfinaki|ITEM|2|guard|autorifleman|[23908.794,20139.566,13.897]|154.0|ground
-OTLAYOUT|Altis|Delfinaki|ITEM|2|object|Land_HBarrier_3_F|[23914.237,20140.496,14.003]|[[0.4384,-0.8988,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Delfinaki|ITEM|2|object|Land_HBarrier_3_F|[23914.237,20140.496,15.753]|[[0.4384,-0.8988,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Delfinaki|ITEM|2|object|Land_BagFence_Short_F|[23914.415,20142.641,14.062]|[[0.4384,-0.8988,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Delfinaki|ITEM|2|object|Land_BagBunker_Tower_F|[23907.982,20155.070,14.535]|[[0.6390,0.7692,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Delfinaki|ITEM|2|object|Flag_NATO_F|[23906.877,20157.808,14.721]|[[0.6390,0.7692,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Delfinaki|ITEM|2|object|Land_CncBarrier_stripes_F|[23907.846,20160.383,14.828]|[[0.7692,-0.6390,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Delfinaki|ITEM|2|object|Land_CncBarrier_stripes_F|[23909.507,20162.384,14.848]|[[0.7692,-0.6390,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Delfinaki|ITEM|2|object|Land_CncBarrier_stripes_F|[23917.831,20161.449,14.654]|[[0.7692,-0.6390,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Delfinaki|ITEM|2|object|Land_CncBarrier_stripes_F|[23916.170,20159.449,14.626]|[[0.7692,-0.6390,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Delfinaki|ITEM|2|guard|rifleman|[23908.174,20155.301,17.935]|39.7|
-OTLAYOUT|Altis|Delfinaki|ITEM|2|object|Land_Razorwire_F|[23903.046,20144.051,14.037]|[[0.8988,0.4384,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Delfinaki|ITEM|2|guard|marksman|[23911.975,20144.678,16.890]|154.0|
-OTLAYOUT|Altis|Delfinaki|ITEM|2|guard|rifleman|[23912.894,20149.410,16.890]|43.0|
+OTLAYOUT|Altis|Delfinaki|ITEM|2|object|Box_NATO_Ammo_F|[23911.350,20142.537,14.022]|[[0.4384,-0.8988,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Delfinaki|ITEM|2|guard|gendarme|[23911.270,20147.690,14.070]|40.3|garrison
+OTLAYOUT|Altis|Delfinaki|ITEM|2|guard|gendarme|[23906.390,20146.970,16.910]|317.8|garrison
+OTLAYOUT|Altis|Delfinaki|ITEM|2|guard|gendarme|[23910.160,20150.590,16.860]|14.5|garrison
+OTLAYOUT|Altis|Delfinaki|ITEM|2|guard|gendarme|[23910.960,20144.820,16.910]|83.1|garrison
+OTLAYOUT|Altis|Delfinaki|ITEM|2|object|Land_PortableLight_single_F|[23911.519,20141.507,13.990]|[[0.4384,-0.8988,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Delfinaki|ITEM|2|guard|gendarme|[23901.060,20123.989,13.466]|64.0|ground,patrol,patrol:1
+OTLAYOUT|Altis|Delfinaki|ITEM|2|guard|gendarme|[23902.951,20124.912,13.483]|64.0|ground,patrol,patrol:1
+OTLAYOUT|Altis|Delfinaki|ITEM|2|guard|gendarme|[23904.842,20125.834,13.532]|64.0|ground,patrol,patrol:1
+OTLAYOUT|Altis|Delfinaki|ITEM|2|guard|gendarme|[23916.134,20165.076,14.764]|64.0|ground,patrol,patrol:2
+OTLAYOUT|Altis|Delfinaki|ITEM|2|guard|gendarme|[23917.020,20163.259,14.708]|154.0|ground,patrol,patrol:2
+OTLAYOUT|Altis|Delfinaki|ITEM|2|guard|gendarme|[23917.906,20161.442,14.653]|154.0|ground,patrol,patrol:2
 OTLAYOUT|Altis|Dorida|OFFICE|Land_i_House_Big_02_V1_F|[19343.342,13235.365,38.639]|51.31|false
 OTLAYOUT|Altis|Dorida|CONFIRMED
 OTLAYOUT|Altis|Dorida|TIER|1|0
@@ -2025,108 +2045,117 @@ OTLAYOUT|Altis|Dorida|ITEM|3|guard|at|[19320.540,13250.470,37.078]|340.9|garriso
 OTLAYOUT|Altis|Dorida|ITEM|3|guard|rifleman|[19319.040,13250.470,37.000]|336.1|garrison,ground,reserve,reserve:1
 OTLAYOUT|Altis|Ekali|OFFICE|Land_i_Stone_HouseBig_V1_F|[17060.156,9992.344,21.336]|70.00|true
 OTLAYOUT|Altis|Ekali|CONFIRMED
-OTLAYOUT|Altis|Ekali|TIER|1|6
+OTLAYOUT|Altis|Ekali|TIER|1|9
 OTLAYOUT|Altis|Ekali|ITEM|1|object|Land_TableDesk_F|[17060.918,9991.557,21.840]|[[0.9397,0.3420,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Ekali|ITEM|1|object|Land_OfficeChair_01_F|[17061.952,9991.934,21.840]|[[0.9397,0.3420,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Ekali|ITEM|1|object|Land_OfficeChair_01_F|[17061.952,9991.933,21.840]|[[0.9397,0.3420,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Ekali|ITEM|1|object|Land_MapBoard_F|[17059.321,9990.976,21.840]|[[0.9397,0.3420,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Ekali|ITEM|1|guard|gendarme|[17062.178,9993.506,21.840]|210.0|
 OTLAYOUT|Altis|Ekali|ITEM|1|object|Flag_NATO_F|[17059.113,9985.260,22.378]|[[-0.9397,-0.3420,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Ekali|ITEM|1|guard|gendarme|[17058.698,9987.131,22.197]|250.0|ground
-OTLAYOUT|Altis|Ekali|TIER|2|19
+OTLAYOUT|Altis|Ekali|ITEM|1|object|Box_NATO_Ammo_F|[17057.881,9989.814,21.930]|[[-0.9397,-0.3420,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Ekali|ITEM|1|guard|gendarme|[17063.020,9989.350,21.840]|136.2|garrison
+OTLAYOUT|Altis|Ekali|ITEM|1|guard|gendarme|[17062.820,9994.280,24.670]|54.0|garrison
+OTLAYOUT|Altis|Ekali|ITEM|1|guard|gendarme|[17066.020,9990.160,24.620]|110.4|garrison
+OTLAYOUT|Altis|Ekali|ITEM|1|guard|gendarme|[17060.190,9989.960,24.670]|179.1|garrison
+OTLAYOUT|Altis|Ekali|TIER|2|16
 OTLAYOUT|Altis|Ekali|ITEM|2|object|Land_TableDesk_F|[17060.918,9991.557,21.840]|[[0.9397,0.3420,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Ekali|ITEM|2|object|Land_OfficeChair_01_F|[17061.952,9991.934,21.840]|[[0.9397,0.3420,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Ekali|ITEM|2|object|Land_OfficeChair_01_F|[17061.952,9991.933,21.840]|[[0.9397,0.3420,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Ekali|ITEM|2|object|Land_MapBoard_F|[17059.321,9990.976,21.840]|[[0.9397,0.3420,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Ekali|ITEM|2|guard|gendarme|[17062.178,9993.506,21.840]|210.0|
 OTLAYOUT|Altis|Ekali|ITEM|2|object|Flag_NATO_F|[17059.113,9985.260,22.378]|[[-0.9397,-0.3420,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Ekali|ITEM|2|guard|gendarme|[17058.698,9987.131,22.197]|250.0|ground
-OTLAYOUT|Altis|Ekali|ITEM|2|object|Land_BagFence_Long_F|[17054.412,9991.743,21.676]|[[-0.9397,-0.3420,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ekali|ITEM|2|object|Land_BagFence_Short_F|[17054.903,9993.231,21.607]|[[-0.3420,0.9397,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ekali|ITEM|2|object|Land_BagFence_Short_F|[17055.744,9990.919,21.779]|[[-0.3420,0.9397,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ekali|ITEM|2|guard|rifleman|[17055.604,9991.539,21.736]|250.0|ground
-OTLAYOUT|Altis|Ekali|ITEM|2|guard|autorifleman|[17055.194,9992.666,21.652]|250.0|ground
-OTLAYOUT|Altis|Ekali|ITEM|2|object|Land_HBarrier_3_F|[17055.550,9987.156,22.081]|[[-0.9397,-0.3420,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ekali|ITEM|2|object|Land_HBarrier_3_F|[17055.550,9987.156,23.831]|[[-0.9397,-0.3420,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Ekali|ITEM|2|object|Land_BagFence_Short_F|[17057.665,9986.755,22.196]|[[-0.9397,-0.3420,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ekali|ITEM|2|object|Land_BagBunker_Tower_F|[17057.295,9981.193,22.658]|[[-0.9397,-0.3420,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ekali|ITEM|2|guard|rifleman|[17057.013,9981.090,26.058]|250.0|
-OTLAYOUT|Altis|Ekali|ITEM|2|object|Land_Razorwire_F|[17060.254,9997.914,21.481]|[[0.3420,-0.9397,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ekali|ITEM|2|guard|marksman|[17059.945,9988.968,24.650]|250.0|
-OTLAYOUT|Altis|Ekali|ITEM|2|guard|rifleman|[17064.555,9987.560,24.650]|220.0|
+OTLAYOUT|Altis|Ekali|ITEM|2|object|Box_NATO_Ammo_F|[17057.881,9989.814,21.930]|[[-0.9397,-0.3420,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Ekali|ITEM|2|guard|gendarme|[17063.020,9989.350,21.840]|136.2|garrison
+OTLAYOUT|Altis|Ekali|ITEM|2|guard|gendarme|[17062.820,9994.280,24.670]|54.0|garrison
+OTLAYOUT|Altis|Ekali|ITEM|2|guard|gendarme|[17066.020,9990.160,24.620]|110.4|garrison
+OTLAYOUT|Altis|Ekali|ITEM|2|guard|gendarme|[17060.190,9989.960,24.670]|179.1|garrison
+OTLAYOUT|Altis|Ekali|ITEM|2|object|Land_PortableLight_single_F|[17056.839,9989.753,21.904]|[[-0.9397,-0.3420,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Ekali|ITEM|2|guard|gendarme|[17040.511,10001.986,20.291]|160.0|ground,patrol,patrol:1
+OTLAYOUT|Altis|Ekali|ITEM|2|guard|gendarme|[17041.230,10000.009,20.450]|160.0|ground,patrol,patrol:1
+OTLAYOUT|Altis|Ekali|ITEM|2|guard|gendarme|[17041.950,9998.032,20.609]|160.0|ground,patrol,patrol:1
+OTLAYOUT|Altis|Ekali|ITEM|2|guard|gendarme|[17079.796,9982.700,22.949]|160.0|ground,patrol,patrol:2
+OTLAYOUT|Altis|Ekali|ITEM|2|guard|gendarme|[17077.897,9982.008,22.981]|250.0|ground,patrol,patrol:2
+OTLAYOUT|Altis|Ekali|ITEM|2|guard|gendarme|[17075.997,9981.317,23.003]|250.0|ground,patrol,patrol:2
 OTLAYOUT|Altis|Feres|OFFICE|Land_i_Stone_HouseBig_V1_F|[21670.480,7615.454,14.378]|245.38|false
 OTLAYOUT|Altis|Feres|CONFIRMED
-OTLAYOUT|Altis|Feres|TIER|1|6
+OTLAYOUT|Altis|Feres|TIER|1|9
 OTLAYOUT|Altis|Feres|ITEM|1|object|Land_TableDesk_F|[21669.656,7616.171,14.880]|[[-0.9091,-0.4166,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Feres|ITEM|1|object|Land_OfficeChair_01_F|[21668.656,7615.713,14.880]|[[-0.9091,-0.4166,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Feres|ITEM|1|object|Land_MapBoard_F|[21671.201,7616.879,14.880]|[[-0.9091,-0.4166,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Feres|ITEM|1|guard|gendarme|[21668.557,7614.128,14.880]|25.4|
 OTLAYOUT|Altis|Feres|ITEM|1|object|Flag_NATO_F|[21670.948,7622.593,14.269]|[[0.9091,0.4166,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Feres|ITEM|1|guard|gendarme|[21671.512,7620.762,14.289]|65.4|ground
-OTLAYOUT|Altis|Feres|TIER|2|24
+OTLAYOUT|Altis|Feres|ITEM|1|object|Box_NATO_Ammo_F|[21672.542,7618.153,14.349]|[[0.9092,0.4163,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Feres|ITEM|1|guard|gendarme|[21667.380,7618.210,14.880]|311.7|garrison
+OTLAYOUT|Altis|Feres|ITEM|1|guard|gendarme|[21667.980,7613.310,17.710]|229.5|garrison
+OTLAYOUT|Altis|Feres|ITEM|1|guard|gendarme|[21664.460,7617.160,17.670]|285.9|garrison
+OTLAYOUT|Altis|Feres|ITEM|1|guard|gendarme|[21670.250,7617.830,17.710]|354.4|garrison
+OTLAYOUT|Altis|Feres|TIER|2|16
 OTLAYOUT|Altis|Feres|ITEM|2|object|Land_TableDesk_F|[21669.656,7616.171,14.880]|[[-0.9091,-0.4166,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Feres|ITEM|2|object|Land_OfficeChair_01_F|[21668.656,7615.713,14.880]|[[-0.9091,-0.4166,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Feres|ITEM|2|object|Land_MapBoard_F|[21671.201,7616.879,14.880]|[[-0.9091,-0.4166,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Feres|ITEM|2|guard|gendarme|[21668.557,7614.128,14.880]|25.4|
 OTLAYOUT|Altis|Feres|ITEM|2|object|Flag_NATO_F|[21670.948,7622.593,14.269]|[[0.9091,0.4166,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Feres|ITEM|2|guard|gendarme|[21671.512,7620.762,14.289]|65.4|ground
-OTLAYOUT|Altis|Feres|ITEM|2|object|Land_BagFence_Long_F|[21676.156,7616.510,14.484]|[[0.9091,0.4166,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Feres|ITEM|2|object|Land_BagFence_Short_F|[21675.786,7614.987,14.513]|[[0.4166,-0.9091,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Feres|ITEM|2|object|Land_BagFence_Short_F|[21674.762,7617.224,14.400]|[[0.4166,-0.9091,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Feres|ITEM|2|guard|rifleman|[21674.951,7616.618,14.426]|65.4|ground
-OTLAYOUT|Altis|Feres|ITEM|2|guard|autorifleman|[21675.451,7615.527,14.482]|65.4|ground
-OTLAYOUT|Altis|Feres|ITEM|2|object|Land_HBarrier_3_F|[21674.652,7620.991,14.306]|[[0.9091,0.4166,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Feres|ITEM|2|object|Land_HBarrier_3_F|[21674.652,7620.991,16.056]|[[0.9091,0.4166,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Feres|ITEM|2|object|Land_BagFence_Short_F|[21672.512,7621.220,14.284]|[[0.9091,0.4166,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Feres|ITEM|2|object|Land_BagBunker_Tower_F|[21675.156,7628.724,14.254]|[[0.9222,0.3867,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Feres|ITEM|2|object|Flag_NATO_F|[21675.441,7631.663,14.258]|[[0.9222,0.3867,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Feres|ITEM|2|object|Land_CncBarrier_stripes_F|[21677.491,7633.498,14.298]|[[0.3867,-0.9222,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Feres|ITEM|2|object|Land_CncBarrier_stripes_F|[21679.889,7634.504,14.279]|[[0.3867,-0.9222,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Feres|ITEM|2|object|Land_CncBarrier_stripes_F|[21686.838,7629.827,14.518]|[[0.3867,-0.9222,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Feres|ITEM|2|object|Land_CncBarrier_stripes_F|[21684.440,7628.822,14.545]|[[0.3867,-0.9222,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Feres|ITEM|2|guard|rifleman|[21675.432,7628.840,17.654]|67.3|
-OTLAYOUT|Altis|Feres|ITEM|2|object|Land_Razorwire_F|[21671.739,7610.306,14.557]|[[-0.4166,0.9091,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Feres|ITEM|2|guard|marksman|[21670.417,7618.830,17.700]|65.4|
-OTLAYOUT|Altis|Feres|ITEM|2|guard|rifleman|[21665.709,7619.863,17.700]|55.4|
+OTLAYOUT|Altis|Feres|ITEM|2|object|Box_NATO_Ammo_F|[21672.542,7618.153,14.349]|[[0.9092,0.4163,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Feres|ITEM|2|guard|gendarme|[21667.380,7618.210,14.880]|311.7|garrison
+OTLAYOUT|Altis|Feres|ITEM|2|guard|gendarme|[21667.980,7613.310,17.710]|229.5|garrison
+OTLAYOUT|Altis|Feres|ITEM|2|guard|gendarme|[21664.460,7617.160,17.670]|285.9|garrison
+OTLAYOUT|Altis|Feres|ITEM|2|guard|gendarme|[21670.250,7617.830,17.710]|354.4|garrison
+OTLAYOUT|Altis|Feres|ITEM|2|object|Land_PortableLight_single_F|[21673.576,7618.297,14.350]|[[0.9092,0.4163,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Feres|ITEM|2|guard|gendarme|[21690.837,7607.420,14.940]|335.4|ground,patrol,patrol:1
+OTLAYOUT|Altis|Feres|ITEM|2|guard|gendarme|[21689.961,7609.332,14.943]|335.4|ground,patrol,patrol:1
+OTLAYOUT|Altis|Feres|ITEM|2|guard|gendarme|[21689.084,7611.245,14.938]|335.4|ground,patrol,patrol:1
+OTLAYOUT|Altis|Feres|ITEM|2|guard|gendarme|[21650.126,7623.479,13.894]|335.4|ground,patrol,patrol:2
+OTLAYOUT|Altis|Feres|ITEM|2|guard|gendarme|[21651.963,7624.321,13.989]|65.4|ground,patrol,patrol:2
+OTLAYOUT|Altis|Feres|ITEM|2|guard|gendarme|[21653.801,7625.164,14.065]|65.4|ground,patrol,patrol:2
 OTLAYOUT|Altis|Frini|OFFICE|Land_i_Stone_HouseBig_V1_F|[14513.402,20713.857,42.209]|1.54|false
 OTLAYOUT|Altis|Frini|CONFIRMED
-OTLAYOUT|Altis|Frini|TIER|1|6
-OTLAYOUT|Altis|Frini|ITEM|1|object|Land_TableDesk_F|[14514.417,20714.283,42.710]|[[0.0269,0.9996,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Frini|TIER|1|9
+OTLAYOUT|Altis|Frini|ITEM|1|object|Land_TableDesk_F|[14514.416,20714.283,42.710]|[[0.0269,0.9996,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Frini|ITEM|1|object|Land_OfficeChair_01_F|[14514.446,20715.382,42.710]|[[0.0269,0.9996,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Frini|ITEM|1|object|Land_MapBoard_F|[14514.371,20712.583,42.710]|[[0.0269,0.9996,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Frini|ITEM|1|guard|gendarme|[14513.067,20716.170,42.710]|141.5|
+OTLAYOUT|Altis|Frini|ITEM|1|object|Land_MapBoard_F|[14514.371,20712.584,42.710]|[[0.0269,0.9996,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Frini|ITEM|1|object|Flag_NATO_F|[14519.611,20710.292,41.892]|[[-0.0269,-0.9996,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Frini|ITEM|1|guard|gendarme|[14517.719,20710.593,41.886]|181.5|ground
-OTLAYOUT|Altis|Frini|TIER|2|24
-OTLAYOUT|Altis|Frini|ITEM|2|object|Land_TableDesk_F|[14514.417,20714.283,42.710]|[[0.0269,0.9996,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Frini|ITEM|1|object|Box_NATO_Ammo_F|[14514.924,20710.817,41.838]|[[-0.0262,-0.9997,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Frini|ITEM|1|guard|gendarme|[14517.240,20715.420,42.710]|67.9|garrison
+OTLAYOUT|Altis|Frini|ITEM|1|guard|gendarme|[14512.580,20717.040,45.550]|345.5|garrison
+OTLAYOUT|Altis|Frini|ITEM|1|guard|gendarme|[14517.590,20718.510,45.490]|42.0|garrison
+OTLAYOUT|Altis|Frini|ITEM|1|guard|gendarme|[14515.630,20713.020,45.540]|110.7|garrison
+OTLAYOUT|Altis|Frini|TIER|2|16
+OTLAYOUT|Altis|Frini|ITEM|2|object|Land_TableDesk_F|[14514.416,20714.283,42.710]|[[0.0269,0.9996,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Frini|ITEM|2|object|Land_OfficeChair_01_F|[14514.446,20715.382,42.710]|[[0.0269,0.9996,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Frini|ITEM|2|object|Land_MapBoard_F|[14514.371,20712.583,42.710]|[[0.0269,0.9996,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Frini|ITEM|2|guard|gendarme|[14513.067,20716.170,42.710]|141.5|
+OTLAYOUT|Altis|Frini|ITEM|2|object|Land_MapBoard_F|[14514.371,20712.584,42.710]|[[0.0269,0.9996,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Frini|ITEM|2|object|Flag_NATO_F|[14519.611,20710.292,41.892]|[[-0.0269,-0.9996,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Frini|ITEM|2|guard|gendarme|[14517.719,20710.593,41.886]|181.5|ground
-OTLAYOUT|Altis|Frini|ITEM|2|object|Land_BagFence_Long_F|[14511.855,20708.300,41.660]|[[-0.0269,-0.9996,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Frini|ITEM|2|object|Land_BagFence_Short_F|[14510.651,20709.302,41.712]|[[-0.9996,0.0269,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Frini|ITEM|2|object|Land_BagFence_Short_F|[14513.110,20709.236,41.710]|[[-0.9996,0.0269,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Frini|ITEM|2|guard|rifleman|[14512.483,20709.333,41.708]|181.5|ground
-OTLAYOUT|Altis|Frini|ITEM|2|guard|autorifleman|[14511.283,20709.365,41.703]|181.5|ground
-OTLAYOUT|Altis|Frini|ITEM|2|object|Land_HBarrier_3_F|[14516.540,20707.673,41.738]|[[-0.0269,-0.9996,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Frini|ITEM|2|object|Land_HBarrier_3_F|[14516.540,20707.673,43.488]|[[-0.0269,-0.9996,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Frini|ITEM|2|object|Land_BagFence_Short_F|[14517.689,20709.493,41.855]|[[-0.0269,-0.9996,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Frini|ITEM|2|object|Land_BagBunker_Tower_F|[14527.356,20708.653,42.036]|[[0.8658,-0.5004,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Frini|ITEM|2|object|Flag_NATO_F|[14527.267,20705.702,41.953]|[[0.8658,-0.5004,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Frini|ITEM|2|object|Land_CncBarrier_stripes_F|[14529.068,20703.622,41.937]|[[-0.5004,-0.8658,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Frini|ITEM|2|object|Land_CncBarrier_stripes_F|[14531.319,20702.321,41.950]|[[-0.5004,-0.8658,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Frini|ITEM|2|object|Land_CncBarrier_stripes_F|[14538.804,20706.079,42.168]|[[-0.5004,-0.8658,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Frini|ITEM|2|object|Land_CncBarrier_stripes_F|[14536.553,20707.380,42.173]|[[-0.5004,-0.8658,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Frini|ITEM|2|guard|rifleman|[14527.616,20708.503,45.436]|120.0|
-OTLAYOUT|Altis|Frini|ITEM|2|object|Land_Razorwire_F|[14508.287,20716.999,42.168]|[[0.9996,-0.0269,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Frini|ITEM|2|guard|marksman|[14516.467,20712.427,45.530]|181.5|
-OTLAYOUT|Altis|Frini|ITEM|2|guard|rifleman|[14519.470,20716.198,45.530]|123.5|
+OTLAYOUT|Altis|Frini|ITEM|2|object|Box_NATO_Ammo_F|[14514.924,20710.817,41.838]|[[-0.0262,-0.9997,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Frini|ITEM|2|guard|gendarme|[14517.240,20715.420,42.710]|67.9|garrison
+OTLAYOUT|Altis|Frini|ITEM|2|guard|gendarme|[14512.580,20717.040,45.550]|345.5|garrison
+OTLAYOUT|Altis|Frini|ITEM|2|guard|gendarme|[14517.590,20718.510,45.490]|42.0|garrison
+OTLAYOUT|Altis|Frini|ITEM|2|guard|gendarme|[14515.630,20713.020,45.540]|110.7|garrison
+OTLAYOUT|Altis|Frini|ITEM|2|object|Land_PortableLight_single_F|[14514.598,20709.825,41.780]|[[-0.0262,-0.9997,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Frini|ITEM|2|guard|gendarme|[14497.223,20699.129,41.760]|91.5|ground,patrol,patrol:1
+OTLAYOUT|Altis|Frini|ITEM|2|guard|gendarme|[14499.326,20699.073,41.631]|91.5|ground,patrol,patrol:1
+OTLAYOUT|Altis|Frini|ITEM|2|guard|gendarme|[14501.430,20699.016,41.560]|91.5|ground,patrol,patrol:1
+OTLAYOUT|Altis|Frini|ITEM|2|guard|gendarme|[14529.315,20718.487,42.430]|181.5|ground,patrol,patrol:2
+OTLAYOUT|Altis|Frini|ITEM|2|guard|gendarme|[14529.261,20716.467,42.359]|181.5|ground,patrol,patrol:2
+OTLAYOUT|Altis|Frini|ITEM|2|guard|gendarme|[14529.206,20714.446,42.280]|181.5|ground,patrol,patrol:2
 OTLAYOUT|Altis|Galati|OFFICE|Land_i_House_Big_02_V2_F|[10230.205,19023.062,117.814]|60.00|false
 OTLAYOUT|Altis|Galati|CONFIRMED
-OTLAYOUT|Altis|Galati|TIER|1|0
-OTLAYOUT|Altis|Galati|TIER|2|3
-OTLAYOUT|Altis|Galati|ITEM|2|object|Land_BagFence_Long_F|[10224.212,19021.444,118.240]|[[0.8660,0.5000,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Galati|ITEM|2|object|Land_BagFence_Short_F|[10222.909,19024.502,118.240]|[[0.5000,-0.8660,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Galati|ITEM|2|object|Land_BagFence_Long_F|[10236.840,19026.771,118.011]|[[0.8660,0.5000,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Galati|TIER|1|8
+OTLAYOUT|Altis|Galati|ITEM|1|object|Land_TableDesk_F|[10230.742,19026.126,121.664]|[[-0.4999,0.8661,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Galati|ITEM|1|object|Land_OfficeChair_01_F|[10229.941,19027.511,121.666]|[[-0.5000,0.8660,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Galati|ITEM|1|object|Land_MapBoard_F|[10232.867,19027.506,121.950]|[[0.5100,0.8602,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Galati|ITEM|1|object|Flag_NATO_F|[10219.185,19023.212,116.873]|[[-0.5000,0.8660,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
+OTLAYOUT|Altis|Galati|ITEM|1|guard|gendarme|[10227.360,19021.310,118.240]|238.5|garrison
+OTLAYOUT|Altis|Galati|ITEM|1|guard|gendarme|[10237.300,19023.370,121.680]|87.5|garrison
+OTLAYOUT|Altis|Galati|ITEM|1|guard|gendarme|[10231.730,19024.720,121.680]|42.5|garrison
+OTLAYOUT|Altis|Galati|ITEM|1|guard|gendarme|[10227.040,19017.150,118.230]|208.2|garrison
+OTLAYOUT|Altis|Galati|TIER|2|14
+OTLAYOUT|Altis|Galati|ITEM|2|object|Land_TableDesk_F|[10230.742,19026.126,121.664]|[[-0.4999,0.8661,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Galati|ITEM|2|object|Land_OfficeChair_01_F|[10229.941,19027.511,121.666]|[[-0.5000,0.8660,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Galati|ITEM|2|object|Land_MapBoard_F|[10232.867,19027.506,121.950]|[[0.5100,0.8602,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Galati|ITEM|2|object|Flag_NATO_F|[10219.185,19023.212,116.873]|[[-0.5000,0.8660,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
+OTLAYOUT|Altis|Galati|ITEM|2|guard|gendarme|[10227.360,19021.310,118.240]|238.5|garrison
+OTLAYOUT|Altis|Galati|ITEM|2|guard|gendarme|[10237.300,19023.370,121.680]|87.5|garrison
+OTLAYOUT|Altis|Galati|ITEM|2|guard|gendarme|[10231.730,19024.720,121.680]|42.5|garrison
+OTLAYOUT|Altis|Galati|ITEM|2|guard|gendarme|[10227.040,19017.150,118.230]|208.2|garrison
+OTLAYOUT|Altis|Galati|ITEM|2|guard|gendarme|[10204.779,19024.923,112.433]|150.0|ground,patrol,patrol:1
+OTLAYOUT|Altis|Galati|ITEM|2|guard|gendarme|[10205.802,19023.150,112.400]|150.0|ground,patrol,patrol:1
+OTLAYOUT|Altis|Galati|ITEM|2|guard|gendarme|[10206.826,19021.377,112.421]|150.0|ground,patrol,patrol:1
+OTLAYOUT|Altis|Galati|ITEM|2|guard|gendarme|[10255.638,19021.193,117.591]|150.0|ground,patrol,patrol:2
+OTLAYOUT|Altis|Galati|ITEM|2|guard|gendarme|[10253.898,19020.189,117.640]|240.0|ground,patrol,patrol:2
+OTLAYOUT|Altis|Galati|ITEM|2|guard|gendarme|[10252.159,19019.184,117.640]|240.0|ground,patrol,patrol:2
 OTLAYOUT|Altis|Gravia|OFFICE|Land_u_House_Big_02_V1_F|[14494.149,17630.039,22.170]|60.32|false
 OTLAYOUT|Altis|Gravia|CONFIRMED
 OTLAYOUT|Altis|Gravia|TIER|1|0
@@ -2278,101 +2307,91 @@ OTLAYOUT|Altis|Gravia|ITEM|3|guard|rifleman|[14499.750,17602.540,22.376]|183.8|g
 OTLAYOUT|Altis|Gravia|ITEM|3|guard|marksman|[14501.250,17601.040,22.461]|179.8|garrison,ground,reserve,reserve:1
 OTLAYOUT|Altis|Ifestiona|OFFICE|Land_i_Stone_HouseBig_V1_F|[12784.224,19686.559,46.672]|41.32|false
 OTLAYOUT|Altis|Ifestiona|CONFIRMED
-OTLAYOUT|Altis|Ifestiona|TIER|1|6
-OTLAYOUT|Altis|Ifestiona|ITEM|1|object|Land_TableDesk_F|[12785.276,19686.241,47.170]|[[0.6603,0.7510,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Ifestiona|ITEM|1|object|Land_OfficeChair_01_F|[12786.002,19687.067,47.170]|[[0.6603,0.7510,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Ifestiona|ITEM|1|object|Land_MapBoard_F|[12784.153,19684.964,47.170]|[[0.6603,0.7510,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Ifestiona|ITEM|1|guard|gendarme|[12785.446,19688.554,47.170]|181.3|
+OTLAYOUT|Altis|Ifestiona|TIER|1|9
+OTLAYOUT|Altis|Ifestiona|ITEM|1|object|Land_TableDesk_F|[12785.275,19686.241,47.180]|[[0.6603,0.7510,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Ifestiona|ITEM|1|object|Land_OfficeChair_01_F|[12786.002,19687.067,47.180]|[[0.6603,0.7510,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Ifestiona|ITEM|1|object|Land_MapBoard_F|[12784.153,19684.964,47.180]|[[0.6603,0.7510,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Ifestiona|ITEM|1|object|Flag_NATO_F|[12786.714,19679.850,46.147]|[[-0.6603,-0.7510,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Ifestiona|ITEM|1|guard|gendarme|[12785.452,19681.292,46.209]|221.3|ground
-OTLAYOUT|Altis|Ifestiona|TIER|2|24
-OTLAYOUT|Altis|Ifestiona|ITEM|2|object|Land_TableDesk_F|[12785.276,19686.241,47.170]|[[0.6603,0.7510,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Ifestiona|ITEM|2|object|Land_OfficeChair_01_F|[12786.002,19687.067,47.170]|[[0.6603,0.7510,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Ifestiona|ITEM|2|object|Land_MapBoard_F|[12784.153,19684.964,47.170]|[[0.6603,0.7510,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Ifestiona|ITEM|2|guard|gendarme|[12785.446,19688.554,47.170]|181.3|
+OTLAYOUT|Altis|Ifestiona|ITEM|1|object|Box_NATO_Ammo_F|[12783.448,19683.253,46.217]|[[-0.6600,-0.7513,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Ifestiona|ITEM|1|guard|gendarme|[12788.170,19685.310,47.170]|107.6|garrison
+OTLAYOUT|Altis|Ifestiona|ITEM|1|guard|gendarme|[12785.630,19689.530,50.010]|25.3|garrison
+OTLAYOUT|Altis|Ifestiona|ITEM|1|guard|gendarme|[12790.420,19687.450,49.960]|81.8|garrison
+OTLAYOUT|Altis|Ifestiona|ITEM|1|guard|gendarme|[12785.400,19684.490,50.010]|150.5|garrison
+OTLAYOUT|Altis|Ifestiona|TIER|2|16
+OTLAYOUT|Altis|Ifestiona|ITEM|2|object|Land_TableDesk_F|[12785.275,19686.241,47.180]|[[0.6603,0.7510,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Ifestiona|ITEM|2|object|Land_OfficeChair_01_F|[12786.002,19687.067,47.180]|[[0.6603,0.7510,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Ifestiona|ITEM|2|object|Land_MapBoard_F|[12784.153,19684.964,47.180]|[[0.6603,0.7510,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Ifestiona|ITEM|2|object|Flag_NATO_F|[12786.714,19679.850,46.147]|[[-0.6603,-0.7510,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Ifestiona|ITEM|2|guard|gendarme|[12785.452,19681.292,46.209]|221.3|ground
-OTLAYOUT|Altis|Ifestiona|ITEM|2|object|Land_BagFence_Long_F|[12779.479,19683.281,46.086]|[[-0.6603,-0.7510,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ifestiona|ITEM|2|object|Land_BagFence_Short_F|[12779.195,19684.822,46.123]|[[-0.7510,0.6603,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ifestiona|ITEM|2|object|Land_BagFence_Short_F|[12781.043,19683.198,46.141]|[[-0.7510,0.6603,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ifestiona|ITEM|2|guard|rifleman|[12780.622,19683.674,46.145]|221.3|ground
-OTLAYOUT|Altis|Ifestiona|ITEM|2|guard|autorifleman|[12779.721,19684.466,46.134]|221.3|ground
-OTLAYOUT|Altis|Ifestiona|ITEM|2|object|Land_HBarrier_3_F|[12782.678,19679.803,46.029]|[[-0.6603,-0.7510,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ifestiona|ITEM|2|object|Land_HBarrier_3_F|[12782.678,19679.803,47.779]|[[-0.6603,-0.7510,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Ifestiona|ITEM|2|object|Land_BagFence_Short_F|[12784.726,19680.466,46.147]|[[-0.6603,-0.7510,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ifestiona|ITEM|2|object|Land_BagBunker_Tower_F|[12781.685,19702.145,47.684]|[[-0.2007,0.9797,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ifestiona|ITEM|2|object|Flag_NATO_F|[12778.857,19702.994,47.721]|[[-0.2007,0.9797,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Ifestiona|ITEM|2|object|Land_CncBarrier_stripes_F|[12777.454,19705.361,47.742]|[[0.9797,0.2007,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ifestiona|ITEM|2|object|Land_CncBarrier_stripes_F|[12776.932,19707.908,47.823]|[[0.9797,0.2007,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ifestiona|ITEM|2|object|Land_CncBarrier_stripes_F|[12782.866,19713.819,48.288]|[[0.9797,0.2007,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ifestiona|ITEM|2|object|Land_CncBarrier_stripes_F|[12783.388,19711.272,48.239]|[[0.9797,0.2007,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ifestiona|ITEM|2|guard|rifleman|[12781.625,19702.438,51.084]|348.4|
-OTLAYOUT|Altis|Ifestiona|ITEM|2|object|Land_Razorwire_F|[12791.560,19692.632,46.601]|[[0.6603,0.7510,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ifestiona|ITEM|2|guard|marksman|[12785.664,19683.502,49.990]|221.3|
-OTLAYOUT|Altis|Ifestiona|ITEM|2|guard|rifleman|[12790.384,19684.479,49.990]|61.3|
+OTLAYOUT|Altis|Ifestiona|ITEM|2|object|Box_NATO_Ammo_F|[12783.448,19683.253,46.217]|[[-0.6600,-0.7513,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Ifestiona|ITEM|2|guard|gendarme|[12788.170,19685.310,47.170]|107.6|garrison
+OTLAYOUT|Altis|Ifestiona|ITEM|2|guard|gendarme|[12785.630,19689.530,50.010]|25.3|garrison
+OTLAYOUT|Altis|Ifestiona|ITEM|2|guard|gendarme|[12790.420,19687.450,49.960]|81.8|garrison
+OTLAYOUT|Altis|Ifestiona|ITEM|2|guard|gendarme|[12785.400,19684.490,50.010]|150.5|garrison
+OTLAYOUT|Altis|Ifestiona|ITEM|2|object|Land_PortableLight_single_F|[12782.563,19682.699,46.165]|[[-0.6600,-0.7513,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Ifestiona|ITEM|2|guard|gendarme|[12763.947,19684.207,45.573]|131.3|ground,patrol,patrol:1
+OTLAYOUT|Altis|Ifestiona|ITEM|2|guard|gendarme|[12765.527,19682.818,45.557]|131.3|ground,patrol,patrol:1
+OTLAYOUT|Altis|Ifestiona|ITEM|2|guard|gendarme|[12767.107,19681.429,45.541]|131.3|ground,patrol,patrol:1
+OTLAYOUT|Altis|Ifestiona|ITEM|2|guard|gendarme|[12806.088,19687.530,45.961]|131.3|ground,patrol,patrol:2
+OTLAYOUT|Altis|Ifestiona|ITEM|2|guard|gendarme|[12804.754,19686.011,45.837]|221.3|ground,patrol,patrol:2
+OTLAYOUT|Altis|Ifestiona|ITEM|2|guard|gendarme|[12803.419,19684.493,45.820]|221.3|ground,patrol,patrol:2
 OTLAYOUT|Altis|Ioannina|OFFICE|Land_i_Stone_HouseBig_V1_F|[23197.031,19993.594,13.852]|124.00|true
 OTLAYOUT|Altis|Ioannina|CONFIRMED
-OTLAYOUT|Altis|Ioannina|TIER|1|6
+OTLAYOUT|Altis|Ioannina|TIER|1|9
 OTLAYOUT|Altis|Ioannina|ITEM|1|object|Land_TableDesk_F|[23196.850,19992.518,14.350]|[[0.8290,-0.5592,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Ioannina|ITEM|1|object|Land_OfficeChair_01_F|[23197.761,19991.903,14.350]|[[0.8290,-0.5592,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Ioannina|ITEM|1|object|Land_MapBoard_F|[23195.440,19993.469,14.350]|[[0.8290,-0.5592,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Ioannina|ITEM|1|guard|gendarme|[23199.166,19992.644,14.350]|264.0|
+OTLAYOUT|Altis|Ioannina|ITEM|1|object|Land_MapBoard_F|[23195.441,19993.469,14.350]|[[0.8290,-0.5592,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Ioannina|ITEM|1|object|Flag_NATO_F|[23190.694,19990.277,14.300]|[[-0.8290,0.5592,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Ioannina|ITEM|1|guard|gendarme|[23191.964,19991.712,14.322]|304.0|ground
-OTLAYOUT|Altis|Ioannina|TIER|2|19
+OTLAYOUT|Altis|Ioannina|ITEM|1|object|Box_NATO_Ammo_F|[23193.654,19993.950,14.355]|[[-0.8290,0.5592,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Ioannina|ITEM|1|guard|gendarme|[23196.290,19989.520,14.350]|190.4|garrison
+OTLAYOUT|Altis|Ioannina|ITEM|1|guard|gendarme|[23200.160,19992.580,17.190]|108.1|garrison
+OTLAYOUT|Altis|Ioannina|ITEM|1|guard|gendarme|[23198.710,19987.560,17.140]|164.5|garrison
+OTLAYOUT|Altis|Ioannina|ITEM|1|guard|gendarme|[23195.120,19992.160,17.190]|233.1|garrison
+OTLAYOUT|Altis|Ioannina|TIER|2|16
 OTLAYOUT|Altis|Ioannina|ITEM|2|object|Land_TableDesk_F|[23196.850,19992.518,14.350]|[[0.8290,-0.5592,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Ioannina|ITEM|2|object|Land_OfficeChair_01_F|[23197.761,19991.903,14.350]|[[0.8290,-0.5592,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Ioannina|ITEM|2|object|Land_MapBoard_F|[23195.440,19993.469,14.350]|[[0.8290,-0.5592,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Ioannina|ITEM|2|guard|gendarme|[23199.166,19992.644,14.350]|264.0|
+OTLAYOUT|Altis|Ioannina|ITEM|2|object|Land_MapBoard_F|[23195.441,19993.469,14.350]|[[0.8290,-0.5592,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Ioannina|ITEM|2|object|Flag_NATO_F|[23190.694,19990.277,14.300]|[[-0.8290,0.5592,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Ioannina|ITEM|2|guard|gendarme|[23191.964,19991.712,14.322]|304.0|ground
-OTLAYOUT|Altis|Ioannina|ITEM|2|object|Land_BagFence_Long_F|[23193.176,19997.891,14.416]|[[-0.8290,0.5592,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ioannina|ITEM|2|object|Land_BagFence_Short_F|[23194.668,19998.368,14.422]|[[0.5592,0.8290,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ioannina|ITEM|2|object|Land_BagFence_Short_F|[23193.292,19996.329,14.390]|[[0.5592,0.8290,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ioannina|ITEM|2|guard|rifleman|[23193.711,19996.806,14.397]|304.0|ground
-OTLAYOUT|Altis|Ioannina|ITEM|2|guard|autorifleman|[23194.382,19997.801,14.413]|304.0|ground
-OTLAYOUT|Altis|Ioannina|ITEM|2|object|Land_HBarrier_3_F|[23190.133,19994.274,14.360]|[[-0.8290,0.5592,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ioannina|ITEM|2|object|Land_HBarrier_3_F|[23190.133,19994.274,16.110]|[[-0.8290,0.5592,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Ioannina|ITEM|2|object|Land_BagFence_Short_F|[23191.052,19992.328,14.331]|[[-0.8290,0.5592,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ioannina|ITEM|2|object|Land_BagBunker_Tower_F|[23186.335,19989.358,14.282]|[[-0.8290,0.5592,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ioannina|ITEM|2|guard|rifleman|[23186.086,19989.525,17.682]|304.0|
-OTLAYOUT|Altis|Ioannina|ITEM|2|object|Land_Razorwire_F|[23201.602,19996.791,14.365]|[[-0.5592,-0.8290,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Ioannina|ITEM|2|guard|marksman|[23194.183,19991.784,17.170]|304.0|
-OTLAYOUT|Altis|Ioannina|ITEM|2|guard|rifleman|[23195.753,19987.227,17.170]|205.0|
+OTLAYOUT|Altis|Ioannina|ITEM|2|object|Box_NATO_Ammo_F|[23193.654,19993.950,14.355]|[[-0.8290,0.5592,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Ioannina|ITEM|2|guard|gendarme|[23196.290,19989.520,14.350]|190.4|garrison
+OTLAYOUT|Altis|Ioannina|ITEM|2|guard|gendarme|[23200.160,19992.580,17.190]|108.1|garrison
+OTLAYOUT|Altis|Ioannina|ITEM|2|guard|gendarme|[23198.710,19987.560,17.140]|164.5|garrison
+OTLAYOUT|Altis|Ioannina|ITEM|2|guard|gendarme|[23195.120,19992.160,17.190]|233.1|garrison
+OTLAYOUT|Altis|Ioannina|ITEM|2|object|Land_PortableLight_single_F|[23192.993,19994.758,14.367]|[[-0.8290,0.5592,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Ioannina|ITEM|2|guard|gendarme|[23193.292,20015.158,14.691]|214.0|ground,patrol,patrol:1
+OTLAYOUT|Altis|Ioannina|ITEM|2|guard|gendarme|[23192.115,20013.414,14.676]|214.0|ground,patrol,patrol:1
+OTLAYOUT|Altis|Ioannina|ITEM|2|guard|gendarme|[23190.938,20011.670,14.652]|214.0|ground,patrol,patrol:1
+OTLAYOUT|Altis|Ioannina|ITEM|2|guard|gendarme|[23200.780,19972.039,14.163]|214.0|ground,patrol,patrol:2
+OTLAYOUT|Altis|Ioannina|ITEM|2|guard|gendarme|[23199.104,19973.169,14.178]|304.0|ground,patrol,patrol:2
+OTLAYOUT|Altis|Ioannina|ITEM|2|guard|gendarme|[23197.428,19974.300,14.188]|304.0|ground,patrol,patrol:2
 OTLAYOUT|Altis|Kalithea|OFFICE|Land_i_Stone_HouseBig_V1_F|[17851.020,18155.219,2.076]|127.97|false
 OTLAYOUT|Altis|Kalithea|CONFIRMED
-OTLAYOUT|Altis|Kalithea|TIER|1|6
-OTLAYOUT|Altis|Kalithea|ITEM|1|object|Land_TableDesk_F|[17850.762,18154.149,2.580]|[[0.7883,-0.6152,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Kalithea|ITEM|1|object|Land_OfficeChair_01_F|[17851.629,18153.473,2.580]|[[0.7883,-0.6152,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Kalithea|ITEM|1|object|Land_MapBoard_F|[17849.422,18155.195,2.580]|[[0.7883,-0.6152,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Kalithea|ITEM|1|guard|gendarme|[17853.082,18154.115,2.580]|268.0|
-OTLAYOUT|Altis|Kalithea|ITEM|1|object|Flag_NATO_F|[17844.466,18152.340,2.031]|[[-0.7883,0.6152,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Kalithea|ITEM|1|guard|gendarme|[17845.832,18153.684,2.006]|308.0|ground
-OTLAYOUT|Altis|Kalithea|TIER|2|24
-OTLAYOUT|Altis|Kalithea|ITEM|2|object|Land_TableDesk_F|[17850.762,18154.149,2.580]|[[0.7883,-0.6152,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Kalithea|ITEM|2|object|Land_OfficeChair_01_F|[17851.629,18153.473,2.580]|[[0.7883,-0.6152,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Kalithea|ITEM|2|object|Land_MapBoard_F|[17849.422,18155.195,2.580]|[[0.7883,-0.6152,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Kalithea|ITEM|2|guard|gendarme|[17853.082,18154.115,2.580]|268.0|
-OTLAYOUT|Altis|Kalithea|ITEM|2|object|Flag_NATO_F|[17844.466,18152.340,2.031]|[[-0.7883,0.6152,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Kalithea|ITEM|2|guard|gendarme|[17845.832,18153.684,2.006]|308.0|ground
-OTLAYOUT|Altis|Kalithea|ITEM|2|object|Land_BagFence_Long_F|[17848.179,18159.210,1.972]|[[-0.7883,0.6152,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Kalithea|ITEM|2|object|Land_BagFence_Short_F|[17849.700,18159.583,1.983]|[[0.6152,0.7883,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Kalithea|ITEM|2|object|Land_BagFence_Short_F|[17848.187,18157.643,1.975]|[[0.6152,0.7883,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Kalithea|ITEM|2|guard|rifleman|[17848.637,18158.091,1.977]|308.0|ground
-OTLAYOUT|Altis|Kalithea|ITEM|2|guard|autorifleman|[17849.375,18159.037,1.982]|308.0|ground
-OTLAYOUT|Altis|Kalithea|ITEM|2|object|Land_HBarrier_3_F|[17844.341,18156.243,1.956]|[[-0.7883,0.6152,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Kalithea|ITEM|2|object|Land_HBarrier_3_F|[17844.341,18156.243,3.706]|[[-0.7883,0.6152,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Kalithea|ITEM|2|object|Land_BagFence_Short_F|[17844.965,18154.361,1.987]|[[-0.7883,0.6152,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Kalithea|ITEM|2|object|Land_BagBunker_Tower_F|[17858.609,18170.353,1.996]|[[-0.8302,0.5575,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Kalithea|ITEM|2|object|Flag_NATO_F|[17855.997,18168.975,1.980]|[[-0.8302,0.5575,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Kalithea|ITEM|2|object|Land_CncBarrier_stripes_F|[17853.337,18169.677,1.980]|[[0.5575,0.8302,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Kalithea|ITEM|2|object|Land_CncBarrier_stripes_F|[17851.179,18171.127,1.980]|[[0.5575,0.8302,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Kalithea|ITEM|2|object|Land_CncBarrier_stripes_F|[17851.263,18179.503,1.970]|[[0.5575,0.8302,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Kalithea|ITEM|2|object|Land_CncBarrier_stripes_F|[17853.421,18178.053,1.970]|[[0.5575,0.8302,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Kalithea|ITEM|2|guard|rifleman|[17858.360,18170.520,5.396]|303.9|
-OTLAYOUT|Altis|Kalithea|ITEM|2|object|Land_Razorwire_F|[17855.798,18158.083,1.990]|[[-0.6152,-0.7883,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Kalithea|ITEM|2|guard|marksman|[17848.051,18153.601,5.390]|308.0|
-OTLAYOUT|Altis|Kalithea|ITEM|2|guard|rifleman|[17849.302,18148.946,5.390]|298.0|
+OTLAYOUT|Altis|Kalithea|TIER|1|9
+OTLAYOUT|Altis|Kalithea|ITEM|1|object|Land_TableDesk_F|[17850.762,18154.149,2.580]|[[0.7883,-0.6153,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Kalithea|ITEM|1|object|Land_OfficeChair_01_F|[17851.629,18153.473,2.580]|[[0.7883,-0.6153,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Kalithea|ITEM|1|object|Land_MapBoard_F|[17849.422,18155.195,2.580]|[[0.7883,-0.6153,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Kalithea|ITEM|1|object|Flag_NATO_F|[17844.466,18152.340,2.031]|[[-0.7883,0.6153,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
+OTLAYOUT|Altis|Kalithea|ITEM|1|object|Box_NATO_Ammo_F|[17847.674,18155.799,1.990]|[[-0.7880,0.6157,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Kalithea|ITEM|1|guard|gendarme|[17850.000,18151.200,2.580]|194.3|garrison
+OTLAYOUT|Altis|Kalithea|ITEM|1|guard|gendarme|[17854.070,18153.990,5.410]|111.9|garrison
+OTLAYOUT|Altis|Kalithea|ITEM|1|guard|gendarme|[17852.280,18149.090,5.360]|168.4|garrison
+OTLAYOUT|Altis|Kalithea|ITEM|1|guard|gendarme|[17849.020,18153.920,5.410]|237.1|garrison
+OTLAYOUT|Altis|Kalithea|TIER|2|16
+OTLAYOUT|Altis|Kalithea|ITEM|2|object|Land_TableDesk_F|[17850.762,18154.149,2.580]|[[0.7883,-0.6153,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Kalithea|ITEM|2|object|Land_OfficeChair_01_F|[17851.629,18153.473,2.580]|[[0.7883,-0.6153,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Kalithea|ITEM|2|object|Land_MapBoard_F|[17849.422,18155.195,2.580]|[[0.7883,-0.6153,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Kalithea|ITEM|2|object|Flag_NATO_F|[17844.466,18152.340,2.031]|[[-0.7883,0.6153,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
+OTLAYOUT|Altis|Kalithea|ITEM|2|object|Box_NATO_Ammo_F|[17847.674,18155.799,1.990]|[[-0.7880,0.6157,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Kalithea|ITEM|2|guard|gendarme|[17850.000,18151.200,2.580]|194.3|garrison
+OTLAYOUT|Altis|Kalithea|ITEM|2|guard|gendarme|[17854.070,18153.990,5.410]|111.9|garrison
+OTLAYOUT|Altis|Kalithea|ITEM|2|guard|gendarme|[17852.280,18149.090,5.360]|168.4|garrison
+OTLAYOUT|Altis|Kalithea|ITEM|2|guard|gendarme|[17849.020,18153.920,5.410]|237.1|garrison
+OTLAYOUT|Altis|Kalithea|ITEM|2|object|Land_PortableLight_single_F|[17847.071,18156.651,1.976]|[[-0.7880,0.6157,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Kalithea|ITEM|2|guard|gendarme|[17848.780,18176.982,1.959]|218.0|ground,patrol,patrol:1
+OTLAYOUT|Altis|Kalithea|ITEM|2|guard|gendarme|[17847.485,18175.323,1.954]|218.0|ground,patrol,patrol:1
+OTLAYOUT|Altis|Kalithea|ITEM|2|guard|gendarme|[17835.737,18147.127,2.034]|128.0|ground,patrol,patrol:1
+OTLAYOUT|Altis|Kalithea|ITEM|2|guard|gendarme|[17853.265,18133.447,2.062]|218.0|ground,patrol,patrol:2
+OTLAYOUT|Altis|Kalithea|ITEM|2|guard|gendarme|[17838.924,18144.640,2.050]|308.0|ground,patrol,patrol:2
+OTLAYOUT|Altis|Kalithea|ITEM|2|guard|gendarme|[17837.330,18145.884,2.042]|308.0|ground,patrol,patrol:2
 OTLAYOUT|Altis|Kalochori|OFFICE|Land_u_House_Big_01_V1_F|[21349.605,16341.162,20.041]|148.41|false
 OTLAYOUT|Altis|Kalochori|CONFIRMED
 OTLAYOUT|Altis|Kalochori|TIER|1|0
@@ -2724,33 +2743,33 @@ OTLAYOUT|Altis|Kalochori|ITEM|4|object|Land_CncWall1_F|[21374.242,16319.987,19.0
 OTLAYOUT|Altis|Kalochori|ITEM|4|object|Land_CncWall1_F|[21374.246,16319.621,19.061]|[[0.9999,0.0109,0.0000],[0.0000,0.0000,1.0000]]|ground,leakfix
 OTLAYOUT|Altis|Katalaki|OFFICE|Land_i_Stone_HouseBig_V1_F|[11664.724,13878.136,12.811]|23.47|false
 OTLAYOUT|Altis|Katalaki|CONFIRMED
-OTLAYOUT|Altis|Katalaki|TIER|1|6
+OTLAYOUT|Altis|Katalaki|TIER|1|9
 OTLAYOUT|Altis|Katalaki|ITEM|1|object|Land_TableDesk_F|[11665.821,13878.154,13.310]|[[0.3983,0.9173,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Katalaki|ITEM|1|object|Land_OfficeChair_01_F|[11666.259,13879.163,13.310]|[[0.3983,0.9173,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Katalaki|ITEM|1|object|Land_MapBoard_F|[11665.144,13876.594,13.310]|[[0.3983,0.9173,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Katalaki|ITEM|1|guard|gendarme|[11665.274,13880.408,13.310]|163.5|
+OTLAYOUT|Altis|Katalaki|ITEM|1|object|Land_MapBoard_F|[11665.144,13876.595,13.310]|[[0.3983,0.9173,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Katalaki|ITEM|1|object|Flag_NATO_F|[11669.149,13872.512,12.643]|[[-0.3983,-0.9173,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Katalaki|ITEM|1|guard|gendarme|[11667.506,13873.498,12.610]|203.5|ground
-OTLAYOUT|Altis|Katalaki|TIER|2|19
+OTLAYOUT|Altis|Katalaki|ITEM|1|object|Box_NATO_Ammo_F|[11664.997,13874.751,12.597]|[[-0.3987,-0.9171,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Katalaki|ITEM|1|guard|gendarme|[11668.870,13878.160,13.310]|89.7|garrison
+OTLAYOUT|Altis|Katalaki|ITEM|1|guard|gendarme|[11665.150,13881.400,16.150]|7.4|garrison
+OTLAYOUT|Altis|Katalaki|ITEM|1|guard|gendarme|[11670.350,13880.890,16.090]|63.9|garrison
+OTLAYOUT|Altis|Katalaki|ITEM|1|guard|gendarme|[11666.480,13876.520,16.150]|132.7|garrison
+OTLAYOUT|Altis|Katalaki|TIER|2|16
 OTLAYOUT|Altis|Katalaki|ITEM|2|object|Land_TableDesk_F|[11665.821,13878.154,13.310]|[[0.3983,0.9173,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Katalaki|ITEM|2|object|Land_OfficeChair_01_F|[11666.259,13879.163,13.310]|[[0.3983,0.9173,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Katalaki|ITEM|2|object|Land_MapBoard_F|[11665.144,13876.594,13.310]|[[0.3983,0.9173,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Katalaki|ITEM|2|guard|gendarme|[11665.274,13880.408,13.310]|163.5|
+OTLAYOUT|Altis|Katalaki|ITEM|2|object|Land_MapBoard_F|[11665.144,13876.595,13.310]|[[0.3983,0.9173,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Katalaki|ITEM|2|object|Flag_NATO_F|[11669.149,13872.512,12.643]|[[-0.3983,-0.9173,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Katalaki|ITEM|2|guard|gendarme|[11667.506,13873.498,12.610]|203.5|ground
-OTLAYOUT|Altis|Katalaki|ITEM|2|object|Land_BagFence_Long_F|[11661.210,13873.560,12.571]|[[-0.3983,-0.9173,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Katalaki|ITEM|2|object|Land_BagFence_Short_F|[11660.468,13874.940,12.579]|[[-0.9173,0.3983,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Katalaki|ITEM|2|object|Land_BagFence_Short_F|[11662.725,13873.960,12.573]|[[-0.9173,0.3983,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Katalaki|ITEM|2|guard|rifleman|[11662.179,13874.284,12.571]|203.5|ground
-OTLAYOUT|Altis|Katalaki|ITEM|2|guard|autorifleman|[11661.078,13874.762,12.577]|203.5|ground
-OTLAYOUT|Altis|Katalaki|ITEM|2|object|Land_HBarrier_3_F|[11665.322,13871.230,12.641]|[[-0.3983,-0.9173,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Katalaki|ITEM|2|object|Land_HBarrier_3_F|[11665.322,13871.230,14.391]|[[-0.3983,-0.9173,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Katalaki|ITEM|2|object|Land_BagFence_Short_F|[11667.068,13872.489,12.633]|[[-0.3983,-0.9173,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Katalaki|ITEM|2|object|Land_BagBunker_Tower_F|[11670.850,13868.394,12.755]|[[-0.3983,-0.9173,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Katalaki|ITEM|2|guard|rifleman|[11670.731,13868.118,16.155]|203.5|
-OTLAYOUT|Altis|Katalaki|ITEM|2|object|Land_Razorwire_F|[11660.751,13882.045,12.965]|[[0.9173,-0.3983,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Katalaki|ITEM|2|guard|marksman|[11667.031,13875.666,16.130]|203.5|
-OTLAYOUT|Altis|Katalaki|ITEM|2|guard|rifleman|[11671.224,13878.043,16.130]|173.5|
+OTLAYOUT|Altis|Katalaki|ITEM|2|object|Box_NATO_Ammo_F|[11664.997,13874.751,12.597]|[[-0.3987,-0.9171,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Katalaki|ITEM|2|guard|gendarme|[11668.870,13878.160,13.310]|89.7|garrison
+OTLAYOUT|Altis|Katalaki|ITEM|2|guard|gendarme|[11665.150,13881.400,16.150]|7.4|garrison
+OTLAYOUT|Altis|Katalaki|ITEM|2|guard|gendarme|[11670.350,13880.890,16.090]|63.9|garrison
+OTLAYOUT|Altis|Katalaki|ITEM|2|guard|gendarme|[11666.480,13876.520,16.150]|132.7|garrison
+OTLAYOUT|Altis|Katalaki|ITEM|2|object|Land_PortableLight_single_F|[11664.323,13873.954,12.581]|[[-0.3987,-0.9171,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Katalaki|ITEM|2|guard|gendarme|[11644.212,13870.518,13.013]|113.5|ground,patrol,patrol:1
+OTLAYOUT|Altis|Katalaki|ITEM|2|guard|gendarme|[11646.142,13869.680,12.931]|113.5|ground,patrol,patrol:1
+OTLAYOUT|Altis|Katalaki|ITEM|2|guard|gendarme|[11648.072,13868.842,12.847]|113.5|ground,patrol,patrol:1
+OTLAYOUT|Altis|Katalaki|ITEM|2|guard|gendarme|[11685.237,13885.760,13.369]|113.5|ground,patrol,patrol:2
+OTLAYOUT|Altis|Katalaki|ITEM|2|guard|gendarme|[11684.432,13883.906,13.356]|203.5|ground,patrol,patrol:2
+OTLAYOUT|Altis|Katalaki|ITEM|2|guard|gendarme|[11683.627,13882.052,13.322]|203.5|ground,patrol,patrol:2
 OTLAYOUT|Altis|Kavala|OFFICE|Land_Hospital_main_F|[3760.451,12990.057,18.802]|359.15|false
 OTLAYOUT|Altis|Kavala|CONFIRMED
 OTLAYOUT|Altis|Kavala|TIER|1|0
@@ -3148,35 +3167,33 @@ OTLAYOUT|Altis|Kore|ITEM|3|guard|rifleman|[7105.500,16525.030,127.994]|153.2|gar
 OTLAYOUT|Altis|Kore|ITEM|3|guard|autorifleman|[7105.500,16526.530,128.117]|151.3|garrison,ground,reserve,reserve:1
 OTLAYOUT|Altis|Koroni|OFFICE|Land_i_Stone_HouseBig_V1_F|[11791.406,18367.969,51.233]|136.00|true
 OTLAYOUT|Altis|Koroni|CONFIRMED
-OTLAYOUT|Altis|Koroni|TIER|1|6
-OTLAYOUT|Altis|Koroni|ITEM|1|object|Land_TableDesk_F|[11791.001,18366.947,51.730]|[[0.6947,-0.7193,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Koroni|ITEM|1|object|Land_OfficeChair_01_F|[11791.765,18366.156,51.730]|[[0.6947,-0.7193,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Koroni|ITEM|1|object|Land_MapBoard_F|[11789.820,18368.170,51.730]|[[0.6947,-0.7193,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Koroni|ITEM|1|guard|gendarme|[11793.293,18366.589,51.730]|276.0|
+OTLAYOUT|Altis|Koroni|TIER|1|9
+OTLAYOUT|Altis|Koroni|ITEM|1|object|Land_TableDesk_F|[11791.001,18366.947,51.740]|[[0.6947,-0.7193,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Koroni|ITEM|1|object|Land_OfficeChair_01_F|[11791.765,18366.156,51.740]|[[0.6947,-0.7193,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Koroni|ITEM|1|object|Land_MapBoard_F|[11789.820,18368.170,51.740]|[[0.6947,-0.7193,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Koroni|ITEM|1|object|Flag_NATO_F|[11784.514,18366.035,51.818]|[[-0.6947,0.7193,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Koroni|ITEM|1|guard|gendarme|[11786.054,18367.175,51.804]|316.0|ground
-OTLAYOUT|Altis|Koroni|TIER|2|21
-OTLAYOUT|Altis|Koroni|ITEM|2|object|Land_TableDesk_F|[11791.001,18366.947,51.730]|[[0.6947,-0.7193,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Koroni|ITEM|2|object|Land_OfficeChair_01_F|[11791.765,18366.156,51.730]|[[0.6947,-0.7193,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Koroni|ITEM|2|object|Land_MapBoard_F|[11789.820,18368.170,51.730]|[[0.6947,-0.7193,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Koroni|ITEM|2|guard|gendarme|[11793.293,18366.589,51.730]|276.0|
+OTLAYOUT|Altis|Koroni|ITEM|1|object|Box_NATO_Ammo_F|[11788.172,18369.012,51.830]|[[-0.6947,0.7193,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Koroni|ITEM|1|guard|gendarme|[11789.840,18364.130,51.730]|202.2|garrison
+OTLAYOUT|Altis|Koroni|ITEM|1|guard|gendarme|[11794.250,18366.320,54.570]|120.1|garrison
+OTLAYOUT|Altis|Koroni|ITEM|1|guard|gendarme|[11791.790,18361.720,54.520]|176.5|garrison
+OTLAYOUT|Altis|Koroni|ITEM|1|guard|gendarme|[11789.250,18366.960,54.570]|245.0|garrison
+OTLAYOUT|Altis|Koroni|TIER|2|16
+OTLAYOUT|Altis|Koroni|ITEM|2|object|Land_TableDesk_F|[11791.001,18366.947,51.740]|[[0.6947,-0.7193,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Koroni|ITEM|2|object|Land_OfficeChair_01_F|[11791.765,18366.156,51.740]|[[0.6947,-0.7193,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Koroni|ITEM|2|object|Land_MapBoard_F|[11789.820,18368.170,51.740]|[[0.6947,-0.7193,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Koroni|ITEM|2|object|Flag_NATO_F|[11784.514,18366.035,51.818]|[[-0.6947,0.7193,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Koroni|ITEM|2|guard|gendarme|[11786.054,18367.175,51.804]|316.0|ground
-OTLAYOUT|Altis|Koroni|ITEM|2|object|Land_BagFence_Long_F|[11788.752,18373.882,51.793]|[[-0.6947,0.7193,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Koroni|ITEM|2|object|Land_BagFence_Short_F|[11790.311,18374.038,51.715]|[[0.7193,0.6947,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Koroni|ITEM|2|object|Land_BagFence_Short_F|[11788.541,18372.329,51.819]|[[0.7193,0.6947,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Koroni|ITEM|2|guard|rifleman|[11789.050,18372.709,51.785]|316.0|ground
-OTLAYOUT|Altis|Koroni|ITEM|2|guard|autorifleman|[11789.913,18373.543,51.734]|316.0|ground
-OTLAYOUT|Altis|Koroni|ITEM|2|object|Land_HBarrier_3_F|[11785.228,18370.478,51.935]|[[-0.6947,0.7193,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Koroni|ITEM|2|object|Land_HBarrier_3_F|[11785.228,18370.478,53.685]|[[-0.6947,0.7193,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Koroni|ITEM|2|object|Land_BagFence_Short_F|[11785.290,18367.966,51.810]|[[-0.6947,0.7193,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Koroni|ITEM|2|object|Land_BagBunker_Tower_F|[11794.458,18358.680,51.833]|[[-0.7202,0.6937,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Koroni|ITEM|2|object|Flag_NATO_F|[11791.646,18357.778,51.924]|[[-0.7202,0.6937,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Koroni|ITEM|2|object|Land_CncBarrier_stripes_F|[11789.149,18358.934,51.944]|[[0.6937,0.7202,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Koroni|ITEM|2|object|Land_CncBarrier_stripes_F|[11787.276,18360.738,51.950]|[[0.6937,0.7202,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Koroni|ITEM|2|guard|rifleman|[11794.242,18358.888,55.233]|313.9|
-OTLAYOUT|Altis|Koroni|ITEM|2|guard|marksman|[11788.240,18366.783,54.550]|316.0|
-OTLAYOUT|Altis|Koroni|ITEM|2|guard|rifleman|[11788.828,18361.999,54.550]|306.0|
+OTLAYOUT|Altis|Koroni|ITEM|2|object|Box_NATO_Ammo_F|[11788.172,18369.012,51.830]|[[-0.6947,0.7193,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Koroni|ITEM|2|guard|gendarme|[11789.840,18364.130,51.730]|202.2|garrison
+OTLAYOUT|Altis|Koroni|ITEM|2|guard|gendarme|[11794.250,18366.320,54.570]|120.1|garrison
+OTLAYOUT|Altis|Koroni|ITEM|2|guard|gendarme|[11791.790,18361.720,54.520]|176.5|garrison
+OTLAYOUT|Altis|Koroni|ITEM|2|guard|gendarme|[11789.250,18366.960,54.570]|245.0|garrison
+OTLAYOUT|Altis|Koroni|ITEM|2|object|Land_PortableLight_single_F|[11787.694,18369.940,51.883]|[[-0.6947,0.7193,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Koroni|ITEM|2|guard|gendarme|[11792.227,18389.832,52.139]|226.0|ground,patrol,patrol:1
+OTLAYOUT|Altis|Koroni|ITEM|2|guard|gendarme|[11790.714,18388.371,52.204]|226.0|ground,patrol,patrol:1
+OTLAYOUT|Altis|Koroni|ITEM|2|guard|gendarme|[11789.201,18386.909,52.248]|226.0|ground,patrol,patrol:1
+OTLAYOUT|Altis|Koroni|ITEM|2|guard|gendarme|[11790.587,18346.098,51.778]|226.0|ground,patrol,patrol:2
+OTLAYOUT|Altis|Koroni|ITEM|2|guard|gendarme|[11789.183,18347.552,51.897]|316.0|ground,patrol,patrol:2
+OTLAYOUT|Altis|Koroni|ITEM|2|guard|gendarme|[11787.779,18349.006,52.024]|316.0|ground,patrol,patrol:2
 OTLAYOUT|Altis|Lakka|OFFICE|Land_u_House_Big_02_V1_F|[12379.171,15704.565,22.664]|22.10|false
 OTLAYOUT|Altis|Lakka|CONFIRMED
 OTLAYOUT|Altis|Lakka|TIER|1|0
@@ -3618,33 +3635,33 @@ OTLAYOUT|Altis|Molos|ITEM|4|guard|rifleman|[26983.150,23273.270,20.420]|308.3|ga
 OTLAYOUT|Altis|Molos|ITEM|4|hide|Land_City_Gate_F|[27026.510,23247.240,20.960]|[[0.0000,1.0000,0.0000],[0.0000,0.0000,1.0000]]|
 OTLAYOUT|Altis|Negades|OFFICE|Land_i_Stone_HouseBig_V2_F|[4854.883,16205.997,72.927]|207.67|false
 OTLAYOUT|Altis|Negades|CONFIRMED
-OTLAYOUT|Altis|Negades|TIER|1|6
+OTLAYOUT|Altis|Negades|TIER|1|9
 OTLAYOUT|Altis|Negades|ITEM|1|object|Land_TableDesk_F|[4853.784,16206.061,73.430]|[[-0.4644,-0.8856,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Negades|ITEM|1|object|Land_OfficeChair_01_F|[4853.273,16205.087,73.430]|[[-0.4644,-0.8856,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Negades|ITEM|1|object|Land_MapBoard_F|[4854.573,16207.567,73.430]|[[-0.4644,-0.8856,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Negades|ITEM|1|guard|gendarme|[4854.164,16203.773,73.430]|347.7|
+OTLAYOUT|Altis|Negades|ITEM|1|object|Land_MapBoard_F|[4854.573,16207.566,73.430]|[[-0.4644,-0.8856,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Negades|ITEM|1|object|Flag_NATO_F|[4850.878,16211.932,70.905]|[[0.4644,0.8856,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Negades|ITEM|1|guard|gendarme|[4852.444,16210.829,71.103]|27.7|ground
-OTLAYOUT|Altis|Negades|TIER|2|19
+OTLAYOUT|Altis|Negades|ITEM|1|object|Box_NATO_Ammo_F|[4854.854,16209.395,71.290]|[[0.4648,0.8854,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Negades|ITEM|1|guard|gendarme|[4850.750,16206.280,73.430]|273.9|garrison
+OTLAYOUT|Altis|Negades|ITEM|1|guard|gendarme|[4854.220,16202.780,76.260]|191.6|garrison
+OTLAYOUT|Altis|Negades|ITEM|1|guard|gendarme|[4849.070,16203.670,76.210]|248.2|garrison
+OTLAYOUT|Altis|Negades|ITEM|1|guard|gendarme|[4853.250,16207.730,76.260]|316.8|garrison
+OTLAYOUT|Altis|Negades|TIER|2|16
 OTLAYOUT|Altis|Negades|ITEM|2|object|Land_TableDesk_F|[4853.784,16206.061,73.430]|[[-0.4644,-0.8856,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Negades|ITEM|2|object|Land_OfficeChair_01_F|[4853.273,16205.087,73.430]|[[-0.4644,-0.8856,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Negades|ITEM|2|object|Land_MapBoard_F|[4854.573,16207.567,73.430]|[[-0.4644,-0.8856,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Negades|ITEM|2|guard|gendarme|[4854.164,16203.773,73.430]|347.7|
+OTLAYOUT|Altis|Negades|ITEM|2|object|Land_MapBoard_F|[4854.573,16207.566,73.430]|[[-0.4644,-0.8856,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Negades|ITEM|2|object|Flag_NATO_F|[4850.878,16211.932,70.905]|[[0.4644,0.8856,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Negades|ITEM|2|guard|gendarme|[4852.444,16210.829,71.103]|27.7|ground
-OTLAYOUT|Altis|Negades|ITEM|2|object|Land_BagFence_Long_F|[4858.719,16210.305,70.887]|[[0.4644,0.8856,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Negades|ITEM|2|object|Land_BagFence_Short_F|[4859.357,16208.875,71.160]|[[0.8856,-0.4644,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Negades|ITEM|2|object|Land_BagFence_Short_F|[4857.179,16210.017,71.013]|[[0.8856,-0.4644,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Negades|ITEM|2|guard|rifleman|[4857.700,16209.654,71.069]|27.7|ground
-OTLAYOUT|Altis|Negades|ITEM|2|guard|autorifleman|[4858.762,16209.096,71.136]|27.7|ground
-OTLAYOUT|Altis|Negades|ITEM|2|object|Land_HBarrier_3_F|[4854.788,16212.930,70.509]|[[0.4644,0.8856,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Negades|ITEM|2|object|Land_HBarrier_3_F|[4854.788,16212.930,72.259]|[[0.4644,0.8856,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Negades|ITEM|2|object|Land_BagFence_Short_F|[4852.955,16211.803,70.860]|[[0.4644,0.8856,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Negades|ITEM|2|object|Land_BagBunker_Tower_F|[4858.026,16218.459,69.572]|[[0.4644,0.8856,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Negades|ITEM|2|guard|rifleman|[4858.165,16218.725,72.972]|27.7|
-OTLAYOUT|Altis|Negades|ITEM|2|object|Land_Razorwire_F|[4858.555,16201.810,72.480]|[[-0.8856,0.4644,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Negades|ITEM|2|guard|marksman|[4852.760,16208.631,76.240]|27.7|
-OTLAYOUT|Altis|Negades|ITEM|2|guard|rifleman|[4848.403,16206.568,76.240]|357.7|
+OTLAYOUT|Altis|Negades|ITEM|2|object|Box_NATO_Ammo_F|[4854.854,16209.395,71.290]|[[0.4648,0.8854,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Negades|ITEM|2|guard|gendarme|[4850.750,16206.280,73.430]|273.9|garrison
+OTLAYOUT|Altis|Negades|ITEM|2|guard|gendarme|[4854.220,16202.780,76.260]|191.6|garrison
+OTLAYOUT|Altis|Negades|ITEM|2|guard|gendarme|[4849.070,16203.670,76.210]|248.2|garrison
+OTLAYOUT|Altis|Negades|ITEM|2|guard|gendarme|[4853.250,16207.730,76.260]|316.8|garrison
+OTLAYOUT|Altis|Negades|ITEM|2|object|Land_PortableLight_single_F|[4855.585,16210.141,71.076]|[[0.4648,0.8854,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Negades|ITEM|2|guard|gendarme|[4875.893,16212.094,70.232]|297.7|ground,patrol,patrol:1
+OTLAYOUT|Altis|Negades|ITEM|2|guard|gendarme|[4874.030,16213.071,70.154]|297.7|ground,patrol,patrol:1
+OTLAYOUT|Altis|Negades|ITEM|2|guard|gendarme|[4872.167,16214.048,70.016]|297.7|ground,patrol,patrol:1
+OTLAYOUT|Altis|Negades|ITEM|2|guard|gendarme|[4835.740,16203.478,73.004]|27.7|ground,patrol,patrol:2
+OTLAYOUT|Altis|Negades|ITEM|2|guard|gendarme|[4836.679,16205.268,72.728]|27.7|ground,patrol,patrol:2
+OTLAYOUT|Altis|Negades|ITEM|2|guard|gendarme|[4837.617,16207.058,72.426]|27.7|ground,patrol,patrol:2
 OTLAYOUT|Altis|Neochori|OFFICE|Land_i_House_Big_01_V1_F|[12537.218,14328.295,12.534]|67.16|false
 OTLAYOUT|Altis|Neochori|CONFIRMED
 OTLAYOUT|Altis|Neochori|TIER|1|0
@@ -4132,95 +4149,115 @@ OTLAYOUT|Altis|Neri|ITEM|3|hide|Land_City_Gate_F|[4120.500,11748.460,51.320]|[[0
 OTLAYOUT|Altis|Neri|ITEM|3|hide|Land_City_Gate_F|[4148.370,11769.080,52.350]|[[0.0000,1.0000,0.0000],[0.0000,0.0000,1.0000]]|
 OTLAYOUT|Altis|Nifi|OFFICE|Land_i_House_Big_02_V3_F|[19396.332,15470.687,26.068]|1.40|false
 OTLAYOUT|Altis|Nifi|CONFIRMED
-OTLAYOUT|Altis|Nifi|TIER|1|0
-OTLAYOUT|Altis|Nifi|TIER|2|4
-OTLAYOUT|Altis|Nifi|ITEM|2|object|Land_BagFence_Long_F|[19394.583,15464.725,26.490]|[[0.0244,0.9997,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Nifi|ITEM|2|object|Land_BagFence_Short_F|[19391.294,15465.206,26.490]|[[0.9997,-0.0244,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Nifi|ITEM|2|object|Land_BagFence_Long_F|[19396.615,15478.280,26.112]|[[0.0244,0.9997,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Nifi|ITEM|2|object|Land_BagFence_Long_F|[19402.298,15473.440,25.966]|[[0.9997,-0.0244,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Nifi|TIER|1|9
+OTLAYOUT|Altis|Nifi|ITEM|1|object|Land_TableDesk_F|[19393.988,15472.739,29.914]|[[-0.9997,0.0245,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Nifi|ITEM|1|object|Land_OfficeChair_01_F|[19392.389,15472.777,29.916]|[[-0.9997,0.0245,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Nifi|ITEM|1|object|Land_MapBoard_F|[19393.918,15475.272,30.200]|[[-0.4685,0.8835,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Nifi|ITEM|1|object|Flag_NATO_F|[19390.455,15461.355,24.855]|[[-0.9997,0.0244,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
+OTLAYOUT|Altis|Nifi|ITEM|1|object|Box_NATO_Ammo_F|[19390.595,15467.304,25.687]|[[-0.9997,0.0244,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Nifi|ITEM|1|guard|gendarme|[19396.340,15467.340,26.490]|179.8|garrison
+OTLAYOUT|Altis|Nifi|ITEM|1|guard|gendarme|[19399.770,15476.910,29.930]|28.9|garrison
+OTLAYOUT|Altis|Nifi|ITEM|1|guard|gendarme|[19395.710,15472.850,29.930]|344.0|garrison
+OTLAYOUT|Altis|Nifi|ITEM|1|guard|gendarme|[19399.730,15464.900,26.490]|149.5|garrison
+OTLAYOUT|Altis|Nifi|TIER|2|16
+OTLAYOUT|Altis|Nifi|ITEM|2|object|Land_TableDesk_F|[19393.988,15472.739,29.914]|[[-0.9997,0.0245,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Nifi|ITEM|2|object|Land_OfficeChair_01_F|[19392.389,15472.777,29.916]|[[-0.9997,0.0245,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Nifi|ITEM|2|object|Land_MapBoard_F|[19393.918,15475.272,30.200]|[[-0.4685,0.8835,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Nifi|ITEM|2|object|Flag_NATO_F|[19390.455,15461.355,24.855]|[[-0.9997,0.0244,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
+OTLAYOUT|Altis|Nifi|ITEM|2|object|Box_NATO_Ammo_F|[19390.595,15467.304,25.687]|[[-0.9997,0.0244,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Nifi|ITEM|2|guard|gendarme|[19396.340,15467.340,26.490]|179.8|garrison
+OTLAYOUT|Altis|Nifi|ITEM|2|guard|gendarme|[19399.770,15476.910,29.930]|28.9|garrison
+OTLAYOUT|Altis|Nifi|ITEM|2|guard|gendarme|[19395.710,15472.850,29.930]|344.0|garrison
+OTLAYOUT|Altis|Nifi|ITEM|2|guard|gendarme|[19399.730,15464.900,26.490]|149.5|garrison
+OTLAYOUT|Altis|Nifi|ITEM|2|object|Land_PortableLight_single_F|[19389.603,15467.628,25.645]|[[-0.9997,0.0244,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Nifi|ITEM|2|guard|gendarme|[19387.628,15449.801,23.127]|91.4|ground,patrol,patrol:1
+OTLAYOUT|Altis|Nifi|ITEM|2|guard|gendarme|[19389.674,15449.751,23.097]|91.4|ground,patrol,patrol:1
+OTLAYOUT|Altis|Nifi|ITEM|2|guard|gendarme|[19391.721,15449.701,23.076]|91.4|ground,patrol,patrol:1
+OTLAYOUT|Altis|Nifi|ITEM|2|guard|gendarme|[19411.170,15491.418,29.900]|91.4|ground,patrol,patrol:2
+OTLAYOUT|Altis|Nifi|ITEM|2|guard|gendarme|[19411.121,15489.410,29.112]|181.4|ground,patrol,patrol:2
+OTLAYOUT|Altis|Nifi|ITEM|2|guard|gendarme|[19411.072,15487.402,28.442]|181.4|ground,patrol,patrol:2
 OTLAYOUT|Altis|Oreokastro|OFFICE|Land_i_Stone_HouseBig_V1_F|[4594.654,21447.148,301.376]|355.79|false
 OTLAYOUT|Altis|Oreokastro|CONFIRMED
-OTLAYOUT|Altis|Oreokastro|TIER|1|6
-OTLAYOUT|Altis|Oreokastro|ITEM|1|object|Land_TableDesk_F|[4595.616,21447.677,301.880]|[[-0.0734,0.9973,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Oreokastro|ITEM|1|object|Land_OfficeChair_01_F|[4595.535,21448.774,301.880]|[[-0.0734,0.9973,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Oreokastro|ITEM|1|object|Land_MapBoard_F|[4595.740,21445.981,301.880]|[[-0.0734,0.9973,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Oreokastro|ITEM|1|guard|gendarme|[4594.084,21449.419,301.880]|135.8|
-OTLAYOUT|Altis|Oreokastro|ITEM|1|object|Flag_NATO_F|[4585.896,21443.502,300.957]|[[0.0734,-0.9973,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Oreokastro|ITEM|1|guard|gendarme|[4598.316,21449.129,301.880]|175.8|
-OTLAYOUT|Altis|Oreokastro|TIER|2|15
-OTLAYOUT|Altis|Oreokastro|ITEM|2|object|Land_TableDesk_F|[4595.616,21447.677,301.880]|[[-0.0734,0.9973,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Oreokastro|ITEM|2|object|Land_OfficeChair_01_F|[4595.535,21448.774,301.880]|[[-0.0734,0.9973,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Oreokastro|ITEM|2|object|Land_MapBoard_F|[4595.740,21445.981,301.880]|[[-0.0734,0.9973,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Oreokastro|ITEM|2|guard|gendarme|[4594.084,21449.419,301.880]|135.8|
-OTLAYOUT|Altis|Oreokastro|ITEM|2|object|Flag_NATO_F|[4585.896,21443.502,300.957]|[[0.0734,-0.9973,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Oreokastro|ITEM|2|guard|gendarme|[4598.316,21449.129,301.880]|175.8|
-OTLAYOUT|Altis|Oreokastro|ITEM|2|object|Land_BagFence_Long_F|[4584.583,21440.898,300.734]|[[0.0734,-0.9973,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Oreokastro|ITEM|2|object|Land_BagFence_Short_F|[4583.285,21441.775,300.898]|[[-0.9973,-0.0734,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Oreokastro|ITEM|2|object|Land_BagFence_Short_F|[4585.739,21441.956,300.811]|[[-0.9973,-0.0734,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Oreokastro|ITEM|2|guard|rifleman|[4585.105,21441.990,300.837]|175.8|ground
-OTLAYOUT|Altis|Oreokastro|ITEM|2|guard|autorifleman|[4583.908,21441.901,300.880]|175.8|ground
-OTLAYOUT|Altis|Oreokastro|ITEM|2|object|Land_BagBunker_Tower_F|[4583.491,21435.303,300.163]|[[0.0734,-0.9973,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Oreokastro|ITEM|2|guard|rifleman|[4583.513,21435.004,303.563]|175.8|
-OTLAYOUT|Altis|Oreokastro|ITEM|2|guard|marksman|[4597.842,21446.036,304.690]|175.8|
-OTLAYOUT|Altis|Oreokastro|ITEM|2|guard|rifleman|[4600.452,21450.088,304.690]|145.8|
+OTLAYOUT|Altis|Oreokastro|TIER|1|7
+OTLAYOUT|Altis|Oreokastro|ITEM|1|object|Land_TableDesk_F|[4595.615,21447.677,301.880]|[[-0.0734,0.9973,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Oreokastro|ITEM|1|object|Land_OfficeChair_01_F|[4595.535,21448.773,301.880]|[[-0.0734,0.9973,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Oreokastro|ITEM|1|object|Land_MapBoard_F|[4595.740,21445.982,301.880]|[[-0.0734,0.9973,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Oreokastro|ITEM|1|guard|gendarme|[4598.310,21449.090,301.870]|62.1|garrison
+OTLAYOUT|Altis|Oreokastro|ITEM|1|guard|gendarme|[4593.520,21450.240,304.710]|339.9|garrison
+OTLAYOUT|Altis|Oreokastro|ITEM|1|guard|gendarme|[4598.360,21452.200,304.660]|36.3|garrison
+OTLAYOUT|Altis|Oreokastro|ITEM|1|guard|gendarme|[4596.960,21446.540,304.710]|104.9|garrison
+OTLAYOUT|Altis|Oreokastro|TIER|2|13
+OTLAYOUT|Altis|Oreokastro|ITEM|2|object|Land_TableDesk_F|[4595.615,21447.677,301.880]|[[-0.0734,0.9973,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Oreokastro|ITEM|2|object|Land_OfficeChair_01_F|[4595.535,21448.773,301.880]|[[-0.0734,0.9973,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Oreokastro|ITEM|2|object|Land_MapBoard_F|[4595.740,21445.982,301.880]|[[-0.0734,0.9973,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Oreokastro|ITEM|2|guard|gendarme|[4598.310,21449.090,301.870]|62.1|garrison
+OTLAYOUT|Altis|Oreokastro|ITEM|2|guard|gendarme|[4593.520,21450.240,304.710]|339.9|garrison
+OTLAYOUT|Altis|Oreokastro|ITEM|2|guard|gendarme|[4598.360,21452.200,304.660]|36.3|garrison
+OTLAYOUT|Altis|Oreokastro|ITEM|2|guard|gendarme|[4596.960,21446.540,304.710]|104.9|garrison
+OTLAYOUT|Altis|Oreokastro|ITEM|2|guard|gendarme|[4580.027,21430.877,300.161]|85.8|ground,patrol,patrol:1
+OTLAYOUT|Altis|Oreokastro|ITEM|2|guard|gendarme|[4582.125,21431.031,299.989]|85.8|ground,patrol,patrol:1
+OTLAYOUT|Altis|Oreokastro|ITEM|2|guard|gendarme|[4584.223,21431.186,299.842]|85.8|ground,patrol,patrol:1
+OTLAYOUT|Altis|Oreokastro|ITEM|2|guard|gendarme|[4584.223,21431.186,299.842]|265.8|ground,patrol,patrol:2
+OTLAYOUT|Altis|Oreokastro|ITEM|2|guard|gendarme|[4582.125,21431.031,299.989]|265.8|ground,patrol,patrol:2
+OTLAYOUT|Altis|Oreokastro|ITEM|2|guard|gendarme|[4580.027,21430.877,300.161]|265.8|ground,patrol,patrol:2
 OTLAYOUT|Altis|Orino|OFFICE|Land_i_Stone_HouseBig_V3_F|[10479.605,17298.215,87.955]|302.90|false
 OTLAYOUT|Altis|Orino|CONFIRMED
-OTLAYOUT|Altis|Orino|TIER|1|6
-OTLAYOUT|Altis|Orino|ITEM|1|object|Land_TableDesk_F|[10479.777,17299.302,88.460]|[[-0.8396,0.5432,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Orino|TIER|1|9
+OTLAYOUT|Altis|Orino|ITEM|1|object|Land_TableDesk_F|[10479.776,17299.301,88.460]|[[-0.8396,0.5432,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Orino|ITEM|1|object|Land_OfficeChair_01_F|[10478.853,17299.899,88.460]|[[-0.8396,0.5432,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Orino|ITEM|1|object|Land_MapBoard_F|[10481.204,17298.378,88.460]|[[-0.8396,0.5432,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Orino|ITEM|1|guard|gendarme|[10477.463,17299.131,88.460]|82.9|
+OTLAYOUT|Altis|Orino|ITEM|1|object|Land_MapBoard_F|[10481.203,17298.378,88.460]|[[-0.8396,0.5432,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Orino|ITEM|1|object|Flag_NATO_F|[10485.888,17301.660,88.204]|[[0.8396,-0.5432,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Orino|ITEM|1|guard|gendarme|[10484.646,17300.201,88.077]|122.9|ground
-OTLAYOUT|Altis|Orino|TIER|2|19
-OTLAYOUT|Altis|Orino|ITEM|2|object|Land_TableDesk_F|[10479.777,17299.302,88.460]|[[-0.8396,0.5432,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Orino|ITEM|1|object|Box_NATO_Ammo_F|[10482.999,17297.931,87.880]|[[0.8396,-0.5432,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Orino|ITEM|1|guard|gendarme|[10480.270,17302.310,88.450]|9.1|garrison
+OTLAYOUT|Altis|Orino|ITEM|1|guard|gendarme|[10476.460,17299.170,91.290]|286.8|garrison
+OTLAYOUT|Altis|Orino|ITEM|1|guard|gendarme|[10477.810,17304.210,91.240]|343.3|garrison
+OTLAYOUT|Altis|Orino|ITEM|1|guard|gendarme|[10481.480,17299.680,91.290]|52.0|garrison
+OTLAYOUT|Altis|Orino|TIER|2|16
+OTLAYOUT|Altis|Orino|ITEM|2|object|Land_TableDesk_F|[10479.776,17299.301,88.460]|[[-0.8396,0.5432,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Orino|ITEM|2|object|Land_OfficeChair_01_F|[10478.853,17299.899,88.460]|[[-0.8396,0.5432,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Orino|ITEM|2|object|Land_MapBoard_F|[10481.204,17298.378,88.460]|[[-0.8396,0.5432,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Orino|ITEM|2|guard|gendarme|[10477.463,17299.131,88.460]|82.9|
+OTLAYOUT|Altis|Orino|ITEM|2|object|Land_MapBoard_F|[10481.203,17298.378,88.460]|[[-0.8396,0.5432,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Orino|ITEM|2|object|Flag_NATO_F|[10485.888,17301.660,88.204]|[[0.8396,-0.5432,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Orino|ITEM|2|guard|gendarme|[10484.646,17300.201,88.077]|122.9|ground
-OTLAYOUT|Altis|Orino|ITEM|2|object|Land_BagFence_Long_F|[10483.553,17294.000,87.777]|[[0.8396,-0.5432,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Orino|ITEM|2|object|Land_BagFence_Short_F|[10482.070,17293.494,87.700]|[[-0.5432,-0.8396,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Orino|ITEM|2|object|Land_BagFence_Short_F|[10483.406,17295.560,87.817]|[[-0.5432,-0.8396,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Orino|ITEM|2|guard|rifleman|[10482.997,17295.074,87.790]|122.9|ground
-OTLAYOUT|Altis|Orino|ITEM|2|guard|autorifleman|[10482.345,17294.067,87.738]|122.9|ground
-OTLAYOUT|Altis|Orino|ITEM|2|object|Land_HBarrier_3_F|[10486.525,17297.675,88.037]|[[0.8396,-0.5432,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Orino|ITEM|2|object|Land_HBarrier_3_F|[10486.525,17297.675,89.787]|[[0.8396,-0.5432,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Orino|ITEM|2|object|Land_BagFence_Short_F|[10485.570,17299.603,88.101]|[[0.8396,-0.5432,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Orino|ITEM|2|object|Land_BagBunker_Tower_F|[10490.229,17302.663,88.378]|[[0.8396,-0.5432,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Orino|ITEM|2|guard|rifleman|[10490.481,17302.500,91.778]|122.9|
-OTLAYOUT|Altis|Orino|ITEM|2|object|Land_Razorwire_F|[10472.534,17304.583,87.390]|[[-0.8396,0.5432,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Orino|ITEM|2|guard|marksman|[10482.429,17300.087,91.270]|122.9|
-OTLAYOUT|Altis|Orino|ITEM|2|guard|rifleman|[10480.771,17304.613,91.270]|92.9|
+OTLAYOUT|Altis|Orino|ITEM|2|object|Box_NATO_Ammo_F|[10482.999,17297.931,87.880]|[[0.8396,-0.5432,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Orino|ITEM|2|guard|gendarme|[10480.270,17302.310,88.450]|9.1|garrison
+OTLAYOUT|Altis|Orino|ITEM|2|guard|gendarme|[10476.460,17299.170,91.290]|286.8|garrison
+OTLAYOUT|Altis|Orino|ITEM|2|guard|gendarme|[10477.810,17304.210,91.240]|343.3|garrison
+OTLAYOUT|Altis|Orino|ITEM|2|guard|gendarme|[10481.480,17299.680,91.290]|52.0|garrison
+OTLAYOUT|Altis|Orino|ITEM|2|object|Land_PortableLight_single_F|[10483.676,17297.136,87.885]|[[0.8396,-0.5432,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Orino|ITEM|2|guard|gendarme|[10484.911,17278.500,87.137]|32.9|ground,patrol,patrol:1
+OTLAYOUT|Altis|Orino|ITEM|2|guard|gendarme|[10486.054,17280.267,87.246]|32.9|ground,patrol,patrol:1
+OTLAYOUT|Altis|Orino|ITEM|2|guard|gendarme|[10487.197,17282.033,87.358]|32.9|ground,patrol,patrol:1
+OTLAYOUT|Altis|Orino|ITEM|2|guard|gendarme|[10478.848,17317.505,88.776]|122.9|ground,patrol,patrol:2
+OTLAYOUT|Altis|Orino|ITEM|2|guard|gendarme|[10480.545,17316.407,88.810]|122.9|ground,patrol,patrol:2
+OTLAYOUT|Altis|Orino|ITEM|2|guard|gendarme|[10490.728,17309.820,88.753]|122.9|ground,patrol,patrol:2
 OTLAYOUT|Altis|Panagia|OFFICE|Land_i_Stone_HouseBig_V1_F|[20589.854,9029.988,40.738]|42.40|false
 OTLAYOUT|Altis|Panagia|CONFIRMED
-OTLAYOUT|Altis|Panagia|TIER|1|6
+OTLAYOUT|Altis|Panagia|TIER|1|9
 OTLAYOUT|Altis|Panagia|ITEM|1|object|Land_TableDesk_F|[20590.895,9029.648,41.240]|[[0.6743,0.7385,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Panagia|ITEM|1|object|Land_OfficeChair_01_F|[20591.637,9030.460,41.240]|[[0.6743,0.7385,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Panagia|ITEM|1|object|Land_MapBoard_F|[20589.749,9028.392,41.240]|[[0.6743,0.7385,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Panagia|ITEM|1|guard|gendarme|[20591.109,9031.958,41.240]|182.4|
+OTLAYOUT|Altis|Panagia|ITEM|1|object|Land_MapBoard_F|[20589.749,9028.393,41.240]|[[0.6743,0.7385,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Panagia|ITEM|1|object|Flag_NATO_F|[20592.213,9023.231,40.100]|[[-0.6743,-0.7385,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Panagia|ITEM|1|guard|gendarme|[20590.978,9024.697,40.156]|222.4|ground
-OTLAYOUT|Altis|Panagia|TIER|2|19
+OTLAYOUT|Altis|Panagia|ITEM|1|object|Box_NATO_Ammo_F|[20589.012,9026.696,40.210]|[[-0.6743,-0.7385,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Panagia|ITEM|1|guard|gendarme|[20593.780,9028.660,41.240]|108.7|garrison
+OTLAYOUT|Altis|Panagia|ITEM|1|guard|gendarme|[20591.320,9032.930,44.070]|26.5|garrison
+OTLAYOUT|Altis|Panagia|ITEM|1|guard|gendarme|[20596.060,9030.770,44.020]|82.8|garrison
+OTLAYOUT|Altis|Panagia|ITEM|1|guard|gendarme|[20590.990,9027.900,44.070]|151.5|garrison
+OTLAYOUT|Altis|Panagia|TIER|2|16
 OTLAYOUT|Altis|Panagia|ITEM|2|object|Land_TableDesk_F|[20590.895,9029.648,41.240]|[[0.6743,0.7385,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Panagia|ITEM|2|object|Land_OfficeChair_01_F|[20591.637,9030.460,41.240]|[[0.6743,0.7385,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Panagia|ITEM|2|object|Land_MapBoard_F|[20589.749,9028.392,41.240]|[[0.6743,0.7385,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Panagia|ITEM|2|guard|gendarme|[20591.109,9031.958,41.240]|182.4|
+OTLAYOUT|Altis|Panagia|ITEM|2|object|Land_MapBoard_F|[20589.749,9028.393,41.240]|[[0.6743,0.7385,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Panagia|ITEM|2|object|Flag_NATO_F|[20592.213,9023.231,40.100]|[[-0.6743,-0.7385,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Panagia|ITEM|2|guard|gendarme|[20590.978,9024.697,40.156]|222.4|ground
-OTLAYOUT|Altis|Panagia|ITEM|2|object|Land_BagFence_Long_F|[20585.043,9026.798,40.196]|[[-0.6743,-0.7385,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Panagia|ITEM|2|object|Land_BagFence_Short_F|[20584.789,9028.344,40.234]|[[-0.7385,0.6743,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Panagia|ITEM|2|object|Land_BagFence_Short_F|[20586.606,9026.685,40.201]|[[-0.7385,0.6743,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Panagia|ITEM|2|guard|rifleman|[20586.194,9027.169,40.211]|222.4|ground
-OTLAYOUT|Altis|Panagia|ITEM|2|guard|autorifleman|[20585.308,9027.978,40.227]|222.4|ground
-OTLAYOUT|Altis|Panagia|ITEM|2|object|Land_HBarrier_3_F|[20588.177,9023.260,40.110]|[[-0.6743,-0.7385,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Panagia|ITEM|2|object|Land_HBarrier_3_F|[20588.177,9023.260,41.860]|[[-0.6743,-0.7385,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Panagia|ITEM|2|object|Land_BagFence_Short_F|[20590.237,9023.884,40.134]|[[-0.6743,-0.7385,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Panagia|ITEM|2|object|Land_BagBunker_Tower_F|[20587.942,9017.516,39.713]|[[-0.6743,-0.7385,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Panagia|ITEM|2|guard|rifleman|[20587.740,9017.294,43.113]|222.4|
-OTLAYOUT|Altis|Panagia|ITEM|2|object|Land_Razorwire_F|[20587.362,9034.973,40.542]|[[0.7385,-0.6743,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Panagia|ITEM|2|guard|marksman|[20591.232,9026.903,44.050]|222.4|
-OTLAYOUT|Altis|Panagia|ITEM|2|guard|rifleman|[20595.970,9027.790,44.050]|192.4|
+OTLAYOUT|Altis|Panagia|ITEM|2|object|Box_NATO_Ammo_F|[20589.012,9026.696,40.210]|[[-0.6743,-0.7385,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Panagia|ITEM|2|guard|gendarme|[20593.780,9028.660,41.240]|108.7|garrison
+OTLAYOUT|Altis|Panagia|ITEM|2|guard|gendarme|[20591.320,9032.930,44.070]|26.5|garrison
+OTLAYOUT|Altis|Panagia|ITEM|2|guard|gendarme|[20596.060,9030.770,44.020]|82.8|garrison
+OTLAYOUT|Altis|Panagia|ITEM|2|guard|gendarme|[20590.990,9027.900,44.070]|151.5|garrison
+OTLAYOUT|Altis|Panagia|ITEM|2|object|Land_PortableLight_single_F|[20588.116,9026.159,40.194]|[[-0.6743,-0.7385,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Panagia|ITEM|2|guard|gendarme|[20567.978,9029.435,39.874]|132.4|ground,patrol,patrol:1
+OTLAYOUT|Altis|Panagia|ITEM|2|guard|gendarme|[20569.532,9028.017,39.884]|132.4|ground,patrol,patrol:1
+OTLAYOUT|Altis|Panagia|ITEM|2|guard|gendarme|[20571.085,9026.598,39.892]|132.4|ground,patrol,patrol:1
+OTLAYOUT|Altis|Panagia|ITEM|2|guard|gendarme|[20611.728,9030.544,40.318]|132.4|ground,patrol,patrol:2
+OTLAYOUT|Altis|Panagia|ITEM|2|guard|gendarme|[20609.003,9027.559,40.111]|222.4|ground,patrol,patrol:2
+OTLAYOUT|Altis|Panagia|ITEM|2|guard|gendarme|[20607.640,9026.066,40.013]|222.4|ground,patrol,patrol:2
 OTLAYOUT|Altis|Panochori|OFFICE|Land_i_House_Big_01_V2_F|[5011.376,11279.886,51.080]|305.26|false
 OTLAYOUT|Altis|Panochori|CONFIRMED
 OTLAYOUT|Altis|Panochori|TIER|1|6
@@ -6331,31 +6368,33 @@ OTLAYOUT|Altis|Stavros|ITEM|3|hide|pallets_f.p3d|[12877.323,15063.494,33.211]|[[
 OTLAYOUT|Altis|Stavros|ITEM|3|hide|pallet_f.p3d|[12878.021,15064.448,33.088]|[[-0.9997,0.0497,0.1421],[0.1503,0.2752,0.9611]]|user
 OTLAYOUT|Altis|Syrta|OFFICE|Land_i_Stone_HouseBig_V3_F|[8623.375,18350.381,176.473]|168.09|false
 OTLAYOUT|Altis|Syrta|CONFIRMED
-OTLAYOUT|Altis|Syrta|TIER|1|6
-OTLAYOUT|Altis|Syrta|ITEM|1|object|Land_TableDesk_F|[8622.493,18349.735,176.970]|[[0.2064,-0.9785,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Syrta|ITEM|1|object|Land_OfficeChair_01_F|[8622.720,18348.659,176.970]|[[0.2064,-0.9785,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Syrta|ITEM|1|object|Land_MapBoard_F|[8622.142,18351.399,176.970]|[[0.2064,-0.9785,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Syrta|ITEM|1|guard|gendarme|[8624.244,18348.214,176.970]|308.1|
+OTLAYOUT|Altis|Syrta|TIER|1|9
+OTLAYOUT|Altis|Syrta|ITEM|1|object|Land_TableDesk_F|[8622.493,18349.736,176.980]|[[0.2064,-0.9785,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Syrta|ITEM|1|object|Land_OfficeChair_01_F|[8622.719,18348.659,176.980]|[[0.2064,-0.9785,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Syrta|ITEM|1|object|Land_MapBoard_F|[8622.142,18351.398,176.980]|[[0.2064,-0.9785,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Syrta|ITEM|1|object|Flag_NATO_F|[8616.512,18352.409,176.106]|[[-0.2064,0.9785,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Syrta|ITEM|1|guard|gendarme|[8621.065,18353.114,176.139]|348.1|ground
-OTLAYOUT|Altis|Syrta|TIER|2|17
-OTLAYOUT|Altis|Syrta|ITEM|2|object|Land_TableDesk_F|[8622.493,18349.735,176.970]|[[0.2064,-0.9785,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Syrta|ITEM|2|object|Land_OfficeChair_01_F|[8622.720,18348.659,176.970]|[[0.2064,-0.9785,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Syrta|ITEM|2|object|Land_MapBoard_F|[8622.142,18351.399,176.970]|[[0.2064,-0.9785,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Syrta|ITEM|2|guard|gendarme|[8624.244,18348.214,176.970]|308.1|
+OTLAYOUT|Altis|Syrta|ITEM|1|object|Box_NATO_Ammo_F|[8621.194,18352.987,176.143]|[[-0.2062,0.9785,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Syrta|ITEM|1|guard|gendarme|[8620.000,18347.960,176.970]|234.4|garrison
+OTLAYOUT|Altis|Syrta|ITEM|1|guard|gendarme|[8624.920,18347.470,179.800]|152.1|garrison
+OTLAYOUT|Altis|Syrta|ITEM|1|guard|gendarme|[8620.380,18344.880,179.760]|208.6|garrison
+OTLAYOUT|Altis|Syrta|ITEM|1|guard|gendarme|[8621.010,18350.680,179.810]|277.2|garrison
+OTLAYOUT|Altis|Syrta|TIER|2|16
+OTLAYOUT|Altis|Syrta|ITEM|2|object|Land_TableDesk_F|[8622.493,18349.736,176.980]|[[0.2064,-0.9785,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Syrta|ITEM|2|object|Land_OfficeChair_01_F|[8622.719,18348.659,176.980]|[[0.2064,-0.9785,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Syrta|ITEM|2|object|Land_MapBoard_F|[8622.142,18351.398,176.980]|[[0.2064,-0.9785,0.0000],[0.0000,0.0000,1.0000]]|drop
 OTLAYOUT|Altis|Syrta|ITEM|2|object|Flag_NATO_F|[8616.512,18352.409,176.106]|[[-0.2064,0.9785,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
-OTLAYOUT|Altis|Syrta|ITEM|2|guard|gendarme|[8621.065,18353.114,176.139]|348.1|ground
-OTLAYOUT|Altis|Syrta|ITEM|2|object|Land_BagFence_Long_F|[8623.592,18356.151,176.184]|[[-0.2064,0.9785,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Syrta|ITEM|2|object|Land_BagFence_Short_F|[8624.996,18355.455,176.230]|[[0.9785,0.2064,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Syrta|ITEM|2|object|Land_BagFence_Short_F|[8622.589,18354.948,176.132]|[[0.9785,0.2064,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Syrta|ITEM|2|guard|rifleman|[8623.222,18354.999,176.148]|348.1|ground
-OTLAYOUT|Altis|Syrta|ITEM|2|guard|autorifleman|[8624.396,18355.247,176.201]|348.1|ground
-OTLAYOUT|Altis|Syrta|ITEM|2|object|Land_BagFence_Short_F|[8620.838,18354.190,176.109]|[[-0.2064,0.9785,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Syrta|ITEM|2|object|Land_BagBunker_Tower_F|[8612.741,18354.782,175.939]|[[-0.2064,0.9785,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Syrta|ITEM|2|guard|rifleman|[8612.679,18355.075,179.339]|348.1|
-OTLAYOUT|Altis|Syrta|ITEM|2|object|Land_Razorwire_F|[8628.673,18350.477,176.358]|[[-0.9785,-0.2064,0.0000],[0.0000,0.0000,1.0000]]|ground
-OTLAYOUT|Altis|Syrta|ITEM|2|guard|marksman|[8620.066,18351.063,179.790]|348.1|
-OTLAYOUT|Altis|Syrta|ITEM|2|guard|rifleman|[8618.023,18346.698,179.790]|318.1|
+OTLAYOUT|Altis|Syrta|ITEM|2|object|Box_NATO_Ammo_F|[8621.194,18352.987,176.143]|[[-0.2062,0.9785,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Syrta|ITEM|2|guard|gendarme|[8620.000,18347.960,176.970]|234.4|garrison
+OTLAYOUT|Altis|Syrta|ITEM|2|guard|gendarme|[8624.920,18347.470,179.800]|152.1|garrison
+OTLAYOUT|Altis|Syrta|ITEM|2|guard|gendarme|[8620.380,18344.880,179.760]|208.6|garrison
+OTLAYOUT|Altis|Syrta|ITEM|2|guard|gendarme|[8621.010,18350.680,179.810]|277.2|garrison
+OTLAYOUT|Altis|Syrta|ITEM|2|object|Land_PortableLight_single_F|[8621.281,18354.028,176.118]|[[-0.2062,0.9785,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Syrta|ITEM|2|guard|gendarme|[8629.514,18367.170,176.490]|258.1|ground,patrol,patrol:1
+OTLAYOUT|Altis|Syrta|ITEM|2|guard|gendarme|[8627.455,18366.736,176.440]|258.1|ground,patrol,patrol:1
+OTLAYOUT|Altis|Syrta|ITEM|2|guard|gendarme|[8625.396,18366.301,176.370]|258.1|ground,patrol,patrol:1
+OTLAYOUT|Altis|Syrta|ITEM|2|guard|gendarme|[8611.067,18332.292,177.172]|258.1|ground,patrol,patrol:2
+OTLAYOUT|Altis|Syrta|ITEM|2|guard|gendarme|[8610.649,18334.270,177.057]|348.1|ground,patrol,patrol:2
+OTLAYOUT|Altis|Syrta|ITEM|2|guard|gendarme|[8610.232,18336.248,176.937]|348.1|ground,patrol,patrol:2
 OTLAYOUT|Altis|Telos|OFFICE|Land_i_House_Big_02_V2_F|[16241.884,17245.127,23.390]|32.79|false
 OTLAYOUT|Altis|Telos|CONFIRMED
 OTLAYOUT|Altis|Telos|TIER|1|0
@@ -6804,11 +6843,33 @@ OTLAYOUT|Altis|Therisa|ITEM|4|guard|rifleman|[10685.070,12210.400,17.634]|121.7|
 OTLAYOUT|Altis|Therisa|ITEM|4|guard|at|[10685.070,12213.400,17.633]|110.1|garrison,ground,reserve,reserve:3
 OTLAYOUT|Altis|Topolia|OFFICE|Land_i_House_Big_02_V3_F|[7416.954,15405.812,57.039]|183.71|false
 OTLAYOUT|Altis|Topolia|CONFIRMED
-OTLAYOUT|Altis|Topolia|TIER|1|0
-OTLAYOUT|Altis|Topolia|TIER|2|3
-OTLAYOUT|Altis|Topolia|ITEM|2|object|Land_BagFence_Long_F|[7418.935,15411.698,57.460]|[[-0.0647,-0.9979,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Topolia|ITEM|2|object|Land_BagFence_Short_F|[7422.203,15411.085,57.460]|[[-0.9979,0.0647,0.0000],[0.0000,0.0000,1.0000]]|drop
-OTLAYOUT|Altis|Topolia|ITEM|2|object|Land_BagFence_Long_F|[7416.359,15398.236,56.688]|[[-0.0647,-0.9979,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Topolia|TIER|1|9
+OTLAYOUT|Altis|Topolia|ITEM|1|object|Land_TableDesk_F|[7419.207,15403.667,60.884]|[[0.9979,-0.0648,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Topolia|ITEM|1|object|Land_OfficeChair_01_F|[7420.803,15403.565,60.886]|[[0.9979,-0.0647,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Topolia|ITEM|1|object|Land_MapBoard_F|[7419.175,15401.133,61.170]|[[0.4325,-0.9016,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Topolia|ITEM|1|object|Flag_NATO_F|[7423.197,15414.899,57.278]|[[0.9979,-0.0647,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
+OTLAYOUT|Altis|Topolia|ITEM|1|object|Box_NATO_Ammo_F|[7422.817,15408.961,57.173]|[[0.9979,-0.0645,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Topolia|ITEM|1|guard|gendarme|[7417.070,15409.150,57.460]|2.1|garrison
+OTLAYOUT|Altis|Topolia|ITEM|1|guard|gendarme|[7413.270,15399.740,60.910]|211.2|garrison
+OTLAYOUT|Altis|Topolia|ITEM|1|guard|gendarme|[7417.480,15403.620,60.900]|166.4|garrison
+OTLAYOUT|Altis|Topolia|ITEM|1|guard|gendarme|[7413.790,15411.730,57.460]|331.9|garrison
+OTLAYOUT|Altis|Topolia|TIER|2|16
+OTLAYOUT|Altis|Topolia|ITEM|2|object|Land_TableDesk_F|[7419.207,15403.667,60.884]|[[0.9979,-0.0648,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Topolia|ITEM|2|object|Land_OfficeChair_01_F|[7420.803,15403.565,60.886]|[[0.9979,-0.0647,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Topolia|ITEM|2|object|Land_MapBoard_F|[7419.175,15401.133,61.170]|[[0.4325,-0.9016,0.0000],[0.0000,0.0000,1.0000]]|drop
+OTLAYOUT|Altis|Topolia|ITEM|2|object|Flag_NATO_F|[7423.197,15414.899,57.278]|[[0.9979,-0.0647,0.0000],[0.0000,0.0000,1.0000]]|ground,flag
+OTLAYOUT|Altis|Topolia|ITEM|2|object|Box_NATO_Ammo_F|[7422.817,15408.961,57.173]|[[0.9979,-0.0645,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Topolia|ITEM|2|guard|gendarme|[7417.070,15409.150,57.460]|2.1|garrison
+OTLAYOUT|Altis|Topolia|ITEM|2|guard|gendarme|[7413.270,15399.740,60.910]|211.2|garrison
+OTLAYOUT|Altis|Topolia|ITEM|2|guard|gendarme|[7417.480,15403.620,60.900]|166.4|garrison
+OTLAYOUT|Altis|Topolia|ITEM|2|guard|gendarme|[7413.790,15411.730,57.460]|331.9|garrison
+OTLAYOUT|Altis|Topolia|ITEM|2|object|Land_PortableLight_single_F|[7423.795,15408.597,57.237]|[[0.9979,-0.0645,0.0000],[0.0000,0.0000,1.0000]]|ground
+OTLAYOUT|Altis|Topolia|ITEM|2|guard|gendarme|[7432.615,15425.932,58.937]|273.7|ground,patrol,patrol:1
+OTLAYOUT|Altis|Topolia|ITEM|2|guard|gendarme|[7430.572,15426.065,58.717]|273.7|ground,patrol,patrol:1
+OTLAYOUT|Altis|Topolia|ITEM|2|guard|gendarme|[7428.529,15426.197,58.497]|273.7|ground,patrol,patrol:1
+OTLAYOUT|Altis|Topolia|ITEM|2|guard|gendarme|[7401.286,15385.695,56.315]|273.7|ground,patrol,patrol:2
+OTLAYOUT|Altis|Topolia|ITEM|2|guard|gendarme|[7403.235,15415.761,55.869]|3.7|ground,patrol,patrol:2
+OTLAYOUT|Altis|Topolia|ITEM|2|guard|gendarme|[7403.365,15417.765,55.918]|3.7|ground,patrol,patrol:2
 OTLAYOUT|Altis|Zaros|OFFICE|Land_i_House_Big_01_V1_F|[9087.396,11934.828,20.098]|279.38|false
 OTLAYOUT|Altis|Zaros|CONFIRMED
 OTLAYOUT|Altis|Zaros|TIER|1|0

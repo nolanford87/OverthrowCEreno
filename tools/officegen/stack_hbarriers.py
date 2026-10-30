@@ -3,7 +3,7 @@ Makes every H-barrier wall in a world's office layouts two high (the user's look
 Land_HBarrier_1/3/5_F standing on the ground gets the same piece 1.4 m above it, and the lower one is put on the
 ground under it (a gap under a piece is a way through for the AI). Pieces already stacked, and pieces standing raised
 on something (an old wall, a step: more than 0.6 m off the ground), stay as they are. Towns given with --skip are
-left alone (e.g. the hamlets, to be reworked).
+left alone (the hamlets have no H-barriers: hamlet_gen.py).
 
     python tools/officegen/stack_hbarriers.py [--world Altis] [--skip "Town,Town"]
 """

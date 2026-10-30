@@ -51,6 +51,7 @@ CLASSES = {
     "Land_OfficeCabinet_01_F": (0.9, 0.5), "Land_CampingTable_F": (1.2, 0.6), "Land_CampingChair_V2_F": (0.6, 0.6),
     "Land_PortableLongRangeRadio_F": (0.5, 0.3), "Land_PortableLight_single_F": (0.6, 0.6),
     "Flag_NATO_F": (0.3, 0.3),
+    "Box_NATO_Ammo_F": (0.9, 0.5),  # A hamlet's door: a prop ammo box (a guess)
 }
 # Real bounding boxes measured in the game ([length, depth, height] m, boundingBoxReal, an UPPER bound: it takes in
 # a gate's raised arm or swing and some slack), from the layout check's OTCLASS lines

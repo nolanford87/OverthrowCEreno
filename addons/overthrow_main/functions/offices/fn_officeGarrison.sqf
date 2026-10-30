@@ -5,7 +5,8 @@
       occupier pays to replace him, one every 10 minutes for 10 resources each; the guards still lost aren't made;
     - always aware (never safe: relaxed men walk through pieces on roads), weapons free when they see a threat;
       the posts hold where they stand, the patrol ("patrol" guards, a group of their own, T4) walks a loop just
-      inside the compound's walls; the reserve ("reserve" guards, small groups of their own: "reserve:<n>") stands
+      inside the compound's walls; a hamlet's patrols (no compound at tiers 1-2: "patrol:<n>", a group each) walk
+      a ring 9 m out round the office, from opposite sides and opposite ways round, and keep within 40 m of it; the reserve ("reserve" guards, small groups of their own: "reserve:<n>") stands
       at ease round the yard, weapons lowered (relaxed, standing, holding their places);
     - flashlights rather than night vision, on after dark;
     - in a fight the posts hold and the patrol and every reserve group go after the nearest threat they know of,
@@ -111,6 +112,32 @@ for "_i" from 0 to _n - 1 do {
         if (_clear && { (_gates findIf { (_x distance2D _p) < 7 }) < 0 } && { _hit isEqualTo [] || { isNull ((_hit select 0) select 2) } } && { _p inPolygon _area }) then { _loop pushBack _p };
     };
 };
+// No compound (a hamlet's tiers 1-2): the ring round the office, 9 m out from the building, a point every 8 m
+// where nothing stands; the patrols keep within 40 m of the office (their walls)
+if (_area isEqualTo [] && { _patrol isNotEqualTo [] }) then {
+    (([_town] call OT_fnc_officeLayout) select 0) params ["_class", "_at"];
+    private _centre = ASLToAGL _at;
+    _centre set [2, 0];
+    private _b = (nearestObjects [_centre, [_class], 3, true]) param [0, objNull];
+    private _corners = if (isNull _b) then { [[-12, -12], [12, -12], [12, 12], [-12, 12]] apply { _centre vectorAdd (_x + [0]) } } else {
+        (boundingBoxReal _b) params ["_mn", "_mx"];
+        [[(_mn select 0) - 9, (_mn select 1) - 9], [(_mx select 0) + 9, (_mn select 1) - 9], [(_mx select 0) + 9, (_mx select 1) + 9], [(_mn select 0) - 9, (_mx select 1) + 9]] apply {
+            private _w = _b modelToWorld [_x select 0, _x select 1, 0];
+            [_w select 0, _w select 1, 0]
+        }
+    };
+    for "_i" from 0 to 3 do {
+        private _a = _corners select _i;
+        private _edge = (_corners select ((_i + 1) mod 4)) vectorDiff _a;
+        for "_t" from 0 to (vectorMagnitude _edge) - 1 step 8 do {
+            private _p = _a vectorAdd ((vectorNormalized _edge) vectorMultiply _t);
+            private _top = (AGLToASL _p) vectorAdd [0, 0, 8];
+            private _hit = lineIntersectsSurfaces [_top, _top vectorAdd [0, 0, -10], objNull, objNull, true, 1, "GEOM", "NONE"];
+            if ((_hit isEqualTo [] || { isNull ((_hit select 0) select 2) }) && { !(surfaceIsWater _p) }) then { _loop pushBack _p };
+        };
+    };
+    for "_a" from 0 to 345 step 22.5 do { _area pushBack (_centre getPos [40, _a]) };
+};
 private _walk = {
     params ["_group", "_loop"];
     { deleteWaypoint _x } forEach ((waypoints _group) select { (_x select 1) > 0 });
@@ -122,18 +149,27 @@ private _walk = {
     } forEach _loop;
     if (_loop isNotEqualTo []) then { (_group addWaypoint [_loop select 0, 0]) setWaypointType "CYCLE" };
 };
-private _patrolGroup = group (_patrol param [0, objNull]);
+private _patrolGroups = ((_patrol apply { group _x }) arrayIntersect (_patrol apply { group _x })) select { !isNull _x };
+// Each patrol its own way round the loop: the second from the far side and the other way, and so on
+{
+    private _n = count _loop;
+    private _from = floor (_forEachIndex * _n / (count _patrolGroups));
+    private _own = (_loop select [_from, _n]) + (_loop select [0, _from]);
+    if ((_forEachIndex mod 2) isEqualTo 1) then { reverse _own };
+    _x setVariable ["OT_patrolLoop", _own];
+} forEach _patrolGroups;
 // The patrol's moves are this function's (inside the walls only), not an AI mod's flanking (LAMBS)
 // and no attack orders of its own (the engine's "ATTACK" takes a man out over a wall the path finding keeps to:
 // it still fires at what it sees)
-if (!isNull _patrolGroup) then {
-    _patrolGroup setVariable ["lambs_danger_disableGroupAI", true, true];
-    { _x disableAI "TARGET" } forEach _patrol;
-};
-if (!isNull _patrolGroup && { count _loop > 1 }) then {
-    { _x enableAI "PATH"; _x doFollow (leader _patrolGroup) } forEach _patrol; // Off the post OT_fnc_officeGuard holds them at
-    [_patrolGroup, _loop] call _walk;
-};
+{
+    private _grp = _x;
+    _grp setVariable ["lambs_danger_disableGroupAI", true, true];
+    { _x disableAI "TARGET" } forEach units _grp;
+    if (count _loop > 1) then {
+        { _x enableAI "PATH"; _x doFollow (leader _grp) } forEach units _grp; // Off the post OT_fnc_officeGuard holds them at
+        [_grp, _grp getVariable ["OT_patrolLoop", _loop]] call _walk;
+    };
+} forEach _patrolGroups;
 // The reserve: the patrol's handling (its own moves, no attack orders), at ease in its places till the alarm
 private _ease = {
     params ["_group"];
@@ -146,8 +182,8 @@ private _ease = {
     [_x] call _ease;
 } forEach _reserveGroups;
 
-[_town, _guards, _patrolGroup, _loop, _walk, _reserveGroups, _ease] spawn {
-    params ["_town", "_guards", "_patrolGroup", "_loop", "_walk", "_reserveGroups", "_ease"];
+[_town, _guards, _patrolGroups, _loop, _walk, _reserveGroups, _ease, _area] spawn {
+    params ["_town", "_guards", "_patrolGroups", "_loop", "_walk", "_reserveGroups", "_ease", "_bounds"];
     private _alerted = false;
     private _lastContact = -1e9;
     private _hunting = false;
@@ -207,14 +243,15 @@ private _ease = {
                 _wp setWaypointSpeed "FULL";
             } forEach ((_gendarmes apply { group _x }) arrayIntersect (_gendarmes apply { group _x }));
         };
-        // The patrol and the reserve hunt the nearest threat they know of, inside the walls only; one outside
-        // straight back in. A minute after the last contact the patrol walks its loop again, the reserve goes back
-        // to its places and stands at ease
+        // The patrol and the reserve hunt the nearest threat they know of, inside the walls only (a hamlet's
+        // patrols within 40 m of the office); one outside straight back in. A minute after the last contact the
+        // patrol walks its loop again, the reserve goes back to its places and stands at ease
         private _area = ([_town, [_town] call OT_fnc_officeTier] call OT_fnc_officeCompound) apply { [_x select 0, _x select 1, 0] };
+        if (_area isEqualTo []) then { _area = _bounds };
         if (_area isNotEqualTo [] && { count _loop > 1 }) then {
             {
                 { if (alive _x && { [getPosATL _x, _area] call OT_fnc_officeOutside }) then { private _m = _x; _m doMove (([_loop, [], { _x distance2D _m }, "ASCEND"] call BIS_fnc_sortBy) select 0) } } forEach (units _x);
-            } forEach ([_patrolGroup] + _reserveGroups);
+            } forEach (_patrolGroups + _reserveGroups);
         };
         private _ended = _hunting && { time > _lastContact + 60 };
         {
@@ -222,25 +259,25 @@ private _ease = {
             private _leader = leader _grp;
             if (isNull _grp || { !alive _leader } || { count _loop < 2 }) then { continue };
             private _threats = (_leader targets [true, 300]) select { alive _x };
-            if (_threats isNotEqualTo [] && { _contact || { _grp isEqualTo _patrolGroup } }) then {
+            if (_threats isNotEqualTo [] && { _contact || { _grp in _patrolGroups } }) then {
                 private _t = [_threats, [], { _leader distance _x }, "ASCEND"] call BIS_fnc_sortBy;
                 private _seen = _leader getHideFrom (_t select 0);
                 private _go = if (_seen inPolygon _area) then { _seen } else { ([_loop, [], { _x distance2D _seen }, "ASCEND"] call BIS_fnc_sortBy) select 0 };
                 { deleteWaypoint _x } forEach ((waypoints _grp) select { (_x select 1) > 0 });
-                if (_grp isNotEqualTo _patrolGroup) then { _grp setBehaviour "AWARE" };
+                if !(_grp in _patrolGroups) then { _grp setBehaviour "AWARE" };
                 { _x doMove _go } forEach (units _grp);
                 _hunting = true;
             } else {
                 if (_ended) then {
-                    if (_grp isEqualTo _patrolGroup) then {
+                    if (_grp in _patrolGroups) then {
                         { _x doFollow _leader } forEach (units _grp);
-                        [_grp, _loop] call _walk;
+                        [_grp, _grp getVariable ["OT_patrolLoop", _loop]] call _walk;
                     } else {
                         { _x doMove (_x getVariable ["OT_reserveHome", getPosATL _x]) } forEach (units _grp);
                     };
                 };
             };
-        } forEach ([_patrolGroup] + _reserveGroups);
+        } forEach (_patrolGroups + _reserveGroups);
         if (_ended) then { _hunting = false };
         // A reserve back at its places stands at ease again
         if (!_hunting) then {

@@ -22,23 +22,21 @@ params [["_items", [], [[]]], ["_side", west, [west]], ["_placeholders", false, 
 private _objects = [];
 private _guards = [];
 private _group = grpNull;
-private _patrolGroup = grpNull; // A compound's patrol walks as a group of its own (OT_fnc_officeGarrison)
-private _reserveGroups = createHashMap; // And each of its reserve's small groups ("reserve:<n>")
+// A compound's patrol walks as a group of its own (OT_fnc_officeGarrison), a hamlet's each of its patrols
+// ("patrol:<n>"), and each of a compound's reserve's small groups ("reserve:<n>")
+private _keyed = createHashMap;
 {
     private _item = _x;
     _item params ["_kind", "_what", "_at", "_orient", ["_extra", []]];
     if (_kind in ["hide", "gate"]) then { continue }; // A map object removed (OT_fnc_officeHide), a gate's opening (a marker)
     if (_kind isEqualTo "guard") then {
-        private _res = _extra findIf { (_x select [0, 8]) isEqualTo "reserve:" };
+        private _res = _extra findIf { (_x select [0, 8]) isEqualTo "reserve:" || { (_x select [0, 7]) isEqualTo "patrol:" } };
+        if (_res < 0 && { "patrol" in _extra }) then { _res = _extra find "patrol" };
         private _in = call {
-            if ("patrol" in _extra) exitWith {
-                if (isNull _patrolGroup) then { _patrolGroup = createGroup [_side, true] };
-                _patrolGroup
-            };
             if (_res > -1) exitWith {
                 private _key = _extra select _res;
-                if (isNull (_reserveGroups getOrDefault [_key, grpNull])) then { _reserveGroups set [_key, createGroup [_side, true]] };
-                _reserveGroups get _key
+                if (isNull (_keyed getOrDefault [_key, grpNull])) then { _keyed set [_key, createGroup [_side, true]] };
+                _keyed get _key
             };
             if (isNull _group) then { _group = createGroup [_side, true] };
             _group
@@ -106,6 +104,14 @@ private _reserveGroups = createHashMap; // And each of its reserve's small group
         if ("drop" in _extra) then {
             private _hits = lineIntersectsSurfaces [_at vectorAdd [0, 0, 0.6], _at vectorAdd [0, 0, -1.5], _object, objNull, true, 1, "GEOM", "NONE"];
             if (_hits isNotEqualTo []) then { _object setPosASL [_at select 0, _at select 1, ((_hits select 0) select 0) select 2] };
+        };
+        // A box with an inventory (an ammo box by a hamlet's door) is only a prop: emptied and locked
+        if (getNumber (configOf _object >> "maximumLoad") > 0 && { !(_object isKindOf "AllVehicles") }) then {
+            clearItemCargoGlobal _object;
+            clearWeaponCargoGlobal _object;
+            clearMagazineCargoGlobal _object;
+            clearBackpackCargoGlobal _object;
+            [_object, true] remoteExec ["lockInventory", 0, _object];
         };
         // "open": a gate's doors swung open (and simulated, so they stay so), for the AI's men and vehicles; every
         // gate of a town the resistance holds
