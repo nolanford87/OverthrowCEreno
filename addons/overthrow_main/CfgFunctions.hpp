@@ -773,6 +773,7 @@ class CfgFunctions {
             class NATOsendAirPatrol {};
             class NATOsendGroundPatrol {};
             class NATOupgradeFOBs {};
+            class NATOupgradeOffices {};
             class NATOFOBtimers {};
             class NATOupgradeGarrisons {};
             class NATOupgradeVehicleGarrisons {};

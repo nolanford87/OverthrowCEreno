@@ -218,6 +218,9 @@ publicVariable "OT_nextNATOTurn";
 
                 //Upgrade FOBs
                 _spend = [_spend, _chance] call OT_fnc_NATOupgradeFOBs;
+
+                // Raise a town's mayor's office a defence tier (out of sight)
+                _spend = [_spend, _chance] call OT_fnc_NATOupgradeOffices;
             };
             //Finish
             private _resources = server getVariable ["NATOresources", 2000];
