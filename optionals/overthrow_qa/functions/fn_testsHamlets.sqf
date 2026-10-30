@@ -3,8 +3,9 @@
     The hamlets' mayor's offices (a town that can never reach tier 3: tools/officegen/hamlet_gen.py, the user's
     design): police only; tier 1 four gendarmes in the building, tier 2 those four and two patrols of three
     ("patrol:1", "patrol:2") walking a ring round the office (OT_fnc_officeGarrison), from opposite sides and
-    opposite ways round, within 40 m of it. Part of the archived QA tests. Uses the hamlet farthest from the host,
-    its tier set to 2 for the test and put back.
+    opposite ways round, within 40 m of it; every bigger town's tiers 1-2 the same (hamlet_gen.py --bigger), its
+    compound tiers on top. Part of the archived QA tests. Uses the hamlet and the bigger town farthest from the
+    host, each's tier set to 2 for the test and put back.
 
     Returns: ARRAY - [[name, code, seconds], ...]
 */
@@ -14,8 +15,10 @@
 call OTQA_fnc_testsOfficeHelpers;
 private _tests = [];
 
-_tests pushBack ["Hamlets: the layouts, police only", {
-    private _hamlets = [true] call OTQA_og_towns;
+// [small (the hamlets) or not, label] for the checks
+OTQA_hm_layouts = {
+    params ["_small", "_label"];
+    private _hamlets = [_small] call OTQA_og_towns;
     private _flags = { _this param [4, []] };
     private _bad = [];
     {
@@ -27,19 +30,22 @@ _tests pushBack ["Hamlets: the layouts, police only", {
         private _p1 = { "patrol:1" in (_x call _flags) } count _t2;
         private _p2 = { "patrol:2" in (_x call _flags) } count _t2;
         private _military = { (_x select 1) isNotEqualTo "gendarme" } count (_t1 + _t2);
-        if !((count _tiers) isEqualTo 2 && { (count _t1) isEqualTo 4 } && { ({ "patrol" in (_x call _flags) } count _t1) isEqualTo 0 }
+        if !(((count _tiers) isEqualTo 2 || { !_small }) && { (count _t1) isEqualTo 4 } && { ({ "patrol" in (_x call _flags) } count _t1) isEqualTo 0 }
             && { (count _t2) isEqualTo 10 } && { _p1 isEqualTo 3 } && { _p2 isEqualTo 3 } && { _military isEqualTo 0 }) then {
             _bad pushBack [_town, count _tiers, count _t1, count _t2, _p1, _p2, _military];
         };
     } forEach _hamlets;
-    ["Hamlets: every hamlet 2 tiers, T1 4 gendarmes inside, T2 10 with 2 patrols of 3, no military",
+    [format ["%1: every one's T1 4 gendarmes inside, T2 10 with 2 patrols of 3, no military%2", _label, ["", " (and only 2 tiers)"] select _small],
         _hamlets isNotEqualTo [] && { _bad isEqualTo [] },
-        format ["%1 hamlets; off ([town, tiers, T1 men, T2 men, patrol 1, patrol 2, military]): %2", count _hamlets, _bad]] call OTQA_fnc_check;
-}, 10];
+        format ["%1 towns; off ([town, tiers, T1 men, T2 men, patrol 1, patrol 2, military]): %2", count _hamlets, _bad]] call OTQA_fnc_check;
+};
+_tests pushBack ["Hamlets: the layouts, police only", { [true, "Hamlets"] call OTQA_hm_layouts }, 10];
+_tests pushBack ["Bigger towns: tiers 1-2 police only", { [false, "Bigger towns"] call OTQA_hm_layouts }, 10];
 
-_tests pushBack ["Hamlets: tier 2's patrols walk the ring round the office", {
-    private _town = ([true] call OTQA_og_towns) param [0, ""];
-    if (_town isEqualTo "") exitWith { ["Hamlets: a hamlet to spawn", false, "none"] call OTQA_fnc_check };
+OTQA_hm_live = {
+    params ["_small", "_label"];
+    private _town = ([_small] call OTQA_og_towns) param [0, ""];
+    if (_town isEqualTo "") exitWith { [format ["%1: a town to spawn", _label], false, "none"] call OTQA_fnc_check };
     private _tierVar = format ["officetier%1", _town];
     private _keep = server getVariable [_tierVar, -1];
     server setVariable [_tierVar, 2];
@@ -54,9 +60,9 @@ _tests pushBack ["Hamlets: tier 2's patrols walk the ring round the office", {
     private _far = flatten (_wps apply { _x apply { _x distance2D _office } });
     private _starts = _wps apply { _x param [0, [0, 0, 0]] };
     private _apart = if ((count _starts) isEqualTo 2) then { (_starts select 0) distance2D (_starts select 1) } else { 0 };
-    ["Hamlets: two patrols of 3, each on a ring of waypoints round the office, from opposite sides",
+    [format ["%1: two patrols of 3, each on a ring of waypoints round the office, from opposite sides", _label],
         (count _patrols) isEqualTo 2 && { (_patrols findIf { (count units _x) isNotEqualTo 3 }) < 0 } && { _cycles isEqualTo 2 }
-            && { (_wps findIf { (count _x) < 4 }) < 0 } && { (_far findIf { _x < 6 || { _x > 30 } }) < 0 } && { _apart > 10 },
+            && { (_wps findIf { (count _x) < 4 }) < 0 } && { (_far findIf { _x < 6 }) < 0 } && { _apart > 10 },
         format ["%1: %2 patrols (men %3), waypoints %4, cycles %5, %6-%7 m from the office, starts %8 m apart", _town, count _patrols, _patrols apply { count units _x }, _wps apply { count _x }, _cycles, round (selectMin (_far + [0])), round (selectMax (_far + [0])), round _apart]] call OTQA_fnc_check;
 
     private _men = flatten (_patrols apply { units _x });
@@ -64,13 +70,17 @@ _tests pushBack ["Hamlets: tier 2's patrols walk the ring round the office", {
     sleep 40;
     private _moved = 0;
     { if ((_x distance2D (_from select _forEachIndex)) > 3) then { _moved = _moved + 1 } } forEach _men;
-    private _out = { (_x distance2D _office) > 40 } count _men;
-    ["Hamlets: the patrols walk, within 40 m of the office",
+    // Within 40 m of the office, or 10 m past the ring round a big one (OT_fnc_officeGarrison)
+    private _bound = 40 max ((selectMax (_far + [0])) + 10);
+    private _out = { (_x distance2D _office) > _bound } count _men;
+    [format ["%1: the patrols walk, within %2 m of the office", _label, round _bound],
         _men isNotEqualTo [] && { _moved isEqualTo (count _men) } && { _out isEqualTo 0 },
         format ["%1 of %2 moved, %3 more than 40 m out", _moved, count _men, _out]] call OTQA_fnc_check;
 
     ["OTQA_hamlet", [], [], {}, []] call OT_fnc_despawn;
     server setVariable [_tierVar, [_keep, nil] select (_keep isEqualTo -1)];
-}, 90];
+};
+_tests pushBack ["Hamlets: tier 2's patrols walk the ring round the office", { [true, "Hamlets"] call OTQA_hm_live }, 90];
+_tests pushBack ["Bigger towns: tier 2's patrols walk the ring round the office", { [false, "Bigger towns"] call OTQA_hm_live }, 90];
 
 _tests

@@ -14,8 +14,8 @@ matter, so don't caveat changes about them.
 - Drafting and generating them is in `tools/officegen` (`townlib.py`, `compound_gen.py` and the other `*_gen.py`,
   per-town scripts in `drafting/`); the walls skill is `.claude/skills/office-walls`. In the game, the `townlayout`
   suite (the layout editor) and the `compounds` suite (the area editor) edit them with Zeus.
-- Hamlets (towns that can never reach tier 3: abandoned once their office is held) are police only, written by
-  `tools/officegen/hamlet_gen.py` (`--carry` rebuilds tier 2 from a reviewed tier 1).
+- Tiers 1-2 everywhere are police only (hamlets: towns that can never reach tier 3, abandoned once their office is held), written by
+  `tools/officegen/hamlet_gen.py` (`--bigger` for the other towns, `--carry` rebuilds tier 2 from a reviewed tier 1).
 - The office buildings' floor plans come from `tools/officegen/probe_offices.txt` (OTPROBE2 lines from the
   `offices` probe; `tools/qa/merge-probe.py <rpt> <probe file>` merges a new run into it), read by
   `tools/officegen/officegen_lib.py`. Their real entrances are in `optionals/overthrow_qa/functions/fn_officeDoorways.sqf`.

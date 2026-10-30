@@ -1,6 +1,7 @@
 """
-The hamlets' mayor's offices (a town that can never reach tier 3, so never a compound: the user's, 2026-10-29),
-police only, no military:
+The mayor's offices' tiers 1-2 (never a compound at those tiers), police only, no military: the hamlets' (a town
+that can never reach tier 3: the user's, 2026-10-29), and with --bigger the same for every other town's tiers 1-2
+(its compound tiers 3-5 untouched):
     T1: 4 gendarmes stationed in the building (its building positions, spread over its floors, each facing out:
         "garrison" turns him to his longest view in play), the office's furniture (its building family's: the
         stone house's from Feres, the big house's from Neri); outside the front door only the flag and an ammo
@@ -8,13 +9,13 @@ police only, no military:
     T2: T1, plus a portable light by the door and two patrols of 3 gendarmes ("patrol", "patrol:1" and
         "patrol:2") on opposite corners of the ring they walk in play (OT_fnc_officeGarrison: 9 m out round the
         building).
-A run replaces the hamlets' tiers 1-2 but the user's things ("user", "hand"). With --carry it keeps tier 1 as
+A run replaces the towns' tiers 1-2 but the user's things ("user", "hand") and the map objects a tier hides. With --carry it keeps tier 1 as
 saved (the user's review) and rebuilds tier 2 from it: the saved tier 1, then tier 2's own (its light, its
 patrols and the user's things there), generating the light and the patrols only where tier 2 has none. From the
 town probe (townlib.py): writes each hamlet's draft (tools/officegen/layouts/drafts/<town>.txt) and merges them
 (merge_layouts.py).
 
-    python tools/officegen/hamlet_gen.py [--world Altis] [--towns "Feres,Abdera"] [--carry] [--dry]
+    python tools/officegen/hamlet_gen.py [--world Altis] [--bigger] [--towns "Feres,Abdera"] [--carry] [--dry]
 """
 import math
 import os
@@ -26,9 +27,10 @@ import merge_layouts  # noqa: E402
 import townlib  # noqa: E402
 
 RING = 9.0  # How far out round the building the patrols walk (OT_fnc_officeGarrison)
-FURNITURE = {"Stone_HouseBig": "Feres", "House_Big_02": "Neri"}  # Each building family's furniture from that town's T1
+FURNITURE = {"Stone_HouseBig": "Feres", "House_Big_02": "Neri", "House_Big_01": "Panochori"}  # Each building family's furniture from that town's T1
 FURNITURE_CLASSES = ("Land_TableDesk_F", "Land_OfficeChair_01_F", "Land_MapBoard_F")
 KEEP = ("user", "hand")
+kept_item = lambda i: i[0] in ("hide", "gate") or any(k in i[4] for k in KEEP)
 LIGHT = "Land_PortableLight_single_F"
 DROPPED = ("Land_InfoStand_V2_F",)  # Taken out by the user (2026-10-29): gone from saved tiers too
 
@@ -193,16 +195,17 @@ def build(town, towns, saved, carry=False):
     if carry and old:
         t1 = [list(i) for i in old[0]]
         own = [i for i in (old[1] if len(old) > 1 else []) if not any(same(i, j) for j in t1)
-               and ("patrol" in i[4] or i[1] == LIGHT or any(k in i[4] for k in KEEP))]
+               and ("patrol" in i[4] or i[1] == LIGHT or kept_item(i))]
     else:
-        kept = [i for i in (old[0] if old else []) if any(k in i[4] for k in KEEP)]
+        kept = [i for i in (old[0] if old else []) if kept_item(i)]
         t1 = tier1(town, towns, saved, frame, kept) + kept
-        own = [i for i in (old[1] if len(old) > 1 else []) if any(k in i[4] for k in KEEP)]
+        own = [i for i in (old[1] if len(old) > 1 else []) if kept_item(i)]
     if not any(i[1] == LIGHT for i in own):
         own += [i for i in [light(town, frame)] if i]
     if not any("patrol" in i[4] for i in own):
         own += patrols(town)
-    return [t1, [list(i) for i in t1] + own]
+    t2 = [list(i) for i in t1] + own
+    return [t1, t2] + old[2:]  # The compound's tiers as they are
 
 
 def main(argv):
@@ -210,10 +213,11 @@ def main(argv):
     only = argv[argv.index("--towns") + 1].split(",") if "--towns" in argv else None
     dry = "--dry" in argv
     carry = "--carry" in argv
+    bigger = "--bigger" in argv
     towns = townlib.load(world)
     saved = merge_layouts.load_saved(world)
     brackets = merge_layouts.probe_brackets(world)
-    hamlets = sorted(n for n in saved if brackets.get(n, 0) == 1 and n in towns and (only is None or n in only))
+    hamlets = sorted(n for n in saved if (brackets.get(n, 0) > 1 if bigger else brackets.get(n, 0) == 1) and n in towns and (only is None or n in only))
     paths = []
     for name in hamlets:
         town = towns[name]
@@ -221,6 +225,9 @@ def main(argv):
         guards = [sum(1 for i in t if i[0] == "guard") for t in tiers]
         patrol = [sum(1 for i in tiers[1] if f"patrol:{p}" in i[4]) for p in (1, 2)]
         print(f"{name:20} {town.cls:28} T1 {len(tiers[0]):2} items {guards[0]} men, T2 {len(tiers[1]):2} items {guards[1]} men (patrols {patrol})")
+        top = tiers[2:]  # A bigger town's compound tiers: kept as they are, only tiers 1-2 written
+        tiers = tiers[:2]
+        town.cap = 2  # The draft's tiers (merge_layouts.py keeps the town's other tiers)
         problems = townlib.check(town, tiers)
         if problems:
             print("   " + "\n   ".join(problems))
