@@ -57,6 +57,9 @@ diag_log format ["Overthrow: Economy version is %1", _version];
         };
     };
 
+    // A police station set up at the town's mayor's office (OT_fnc_officePolice): its marker
+    private _policePos = server getVariable [format ["policepos%1", _town], []];
+    if (_policePos isNotEqualTo [] && { ([_town] call OT_fnc_officeLayout) isNotEqualTo [] }) then { [_policePos, objNull] call OT_fnc_initPoliceStation };
     private _garrison = server getVariable [format ['police%1', _town], 0];
     private _mrkid = format ["%1-police", _town];
     _mrkid setMarkerText format ["%1", _garrison];

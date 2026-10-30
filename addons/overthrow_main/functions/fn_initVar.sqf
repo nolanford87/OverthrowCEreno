@@ -1268,7 +1268,6 @@ OT_Buildables = [
         "Attach weapons to vehicles"
     ],
     ["House", 2000, ["Land_House_Small_06_F", "Land_House_Small_02_F", "Land_House_Small_03_F", "Land_GarageShelter_01_F", "Land_Slum_04_F"], "", false, "4 walls, a roof, and if you're lucky a door that opens."],
-    ["Police Station", 2500, [OT_policeStation], "OT_fnc_initPoliceStation", false, "Allows hiring of policeman to raise stability in a town and keep the peace. Comes with 2 units."],
     ["Warehouse", 4000, [OT_warehouse], "OT_fnc_initWarehouse", false, "A house that you put wares in."],
     ["Refugee Camp", 600, [OT_refugeeCamp], "", false, "Can recruit civilians here without needing to chase them down"],
     ["Radar", 25000, [OT_radarBuilding], "OT_fnc_initRadar", false, "Reveals enemy drones, helicopters and planes within 2.5km"]

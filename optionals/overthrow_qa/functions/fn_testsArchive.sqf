@@ -16,6 +16,7 @@ private _tests = [];
 {
     _tests append (call _x);
 } forEach [
+    OTQA_fnc_testsOfficePolice,
     OTQA_fnc_testsTierSpending,
     OTQA_fnc_testsStartTiers,
     OTQA_fnc_testsHamlets,

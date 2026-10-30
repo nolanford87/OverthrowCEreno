@@ -1,3 +1,6 @@
+// At the mayor's office of a town of ours the button sets up or manages its police station
+if ((["near"] call OT_fnc_officePolice) isNotEqualTo "") exitWith { ["use"] call OT_fnc_officePolice };
+
 private _b = player call OT_fnc_nearestRealEstate;
 private _building = objNull;
 if (_b isEqualType []) then {

@@ -492,6 +492,24 @@ if (_obpos distance player < 250) then {
 
 _areatxtctrl ctrlSetStructuredText parseText _areaText;
 
+// At the mayor's office of a town of ours: its police station, set up or managed there (OT_fnc_officePolice)
+private _officeTown = ["near"] call OT_fnc_officePolice;
+if (_officeTown isNotEqualTo "") then {
+    private _unlocked = (server getVariable [format ["policepos%1", _officeTown], []]) isNotEqualTo [];
+    ctrlSetText [1608, "Sell"];
+    ctrlEnable [1608, false];
+    ctrlSetText [1609, ["Police ($2,500)", "Manage"] select _unlocked];
+    ctrlEnable [1609, true];
+    ctrlEnable [1610, false];
+    _buildingTxt = format [
+        "
+		<t align='left' size='0.8'>Mayor's Office</t><br/>
+		<t align='left' size='0.65'>%1</t>
+	",
+        ["No police station yet", format ["Police: %1", server getVariable [format ["police%1", _officeTown], 0]]] select _unlocked
+    ];
+};
+
 OT_interactingWith = objNull;
 _buildingtextctrl ctrlSetStructuredText parseText _buildingTxt;
 
