@@ -7,10 +7,10 @@
     Returns: Nothing
 */
 
-// Towns with an office layout, farthest from the host first (locked at 100 people or more, or under 100 with _small)
+// Towns with an office layout, farthest from the host first (able to reach tier 3, or never with _small)
 OTQA_og_towns = {
     params [["_small", false]];
-    private _towns = OT_allTowns select { ([_x] call OT_fnc_officeLayout) isNotEqualTo [] && { (([_x] call OT_fnc_officeBracket) <= 2) isEqualTo _small } };
+    private _towns = OT_allTowns select { ([_x] call OT_fnc_officeLayout) isNotEqualTo [] && { (([_x, true] call OT_fnc_officeTier) < 3) isEqualTo _small } };
     [_towns, [], { (server getVariable [_x, [0, 0, 0]]) distance2D player }, "DESCEND"] call BIS_fnc_sortBy;
 };
 OTQA_og_officePos = { ASLToAGL ((([_this] call OT_fnc_officeLayout) select 0) select 1) };

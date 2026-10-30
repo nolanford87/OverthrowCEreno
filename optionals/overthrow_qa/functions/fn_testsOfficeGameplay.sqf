@@ -8,7 +8,7 @@
        the resistance holds it
     3. Capture: the task, cleared and held (2 minutes, shortened), the office held, the QRF for it; the
        resistance wins it (forced) and has the town
-    3b. A town under 100 people is the resistance's with its office, no QRF
+    3b. A town that can never reach tier 3 is the resistance's with its office, no QRF
     4. Lost again: the occupier wins the QRF (forced), stability 50, the office theirs again
     5. Called off: the town's stability rises before the office is taken, the task is cancelled
     6. The fight for the office: the occupier holding it with nobody of ours inside wins
@@ -245,23 +245,24 @@ _tests pushBack ["Office: the compound's doors locked, picked and breached", {
     private _allOpen = ((_t3 + _t4) findIf { (_x call _locked) isNotEqualTo 0 }) < 0;
     _t3 = [_town, 3] call OT_fnc_officeDoors;
     private _allLocked = (_t3 findIf { (_x call _locked) isNotEqualTo 1 }) < 0;
-    // The block probe's buildings by the same rule: T3 the house across its line (6 doors), T4 the two houses
-    // across its line and the garage (13)
-    ["Doors: T3 locks the doors out of the compound, the building knows them", (count _t3) isEqualTo 6 && { (count _t4) isEqualTo 13 } && _allLocked && { (_t3 findIf { !((_x select 1) in ((_x select 0) getVariable ["OT_lockedDoors", []])) }) < 0 }, format ["%1 locked at T3, %2 at T4", count _t3, count _t4]] call OTQA_fnc_check;
+    // By the same rule: T3 the shed across its line (1 door; the east wall runs at the road's edge, the houses
+    // clear behind it), T4 the two houses across its line, the shed and the garage (14)
+    ["Doors: T3 locks the doors out of the compound, the building knows them", (count _t3) isEqualTo 1 && { (count _t4) isEqualTo 14 } && _allLocked && { (_t3 findIf { !((_x select 1) in ((_x select 0) getVariable ["OT_lockedDoors", []])) }) < 0 }, format ["%1 locked at T3, %2 at T4", count _t3, count _t4]] call OTQA_fnc_check;
     ["Doors: none locked for no tier, all unlocked again", _none isEqualTo [] && _allOpen, str count _none] call OTQA_fnc_check;
 
-    // The lockpick: one door unlocked, the rest kept
-    (_t3 select 0) params ["_pb", "_pd"];
+    // The lockpick: one door unlocked, the rest kept (at T4, with doors to spare)
+    _t4 = [_town, 4] call OT_fnc_officeDoors;
+    (_t4 select 0) params ["_pb", "_pd"];
     [_pb, _pd] call OT_fnc_officeUnlock;
     private _picked = ([_pb, _pd] call _locked) isEqualTo 0 && { !(_pd in (_pb getVariable ["OT_lockedDoors", []])) };
-    private _others = ((_t3 - [[_pb, _pd]]) findIf { (_x call _locked) isNotEqualTo 1 }) < 0;
+    private _others = ((_t4 - [[_pb, _pd]]) findIf { (_x call _locked) isNotEqualTo 1 }) < 0;
     ["Lockpick: the door unlocked, the others still locked", _picked && _others, format ["%1 door %2", typeOf _pb, _pd]] call OTQA_fnc_check;
 
     // A charge at a locked door: it's breached, a locked door more than 3 m off isn't
-    _t3 = [_town, 3] call OT_fnc_officeDoors;
-    (_t3 select 0) params ["_bb", "_bd"];
+    _t4 = [_town, 4] call OT_fnc_officeDoors;
+    (_t4 select 0) params ["_bb", "_bd"];
     private _at = AGLToASL ([_bb, _bd] call OT_fnc_officeDoorPos);
-    private _far = _t3 select { (AGLToASL ([_x select 0, _x select 1] call OT_fnc_officeDoorPos) distance _at) > 6 };
+    private _far = _t4 select { (AGLToASL ([_x select 0, _x select 1] call OT_fnc_officeDoorPos) distance _at) > 6 };
     [_at] call OT_fnc_officeBreach;
     private _breached = ([_bb, _bd] call _locked) isEqualTo 0;
     private _kept = (_far findIf { (_x call _locked) isNotEqualTo 1 }) < 0;

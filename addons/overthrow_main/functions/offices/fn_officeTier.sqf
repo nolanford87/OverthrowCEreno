@@ -7,17 +7,21 @@
 
     Parameters:
         _this # 0: STRING - Town
+        _this # 1: BOOL - The highest tier the town can ever reach instead (default false)
 
-    Usage: private _tier = [_town] call OT_fnc_officeTier;
+    Usage: private _tier = [_town] call OT_fnc_officeTier; private _top = [_town, true] call OT_fnc_officeTier;
 
     Returns: NUMBER - The tier, 1-5
 */
 
-params [["_town", "", [""]]];
+params [["_town", "", [""]], ["_top", false, [false]]];
 
 private _bracket = [_town] call OT_fnc_officeBracket;
 private _authored = 0;
 { if (_x isNotEqualTo []) then { _authored = _forEachIndex + 1 } } forEach (([_town] call OT_fnc_officeLayout) param [1, []]);
 
+private _cap = ((_bracket + 1) min (_authored max 1)) max 1;
+if (_top) exitWith { _cap };
+
 private _tier = server getVariable [format ["officetier%1", _town], [1, 1, 2, 3, 4] select (_bracket - 1)];
-(_tier min (_bracket + 1) min (_authored max 1)) max 1
+(_tier min _cap) max 1

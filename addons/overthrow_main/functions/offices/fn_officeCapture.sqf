@@ -3,8 +3,8 @@
     Taking a town by its mayor's office, once the town's stability is down to 0 (OT_fnc_NATOcheckTowns):
     the resistance gets a task to take the office; it's taken once no occupier soldier is left in its area
     (the occupier compound at the town's tier, else 30 m round the office: OT_fnc_officeArea) and the
-    resistance has held it for 2 minutes. A town under 100 people is then the
-    resistance's; a bigger one the occupier counter-attacks at the office
+    resistance has held it for 2 minutes. A town that can never reach tier 3 (OT_fnc_officeTier) is then
+    the resistance's; any other the occupier counter-attacks at the office
     (OT_fnc_NATOResponseTown, after its 10 minutes to get there, the time to bunker down): the resistance
     wins the town if it still holds the office when the attack is spent or runs out of time, the occupier
     wins it back by holding the office with nobody of the resistance inside for 2 minutes. While the
@@ -30,12 +30,13 @@ private _pos = ASLToAGL ((([_town] call OT_fnc_officeLayout) select 0) select 1)
 private _held = format ["officeheld%1", _town];
 private _holdTime = missionNamespace getVariable ["OT_officeHoldTime", 120]; // Shorter only in the QA tests
 private _area = [_town] call OT_fnc_officeArea;
+private _abandon = ([_town, true] call OT_fnc_officeTier) < 3; // Never a compound: no counter-attack
 // How far out to look for units: the area's farthest corner
 private _reach = if (_area isEqualType 0) then { _area } else { selectMax (_area apply { _x distance2D _pos }) };
 
 if !(server getVariable [_held, false]) then {
     private _task = format ["office%1", _town];
-    [independent, [_task], [format ["Clear every %2 soldier out of the mayor's office in %1, then hold it for 2 minutes. %2 will counter-attack once it's ours.", _town, OT_NATO_name], format ["Take the mayor's office in %1", _town], _task], _pos, "CREATED", 2, true, "Attack", true] call BIS_fnc_taskCreate;
+    [independent, [_task], [format ["Clear every %2 soldier out of the mayor's office in %1, then hold it for 2 minutes. %2 will %3 once it's ours.", _town, OT_NATO_name, ["counter-attack", "abandon the town"] select _abandon], format ["Take the mayor's office in %1", _town], _task], _pos, "CREATED", 2, true, "Attack", true] call BIS_fnc_taskCreate;
 
     private _for = 0;
     private _result = "";
@@ -61,12 +62,12 @@ if !(server getVariable [_held, false]) then {
     if (_result isEqualTo "SUCCEEDED") then {
         server setVariable [_held, true, true];
         [_town, 0] call OT_fnc_officeDoors; // The compound's doors unlocked
-        format ["We hold the mayor's office in %1. Bunker down: %2 will counter-attack it in about 10 minutes", _town, OT_NATO_name] remoteExec ["OT_fnc_notifyGood", 0, false];
+        if (!_abandon) then { format ["We hold the mayor's office in %1. Bunker down: %2 will counter-attack it in about 10 minutes", _town, OT_NATO_name] remoteExec ["OT_fnc_notifyGood", 0, false] };
     };
 };
 
-// A small town (under 100 people) is the resistance's with its office, no counter-attack
-if ((server getVariable [_held, false]) && { ([_town] call OT_fnc_officeBracket) <= 2 } && { !(_town in (server getVariable ["NATOabandoned", []])) }) then {
+// A town that can never reach tier 3 (no compound) is the resistance's with its office, no counter-attack
+if ((server getVariable [_held, false]) && { _abandon } && { !(_town in (server getVariable ["NATOabandoned", []])) }) then {
     private _abandoned = server getVariable ["NATOabandoned", []];
     _abandoned pushBack _town;
     server setVariable ["NATOabandoned", _abandoned, true];
